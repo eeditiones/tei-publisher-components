@@ -1,0 +1,27 @@
+{
+  "name": "tei-publisher-components",
+  "version": "1.0.0",
+  "description": "Collection of webcomponents underlying TEI Publisher",
+  "repository": "https://gitlab.existsolutions.com/tei-publisher/components.git",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm install --quiet && polymer serve --npm",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "polymer analyze > analysis.json"
+  },
+  "author": "Wolfgang Meier",
+  "license": "GPLv3",
+  "dependencies": {
+    "@polymer/iron-ajax": "^3.0.1",
+    "@polymer/iron-icons": "^3.0.1",
+    "@polymer/iron-iconset": "^3.0.1",
+    "@polymer/paper-fab": "^3.0.1",
+    "@webcomponents/webcomponentsjs": "latest",
+    "lit-element": "latest",
+    "lit-html": "^1.1.2"
+  },
+  "devDependencies": {
+    "@polymer/iron-component-page": "^4.0.1",
+    "@polymer/iron-demo-helpers": "github:PolymerElements/iron-demo-helpers"
+  }
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <style>
+    main {
+      display: flex;
+      justify-content: center;
+    }
+
+    pb-navigation {
+      position: fixed;
+      bottom: calc(50% - 28px);
+      --paper-fab-background: #35424b;
+      color: white;
+    }
+
+    pb-navigation[direction=forward] {
+      right: 20px;
+    }
+
+    pb-navigation[direction=backward] {
+      left: 20px;
+    }
+  </style>
+  <!-- Register service worker if supported. -->
+  <!--
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+  -->
+
+  <!-- Load polyfills -->
+  <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+  <script type="module" src="node_modules/@polymer/iron-icons/iron-icons.js"></script>
+  <script type="module" src="node_modules/@polymer/paper-fab/paper-fab.js"></script>
+  <script type="module" src="src/pb-page.js"></script>
+  <script type="module" src="src/pb-document.js"></script>
+  <script type="module" src="src/pb-view.js"></script>
+  <script type="module" src="src/pb-navigation.js"></script>
+
+  <!-- Change stuff here for your app -->
+  <meta name="theme-color" content="#ffffff">
+  <title>TEI Publisher Components</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="UTF-8">
+</head>
+
+<body>
+
+  <!--
+    To configure starting state of the checkbox from markup:
+    <start-lit-element pie="true">
+  -->
+  <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+    <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>
+    <main>
+      <pb-navigation direction="backward" keyboard="left">
+        <paper-fab icon="icons:chevron-left"></paper-fab>
+      </pb-navigation>
+      <pb-view src="document1">
+      </pb-view>
+      <pb-navigation direction="forward" keyboard="right">
+        <paper-fab icon="icons:chevron-right"></paper-fab>
+      </pb-navigation>
+    </main>
+  </pb-page>
+</body>
