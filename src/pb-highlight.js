@@ -48,7 +48,8 @@ export class PbHighlight extends pbMixin(LitElement) {
                 type: Boolean
             },
             highlightSelf: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'highlight-self'
             },
             _className: {
                 type: String

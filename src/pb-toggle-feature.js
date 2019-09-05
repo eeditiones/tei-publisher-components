@@ -86,14 +86,16 @@ export class PbToggleFeature extends pbMixin(LitElement) {
              * Possible properties are 'view', 'odd' and 'columnSeparator'.
              */
             propertiesOn: {
-                type: Object
+                type: Object,
+                attribute: 'properties-on'
             },
             /**
              * Additional properties to set on the pb-view if toggle is in 'off' state.
              * Possible properties are 'view', 'odd' and 'columnSeparator'.
              */
             propertiesOff: {
-                type: Object
+                type: Object,
+                attribute: 'properties-off'
             },
             checked: {
                 type: Boolean

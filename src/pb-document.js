@@ -30,7 +30,8 @@ class PbDocument extends pbMixin(LitElement) {
              * specified in `path`.
              */
             rootPath: {
-                type: String
+                type: String,
+                attribute: 'root-path'
             },
             /**
              * The odd file which should be used to render this document by default. Might be
@@ -56,7 +57,8 @@ class PbDocument extends pbMixin(LitElement) {
                 reflect: true
             },
             sourceView: {
-                type: String
+                type: String,
+                attribute: 'source-view'
             }
         };
     }

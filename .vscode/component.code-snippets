@@ -18,7 +18,7 @@
 			"\t\tconst superProps = super.properties;",
 			"\t\treturn {",
 			"\t\t\t...superProps",
-			"\t\t}",
+			"\t\t};",
 			"\t}\n",
 			"\tconstructor() {",
 			"\t\tsuper();",

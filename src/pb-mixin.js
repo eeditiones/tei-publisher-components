@@ -67,7 +67,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
              * be an array of event names to listen to.
              */
             subscribeConfig: {
-                type: Object
+                type: Object,
+                attribute: 'subscribe-config'
             },
             /**
              * The name of the channel to send events to.
@@ -81,7 +82,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
              * be an array of event names to be dispatched.
              */
             emitConfig: {
-                type: Object
+                type: Object,
+                attribute: 'emit-config'
             },
             /**
              * A selector pointing to other components this component depends on.
@@ -90,7 +92,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
              * to events.
              */
             waitFor: {
-                type: String
+                type: String,
+                attribute: 'wait-for'
             },
             _isReady: {
                 type: Boolean
@@ -110,7 +113,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
              * named by property `keyboard` is pressed. The function receives no arguments.
              */
             keyPressed: {
-                type: Function
+                type: Function,
+                attribute: 'key-pressed'
             }
         }
     }

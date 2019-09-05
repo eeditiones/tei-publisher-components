@@ -87,7 +87,8 @@ export class PbView extends pbMixin(LitElement) {
             */
             nodeId: {
                 type: String,
-                reflect: true
+                reflect: true,
+                attribute: 'node-id'
             },
             /**
             * An xml:id to be displayed. If specified, this determines the root of the fragment to be
@@ -95,7 +96,8 @@ export class PbView extends pbMixin(LitElement) {
             */
             xmlId: {
                 type: Array,
-                reflect: true
+                reflect: true,
+                attribute: 'xml-id'
             },
             /**
             * An optional XPath expression: the root of the fragment to be processed is determined
@@ -127,14 +129,16 @@ export class PbView extends pbMixin(LitElement) {
             * event. Use this to make one `pb-view` component dependent on another one. Default is 'false'.
             */
             onUpdate: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'on-update'
             },
             /**
             * Message to display if no content was returned by the server.
             * Set to empty string to show nothing.
             */
             notFound: {
-                type: String
+                type: String,
+                attribute: 'not-found'
             },
             /**
             * The relative URL to the script on the server which will be called for loading content.
@@ -150,7 +154,8 @@ export class PbView extends pbMixin(LitElement) {
             * if you wish to append them to the main text.
             */
             appendFootnotes: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'append-footnotes'
             },
             /**
             * Should matches be highlighted if a search has been executed?
@@ -165,7 +170,8 @@ export class PbView extends pbMixin(LitElement) {
             * are found, the component will display two columns side by side.
             */
             columnSeparator: {
-                type: String
+                type: String,
+                attribute: 'column-separator'
             },
             /**
             * The reading direction, i.e. 'ltr' or 'rtl'.
