@@ -558,13 +558,14 @@ export class PbView extends pbMixin(LitElement) {
      * @param {string} direction either `in` or `out`
      */
     zoom(direction) {
-        const fontSize = window.getComputedStyle(this.$.view).getPropertyValue('font-size');
+        const view = this.shadowRoot.getElementById('view');
+        const fontSize = window.getComputedStyle(view).getPropertyValue('font-size');
         const size = parseInt(fontSize.replace(/^(\d+)px/, "$1"));
 
         if (direction === 'in') {
-            this.$.view.style.fontSize = (size + 1) + 'px';
+            view.style.fontSize = (size + 1) + 'px';
         } else {
-            this.$.view.style.fontSize = (size - 1) + 'px';
+            view.style.fontSize = (size - 1) + 'px';
         }
     }
 

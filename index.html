@@ -4,6 +4,10 @@
 
 <head>
   <style>
+    .toolbar {
+      display: flex;
+    }
+    
     main {
       display: flex;
       justify-content: center;
@@ -37,11 +41,13 @@
   <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
   <script type="module" src="node_modules/@polymer/iron-icons/iron-icons.js"></script>
   <script type="module" src="node_modules/@polymer/paper-fab/paper-fab.js"></script>
+
   <script type="module" src="src/pb-page.js"></script>
   <script type="module" src="src/pb-document.js"></script>
   <script type="module" src="src/pb-toggle-feature.js"></script>
   <script type="module" src="src/pb-view.js"></script>
   <script type="module" src="src/pb-navigation.js"></script>
+  <script type="module" src="src/pb-zoom.js"></script>
 
   <!-- Change stuff here for your app -->
   <meta name="theme-color" content="#ffffff">
@@ -60,6 +66,10 @@
   -->
   <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
     <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>
+    <div class="toolbar">
+        <pb-zoom direction="in" icon="icons:zoom-in"></pb-zoom>
+        <pb-zoom direction="out" icon="icons:zoom-out"></pb-zoom>
+    </div>
     <main>
       <pb-navigation direction="backward" keyboard="left">
         <paper-fab icon="icons:chevron-left"></paper-fab>

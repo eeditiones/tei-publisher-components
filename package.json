@@ -17,6 +17,7 @@
     "@polymer/iron-iconset": "^3.0.1",
     "@polymer/paper-checkbox": "github:PolymerElements/paper-checkbox",
     "@polymer/paper-fab": "^3.0.1",
+    "@polymer/paper-icon-button": "github:PolymerElements/paper-icon-button",
     "@polymer/paper-tooltip": "github:PolymerElements/paper-tooltip",
     "@webcomponents/webcomponentsjs": "latest",
     "lit-element": "latest",
