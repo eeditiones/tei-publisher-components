@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin';
-import '@polymer/iron-ajax/iron-ajax.js';
+import '@polymer/iron-ajax';
+import '@polymer/paper-tooltip';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.

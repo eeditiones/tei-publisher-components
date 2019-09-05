@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-view Demo</title>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-document.js"></script>
+    <script type="module" src="../src/pb-toggle-feature.js"></script>
+    <script type="module" src="../src/pb-view.js"></script>
+    <script type="module" src="../src/pb-navigation.js"></script>
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+            body {
+                --paper-fab-background: #35424b;
+            }
+
+            demo-snippet {
+                position: relative;
+            }
+
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+        </style>
+    </custom-style>
+</head>
+
+<body>
+    <demo-snippet>
+        <template>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+
+                <p>Switch between a diplomatic and normalized view of the text by passing a parameter to the ODD, 
+                    which can be used in processing model rules to distinguish view modes. In the example below, 
+                    the normalized view omits the original line endings and expands abbreviations.</p>
+                <div class="toolbar">
+                    <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
+                    <!--pb-select-feature name="xpath" label="Select View">
+                        <pb-item value="//text[@type='source']">Transcription</pb-item>
+                        <pb-item value="//text[@type='translation']">Translation</pb-item>
+                    </pb-select-feature-->
+                </div>
+                <main>
+                    <pb-view id="view1" src="document1" view="single" xpath="//text[@type='source']"></pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </demo-snippet>
+</body>
+
+</html>
