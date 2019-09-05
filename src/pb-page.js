@@ -27,8 +27,7 @@ class PbPage extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.querySelectorAll('pb-view').forEach(view => {
-            console.log('<pb-page> init');
+        this.querySelectorAll('pb-view, pb-load').forEach(view => {
             view.endpoint = this.endpoint;
         });
     }
