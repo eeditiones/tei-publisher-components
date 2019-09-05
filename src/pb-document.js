@@ -15,9 +15,8 @@ import { pbMixin } from './pb-mixin';
 class PbDocument extends pbMixin(LitElement) {
 
     static get properties() {
-        const superProps = super.properties;
         return {
-            ...superProps,
+            ...super.properties,
             /**
              * The path to the document to be loaded. Should be relative to `root`.
              */

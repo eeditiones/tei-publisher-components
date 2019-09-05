@@ -1,9 +1,10 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin';
 
-
 /**
- *
+ * Create an internal link: clicking it will cause connected views to
+ * update and load the corresponding document fragment defined by the
+ * properties.
  *
  * @customElement
  * @polymer
@@ -12,9 +13,7 @@ import { pbMixin } from './pb-mixin';
  */
 export class PbLink extends pbMixin(LitElement) {
     static get properties() {
-        const superProps = super.properties;
         return {
-            ...superProps,
             /** Browse to an xml:id within the document */
             xmlId: {
                 type: String,
@@ -40,7 +39,8 @@ export class PbLink extends pbMixin(LitElement) {
              */
             history: {
                 type: Boolean
-            }
+            },
+            ...super.properties
         };
     }
 
@@ -55,16 +55,12 @@ export class PbLink extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <a href="#" @click="${this._onClick}"><slot></slot></a>
+            <a href="#" @click="${this._onClick}">${this.innerHTML}</a>
         `;
     }
 
-    static get styles() {
-        return css`
-            :host {
-                display: inline;
-            }
-        `;
+    createRenderRoot() {
+        return this;
     }
 
     _onClick(ev) {

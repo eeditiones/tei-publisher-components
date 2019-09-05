@@ -42,9 +42,8 @@ import './pb-highlight';
 export class PbView extends pbMixin(LitElement) {
 
     static get properties() {
-        const superProps = super.properties;
         return {
-            ...superProps,
+            ...super.properties,
             /**
             * The id of a `pb-document` element this view should display.
             * Settings like `odd` or `view` will be taken from the `pb-document`

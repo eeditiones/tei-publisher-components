@@ -14,9 +14,8 @@ import '@polymer/paper-icon-button';
  */
 export class PbZoom extends pbMixin(LitElement) {
     static get properties() {
-        const superProps = super.properties;
         return {
-            ...superProps,
+            ...super.properties,
             /**
              * The icon to use
              */

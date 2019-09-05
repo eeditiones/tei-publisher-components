@@ -53,9 +53,8 @@ import '@polymer/paper-checkbox';
 export class PbToggleFeature extends pbMixin(LitElement) {
 
     static get properties() {
-        const superProps = super.properties;
         return {
-            ...superProps,
+            ...super.properties,
             /**
              * The name of the feature (required). This will correspond to the name of the custom parameter
              * passed to the ODD.

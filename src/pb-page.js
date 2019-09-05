@@ -5,6 +5,7 @@ class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
         return {
+            ...super.properties,
             appRoot: {
                 type: String,
                 attribute: 'app-root'

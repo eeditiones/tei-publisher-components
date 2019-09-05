@@ -15,6 +15,7 @@ export class PbNavigation extends pbMixin(LitElement) {
 
     static get properties() {
         return {
+            ...super.properties,
             /**
              * The direction to navigate in, either `forward` or `backward`
              */

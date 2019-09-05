@@ -29,6 +29,11 @@
             pb-view {
                 flex: 3 0;
             }
+
+            pb-link a {
+                color: #333333;
+                text-decoration: none;
+            }
         </style>
     </custom-style>
 </head>
@@ -48,10 +53,10 @@
                                 xml:id</pb-link>
                         </li>
                         <li>
-                            <pb-link path="doc/documentation.xml" odd="docbook">Documentation</pb-link>
+                            <pb-link class="docs" path="doc/documentation.xml" odd="docbook">Documentation</pb-link>
                         </li>
                         <li>
-                            <pb-link path="doc/documentation.xml" xml-id="pi-config" odd="docbook">Link by xml:id
+                            <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook">Link by xml:id
                             </pb-link>
                         </li>
                     </ul>
