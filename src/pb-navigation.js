@@ -48,14 +48,11 @@ export class PbNavigation extends pbMixin(LitElement) {
             } else {
                 this._buttonClass = 'inactive';
             }
-        } else {
-            if (ev.detail.data.previous) {
+        } else if (ev.detail.data.previous) {
                 this._buttonClass = '';
-            } else {
-                this._buttonClass = 'inactive';
-            }
+        } else {
+            this._buttonClass = 'inactive';
         }
-        console.log('button %s: %s', this.direction, this._buttonClass);
     }
 
     _handleClick() {

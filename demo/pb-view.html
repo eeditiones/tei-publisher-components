@@ -13,12 +13,18 @@
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
         <script type="module" src="../src/pb-navigation.js"></script>
+        <script type="module" src="../src/pb-progress.js"></script>
         <custom-style>
             <style is="custom-style" include="demo-pages-shared-styles">
                 body {
                     --paper-fab-background: #35424b;
                 }
 
+                pb-progress {
+                    position: absolute;
+                    top: 0;
+                    width: 100%;
+                }
                 demo-snippet {
                     position: relative;
                 }
@@ -37,6 +43,7 @@
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
 
+                    <pb-progress></pb-progress>
                     <!-- Output the document title -->
                     <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
                         <pb-param name="header" value="short"/>

@@ -50,13 +50,13 @@ export class PbProgress extends pbMixin(LitElement) {
 
     _startUpdate() {
         this.style.visibility = 'visible';
-        this.$.progress.disabled = false;
+        this.shadowRoot.getElementById('progress').disabled = false;
         console.log('<pb-progress> start update');
     }
 
     _endUpdate() {
         this.style.visibility = 'hidden';
-        this.$.progress.disabled = true;
+        this.shadowRoot.getElementById('progress').disabled = true;
     }
 }
 customElements.define('pb-progress', PbProgress);
