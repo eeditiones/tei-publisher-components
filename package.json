@@ -5,9 +5,15 @@
   "repository": "https://gitlab.existsolutions.com/tei-publisher/components.git",
   "main": "index.html",
   "scripts": {
-    "start": "npm install --quiet && polymer serve --npm",
+    "start": "es-dev-server --app-index index.html --node-resolve --open --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "polymer analyze > analysis.json"
+    "docs": "polymer analyze > analysis.json",
+    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
+    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
+    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
+    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "format": "npm run format:eslint && npm run format:prettier"
   },
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
@@ -35,7 +41,26 @@
     "lit-html": "^1.1.2"
   },
   "devDependencies": {
+    "es-dev-server": "^1.5.0",
+    "eslint": "^6.1.0",
+    "@open-wc/eslint-config": "^1.0.0",
+    "@open-wc/prettier-config": "^0.1.10",
+    "lint-staged": "^8.0.0",
     "@polymer/iron-component-page": "^4.0.1",
     "@polymer/iron-demo-helpers": "^3.1.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@open-wc/eslint-config",
+      "eslint-config-prettier"
+    ]
+  },
+  "prettier": "@open-wc/prettier-config",
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   }
 }

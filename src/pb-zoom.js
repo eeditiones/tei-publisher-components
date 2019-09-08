@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin';
 import '@polymer/iron-icons';
 import '@polymer/paper-icon-button';
@@ -42,7 +42,7 @@ export class PbZoom extends pbMixin(LitElement) {
     }
 
     _handleClick() {
-        this.emitTo('pb-zoom', {direction: this.direction});
+        this.emitTo('pb-zoom', { direction: this.direction });
     }
 
     render() {
