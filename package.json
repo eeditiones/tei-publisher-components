@@ -12,19 +12,30 @@
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@cwmr/paper-autocomplete": "^4.0.0",
     "@polymer/iron-ajax": "^3.0.1",
+    "@polymer/iron-collapse": "^3.0.1",
+    "@polymer/iron-form": "^3.0.1",
+    "@polymer/iron-icon": "^3.0.1",
     "@polymer/iron-icons": "^3.0.1",
     "@polymer/iron-iconset": "^3.0.1",
-    "@polymer/paper-checkbox": "github:PolymerElements/paper-checkbox",
+    "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-checkbox": "^3.1.0",
+    "@polymer/paper-dialog": "^3.0.1",
+    "@polymer/paper-dropdown-menu": "^3.0.1",
     "@polymer/paper-fab": "^3.0.1",
-    "@polymer/paper-icon-button": "github:PolymerElements/paper-icon-button",
-    "@polymer/paper-tooltip": "github:PolymerElements/paper-tooltip",
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.0.2",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/paper-progress": "^3.0.1",
+    "@polymer/paper-tooltip": "^3.0.1",
     "@webcomponents/webcomponentsjs": "latest",
     "lit-element": "latest",
     "lit-html": "^1.1.2"
   },
   "devDependencies": {
     "@polymer/iron-component-page": "^4.0.1",
-    "@polymer/iron-demo-helpers": "github:PolymerElements/iron-demo-helpers"
+    "@polymer/iron-demo-helpers": "^3.1.0"
   }
 }

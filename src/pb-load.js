@@ -1,10 +1,13 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin';
 import '@polymer/iron-ajax';
+import '@polymer/paper-dialog';
 
 /**
- *
- *
+ * Dynamically load data by calling a server-side script, optionally triggered by an event.
+ * This is used for e.g. the document list on the start page or the table
+ * of contents.
+ * 
  * @customElement
  * @polymer
  * @demo demo/pb-load.html
@@ -57,9 +60,6 @@ export class PbLoad extends pbMixin(LitElement) {
             event: {
                 type: String
             },
-            endpoint: {
-                type: String
-            },
             ...super.properties
         };
     }
@@ -76,7 +76,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        this.subscribeTo(this.event, function(ev) {
+        this.subscribeTo(this.event, function (ev) {
             if (this.history && ev.detail && ev.detail.params) {
                 const start = ev.detail.params.start;
                 if (start) {
@@ -90,7 +90,7 @@ export class PbLoad extends pbMixin(LitElement) {
         }.bind(this));
 
         if (this.history) {
-            window.addEventListener('popstate', function(ev) {
+            window.addEventListener('popstate', function (ev) {
                 ev.preventDefault();
                 if (ev.state && ev.state.start && ev.state.start !== this.start) {
                     this.start = ev.state.start;
@@ -109,7 +109,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <slot id="contentSlot"></slot>
+            <slot></slot>
             <iron-ajax
                 id="loadContent"
                 verbose
@@ -117,6 +117,15 @@ export class PbLoad extends pbMixin(LitElement) {
                 method="get"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
+            <paper-dialog id="errorDialog" style="visibility: hidden">
+                <h2>Error</h2>
+                <paper-dialog-scrollable></paper-dialog-scrollable>
+                <div class="buttons">
+                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                        Close
+                    </paper-button>
+                </div>
+            </paper-dialog>
         `;
     }
 
@@ -135,7 +144,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
         this.emitTo('pb-start-update');
 
-        const url = this.endpoint + '/' + this.url;
+        const url = this.getEndpoint() + '/' + this.url;
 
         let params = {};
 
@@ -195,11 +204,9 @@ export class PbLoad extends pbMixin(LitElement) {
         } else {
             this.style.display = '';
             this._clearContent();
-            
+
             const div = document.createElement('div');
             div.innerHTML = resp;
-            div.className = '_contentSlot';
-            console.log(div);
             div.slot = '';
             this.appendChild(div);
             this._onLoad(this);
@@ -209,17 +216,13 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     _clearContent() {
-        const oldContent = this.shadowRoot.querySelectorAll('._contentSlot');
-        const contentSlot = this.shadowRoot.getElementById('contentSlot');
-        if (oldContent.length > 0) {
-            // clear content inserted previously
-            oldContent.forEach((node) => node.parentNode.removeChild(node));
-        } else if (contentSlot) {
-            // clear fallback content from slot
+        const contentSlot = this.shadowRoot.querySelector('slot:not([name])');
+        if (contentSlot) {
+            // clear content from slot
             contentSlot.assignedNodes().forEach((node) => node.parentNode.removeChild(node));
         }
     }
-    
+
     _handleError(ev) {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
@@ -228,7 +231,7 @@ export class PbLoad extends pbMixin(LitElement) {
         const doc = parser.parseFromString(msg, "application/xml");
         const node = doc.querySelector('message');
 
-        const dialog = document.getElementById('errorDialog');
+        const dialog = this.shadowRoot.getElementById('errorDialog');
         const body = dialog.querySelector("paper-dialog-scrollable");
         body.innerHTML = node.textContent;
         dialog.open();
@@ -264,12 +267,12 @@ export class PbLoad extends pbMixin(LitElement) {
      * @event pb-end-update
      */
 
-     /**
-      * Fired after the element has received content from the server
-      *
-      * @event pb-results-received
-      * @param {int} count number of results received (according to `pb-total` header)
-      * @param {int} start offset into the result set (according to `pb-start` header)
-      */
+    /**
+     * Fired after the element has received content from the server
+     *
+     * @event pb-results-received
+     * @param {int} count number of results received (according to `pb-total` header)
+     * @param {int} start offset into the result set (according to `pb-start` header)
+     */
 }
 customElements.define('pb-load', PbLoad);

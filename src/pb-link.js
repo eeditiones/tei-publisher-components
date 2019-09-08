@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 /**
  * Create an internal link: clicking it will cause connected views to

@@ -145,9 +145,6 @@ export class PbView extends pbMixin(LitElement) {
             url: {
                 type: String
             },
-            endpoint: {
-                type: String
-            },
             /**
             * The server returns footnotes separately. Set this property
             * if you wish to append them to the main text.
@@ -245,7 +242,6 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        console.log('<pb-view> base URI: %s', this.endpoint);
         if (!this.onUpdate) {
             this._refresh();
         }
@@ -450,7 +446,7 @@ export class PbView extends pbMixin(LitElement) {
         const link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', this.endpoint + '/transform/' + this.getOdd() + '.css');
+        link.setAttribute('href', this.getEndpoint() + '/transform/' + this.getOdd() + '.css');
 
         view.appendChild(link);
     }
@@ -715,7 +711,7 @@ export class PbView extends pbMixin(LitElement) {
             </div>
             <iron-ajax
                 id="loadContent"
-                url="${this.endpoint}/${this.url}"
+                url="${this.getEndpoint()}/${this.url}"
                 verbose
                 handle-as="json"
                 method="get"

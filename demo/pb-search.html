@@ -4,45 +4,34 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
-    <title>pb-load Demo</title>
+    <title>pb-search Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
-    <script type="module" src="../src/pb-document.js"></script>
-    <script type="module" src="../src/pb-view.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
-    <script type="module" src="../src/pb-link.js"></script>
-    <script type="module" src="../src/pb-collapse.js"></script>
+    <script type="module" src="../src/pb-search.js"></script>
+    <script type="module" src="../src/pb-paginate.js"></script>
     <custom-style>
         <style is="custom-style" include="demo-pages-shared-styles">
-            body {
-                --paper-fab-background: #35424b;
+            pb-search {
+                display: block;
             }
 
-            demo-snippet {
-                position: relative;
+            pb-paginate {
+                margin-top: 40px;
+                margin-bottom: 10px;
             }
 
-            main {
+            #results header {
                 display: flex;
+                background-color: #F0F0F0;
             }
 
-            pb-load {
-                max-width: 33%;
-                margin-right: 20px;
-            }
-
-            .transcription {
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            pb-link a {
-                text-decoration: none;
-                color: #222222;
+            #results header .count {
+                margin-right: 10px;
             }
         </style>
     </custom-style>
@@ -52,14 +41,15 @@
     <demo-snippet>
         <template>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
-
                 <main>
-                    <pb-load url="templates/toc.html?target=transcription" src="document1" auto>Loading table of
-                        contents...</pb-load>
-                    <div class="transcription">
-                        <pb-view src="document1" subscribe="transcription" view="page"></pb-view>
-                    </div>
+                    <pb-search id="search-form" place-holder="Enter query">
+                        <div class="targets">
+                            <paper-checkbox name="tei-target" value="tei-text">Search sections</paper-checkbox>
+                            <paper-checkbox name="tei-target" value="tei-head">Search headings</paper-checkbox>
+                        </div>
+                    </pb-search>
+                    <pb-paginate per-page="10" range="5" found-label="Found"></pb-paginate>
+                    <pb-load url="templates/search-results.html"></pb-load>
                 </main>
             </pb-page>
         </template>

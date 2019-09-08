@@ -302,11 +302,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             if (doc) {
                 return doc;
             }
-
-            console.error('<pb-view> src document not found: %s', this.src);
-        } else {
-            console.error('<pb-mixin> src property is missing');
         }
+        return null;
     }
 
     getParameter(name, fallback) {
@@ -389,6 +386,17 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     pushHistory(msg, state) {
         history.pushState(state, msg, TeiPublisher.url.toString());
+    }
+
+    getEndpoint() {
+        let next = this.parentNode;
+        while (next) {
+            if (next.localName === 'pb-page') {
+                return next.endpoint;
+            }
+            next = next.parentNode;
+        }
+        return null;
     }
 
     __register(newKey, oldKey) {
