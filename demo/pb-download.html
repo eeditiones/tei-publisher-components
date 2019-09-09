@@ -7,6 +7,7 @@
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
@@ -14,17 +15,8 @@
         <script type="module" src="../src/pb-download.js"></script>
         <custom-style>
             <style is="custom-style" include="demo-pages-shared-styles">
-                demo-snippet {
-                    position: relative;
-                }
-
-                main {
-                    display: flex;
-                    justify-content: space-between;
-                }
-
-                pb-view {
-                    flex: 1 0;
+                pb-download {
+                    margin-right: 10px;
                 }
             </style>
         </custom-style>
@@ -38,16 +30,16 @@
 
                     <!-- Display two document views side by side -->
                     <main>
-                        <pb-download type="pdf" src="document1" dialog="downloadDialog" title="Download PDF" full-path>
-                            Documentation: PDF
+                        <pb-download type="pdf" src="document1" dialog="downloadDialog" title="Download PDF" full>
+                            <paper-button raised>Documentation: PDF</paper-button>
                         </pb-download>
-                        <pb-download type="pdf" src="document1" title="Download PDF" full-path
+                        <pb-download type="pdf" src="document1" title="Download PDF" full
                             source>
-                            Documentation: FO source
+                            <paper-button raised>Documentation: FO source</paper-button>
                         </pb-download>
                         <pb-download type="pdf" url="test/graves6.xml" dialog="downloadDialog" title="Download PDF"
-                            odd="graves.odd">
-                            Letter: PDF
+                            odd="graves.odd" full>
+                            <paper-button raised>Letter: PDF</paper-button>
                         </pb-download>
                     </main>
                 </pb-page>

@@ -1,10 +1,10 @@
 import { LitElement, html, css } from 'lit-element';
-import '@webcomponents/shadycss/entrypoints/apply-shim.js';
 import 'js-cookie/src/js.cookie.js';
 import { pbMixin } from './pb-mixin.js';
 
 /**
- *
+ * Generate a link to download a resource. Optionally shows a dialog during the download.
+ * This component is mainly used for creating the links for downloading PDFs, epubs etc.
  *
  * @customElement
  * @polymer
@@ -21,9 +21,12 @@ export class PbDownload extends pbMixin(LitElement) {
             src: {
                 type: String
             },
-            fullPath: {
-                type: Boolean,
-                attribute: 'full-path'
+            /**
+             * If true, an absolute URL will be constructed using the endpoint defined by `pb-page`.
+             * Otherwise only the file name of the document is used as relative URL.
+             */
+            full: {
+                type: Boolean
             },
             /**
              * the base URL to construct the link from. If not specified, the path to the document will be used.
@@ -88,7 +91,7 @@ export class PbDownload extends pbMixin(LitElement) {
         super();
 
         this.source = false;
-        this.fullPath = false;
+        this.full = false;
         this._target = '_self';
     }
 
@@ -136,11 +139,12 @@ export class PbDownload extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display: block;
+                display: inline-block;
             }
 
             a {
-                @apply --pb-download;
+                text-decoration: var(--pb-download-text-decoration, none);
+                color: var(--pb-download-color);
             }
         `;
     }
@@ -157,13 +161,12 @@ export class PbDownload extends pbMixin(LitElement) {
             let path;
             if (this.url) {
                 path = this.url;
-            } else if (this.fullPath) {
-                path = doc.path;
+            } else if (this.full) {
+                path = `${this.getEndpoint()}/${doc.path}`;
             } else {
                 path = doc.getFileName();
             }
-            url = `${this.getEndpoint()}/${path}`;
-            url = `${url}${this.type ? `.${this.type}` : ''}?odd=${doc.odd}.odd&cache=no&token=${this._token}`;
+            url = `${path}${this.type ? `.${this.type}` : ''}?odd=${doc.odd}.odd&cache=no&token=${this._token}`;
         } else {
             url = /^(?:[a-z]+:)?\/\//i.test(this.url) ? this.url : `${this.getEndpoint()}/${this.url}`;
             url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
