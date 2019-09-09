@@ -46,6 +46,9 @@ export class PbMediaQuery extends LitElement {
     }
 
     _handleResize() {
+        if (!this.query[0] !== '(') {
+            this.query = `(${this.query})`;
+        }
         if (window.matchMedia(this.query).matches) {
             // From no match to match
             if (this.match === false) {
