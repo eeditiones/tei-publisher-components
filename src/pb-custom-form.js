@@ -43,8 +43,17 @@ export class PbCustomForm extends PbLoad {
                 verbose
                 handle-as="text"
                 method="get"
-                on-response="_handleContent"
-                on-error="_handleError"></iron-ajax>
+                @response="${this._handleContent}"
+                @error="${this._handleError}"></iron-ajax>
+            <paper-dialog id="errorDialog" style="visibility: hidden">
+                <h2>Error</h2>
+                <paper-dialog-scrollable></paper-dialog-scrollable>
+                <div class="buttons">
+                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                        Close
+                    </paper-button>
+                </div>
+            </paper-dialog>
         `;
     }
 
