@@ -1,8 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
 import '@polymer/paper-tooltip';
-import './pb-highlight';
+import './pb-highlight.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -186,7 +186,19 @@ export class PbView extends pbMixin(LitElement) {
                 type: Object
             },
             _content: {
-                type: String,
+                type: Node,
+                attribute: false
+            },
+            _column1: {
+                type: Node,
+                attribute: false
+            },
+            _column2: {
+                type: Node,
+                attribute: false
+            },
+            _footnotes: {
+                type: Node,
                 attribute: false
             }
         };
@@ -340,9 +352,10 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _clear() {
-        this._content = '';
-        this._column1 = "";
-        this._column2 = "";
+        this._content = null;
+        this._column1 = null;
+        this._column2 = null;
+        this._footnotes = null;
     }
 
     _handleContent() {
@@ -398,16 +411,15 @@ export class PbView extends pbMixin(LitElement) {
             this._content = elem;
         }
 
-
         if (this.appendFootnotes) {
             const footnotes = document.createElement('div');
             if (resp.footnotes) {
                 footnotes.innerHTML = resp.footnotes;
             }
-            this._content.appendChild(footnotes);
+            this._footnotes = footnotes;
         }
 
-        this._initFootnotes(this._content);
+        this._initFootnotes(this._footnotes);
 
         return elem;
     }
@@ -446,21 +458,23 @@ export class PbView extends pbMixin(LitElement) {
         const link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', this.getEndpoint() + '/transform/' + this.getOdd() + '.css');
+        link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
 
         view.appendChild(link);
     }
 
     _initFootnotes(content) {
-        content.querySelectorAll('.note, .fn-back').forEach(elem => {
-            elem.addEventListener('click', (ev) => {
-                ev.preventDefault();
-                var fn = this.shadowRoot.getElementById('content').querySelector(elem.hash);
-                if (fn) {
-                    fn.scrollIntoView();
-                }
+        if (content) {
+            content.querySelectorAll('.note, .fn-back').forEach(elem => {
+                elem.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    const fn = this.shadowRoot.getElementById('content').querySelector(elem.hash);
+                    if (fn) {
+                        fn.scrollIntoView();
+                    }
+                });
             });
-        })
+        }
     }
 
     _getParameters() {
@@ -708,6 +722,7 @@ export class PbView extends pbMixin(LitElement) {
                     <div id="column2">${this._column2}</div>
                 </div>
                 <div id="content">${this._content}</div>
+                <div id="footnotes">${this._footnotes}</div>
             </div>
             <iron-ajax
                 id="loadContent"
