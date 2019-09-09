@@ -14,3 +14,4 @@ import './src/pb-toggle-feature.js';
 import './src/pb-view.js';
 import './src/pb-zoom.js';
 import './src/pb-popover.js';
+import './src/pb-drawer.js';
