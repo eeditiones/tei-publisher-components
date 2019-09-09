@@ -46,10 +46,11 @@ export class PbMediaQuery extends LitElement {
     }
 
     _handleResize() {
-        if (!this.query[0] !== '(') {
-            this.query = `(${this.query})`;
+        let {query} = this;
+        if (!/\(.*\)$/.test(query)) {
+            query = `(${query})`;
         }
-        if (window.matchMedia(this.query).matches) {
+        if (window.matchMedia(query).matches) {
             // From no match to match
             if (this.match === false) {
                 this.dispatchEvent(new CustomEvent('changed', {
