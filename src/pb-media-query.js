@@ -75,5 +75,13 @@ export class PbMediaQuery extends LitElement {
             ${this.match ? html`<slot></slot>` : null}
         `;
     }
+
+    static get styles() {
+        return css`
+            :host {
+                display: inherit;
+            }
+        `;
+    }
 }
 customElements.define('pb-media-query', PbMediaQuery);
