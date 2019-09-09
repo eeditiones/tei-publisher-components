@@ -16,3 +16,4 @@ import './src/pb-zoom.js';
 import './src/pb-popover.js';
 import './src/pb-drawer.js';
 import './src/pb-media-query.js';
+import './src/pb-custom-form.js';
