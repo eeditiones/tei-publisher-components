@@ -15,15 +15,8 @@ import { PbLoad } from './pb-load.js';
  * @polymer
  */
 export class PbCustomForm extends PbLoad {
-    static get properties() {
-        return {
-            ...super.properties
-        };
-    }
 
-    connectedCallback() {
-        super.connectedCallback();
-
+    firstUpdated() {
         this.shadowRoot.getElementById('ironform').addEventListener('iron-form-presubmit', (ev) => {
             ev.preventDefault();
             this._submit();
