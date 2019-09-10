@@ -1,12 +1,13 @@
-import { LitElement, html, css } from 'lit-element';
-import { PbLoad } from './pb-load';
-import '@polymer/paper-input/paper-input';
+import { html, css } from 'lit-element';
+import { PbLoad } from './pb-load.js';
+import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
-import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions';
+import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.

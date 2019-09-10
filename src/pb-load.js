@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
 
 /**
  * Dynamically load data by calling a server-side script, optionally triggered by an event.
@@ -117,7 +118,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 method="get"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
-            <paper-dialog id="errorDialog" style="visibility: hidden">
+            <paper-dialog id="errorDialog">
                 <h2>Error</h2>
                 <paper-dialog-scrollable></paper-dialog-scrollable>
                 <div class="buttons">

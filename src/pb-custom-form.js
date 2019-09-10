@@ -1,6 +1,8 @@
 import { html, css } from 'lit-element';
 import '@polymer/iron-form';
 import '@polymer/iron-ajax';
+import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
 import { PbLoad } from './pb-load.js';
 
 /**
@@ -38,7 +40,7 @@ export class PbCustomForm extends PbLoad {
                 method="get"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
-            <paper-dialog id="errorDialog" style="visibility: hidden">
+            <paper-dialog id="errorDialog">
                 <h2>Error</h2>
                 <paper-dialog-scrollable></paper-dialog-scrollable>
                 <div class="buttons">

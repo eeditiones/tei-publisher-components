@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
 import '@polymer/paper-tooltip';
 import '@polymer/paper-button';
 
