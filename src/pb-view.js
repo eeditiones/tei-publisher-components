@@ -733,6 +733,47 @@ export class PbView extends pbMixin(LitElement) {
                 @response="${this._handleContent}"></iron-ajax>
       `;
     }
+
+    /**
+     * Fired before the element updates its content
+     *
+     * @event pb-start-update
+     * @param {object} Parameters to be passed to the request
+     */
+
+        /**
+         * Fired when the component received content from the server
+         *
+         * @event pb-update
+         * @param {Object} data the raw data returned from the server
+         * @param {HTMLElement} root the HTML element inserted as content
+         * @param {Object} params the parameters sent to the server to request the content
+         */
+
+        /**
+         * Fired after the element has finished updating its content
+         *
+         * @event pb-end-update
+         */
+
+        /**
+        * When this event is received: navigate forward or backward in the document
+        *
+        * @event pb-navigate
+        */
+
+        /**
+         * When this event is received: increase or decrease the font size of the content
+         *
+         * @event pb-zoom
+         */
+
+            /**
+             * When received, refresh the current view using the parameters passed in the
+             * event details.
+             *
+             * @event pb-refresh
+             */
 }
 
 customElements.define('pb-view', PbView);

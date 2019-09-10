@@ -70,12 +70,11 @@ class PbDocument extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        console.log('pb-document odd: %s', this.odd);
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
         super.attributeChangedCallback(name, oldVal, newVal);
-        if (typeof oldVal !== 'undefined') {
+        if (oldVal) {
             console.log('<pb-document> Emit update event');
             this.emitTo('pb-document', this);
         }
