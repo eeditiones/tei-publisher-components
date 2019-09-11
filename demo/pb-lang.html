@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-lang Demo</title>
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
+        <script type="module" src="../src/pb-lang.js"></script>
+        <custom-style>
+            <style is="custom-style" include="demo-pages-shared-styles">
+                pb-download {
+                    margin-right: 10px;
+                }
+            </style>
+        </custom-style>
+    </head>
+
+    <body>
+        <demo-snippet>
+            <template>
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                    <!-- Display two document views side by side -->
+                    <main>
+                        <pb-lang label="Language" selected="de">
+                            <paper-item value="en">English</paper-item>
+                            <paper-item value="de">German</paper-item>
+                        </pb-lang>
+                    </main>
+                </pb-page>
+            </template>
+        </demo-snippet>
+    </body>
+</html>
