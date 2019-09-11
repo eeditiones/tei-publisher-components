@@ -20,3 +20,5 @@ import './src/pb-custom-form.js';
 import './src/pb-download.js';
 import './src/pb-login.js';
 import './src/pb-ajax.js';
+import './src/pb-lang.js';
+import './src/pb-tabs.js';
