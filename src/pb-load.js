@@ -116,6 +116,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
+                withCredentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
@@ -123,7 +124,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 <paper-dialog-scrollable></paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                        Close
+                        Closes
                     </paper-button>
                 </div>
             </paper-dialog>
@@ -224,7 +225,7 @@ export class PbLoad extends pbMixin(LitElement) {
         }
     }
 
-    _handleError(ev) {
+    _handleError() {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
         const msg = loader.lastError.response;

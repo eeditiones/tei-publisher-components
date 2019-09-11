@@ -197,7 +197,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *
      * @param {String} type Name of the event, usually starting with `pb-`
      * @param {Function} listener Callback function
-     * @param {Array} channels Optional: explicitely specify the channels to emit to. This overwrites
+     * @param {Array} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the emit property. Pass empty array to target the default channel.
      */
     subscribeTo(type, listener, channels) {
@@ -241,8 +241,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * are defined, the event will be limited to the channel specified there.
      *
      * @param {String} type Name of the event, usually starting with `pb-`
-     * @param {Object} options Options to be passed in ev.detail
-     * @param {Array} channels Optional: explicitely specify the channels to emit to. This overwrites
+     * @param {Object} [options] Options to be passed in ev.detail
+     * @param {Array} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {

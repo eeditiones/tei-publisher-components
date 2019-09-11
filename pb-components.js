@@ -19,3 +19,4 @@ import './src/pb-media-query.js';
 import './src/pb-custom-form.js';
 import './src/pb-download.js';
 import './src/pb-login.js';
+import './src/pb-ajax.js';

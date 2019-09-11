@@ -178,6 +178,7 @@ export class PbBrowseDocs extends PbLoad {
                 verbose
                 handle-as="text"
                 method="get"
+                withCredentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <iron-ajax
