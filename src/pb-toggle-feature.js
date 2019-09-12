@@ -98,6 +98,16 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             },
             checked: {
                 type: Boolean
+            },
+            /**
+             * If set to true (default), `pb-toggle-feature` will pass its properties to the
+             * connected view before this loads content for the first time. If false,
+             * `pb-toggle-feature` will initialize its state depending on the setting of the view.
+             * This only makes sense for the special properties 'view' and 'odd' though.
+             */
+            initFromView: {
+                type: Boolean,
+                attribute: 'init-from-view'
             }
         };
     }
@@ -107,6 +117,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         this.default = 'on';
         this.propertiesOn = {};
         this.propertiesOff = {};
+        this.initFromView = false;
+        this.initializing = true;
     }
 
     render() {
@@ -118,20 +130,24 @@ export class PbToggleFeature extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        let param = this.getParameter(this.name);
-        if (typeof param !== 'undefined') {
-            this.checked = param === this.on;
+        if (this.initFromView) {
+            this.subscribeTo('pb-update', this._initialize.bind(this));
         } else {
-            this.checked = this.default === 'on';
+            const param = this.getParameter(this.name);
+            if (typeof param !== 'undefined') {
+                this.checked = param === this.on;
+            } else {
+                this.checked = this.default === 'on';
+            }
+            this.waitForChannel(() => {
+                const params = {
+                    properties: this.checked ? this.propertiesOn : this.propertiesOff,
+                    action: 'init'
+                };
+                this.emitTo('pb-toggle', params);
+                this.initializing = false;
+            });
         }
-        this.waitForChannel(() => {
-            const params = {
-                properties: this.checked ? this.propertiesOn : this.propertiesOff,
-                action: 'init'
-            };
-            this.emitTo('pb-toggle', params);
-            this.initializing = false;
-        });
         this.signalReady();
     }
 
@@ -147,6 +163,21 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         }
     }
 
+    _initialize(ev) {
+        if (!this.initializing) {
+            return;
+        }
+        switch (this.name) {
+            case 'view':
+                this.checked = ev.detail.data.view === this.on;
+                break;
+            case 'odd':
+                this.checked = ev.detail.data.odd === this.on;
+                break;
+        }
+        this.initializing = false;
+    }
+    
     _changed() {
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
         this.setParameter(this.name, this.checked ? this.on : this.off);
