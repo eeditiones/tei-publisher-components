@@ -166,12 +166,11 @@ export class PbLogin extends pbMixin(LitElement) {
                 padding: 16px 8px;
                 margin-top: 0;
                 color: #F0F0F0;
-
-                @apply --pb-login-title;
             }
 
             a {
-                @apply --pb-login-theme;
+                color: var(--pb-login-link-color, --pb-link-color);
+                text-decoration: none;
             }
 
             @media (max-width: 1024px) {

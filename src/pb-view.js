@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
-import '@polymer/paper-tooltip';
+import './pb-popover.js';
 import './pb-highlight.js';
 
 /**

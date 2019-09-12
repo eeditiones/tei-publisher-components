@@ -49,7 +49,7 @@ export class PbPopover extends pbMixin(LitElement) {
     static _renderTooltip() {
         return html`
             <paper-tooltip for="link" position="bottom" fit-to-visible-bounds="fit-to-visible-bounds">
-                <slot name="content"></slot>
+                <slot name="alternate"></slot>
             </paper-tooltip>
         `;
     }
@@ -59,7 +59,7 @@ export class PbPopover extends pbMixin(LitElement) {
             <paper-dialog id="dialog" dynamic-align no-overlap horizontal-align="left" vertical-align="top">
                 <h2><slot name="title"></slot></h2>
                 <paper-dialog-scrollable>
-                    <slot name="content"></slot>
+                    <slot name="alternate"></slot>
                 </paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
@@ -73,7 +73,11 @@ export class PbPopover extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display: inline-block;
+                display: inline;
+            }
+            #link {
+                color: var(--pb-popover-link-color, var(--pb-link-color));
+                text-decoration: none;
             }
         `;
     }

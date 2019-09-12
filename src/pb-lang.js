@@ -3,9 +3,8 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import { pbMixin } from './pb-mixin.js';
 
-
 /**
- *
+ * A dropdown for switching the interface language.
  *
  * @customElement
  * @polymer
@@ -48,6 +47,11 @@ export class PbLang extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
+
+                --paper-input-container-input-color: var(--pb-lang-input-color, white);
+                --paper-input-container-label: {
+                    color:var(--pb-lang-label-color, --paper-grey-100);
+                };
             }
         `;
     }
