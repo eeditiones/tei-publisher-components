@@ -20,6 +20,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@cwmr/paper-autocomplete": "^4.0.0",
+    "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
     "@polymer/iron-collapse": "^3.0.1",
     "@polymer/iron-form": "^3.0.1",

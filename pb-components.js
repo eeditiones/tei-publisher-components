@@ -22,3 +22,6 @@ import './src/pb-login.js';
 import './src/pb-ajax.js';
 import './src/pb-lang.js';
 import './src/pb-tabs.js';
+import './src/pb-panel.js';
+import './src/pb-grid.js';
+import './src/pb-grid-action.js';
