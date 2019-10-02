@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
+import '@polymer/iron-form';
 import '@polymer/paper-checkbox';
 import '@polymer/paper-button';
 import '@polymer/paper-icon-button';
