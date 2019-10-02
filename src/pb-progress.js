@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
-
+import '@polymer/paper-progress';
 
 /**
  * A progress bar which becomes active when signal `pb-start-update` is
