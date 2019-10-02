@@ -36,6 +36,8 @@ const handleKeydown = event => {
 
 window.addEventListener('keydown', handleKeydown, true);
 
+const initEventsFired = {};
+
 /**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
@@ -52,6 +54,7 @@ window.addEventListener('keydown', handleKeydown, true);
  * @mixinFunction
  */
 export const pbMixin = (superclass) => class PbMixin extends superclass {
+
     static get properties() {
         return {
             /**
@@ -115,6 +118,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             keyPressed: {
                 type: Function,
                 attribute: 'key-pressed'
+            },
+            _endpoint: {
+                type: String
             }
         }
     }
@@ -123,6 +129,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         super();
         this._isReady = false;
         this.keyPressed = function () { };
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        PbMixin.waitOnce('pb-page-ready', (options) => {
+            this._endpoint = options.endpoint;
+        });
     }
 
     attributeChangedCallback(attr, oldValue, newValue) {
@@ -181,13 +194,26 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         this.subscribeTo('pb-ready', listener);
     }
 
+    static waitOnce(name, callback) {
+        if (initEventsFired[name]) {
+            callback(initEventsFired[name]);
+        } else {
+            document.addEventListener(name, (ev) => {
+                initEventsFired[name] = ev.detail;
+                callback(ev.detail);
+            }, {
+                once: true
+            });
+        }
+    }
+
     /**
      * Signal that the component is ready to respond to events.
      */
-    signalReady() {
+    signalReady(name = 'pb-ready', data) {
         this._isReady = true;
-        this.dispatchEvent(new CustomEvent('pb-ready'));
-        this.emitTo('pb-ready');
+        this.dispatchEvent(new CustomEvent(name, { detail: data }));
+        this.emitTo(name, data);
     }
 
     /**
@@ -390,14 +416,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     getEndpoint() {
-        let next = this.parentNode;
-        while (next) {
-            if (next.localName === 'pb-page') {
-                return next.endpoint;
-            }
-            next = next.parentNode;
-        }
-        return null;
+        return this._endpoint;
     }
 
     __register(newKey, oldKey) {

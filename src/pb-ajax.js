@@ -57,7 +57,6 @@ export class PbAjax extends pbMixin(LitElement) {
 
             <iron-ajax
                 id="loadContent"
-                url="${this.getEndpoint()}/${this.url}"
                 verbose
                 handle-as="text"
                 method="get"
@@ -85,6 +84,8 @@ export class PbAjax extends pbMixin(LitElement) {
 
     _handleClick(ev) {
         ev.preventDefault();
+        const loader = this.shadowRoot.getElementById('loadContent');
+        loader.url = `${this.getEndpoint()}/${this.url}`;
         this.emitTo('pb-start-update');
         this.shadowRoot.getElementById('loadContent').generateRequest();
     }

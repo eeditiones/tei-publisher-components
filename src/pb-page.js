@@ -26,14 +26,16 @@ class PbPage extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
+        this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint
+        });
     }
 
     firstUpdated() {
         super.firstUpdated();
-        console.log('<pb-page> trigger window resize');
+        console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
         this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());
-
-
     }
 
     render() {

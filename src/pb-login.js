@@ -95,8 +95,10 @@ export class PbLogin extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        super.firstUpdated();
         this._checkLogin = this.shadowRoot.getElementById('checkLogin');
         this._loginDialog = this.shadowRoot.getElementById('loginDialog');
+
         window.addEventListener('blur', () => {
             this._hasFocus = false;
         });
@@ -107,18 +109,21 @@ export class PbLogin extends pbMixin(LitElement) {
                 this._checkLogin.generateRequest();
             }
         });
-        this._checkLogin.body = null;
-        this._checkLogin.generateRequest();
+        PbLogin.waitOnce('pb-page-ready', (detail) => {
+            this._checkLogin.url = `${detail.endpoint}/login`;
+            this._checkLogin.body = null;
+            this._checkLogin.generateRequest();
+        });
     }
 
     render() {
         return html`
             <a href="#" @click="${this._show}" title="${this.user}">
                 ${
-                    this.loggedIn ?
-                        html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${this.logoutLabel} ${this.user}</span>` :
-                        html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${this.loginLabel}</span>`
-                }                
+            this.loggedIn ?
+                html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${this.logoutLabel} ${this.user}</span>` :
+                html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${this.loginLabel}</span>`
+            }                
             </a>
 
             <paper-dialog id="loginDialog" no-cancel-on-outside-click no-cancel-on-esc-key>
@@ -129,20 +134,20 @@ export class PbLogin extends pbMixin(LitElement) {
                         <paper-input id="password" name="password" label="Password" type="password"></paper-input>
                         <input id="logout" type="hidden" name="logout"></input>
                     </form>
-                    ${this._invalid ?                    
-                        html`
+                    ${this._invalid ?
+                html`
                             <p id="message">Wrong password or invalid user
                             ${this.group ? html`(must be member of group ${this.group})` : null}
                             </p>
                         `: null
-                    }
+            }
                 </paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button autofocus @click="${this._confirmLogin}">Login</paper-button>
                 </div>
             </paper-dialog>
 
-            <iron-ajax id="checkLogin" url="${this.getEndpoint()}/login"
+            <iron-ajax id="checkLogin"
                     handle-as="json" @response="${this._handleResponse}"
                     content-type="application/x-www-form-urlencoded"
                     method="POST"></iron-ajax>
