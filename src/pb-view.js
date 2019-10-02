@@ -380,7 +380,7 @@ export class PbView extends pbMixin(LitElement) {
         const elem = this._replaceContent(resp);
 
         this.animate();
-
+        this._scroll();
 
         this.next = resp.next;
         this.previous = resp.previous;
@@ -449,6 +449,16 @@ export class PbView extends pbMixin(LitElement) {
             } else {
                 this._column2 = fragmentBefore;
                 this._column1 = fragmentAfter;
+            }
+        }
+    }
+
+    _scroll() {
+        const { hash } = this.getUrl();
+        if (hash) {
+            const target = this.shadowRoot.getElementById(hash.substring(1));
+            if (target) {
+                target.scrollIntoView({ block: "center", inline: "nearest" });
             }
         }
     }
