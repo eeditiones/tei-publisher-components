@@ -200,6 +200,10 @@ export class PbView extends pbMixin(LitElement) {
             _footnotes: {
                 type: Node,
                 attribute: false
+            },
+            _style: {
+                type: Node,
+                attribute: false
             }
         };
     }
@@ -450,17 +454,12 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _updateStyles() {
-        const view = this.shadowRoot.getElementById('view');
-        const oldLink = view.querySelector('link');
-        if (oldLink) {
-            oldLink.parentNode.removeChild(oldLink);
-        }
         const link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
 
-        view.appendChild(link);
+        this._style = link;
     }
 
     _initFootnotes(content) {
@@ -717,6 +716,7 @@ export class PbView extends pbMixin(LitElement) {
     render() {
         return html`
             <div id="view">
+                ${this._style}
                 <div class="columns">
                     <div id="column1">${this._column1}</div>
                     <div id="column2">${this._column2}</div>
@@ -741,39 +741,39 @@ export class PbView extends pbMixin(LitElement) {
      * @param {object} Parameters to be passed to the request
      */
 
-        /**
-         * Fired when the component received content from the server
-         *
-         * @event pb-update
-         * @param {Object} data the raw data returned from the server
-         * @param {HTMLElement} root the HTML element inserted as content
-         * @param {Object} params the parameters sent to the server to request the content
-         */
+    /**
+     * Fired when the component received content from the server
+     *
+     * @event pb-update
+     * @param {Object} data the raw data returned from the server
+     * @param {HTMLElement} root the HTML element inserted as content
+     * @param {Object} params the parameters sent to the server to request the content
+     */
 
-        /**
-         * Fired after the element has finished updating its content
-         *
-         * @event pb-end-update
-         */
+    /**
+     * Fired after the element has finished updating its content
+     *
+     * @event pb-end-update
+     */
 
-        /**
-        * When this event is received: navigate forward or backward in the document
-        *
-        * @event pb-navigate
-        */
+    /**
+    * When this event is received: navigate forward or backward in the document
+    *
+    * @event pb-navigate
+    */
 
-        /**
-         * When this event is received: increase or decrease the font size of the content
-         *
-         * @event pb-zoom
-         */
+    /**
+     * When this event is received: increase or decrease the font size of the content
+     *
+     * @event pb-zoom
+     */
 
-            /**
-             * When received, refresh the current view using the parameters passed in the
-             * event details.
-             *
-             * @event pb-refresh
-             */
+    /**
+     * When received, refresh the current view using the parameters passed in the
+     * event details.
+     *
+     * @event pb-refresh
+     */
 }
 
 customElements.define('pb-view', PbView);
