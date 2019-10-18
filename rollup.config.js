@@ -7,7 +7,7 @@ const production = process.env.PRODUCTION;
 export default {
     input: 'index.js',
     output: {
-        file: 'bundle.js',
+        file: 'pb-components.js',
         format: 'iife',
         sourcemap: true
     },

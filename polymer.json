@@ -1,5 +1,5 @@
 {
-  "entrypoint": "index.html",
+  "entrypoint": "pb-components.js",
   "npm": true,
   "moduleResolution": "node",
   "sources": [
@@ -17,8 +17,8 @@
         "compile": "es5",
         "transformModulesToAmd": true
       },
-      "addServiceWorker": true,
-      "addPushManifest": true
+      "addServiceWorker": false,
+      "addPushManifest": false
     }
   ]
 }

@@ -4,11 +4,11 @@ import '@vaadin/vaadin-upload';
 import '@polymer/paper-button';
 
 /**
- *
+ * Component for uploading resources to TEI Publisher or a generated app.
  *
  * @customElement pb-upload
  * @polymer
- * @demo demo/pb-upload.html
+ * @demo demo/pb-browse-docs.html
  * @appliesMixin pbMixin
  */
 export class PbUpload extends pbMixin(LitElement) {

@@ -21,7 +21,7 @@ class PbPage extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        this.endpoint = "http://localhost:8080/exist/apps/tei-publisher";
+        this.endpoint = ".";
     }
 
     connectedCallback() {

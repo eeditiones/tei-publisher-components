@@ -1,0 +1,14 @@
+build/
+demo/
+test/
+polymer.json
+karma.conf.js
+rollup.config.js
+tsconfig.json
+*.html
+index.js
+analysis.json
+*.js.map
+.vscode/
+.editorconfig
+*.tgz
