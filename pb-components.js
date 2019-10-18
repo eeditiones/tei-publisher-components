@@ -27,3 +27,4 @@ import './src/pb-grid.js';
 import './src/pb-grid-action.js';
 import './src/pb-manage-odds.js';
 import './src/pb-edit-xml.js';
+import './src/pb-upload.js';

@@ -46,6 +46,7 @@
     "@polymer/paper-progress": "^3.0.1",
     "@polymer/paper-tabs": "^3.1.0",
     "@polymer/paper-tooltip": "^3.0.1",
+    "@vaadin/vaadin-upload": "^4.2.2",
     "@webcomponents/webcomponentsjs": "latest",
     "js-cookie": "^2.2.1",
     "lit-element": "latest",
