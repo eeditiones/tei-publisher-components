@@ -1,0 +1,69 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-document Demo</title>
+    <script src="../node_modules/openseadragon/build/openseadragon/openseadragon.js"></script>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-facsimile.js"></script>
+    <script type="module" src="../src/pb-facs-link.js"></script>
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+            pb-facsimile {
+                flex: 1 0;
+                min-width: 400px;
+                --pb-facsimile-height: 360px;
+                margin-right: 20px;
+            }
+
+            div {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+        </style>
+    </custom-style>
+</head>
+
+<body>
+    <demo-snippet>
+        <template>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <!-- Display facsimile -->
+                <main>
+                    <div>
+                        <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+                            facsimiles='["15929_000_IDL5772_BOss12034_IIIp79.jpg", "15929_000_IDL5772_BOss12034_IIIp80.jpg", "15929_000_IDL5772_BOss12034_IIIp81.jpg", "15929_000_IDL5772_BOss12034_IIIp82.jpg"]'
+                            default-zoom-level="0" show-navigator="show-navigator"
+                            show-navigation-control="show-navigation-control"></pb-facsimile>
+                        <ul>
+                            <li>
+                                <pb-facs-link facs="15929_000_IDL5772_BOss12034_IIIp79.jpg">Page 79</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link facs="15929_000_IDL5772_BOss12034_IIIp80.jpg">Page 80</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link facs="15929_000_IDL5772_BOss12034_IIIp81.jpg">Page 81</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link facs="15929_000_IDL5772_BOss12034_IIIp82.jpg">Page 82</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link facs="15929_000_IDL5772_BOss12034_IIIp82.jpg"
+                                    coordinates="[59,1796,429,1027]">Fragment on page 82</pb-facs-link>
+                            </li>
+                        </ul>
+                    </div>
+                </main>
+            </pb-page>
+        </template>
+    </demo-snippet>
+</body>
+
+</html>

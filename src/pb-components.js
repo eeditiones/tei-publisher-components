@@ -1,6 +1,8 @@
 import './pb-browse-docs.js';
 import './pb-collapse.js';
 import './pb-document.js';
+import './pb-facsimile.js';
+import './pb-facs-link.js';
 import './pb-highlight.js';
 import './pb-link.js';
 import './pb-load.js';
