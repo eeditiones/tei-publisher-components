@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import * as osd from "../assets/openseadragon.esm.js";
+import { pbMixin } from './pb-mixin.js';
 
 /**
  *
@@ -141,10 +142,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     // Init openseadragon
     _initOpenSeadragon() {
-
-        this.viewer = OpenSeadragon({
+        this.viewer = osd.default({
             element: this.shadowRoot.getElementById('viewer'),
-            prefixUrl: "../node_modules/openseadragon/build/openseadragon/images/",
+            prefixUrl: "./assets/openseadragon/",
             preserveViewport: true,
             sequenceMode: true,
             showZoomControl: true,

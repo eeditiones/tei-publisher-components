@@ -4,3 +4,4 @@ build
 .firebase
 analysis.json
 pb-components.js*
+assets

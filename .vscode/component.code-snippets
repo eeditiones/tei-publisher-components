@@ -1,14 +1,26 @@
 {
-	"Create LitElement": {
-		"prefix": ["litelem"],
+	"Attribute Change Callback": {
+		"prefix": "attr",
 		"scope": "javascript",
-		"body":[
+		"body": [
+			"attributeChangedCallback(name, oldVal, newVal) {",
+			"\tsuper.attributeChangedCallback(name, oldVal, newVal);",
+			"\t$0",
+			"}"
+		]
+	},
+	"Create LitElement": {
+		"prefix": [
+			"litelem"
+		],
+		"scope": "javascript",
+		"body": [
 			"import { LitElement, html, css } from 'lit-element';",
 			"import { pbMixin } from './pb-mixin';\n\n",
 			"/**",
 			" *",
 			" *",
-			" * @customElement",
+			" * @customElement  ${TM_FILENAME_BASE}",
 			" * @polymer",
 			" * @demo demo/${TM_FILENAME_BASE}.html",
 			" * @appliesMixin pbMixin",
