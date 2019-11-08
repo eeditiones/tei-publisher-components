@@ -6,7 +6,7 @@
   "main": "index.html",
   "scripts": {
     "build": "npm run osd && rollup -c rollup.config.js",
-    "build:production": "PRODUCTION=true npm run build",
+    "build:production": "npm run env PRODUCTION=true && npm run build",
     "start": "npm run build && es-dev-server --app-index index.html --node-resolve --open --watch",
     "test": "karma start",
     "test:watch": "karma start --auto-watch=true --single-run=false",
