@@ -31,3 +31,4 @@ import './pb-manage-odds.js';
 import './pb-edit-xml.js';
 import './pb-upload.js';
 import './pb-select-odd.js';
+import './pb-select-template.js';

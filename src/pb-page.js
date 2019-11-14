@@ -28,7 +28,8 @@ class PbPage extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.signalReady('pb-page-ready', {
-            endpoint: this.endpoint
+            endpoint: this.endpoint,
+            template: this.template
         });
     }
 

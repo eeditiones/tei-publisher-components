@@ -21,10 +21,6 @@ import "@polymer/neon-animation";
 export class PbSelectOdd extends pbMixin(LitElement) {
     static get properties() {
         return {
-            /** Id of the document component on which the ODD should be changed */
-            src: {
-                type: String
-            },
             /** The label to show on top of the dropdown menu */
             label: {
                 type: String
