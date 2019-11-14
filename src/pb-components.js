@@ -30,3 +30,4 @@ import './pb-grid-action.js';
 import './pb-manage-odds.js';
 import './pb-edit-xml.js';
 import './pb-upload.js';
+import './pb-select-odd.js';
