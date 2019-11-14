@@ -67,7 +67,6 @@ export class PbPanel extends pbMixin(LitElement) {
             const titles = [];
             this.querySelectorAll('template').forEach(template => titles.push(template.title));
             this.panels = titles;
-            console.log('panels: %o', this.panels);
         }
         this._show();
     }
@@ -76,7 +75,7 @@ export class PbPanel extends pbMixin(LitElement) {
         return html`
             <app-toolbar>
                 <paper-dropdown-menu id="menu" label="${this.label}">
-                    <paper-listbox slot="dropdown-content" class="dropdown-content" 
+                    <paper-listbox id="panels" slot="dropdown-content" class="dropdown-content" 
                         selected="${this.active}" @selected-item-changed="${this._update}">
                     ${this.panels.map((item) => html`<paper-item>${item}</paper-item>`)}
                     </paper-listbox>
@@ -110,7 +109,11 @@ export class PbPanel extends pbMixin(LitElement) {
     }
 
     _update() {
-        this._show();
+        const panel = this.shadowRoot.getElementById('panels').selected;
+        if (this.active !== panel) {
+            this.active = panel;
+            this._show();
+        }
     }
 
     _show() {
