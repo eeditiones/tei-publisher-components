@@ -11,6 +11,14 @@ export default {
         copy({
             targets: [
                 {
+                    src: './node_modules/leaflet/dist/leaflet.css',
+                    dest: './assets/leaflet'
+                },
+                {
+                    src: './node_modules/leaflet/dist/images/*',
+                    dest: './assets/leaflet'
+                },
+                {
                     src: './node_modules/openseadragon/build/openseadragon/images/*',
                     dest: './assets/openseadragon'
                 }

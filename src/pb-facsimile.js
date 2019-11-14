@@ -81,6 +81,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 attribute: 'base-uri'
             },
             /**
+             * Path pointing to the location of openseadragon user interface images.
+             */
+            prefixUrl: {
+                type: String,
+                attribute: 'prefix-url'
+            },
+            /**
              * Array of facsimiles
              *
              */
@@ -101,6 +108,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.showHomeControl = true;
         this.showNavigationControl = true;
         this.src = '';
+        this.prefixUrl = '../assets/openseadragon/';
     }
 
     connectedCallback() {
@@ -144,7 +152,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     _initOpenSeadragon() {
         this.viewer = osd.default({
             element: this.shadowRoot.getElementById('viewer'),
-            prefixUrl: "./assets/openseadragon/",
+            prefixUrl: this.prefixUrl,
             preserveViewport: true,
             sequenceMode: true,
             showZoomControl: true,

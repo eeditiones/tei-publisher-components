@@ -32,3 +32,5 @@ import './pb-edit-xml.js';
 import './pb-upload.js';
 import './pb-select-odd.js';
 import './pb-select-template.js';
+import './pb-leaflet-map.js';
+import './pb-geolocation.js';
