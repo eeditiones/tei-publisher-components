@@ -72,6 +72,10 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
             :host {
                 display: block;
             }
+            paper-dropdown-menu {
+                --paper-listbox-background-color: white;
+                width: 100%;
+            }
         `;
     }
 
