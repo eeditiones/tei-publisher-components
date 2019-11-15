@@ -52,7 +52,7 @@ export class PbGeolocation extends PbHighlight {
     static get styles() {
         return css`
             :host {
-                display: block;
+                display: inline;
             }
 
             @keyframes keyFrameBackgroundColorIn {

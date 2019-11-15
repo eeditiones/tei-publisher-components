@@ -152,7 +152,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     _initOpenSeadragon() {
         this.viewer = osd.default({
             element: this.shadowRoot.getElementById('viewer'),
-            prefixUrl: this.prefixUrl,
+            prefixUrl: this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"),
             preserveViewport: true,
             sequenceMode: true,
             showZoomControl: true,
