@@ -10,7 +10,7 @@ import { pbMixin } from './pb-mixin';
  * 
  * @customElement
  * @polymer
- * @demo demo/pb-paginate.html
+ * @demo demo/pb-search.html
  * @appliesMixin pbMixin
  */
 export class PbPaginate extends pbMixin(LitElement) {

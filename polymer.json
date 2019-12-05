@@ -1,5 +1,5 @@
 {
-  "entrypoint": "pb-components.js",
+  "entrypoint": "src/pb-components.js",
   "npm": true,
   "moduleResolution": "node",
   "sources": [

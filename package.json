@@ -5,9 +5,9 @@
   "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
   "main": "index.html",
   "scripts": {
-    "build": "npm run osd && rollup -c rollup.config.js",
+    "build": "npm run docs && npm run osd && rollup -c rollup.config.js",
     "build:production": "npm run env PRODUCTION=true && npm run build",
-    "start": "npm run build && es-dev-server --app-index index.html --node-resolve --open --watch",
+    "start": "npm run build && es-dev-server --app-index docs.html --node-resolve --open --watch",
     "test": "karma start",
     "test:watch": "karma start --auto-watch=true --single-run=false",
     "docs": "polymer analyze > analysis.json",

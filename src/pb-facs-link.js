@@ -7,7 +7,7 @@ import { pbMixin } from './pb-mixin';
  *
  * @customElement pb-facs-link
  * @polymer
- * @demo demo/pb-facs-link.html
+ * @demo demo/pb-facsimile.html
  * @appliesMixin pbMixin
  */
 export class PbFacsLink extends pbMixin(LitElement) {
