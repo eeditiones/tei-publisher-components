@@ -13,6 +13,16 @@ Distributing the components in a separate package has several benefits:
 
 Clone the repository, call `npm install` once and run `npm start`. This creates a simple webserver which you can access in a browser to see the documentation and demos.
 
+All components talk to an endpoint, which will either be a TEI Publisher instance or an application generated from TEI Publisher. Docs and demos in this repo currently expect the endpoint to be available on `http://localhost:8080/exist`.
+
+For the full functionality, please install the `litelement` branch of TEI Publisher. Using the master branch some demos will not work correctly.
+
 ## Building
 
 Run `npm run build:production` to generate a single `bundle.js` containing all components and their dependencies.
+
+## Development
+
+For development, run `npm start` as described above. It will watch for file changes.
+
+Every component should have a demo to show its functionality.s
