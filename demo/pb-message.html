@@ -3,18 +3,19 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-login Demo</title>
+        <title>pb-message Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
 
-        <script type="module" src="../src/editor/odd-editor.js"></script>
+        <script type="module" src="../src/pb-message.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
 
 
         <custom-style>
             <style is="custom-style" include="demo-pages-shared-styles">
-                pb-login {
-                    --pb-login-link-color: #886666;
+                pb-message {
+                    width:400px;
                 }
             </style>
         </custom-style>
@@ -23,35 +24,20 @@
     <body>
         <demo-snippet>
             <template>
-                <odd-editor output-root="/db/apps/tei-publisher/transform" root-path="/db/apps/tei-publisher/odd" output-prefix="transform" odd="graves.odd" data-template="app:odd-editor">
-<!--
-                    <odd-selector id="selector" data-template="app:form-odd-select">
-                        <paper-item value="dta.odd" role="option" tabindex="-1" aria-disabled="false">Deutsches Textarchiv [2017-09-08]</paper-item>
-                        <paper-item value="vangogh.odd" role="option" tabindex="-1" aria-disabled="false">Van Gogh Letters [2019-01-28+01:00]</paper-item>
-                        <paper-item value="docbook.odd" role="option" tabindex="-1" aria-disabled="false">Docbook v5  []</paper-item>
-                        <paper-item value="serafin.odd" role="option" tabindex="-1" aria-disabled="false">Serafin Letters
+                <pb-message id="msg"></pb-message>
 
-
-                            [2018-08-31+02:00]</paper-item>
-                        <paper-item value="shakespeare.odd" role="option" tabindex="-1" aria-disabled="false">Shakespeare Plays [2018-08-30+02:00]</paper-item>
-                        <paper-item value="graves.odd" selected="" role="option" tabindex="-1" aria-disabled="false" aria-selected="true" class="iron-selected">Graves' Letters
-
-                            [2018-08-05+02:00]</paper-item>
-                        <paper-item value="jats.odd" role="option" tabindex="-1" aria-disabled="false">JATS
-                            []</paper-item>
-                        <paper-item value="docx.odd" role="option" tabindex="-1" aria-disabled="false">DOCX Import [2019-05-07+02:00]</paper-item>
-                        <paper-item value="teipublisher.odd" role="option" tabindex="-1" aria-disabled="false">TEI Publisher Base [2017-09-08]</paper-item>
-                        <paper-item value="tei_simplePrint.odd" role="option" tabindex="-1" aria-disabled="false">Standard Default [2016-11-17]</paper-item>
-                        <paper-item value="dantiscus.odd" role="option" tabindex="-1" aria-disabled="false">Dantiscus' Letters
-
-
-
-
-                            [2018-09-12+02:00]</paper-item>
-                    </odd-selector>
--->
-                </odd-editor>
+                <button onclick="init();">show message</button>
+                <button onclick="confirm();">show confirmation</button>
             </template>
         </demo-snippet>
+
+        <script type="application/javascript">
+            function init(){
+                document.getElementById('msg').show("a title", 'a message');
+            }
+            function confirm(){
+                document.getElementById('msg').confirm("a confirmation message", 'confirm?');
+            }
+        </script>
     </body>
 </html>
