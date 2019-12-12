@@ -255,7 +255,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 this.viewer.viewport.getBounds(true));
 
             // scroll into view?
-            if (!currentRect.containsPoint(new OpenSeadragon.Point(x1, y1))) {
+            if (!currentRect.containsPoint(new osd.Point(x1, y1))) {
                 this.viewer.viewport.fitBoundsWithConstraints(
                     this.viewer.viewport.imageToViewportRectangle(x1, y1, currentRect.width, currentRect.height));
             }
