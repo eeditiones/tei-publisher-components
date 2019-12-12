@@ -40,23 +40,17 @@ export class PbPopover extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`
-            <a id="link" class="${this.persistent ? 'persistent' : ''}" href="#" @click="${this._open}"><slot></slot></a>
-            ${this.persistent ? PbPopover._renderDialog() : PbPopover._renderTooltip()}
-        `;
+        return html`<a id="link" class="${this.persistent ? 'persistent' : ''}" href="#" @click="${this._open}"><slot></slot></a>${this.persistent ? PbPopover._renderDialog() : PbPopover._renderTooltip()}`;
     }
 
     static _renderTooltip() {
-        return html`
-            <paper-tooltip for="link" position="bottom" fit-to-visible-bounds="fit-to-visible-bounds">
+        return html`<paper-tooltip for="link" position="bottom" fit-to-visible-bounds="fit-to-visible-bounds">
                 <slot name="alternate"></slot>
-            </paper-tooltip>
-        `;
+            </paper-tooltip>`;
     }
 
     static _renderDialog() {
-        return html`
-            <paper-dialog id="dialog" dynamic-align no-overlap horizontal-align="left" vertical-align="top">
+        return html`<paper-dialog id="dialog" dynamic-align no-overlap horizontal-align="left" vertical-align="top">
                 <h2><slot name="title"></slot></h2>
                 <paper-dialog-scrollable>
                     <slot name="alternate"></slot>
@@ -66,14 +60,15 @@ export class PbPopover extends pbMixin(LitElement) {
                         Close
                     </paper-button>
                 </div>
-            </paper-dialog>
-        `;
+            </paper-dialog>`;
     }
 
     static get styles() {
         return css`
             :host {
-                display: inline-block;
+                display: inline;
+                padding: 0;
+                margin: 0;
             }
             #link {
                 color: var(--pb-popover-link-color, var(--pb-link-color));
