@@ -41,7 +41,7 @@ export class PbPopover extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <a id="link" href="#" @click="${this._open}"><slot></slot></a>
+            <a id="link" class="${this.persistent ? 'persistent' : ''}" href="#" @click="${this._open}"><slot></slot></a>
             ${this.persistent ? PbPopover._renderDialog() : PbPopover._renderTooltip()}
         `;
     }
@@ -73,11 +73,15 @@ export class PbPopover extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display: inline;
+                display: inline-block;
             }
             #link {
                 color: var(--pb-popover-link-color, var(--pb-link-color));
                 text-decoration: none;
+                cursor: text;
+            }
+            #link.persistent {
+                cursor: pointer;
             }
         `;
     }
