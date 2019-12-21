@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-document Demo</title>
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/dts-select-endpoint.js"></script>
+        <script type="module" src="../src/dts-client.js"></script>
+        <script type="module" src="../src/pb-paginate.js"></script>
+        <custom-style>
+            <style is="custom-style" include="demo-pages-shared-styles">
+                demo-snippet {
+                    position: relative;
+                }
+
+                pb-paginate {
+                    margin-bottom: 10px;
+                }
+            </style>
+        </custom-style>
+    </head>
+
+    <body>
+        <demo-snippet>
+            <template>
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <!-- Display two document views side by side -->
+                    <main>
+                        <dts-client>
+                            <dts-select-endpoint slot="toolbar" label="Endpoint" load="dts-config.json"></dts-select-endpoint>
+                            <p class="dts-info" slot="toolbar">Experimental: access other editions which expose the DTS API</p>
+                            <pb-paginate slot="pagination" per-page="10" range="5" found-label="Resources"></pb-paginate>
+                        </dts-client>
+                    </main>
+                </pb-page>
+            </template>
+        </demo-snippet>
+    </body>
+</html>

@@ -17,7 +17,7 @@
     "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
-    "clean": "rimraf bundle.js && npm run build",
+    "clean": "rimraf bundle.js && rimraf assets && npm run build",
     "prepare": "npm run build:production",
     "osd": "rollup -c osd.rollup.config.js"
   },

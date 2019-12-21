@@ -1,0 +1,14 @@
+[
+    {
+        "url": "http://localhost:8080/exist/apps/vangogh/api/dts",
+        "title": "Van Gogh Letters"
+    },
+    {
+        "url": "https://teipublisher.com/exist/apps/shakespeare-pm/api/dts",
+        "title": "Shakespeare Plays"
+    },
+    {
+        "url": "http://texts.alpheios.net/api/dts",
+        "title": "Alpheios Project"
+    }
+]

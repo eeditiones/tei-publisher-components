@@ -34,3 +34,5 @@ import './pb-select-odd.js';
 import './pb-select-template.js';
 import './pb-leaflet-map.js';
 import './pb-geolocation.js';
+import './dts-select-endpoint.js';
+import './dts-client.js';
