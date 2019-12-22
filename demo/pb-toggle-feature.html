@@ -14,6 +14,7 @@
     <script type="module" src="../src/pb-document.js"></script>
     <script type="module" src="../src/pb-toggle-feature.js"></script>
     <script type="module" src="../src/pb-view.js"></script>
+    <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-navigation.js"></script>
     <custom-style>
         <style is="custom-style" include="demo-pages-shared-styles">
@@ -44,6 +45,7 @@
 </head>
 
 <body>
+    <h1>Using pb-toggle-feature with pb-view</h1>
     <demo-snippet>
         <template>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
@@ -71,6 +73,26 @@
                 </div>
                 <main>
                     <pb-view id="view1" src="document1" view="single" xpath="//text[@type='source']"></pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </demo-snippet>
+    <h1>Using pb-toggle-feature with pb-load</h1>
+    <demo-snippet>
+        <template>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+
+                <div class="toolbar">
+                    <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter -->
+                    <!-- note that we have to prefix the parameter with 'user.' because that's how components.xql expects it -->
+                    <pb-toggle-feature emit="loader" name="user.mode" on="diplomatic" off="norm"
+                        default="on">Diplomatic View</pb-toggle-feature>
+                </div>
+                <main>
+                    <!-- call components.xql to retrieve the full source text -->
+                    <pb-load url="modules/lib/components.xql?debug=yes&xpath=//text[@type='source']&view=single" 
+                        src="document2" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
             </pb-page>
         </template>

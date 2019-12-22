@@ -61,6 +61,9 @@ export class PbLoad extends pbMixin(LitElement) {
             event: {
                 type: String
             },
+            userParams: {
+                type: Object
+            },
             ...super.properties
         };
     }
@@ -72,7 +75,6 @@ export class PbLoad extends pbMixin(LitElement) {
         this.history = false;
         this.event = 'pb-load';
         this.loaded = false;
-        this.parameters = null;
     }
 
     connectedCallback() {
@@ -99,6 +101,10 @@ export class PbLoad extends pbMixin(LitElement) {
                 }
             }.bind(this));
         }
+
+        this.subscribeTo('pb-toggle', ev => {
+            this.toggleFeature(ev);
+        });
     }
 
     firstUpdated() {
@@ -139,6 +145,14 @@ export class PbLoad extends pbMixin(LitElement) {
         `;
     }
 
+    toggleFeature(ev) {
+        this.userParams = ev.detail.properties;
+        console.log('<pb-load> toggle feature %o', this.userParams);
+        if (ev.detail.action === 'refresh') {
+            this.load();
+        }
+    }
+
     load(ev) {
         if (this.loadOnce && this.loaded) {
             return;
@@ -170,7 +184,7 @@ export class PbLoad extends pbMixin(LitElement) {
             params.start = this.start;
         }
 
-        params = this.getParameters(params);
+        params = this.prepareParameters(params);
 
         console.log("<pb-load> Loading %s with parameters %o", this.url, params);
         const loader = this.shadowRoot.getElementById('loadContent');
@@ -186,10 +200,13 @@ export class PbLoad extends pbMixin(LitElement) {
     /**
      * Allow subclasses to set parameters before the request is being sent.
      *
-     * @param parameters Map of parameters
+     * @param params Map of parameters
      * @return new or modified parameters map
      */
-    getParameters(params) {
+    prepareParameters(params) {
+        if (this.userParams) {
+            return { ...params, ...this.userParams };
+        }
         return params;
     }
 

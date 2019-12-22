@@ -256,7 +256,7 @@ export class PbBrowseDocs extends PbLoad {
         `;
     }
 
-    getParameters(params) {
+    prepareParameters(params) {
         params.sort = this.sortBy;
         if (this.filter) {
             params.filter = this.filter;
