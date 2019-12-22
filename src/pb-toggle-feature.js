@@ -5,13 +5,14 @@ import '@polymer/paper-checkbox';
 /**
  * Enable or disable a particular display feature by setting a predefined or custom parameter.
  *
- * Predefined view parameters known are
+ * Predefined view parameters correspond to the following properties supported by `pb-view`:
  *
  * | Parameter | Description |
  * | ----------------|-------------|
  * | odd | the ODD to use |
  * | view | the view type: 'page', 'div' or 'single' |
  * | columnSeparator | CSS selector to find elements to use as column separator |
+ * | xpath | XPath expression to select a portion of the text for display |
  *
  * For example, one may switch between page-by-page and by-division view using
  *
@@ -100,8 +101,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 type: Boolean
             },
             /**
-             * If set to true (default), `pb-toggle-feature` will pass its properties to the
-             * connected view before this loads content for the first time. If false,
+             * If set to false (the default), `pb-toggle-feature` will pass its properties to the
+             * connected view before this loads content for the first time. If true,
              * `pb-toggle-feature` will initialize its state depending on the setting of the view.
              * This only makes sense for the special properties 'view' and 'odd' though.
              */
@@ -177,7 +178,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         }
         this.initializing = false;
     }
-    
+
     _changed() {
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
         this.setParameter(this.name, this.checked ? this.on : this.off);

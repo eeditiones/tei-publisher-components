@@ -602,6 +602,7 @@ export class PbView extends pbMixin(LitElement) {
                 case 'view':
                 case 'columnSeparator':
                 case 'xpath':
+                case 'nodeId':
                     break;
                 default:
                     this._features[key] = value;
@@ -614,7 +615,13 @@ export class PbView extends pbMixin(LitElement) {
             }
             if (properties.view) {
                 this.view = properties.view;
-                this.root = this.switchView;
+                if (this.view === 'single') {
+                    // when switching to single view, clear current node id
+                    this.nodeId = null;
+                } else {
+                    // otherwise use value for alternate view returned from server
+                    this.nodeId = this.switchView;
+                }
             }
             if (properties.xpath) {
                 this.xpath = properties.xpath;
