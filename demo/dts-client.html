@@ -32,7 +32,7 @@
                     <!-- Display two document views side by side -->
                     <main>
                         <dts-client>
-                            <dts-select-endpoint slot="toolbar" label="Endpoint" load="dts-config.json"></dts-select-endpoint>
+                            <dts-select-endpoint slot="toolbar" id="endpoints" label="Endpoint"></dts-select-endpoint>
                             <p class="dts-info" slot="toolbar">Experimental: access other editions which expose the DTS API</p>
                             <pb-paginate slot="pagination" per-page="10" range="5" found-label="Resources"></pb-paginate>
                         </dts-client>
@@ -40,5 +40,25 @@
                 </pb-page>
             </template>
         </demo-snippet>
+        <script>
+            // configuration for the DTS endpoints
+            const dtsConfig = [
+                {
+                    "url": "http://localhost:8080/exist/apps/vangogh/api/dts",
+                    "title": "Van Gogh Letters"
+                },
+                {
+                    "url": "http://localhost:8080/exist/apps/shakespeare-pm/api/dts",
+                    "title": "Shakespeare Plays"
+                },
+                {
+                    "url": "http://texts.alpheios.net/api/dts",
+                    "title": "Alpheios Project"
+                }
+            ];
+            window.addEventListener('WebComponentsReady', () => {
+                document.getElementById('endpoints').endpoints = dtsConfig;
+            });
+        </script>
     </body>
 </html>

@@ -30,9 +30,6 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
             endpoints: {
                 type: Array
             },
-            load: {
-                type: String
-            },
             ...super.properties
         };
     }
@@ -46,18 +43,15 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.endpoint = this.getParameter('endpoint');
-        if (this.load) {
-            fetch(this.load).then((body) => {
-                body.json().then((data) => {
-                    this.endpoints = data;
-                    if (!this.endpoint) {
-                        this.endpoint = this.endpoints[0].url;
-                    }
-                    this.waitForChannel(() => this._selected());
-                });
-            }).catch();
-        } else {
-            this.waitForChannel(() => this._selected());
+    }
+
+    updated(changedProperties) {
+        super.updated();
+        if (changedProperties.has('endpoints')) {
+            const item = this.shadowRoot.getElementById('endpoints').selectedItem;
+            if (!item && this.endpoints.length > 0) {
+                this.endpoint = this.endpoints[0].url;
+            }
         }
     }
 
@@ -81,7 +75,11 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
     }
 
     _selected() {
-        const newEndpoint = this.shadowRoot.getElementById('endpoints').selected;
+        const item = this.shadowRoot.getElementById('endpoints').selectedItem;
+        if (!item) {
+            return;
+        }
+        const newEndpoint = item.getAttribute('value');
         this.setParameter('endpoint', newEndpoint);
         this.pushHistory('dts-endpoint');
         console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
