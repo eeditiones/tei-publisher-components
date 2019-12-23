@@ -55,9 +55,7 @@ export class PbLink extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`
-            <a href="#" @click="${this._onClick}">${unsafeHTML(this.innerHTML)}</a>
-        `;
+        return html`<a href="#" @click="${this._onClick}">${unsafeHTML(this.innerHTML)}</a>`;
     }
 
     createRenderRoot() {
