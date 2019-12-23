@@ -258,7 +258,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      */
     signalReady(name = 'pb-ready', data) {
         this._isReady = true;
-        this.dispatchEvent(new CustomEvent(name, { detail: data }));
+        this.dispatchEvent(new CustomEvent(name, { detail: { data, source: this } }));
         this.emitTo(name, data);
     }
 
