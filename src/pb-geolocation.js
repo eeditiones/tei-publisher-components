@@ -44,9 +44,7 @@ export class PbGeolocation extends PbHighlight {
     }
 
     render() {
-        return html`
-            <span id="content"><slot></slot></span>
-        `;
+        return html`<span id="content"><slot></slot></span>`;
     }
 
     static get styles() {
