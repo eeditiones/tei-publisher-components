@@ -105,12 +105,14 @@ export class PbLoad extends pbMixin(LitElement) {
         this.subscribeTo('pb-toggle', ev => {
             this.toggleFeature(ev);
         });
+
+        this.signalReady();
     }
 
     firstUpdated() {
         if (this.auto) {
             this.start = this.getParameter('start', this.start);
-            this.load();
+            this.wait(() => this.load());
         }
     }
 

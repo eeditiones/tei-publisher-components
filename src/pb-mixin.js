@@ -363,7 +363,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                     }
                 }
                 if (type === 'pb-ready') {
-                    readyEventsFired.set(key, true);
+                    readyEventsFired.add(key);
                 }
                 const ev = new CustomEvent(type, {
                     detail: detail,
