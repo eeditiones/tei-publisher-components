@@ -36,7 +36,17 @@ const handleKeydown = event => {
 
 window.addEventListener('keydown', handleKeydown, true);
 
-const initEventsFired = {};
+/**
+ * Global set to record the names of the channels for which a 
+ * `pb-ready` event was fired.
+ */
+const readyEventsFired = new Set();
+
+/**
+ * Gobal map to record the initialization events which have
+ * been received.
+ */
+const initEventsFired = new Map();
 
 /**
  * Implements the core channel/event mechanism used by components in TEI Publisher
@@ -157,6 +167,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         if (this.waitFor) {
             const targets = document.querySelectorAll(this.waitFor);
             const targetCount = targets.length;
+            if (targetCount === 0) {
+                // selector did not return any targets
+                return callback();
+            }
             let count = 0;
             targets.forEach((target) => {
                 if (target._isReady) {
@@ -166,6 +180,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                     }
                 } else {
                     const handler = target.addEventListener('pb-ready', (ev) => {
+                        if (ev.detail.source == this) {
+                            // same source: ignore
+                            return;
+                        }
                         count++;
                         if (targetCount === count) {
                             target.removeEventListener('pb-ready', handler);
@@ -187,19 +205,46 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param callback function to be called when `pb-ready` is received
      */
     waitForChannel(callback) {
-        const listener = function () {
+        // check first if a `pb-ready` event has already been received on one of the channels
+        if (this.subscribeConfig) {
+            for (const key in this.subscribeConfig) {
+                this.subscribeConfig[key].forEach(t => {
+                    if (t === 'pb-ready' && readyEventsFired.has(key)) {
+                        return callback();
+                    }
+                });
+            }
+        } else if (
+            (this.subscribe && readyEventsFired.has(this.subscribe)) ||
+            (!this.subscribe && readyEventsFired.has('__default__'))
+        ) {
+            return callback();
+        }
+
+        const listener = (ev) => {
+            if (ev.detail._source == this) {
+                return;
+            }
             document.removeEventListener('pb-ready', listener);
             callback();
         };
         this.subscribeTo('pb-ready', listener);
     }
 
+    /**
+     * Wait until the global event identified by name
+     * has been fired once. This is mainly used to wait for initialization
+     * events like `pb-page-ready`.
+     * 
+     * @param {string} name 
+     * @param {Function} callback 
+     */
     static waitOnce(name, callback) {
-        if (initEventsFired[name]) {
-            callback(initEventsFired[name]);
+        if (initEventsFired.has(name)) {
+            callback(initEventsFired.get(name));
         } else {
             document.addEventListener(name, (ev) => {
-                initEventsFired[name] = ev.detail;
+                initEventsFired.set(name, ev.detail);
                 callback(ev.detail);
             }, {
                 once: true
@@ -209,6 +254,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     /**
      * Signal that the component is ready to respond to events.
+     * Emits an event to all channels the component is registered with.
      */
     signalReady(name = 'pb-ready', data) {
         this._isReady = true;
@@ -289,6 +335,14 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             }
         }
         if (chs.length == 0) {
+            if (type === 'pb-ready') {
+                readyEventsFired.add('__default__');
+            }
+            if (options) {
+                options._source = this;
+            } else {
+                options = { _source: this };
+            }
             const ev = new CustomEvent(type, {
                 detail: options,
                 composed: true,
@@ -298,7 +352,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         } else {
             chs.forEach(key => {
                 const detail = {
-                    key: key
+                    key: key,
+                    _source: this
                 };
                 if (options) {
                     for (const opt in options) {
@@ -306,6 +361,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                             detail[opt] = options[opt];
                         }
                     }
+                }
+                if (type === 'pb-ready') {
+                    readyEventsFired.set(key, true);
                 }
                 const ev = new CustomEvent(type, {
                     detail: detail,

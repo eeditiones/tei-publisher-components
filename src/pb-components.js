@@ -13,6 +13,7 @@ import './pb-paginate.js';
 import './pb-progress.js';
 import './pb-search.js';
 import './pb-toggle-feature.js';
+import './pb-select-feature.js';
 import './pb-view.js';
 import './pb-zoom.js';
 import './pb-popover.js';
