@@ -112,6 +112,14 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 type: Boolean
             },
             /**
+             * Common property to disable the functionality associated with a component.
+             * `pb-highlight` and `pb-popover` react to this.
+             */
+            disabled: {
+                type: Boolean,
+                reflect: true
+            },
+            /**
              * Register a shortcut key: when pressed, the handler function assigned to property `keyPressed`
              * will be called. By default the function does nothing and should be set by subclasses.
              */
@@ -139,6 +147,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         super();
         this._isReady = false;
         this.keyPressed = function () { };
+        this.disabled = false;
     }
 
     connectedCallback() {
@@ -154,6 +163,22 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             this.__register(newValue, oldValue);
         } else if (attr === 'override') {
             this.__override(this.keyboard);
+        }
+    }
+
+    /**
+     * Enable or disable certain features of a component. Called by `pb-toggle-feature`
+     * and `pb-select-feature` to change the components behaviour.
+     * 
+     * By default only one command is known: `disable` will disable any interactive feature
+     * of the component.
+     * 
+     * @param {string} command name of an action to take or setting to be toggled
+     * @param {Boolean} state the state to set the setting to
+     */
+    command(command, state) {
+        if (command === 'disable') {
+            this.disabled = state;
         }
     }
 

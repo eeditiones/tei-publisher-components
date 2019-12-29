@@ -52,7 +52,7 @@
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
-                    <pb-toggle-feature name="highlights1" selector=".tei-foreign">Hide highlights</pb-toggle-feature>
+                    <pb-toggle-feature name="highlight1" selector=".tei-foreign,pb-highlight,pb-popover" action="disable" default="off">Plain Reading View</pb-toggle-feature>
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter-->
                     <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
                     <!-- directly change properties of the pb-view -->
@@ -83,7 +83,7 @@
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
                 <div class="toolbar">
-                    <pb-toggle-feature name="highlight2" selector=".tei-foreign,pb-highlight" default="on" emit="ex2" subscribe="ex2">Hide highlights</pb-toggle-feature>
+                    <pb-toggle-feature name="highlight2" selector=".tei-foreign,pb-highlight,pb-popover" action="disable" default="off" emit="ex2" subscribe="ex2">Plain Reading View</pb-toggle-feature>
                     <pb-toggle-feature name="norm2" selector=".choice,.choice-alternate,br" emit="ex2" subscribe="ex2">Normalized View</pb-toggle-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">

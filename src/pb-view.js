@@ -550,15 +550,15 @@ export class PbView extends pbMixin(LitElement) {
         if (this._selector.size === 0) {
             return;
         }
-        this._selector.forEach((state, selector) => {
+        this._selector.forEach((setting, selector) => {
             elem.querySelectorAll(selector).forEach(node => {
-                if (node.deactivate) {
-                    node.deactivate(state);
+                if (node.command) {
+                    node.command(setting.command, setting.state);
                 }
-                if (state) {
-                    node.classList.add('toggled');
+                if (setting.state) {
+                    node.classList.add(setting.command);
                 } else {
-                    node.classList.remove('toggled');
+                    node.classList.remove(setting.command);
                 }
             });
         });
@@ -677,7 +677,10 @@ export class PbView extends pbMixin(LitElement) {
             }
         }
         if (ev.detail.selector) {
-            this._selector.set(ev.detail.selector, ev.detail.state);
+            this._selector.set(ev.detail.selector, {
+                state: ev.detail.state,
+                command: ev.detail.command
+            });
         }
         if (ev.detail.action === 'refresh') {
             if (Object.keys(properties).length > 0) {

@@ -40,6 +40,9 @@ export class PbPopover extends pbMixin(LitElement) {
     }
 
     render() {
+        if (this.disabled) {
+            return html`<slot></slot>`;
+        }
         return html`<a id="link" class="${this.persistent ? 'persistent' : ''}" href="#" @click="${this._open}"><slot></slot></a>${this.persistent ? PbPopover._renderDialog() : PbPopover._renderTooltip()}`;
     }
 

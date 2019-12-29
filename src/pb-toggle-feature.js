@@ -72,6 +72,13 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * In combination with a selector specifies the action to be taken, currently one of
+             * `toggle` (default) or `disable`.
+             */
+            action: {
+                type: String
+            },
+            /**
              * Value to set the parameter to when the feature is enabled.
              */
             on: {
@@ -124,6 +131,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
     constructor() {
         super();
         this.default = 'on';
+        this.action = 'toggle';
         this.propertiesOn = {};
         this.propertiesOff = {};
         this.initFromView = false;
@@ -148,6 +156,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             this.waitForChannel(() => {
                 const params = {
                     selector: this.selector,
+                    command: this.action,
                     state: this.checked,
                     properties: {},
                     action: 'init'
@@ -165,6 +174,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             this.waitForChannel(() => {
                 const params = {
                     selector: this.selector,
+                    command: this.action,
                     state: this.checked,
                     properties: this.checked ? this.propertiesOn : this.propertiesOff,
                     action: 'init'
@@ -198,6 +208,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
         const params = {
             selector: this.selector,
+            command: this.action,
             state: this.checked,
             properties: this.checked ? this.propertiesOn : this.propertiesOff,
             action: 'refresh'
