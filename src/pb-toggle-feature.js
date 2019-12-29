@@ -64,6 +64,14 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * (optional) CSS selector: selects the elements to toggle client side (sets or unsets a 
+             * CSS class `.toggled`). Setting this property will not trigger a reload as everything is
+             * handled by javascript.
+             */
+            selector: {
+                type: String
+            },
+            /**
              * Value to set the parameter to when the feature is enabled.
              */
             on: {
@@ -119,7 +127,6 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         this.propertiesOn = {};
         this.propertiesOff = {};
         this.initFromView = false;
-        this.initializing = true;
     }
 
     render() {
@@ -132,24 +139,40 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         super.connectedCallback();
 
         if (this.initFromView) {
-            this.subscribeTo('pb-update', this._initialize.bind(this));
+            const initHandler = this.subscribeTo('pb-update', (ev) => {
+                if (this.name === 'view' || this.name === 'odd' || this.name === 'xpath') {
+                    this.checked = ev.detail.data[this.name] === this.propertiesOn[this.name];
+                }
+                initHandler.forEach((handler) => document.removeEventListener('pb-update', handler));
+            });
+            this.waitForChannel(() => {
+                const params = {
+                    selector: this.selector,
+                    state: this.checked,
+                    properties: {},
+                    action: 'init'
+                };
+                this.emitTo('pb-toggle', params);
+                this.signalReady();
+            });
         } else {
             const param = this.getParameter(this.name);
             if (typeof param !== 'undefined') {
-                this.checked = param === this.on;
+                this.checked = param === 'on';
             } else {
                 this.checked = this.default === 'on';
             }
             this.waitForChannel(() => {
                 const params = {
+                    selector: this.selector,
+                    state: this.checked,
                     properties: this.checked ? this.propertiesOn : this.propertiesOff,
                     action: 'init'
                 };
                 this.emitTo('pb-toggle', params);
-                this.initializing = false;
+                this.signalReady();
             });
         }
-        this.signalReady();
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -161,30 +184,21 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             case 'off':
                 this.propertiesOff[this.name] = newVal;
                 break;
-        }
-    }
-
-    _initialize(ev) {
-        if (!this.initializing) {
-            return;
-        }
-        switch (this.name) {
-            case 'view':
-                this.checked = ev.detail.data.view === this.on;
-                break;
-            case 'odd':
-                this.checked = ev.detail.data.odd === this.on;
+            default:
                 break;
         }
-        this.initializing = false;
     }
 
     _changed() {
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
-        this.setParameter(this.name, this.checked ? this.on : this.off);
-        this.pushHistory('toggle feature ' + this.name);
+        if (this.name) {
+            this.setParameter(this.name, this.checked ? 'on' : 'off');
+            this.pushHistory('toggle feature ' + this.name);
+        }
 
         const params = {
+            selector: this.selector,
+            state: this.checked,
             properties: this.checked ? this.propertiesOn : this.propertiesOff,
             action: 'refresh'
         };

@@ -182,6 +182,19 @@ export class PbView extends pbMixin(LitElement) {
             animation: {
                 type: Boolean
             },
+            /**
+             * A selector pointing to other components this component depends on.
+             * When method `wait` is called, it will wait until all referenced
+             * components signal with a `pb-ready` event that they are ready and listening
+             * to events.
+             * 
+             * `pb-view` by default sets this property to select `pb-toggle-feature` and `pb-select-feature` 
+             * elements.
+             */
+            waitFor: {
+                type: String,
+                attribute: 'wait-for'
+            },
             _features: {
                 type: Object
             },
@@ -218,6 +231,7 @@ export class PbView extends pbMixin(LitElement) {
         this.direction = 'ltr';
         this.highlight = false;
         this._features = {};
+        this._selector = new Map();
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -393,6 +407,9 @@ export class PbView extends pbMixin(LitElement) {
             this.pushHistory('Navigate to xml:id');
         }
         this.xmlId = null;
+
+        this._applyToggles(elem);
+
         const eventOptions = {
             data: resp,
             root: elem,
@@ -529,6 +546,24 @@ export class PbView extends pbMixin(LitElement) {
         return params;
     }
 
+    _applyToggles(elem) {
+        if (this._selector.size === 0) {
+            return;
+        }
+        this._selector.forEach((state, selector) => {
+            elem.querySelectorAll(selector).forEach(node => {
+                if (node.deactivate) {
+                    node.deactivate(state);
+                }
+                if (state) {
+                    node.classList.add('toggled');
+                } else {
+                    node.classList.remove('toggled');
+                }
+            });
+        });
+    }
+
     /**
      * Load a part of the document identified by the given eXist nodeId
      *
@@ -596,6 +631,15 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     toggleFeature(ev) {
+        const applyToggles = () => {
+            if (this._column1) {
+                this._applyToggles(this._column1);
+                this._applyToggles(this._column2);
+            } else {
+                this._applyToggles(this._content);
+            }
+        }
+
         const properties = ev.detail.properties;
         console.log('<pb-view> toggle feature %o', properties);
         for (const [key, value] of Object.entries(properties)) {
@@ -632,8 +676,15 @@ export class PbView extends pbMixin(LitElement) {
                 this.columnSeparator = properties.columnSeparator;
             }
         }
+        if (ev.detail.selector) {
+            this._selector.set(ev.detail.selector, ev.detail.state);
+        }
         if (ev.detail.action === 'refresh') {
-            this._load();
+            if (Object.keys(properties).length > 0) {
+                this._load();
+            } else {
+                applyToggles();
+            }
         }
     }
 

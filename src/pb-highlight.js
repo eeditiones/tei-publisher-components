@@ -63,6 +63,7 @@ export class PbHighlight extends pbMixin(LitElement) {
         this.scroll = false;
         this.highlightSelf = false;
         this._className = 'highlight-off';
+        this.disabled = false;
     }
 
     connectedCallback() {
@@ -71,7 +72,17 @@ export class PbHighlight extends pbMixin(LitElement) {
         this.subscribeTo('pb-highlight-off', this._highlightOff.bind(this));
     }
 
+    deactivate(disabled) {
+        this.disabled = disabled;
+        if (disabled) {
+            this._className = 'highlight-off';
+        }
+    }
+
     _mouseOver() {
+        if (this.disabled) {
+            return;
+        }
         this.emitTo('pb-highlight-off', {
             source: this
         });
@@ -124,6 +135,9 @@ export class PbHighlight extends pbMixin(LitElement) {
     }
 
     _highlightOn(ev) {
+        if (this.disabled) {
+            return;
+        }
         if (ev.detail.source != this && ev.detail.id === this.key) {
             this._className = 'highlight-on';
             if (ev.detail.scroll) {
@@ -138,6 +152,9 @@ export class PbHighlight extends pbMixin(LitElement) {
     }
 
     _highlightOff(ev) {
+        if (this.disabled) {
+            return;
+        }
         if (ev.detail.source != this) {
             this._className = 'highlight-off';
         }

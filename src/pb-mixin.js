@@ -159,13 +159,15 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     /**
      * Wait for the components referenced by the selector given in property `waitFor`
-     * to signal that they are ready to respond to events.
-     *
+     * to signal that they are ready to respond to events. Only wait for elements which
+     * emit to one of the channels this component subscribes to.
+     * 
      * @param callback function to be called when all components are ready
      */
     wait(callback) {
         if (this.waitFor) {
-            const targets = document.querySelectorAll(this.waitFor);
+            const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
+            const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
             const targetCount = targets.length;
             if (targetCount === 0) {
                 // selector did not return any targets
@@ -221,14 +223,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             return callback();
         }
 
-        const listener = (ev) => {
+        const listeners = this.subscribeTo('pb-ready', (ev) => {
             if (ev.detail._source == this) {
                 return;
             }
-            document.removeEventListener('pb-ready', listener);
+            listeners.forEach(listener => document.removeEventListener('pb-ready', listener));
             callback();
-        };
-        this.subscribeTo('pb-ready', listener);
+        });
     }
 
     /**
@@ -263,6 +264,66 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     /**
+     * Get the list of channels this element subscribes to.
+     * 
+     * @returns an array of channel names
+     */
+    getSubscribedChannels() {
+        const chs = [];
+        if (this.subscribeConfig) {
+            Object.keys(this.subscribeConfig).forEach((key) => {
+                this.subscribeConfig[key].forEach(t => {
+                    if (t === type) {
+                        chs.push(key);
+                    }
+                })
+            });
+        } else if (this.subscribe) {
+            chs.push(this.subscribe);
+        }
+        return chs;
+    }
+
+    /**
+     * Check if the other element emits to one of the channels this
+     * element subscribes to.
+     * 
+     * @param {Element} other the other element to compare with
+     */
+    emitsOnSameChannel(other) {
+        if (!other.getEmittedChannels) {
+            return false;
+        }
+        const myChannels = this.getSubscribedChannels();
+        const otherChannels = other.getEmittedChannels();
+        if (myChannels.length === 0 && otherChannels.length === 0) {
+            return true;
+        }
+        return myChannels.some((channel) => otherChannels.includes(channel));
+    }
+
+    /**
+     * Get the list of channels this element emits to.
+     * 
+     * @returns an array of channel names
+     */
+    getEmittedChannels() {
+        const chs = [];
+        if (this.emitConfig) {
+            Object.keys(this.emitConfig).forEach(key => {
+                this.emitConfig[key].forEach(t => {
+                    if (t === type) {
+                        chs.push(key);
+                    }
+                })
+            });
+        } else if (this.emit) {
+            chs.push(this.emit);
+        }
+        return chs;
+    }
+
+    /**
      * Listen to the event defined by type. If property `subscribe` or `subscribe-config`
      * is defined, this method will trigger the listener only if the event has a key
      * equal to the key defined in `subscribe` or `subscribe-config`.
@@ -273,39 +334,27 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the emit property. Pass empty array to target the default channel.
      */
     subscribeTo(type, listener, channels) {
-        let chs = [];
-        if (channels) {
-            chs = channels;
-        } else {
-            if (this.subscribeConfig) {
-                for (const key in this.subscribeConfig) {
-                    this.subscribeConfig[key].forEach(t => {
-                        if (t === type) {
-                            chs.push(key);
-                        }
-                    })
-                }
-            } else if (this.subscribe) {
-                chs.push(this.subscribe);
-            }
-        }
+        const chs = channels || this.getSubscribedChannels();
         if (chs.length === 0) {
             // no channel defined: listen for all events not targetted at a channel
-            document.addEventListener(type, (ev) => {
+            const handle = (ev) => {
                 if (ev.detail && ev.detail.key) {
                     return;
                 }
                 listener(ev);
-            });
-        } else {
-            chs.forEach(key =>
-                document.addEventListener(type, ev => {
-                    if (ev.detail && ev.detail.key && ev.detail.key === key) {
-                        listener(ev);
-                    }
-                })
-            );
+            };
+            document.addEventListener(type, handle);
+            return [handle];
         }
+        return chs.map(key => {
+            const handle = ev => {
+                if (ev.detail && ev.detail.key && ev.detail.key === key) {
+                    listener(ev);
+                }
+            };
+            document.addEventListener(type, handle);
+            return handle;
+        });
     }
 
     /**
@@ -318,22 +367,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {
-        let chs = [];
-        if (channels) {
-            chs = channels;
-        } else {
-            if (this.emitConfig) {
-                for (const key in this.emitConfig) {
-                    this.emitConfig[key].forEach(t => {
-                        if (t === type) {
-                            chs.push(key);
-                        }
-                    })
-                }
-            } else if (this.emit) {
-                chs.push(this.emit);
-            }
-        }
+        const chs = channels || this.getEmittedChannels();
         if (chs.length == 0) {
             if (type === 'pb-ready') {
                 readyEventsFired.add('__default__');

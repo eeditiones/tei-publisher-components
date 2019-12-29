@@ -52,14 +52,14 @@
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
+                    <pb-toggle-feature name="highlights1" selector=".tei-foreign">Hide highlights</pb-toggle-feature>
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter-->
                     <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
                     <!-- directly change properties of the pb-view -->
-                    <pb-toggle-feature name="view" on="page" off="single" init-from-view>Page View</pb-toggle-feature>
-                    <pb-toggle-feature name="xpath" 
-                        properties-on='{"xpath": "//text[@type=&apos;translation&apos;]", "odd": "teipublisher", "nodeId": null}'
-                        properties-off='{"xpath": "//text[@type=&apos;source&apos;]", "odd": "dantiscus"}'
-                        init-from-view>
+                    <pb-toggle-feature name="view" on="page" off="single" default="off">Page View</pb-toggle-feature>
+                    <pb-toggle-feature name="xpath" default="off"
+                        properties-on='{"xpath": "//text[@type=&apos;translation&apos;]", "odd": "teipublisher", "nodeId": null, "view": "single"}'
+                        properties-off='{"xpath": "//text[@type=&apos;source&apos;]", "odd": "dantiscus"}'>
                         Translation
                     </pb-toggle-feature>
                     <!-- Navigate to previous page -->
@@ -72,7 +72,30 @@
                     </pb-navigation>
                 </div>
                 <main>
-                    <pb-view id="view1" src="document1" view="single" xpath="//text[@type='source']"></pb-view>
+                    <pb-view id="view1" src="document1" xpath="//text[@type='source']"></pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </demo-snippet>
+    <h1>Toggling features without content reload</h1>
+    <demo-snippet>
+        <template>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+                <div class="toolbar">
+                    <pb-toggle-feature name="highlight2" selector=".tei-foreign,pb-highlight" default="on" emit="ex2" subscribe="ex2">Hide highlights</pb-toggle-feature>
+                    <pb-toggle-feature name="norm2" selector=".choice,.choice-alternate,br" emit="ex2" subscribe="ex2">Normalized View</pb-toggle-feature>
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
+                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                    </pb-navigation>
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right" emit="ex2" subscribe="ex2">
+                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                    </pb-navigation>
+                </div>
+                <main>
+                    <pb-view id="view2" src="document2" xpath="//text[@type='source']" emit="ex2" subscribe="ex2"></pb-view>
                 </main>
             </pb-page>
         </template>
@@ -81,18 +104,18 @@
     <demo-snippet>
         <template>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+                <pb-document id="document3" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter -->
                     <!-- note that we have to prefix the parameter with 'user.' because that's how components.xql expects it -->
-                    <pb-toggle-feature id="toggle2" emit="loader" subscribe="loader" name="user.mode" on="diplomatic" off="norm"
+                    <pb-toggle-feature id="toggle2" name="mode" emit="loader" subscribe="loader" name="user.mode" on="diplomatic" off="norm"
                         default="on">Diplomatic View</pb-toggle-feature>
                 </div>
                 <main>
                     <!-- call components.xql to retrieve the full source text -->
                     <pb-load url="modules/lib/components.xql?debug=yes&xpath=//text[@type='source']&view=single" 
-                        src="document2" auto subscribe="loader" emit="loader" wait-for="toggle2">Loading document ...</pb-load>
+                        src="document3" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
             </pb-page>
         </template>
