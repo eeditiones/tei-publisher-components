@@ -155,9 +155,11 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             });
             this.waitForChannel(() => {
                 const params = {
-                    selector: this.selector,
-                    command: this.action,
-                    state: this.checked,
+                    selectors: [{
+                        selector: this.selector,
+                        command: this.action,
+                        state: this.checked
+                    }],
                     properties: {},
                     action: 'init'
                 };
@@ -173,9 +175,11 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             }
             this.waitForChannel(() => {
                 const params = {
-                    selector: this.selector,
-                    command: this.action,
-                    state: this.checked,
+                    selectors: [{
+                        selector: this.selector,
+                        command: this.action,
+                        state: this.checked
+                    }],
                     properties: this.checked ? this.propertiesOn : this.propertiesOff,
                     action: 'init'
                 };
@@ -207,9 +211,11 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         }
 
         const params = {
-            selector: this.selector,
-            command: this.action,
-            state: this.checked,
+            selectors: [{
+                selector: this.selector,
+                command: this.action,
+                state: this.checked
+            }],
             properties: this.checked ? this.propertiesOn : this.propertiesOff,
             action: 'refresh'
         };

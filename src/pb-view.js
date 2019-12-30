@@ -552,13 +552,14 @@ export class PbView extends pbMixin(LitElement) {
         }
         this._selector.forEach((setting, selector) => {
             elem.querySelectorAll(selector).forEach(node => {
+                const command = setting.command || 'toggle';
                 if (node.command) {
-                    node.command(setting.command, setting.state);
+                    node.command(command, setting.state);
                 }
                 if (setting.state) {
-                    node.classList.add(setting.command);
+                    node.classList.add(command);
                 } else {
-                    node.classList.remove(setting.command);
+                    node.classList.remove(command);
                 }
             });
         });
@@ -641,7 +642,6 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         const properties = ev.detail.properties;
-        console.log('<pb-view> toggle feature %o', properties);
         for (const [key, value] of Object.entries(properties)) {
             switch (key) {
                 case 'odd':
@@ -676,10 +676,12 @@ export class PbView extends pbMixin(LitElement) {
                 this.columnSeparator = properties.columnSeparator;
             }
         }
-        if (ev.detail.selector) {
-            this._selector.set(ev.detail.selector, {
-                state: ev.detail.state,
-                command: ev.detail.command
+        if (ev.detail.selectors) {
+            ev.detail.selectors.forEach(sc => {
+                this._selector.set(sc.selector, {
+                    state: sc.state,
+                    command: sc.command || 'toggle'
+                });
             });
         }
         if (ev.detail.action === 'refresh') {

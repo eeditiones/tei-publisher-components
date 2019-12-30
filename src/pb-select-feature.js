@@ -64,7 +64,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
 
-        this.shadowRoot.getElementById('list').addEventListener('selected-changed', this._selectionChanged.bind(this));
+        this.shadowRoot.getElementById('menu').addEventListener('selected-item-changed', this._selectionChanged.bind(this));
     }
 
     // updated(changedProperties) {
@@ -83,14 +83,15 @@ export class PbSelectFeature extends pbMixin(LitElement) {
         const current = this.shadowRoot.getElementById('list').selected;
         this.setParameter(this.name, current);
         this.pushHistory('toggle feature ' + this.name);
-        console.log('<pb-select-feature> Setting features: %o', this.items[current].properties);
+        console.log('<pb-select-feature> Setting features: %o', this.items[current]);
         this._emit('refresh', current);
     }
 
     _emit(action, index) {
-        console.log('<pb-select-feature> Emitting %s', action);
+        const item = this.items[index];
         const params = {
-            properties: this.items[index].properties,
+            properties: item.properties || {},
+            selectors: item.selectors,
             action
         };
         this.emitTo('pb-toggle', params);
