@@ -12,17 +12,18 @@
     <script type="module" src="../src/pb-manage-odds.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-login.js"></script>
+    <script type="module" src="../src/pb-progress.js"></script>
 </head>
 
 <body>
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-            pb-download {
-                margin-right: 10px;
-            }
+            pb-download { margin-right: 10px; }
+            pb-progress { margin-bottom: 20px; }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-progress></pb-progress>
                 <pb-login id="login" login-label="Login" logout-label="Logged in as "></pb-login>
                 <pb-manage-odds login="login" target="document-list"></pb-manage-odds>
             </pb-page>

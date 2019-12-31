@@ -18,8 +18,17 @@ export class PbDemoSnippet extends LitElement {
             code: {
                 type: String
             },
+            _editorLoaded: {
+                type: Boolean
+            },
             _showCodeLabel: {
                 type: String
+            },
+            _editCodeLabel: {
+                type: String
+            },
+            _vm: {
+                type: Object
             }
         };
     }
@@ -29,6 +38,8 @@ export class PbDemoSnippet extends LitElement {
         this.title = 'Demo code';
         this.code = 'Loading ...';
         this._showCodeLabel = 'Show Code';
+        this._editCodeLabel = 'Edit Code';
+        this._editorLoaded = false;
     }
 
     connectedCallback() {
@@ -46,7 +57,7 @@ export class PbDemoSnippet extends LitElement {
             <div id="container"></div>
             <div class="buttons">
                 <button class="pretty-button" @click="${this._showCode}">${this._showCodeLabel}</button>
-                <button class="pretty-button" @click="${this._loadProject}" ?disabled="${this._vm}">Edit Code</button>
+                <button class="pretty-button" @click="${this._loadProject}">${this._editCodeLabel}</button>
             </div>
         `;
     }
@@ -63,6 +74,19 @@ export class PbDemoSnippet extends LitElement {
     }
 
     _loadProject() {
+        if (this._editorLoaded) {
+            const container = this.shadowRoot.getElementById('container');
+            const div = document.createElement('div');
+            div.id = 'container';
+            this.shadowRoot.replaceChild(div, container);
+            this._editorLoaded = false;
+            this._editCodeLabel = 'Edit Code';
+            return;
+        }
+
+        this._editorLoaded = true;
+        this._editCodeLabel = 'Close Editor';
+
         const source = this.shadowRoot.getElementById('source');
         source.classList.remove('open');
         this._showCodeLabel = 'Show Code';
@@ -109,14 +133,14 @@ export class PbDemoSnippet extends LitElement {
             }
         };
         const container = this.shadowRoot.getElementById('container');
-        this._vm = StackBlitzSDK.embedProject(container, project, {
+        StackBlitzSDK.embedProject(container, project, {
             forceEmbedLayout: true,
             view: 'both',
             hideExplorer: false,
             hideNavigation: false,
             height: 640,
             openFile: 'index.html'
-        });
+        }).then(vm => { this._vm = vm; });
     }
 
     static removeIndent(input) {

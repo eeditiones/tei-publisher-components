@@ -13,6 +13,7 @@
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-search.js"></script>
     <script type="module" src="../src/pb-paginate.js"></script>
+    <script type="module" src="../src/pb-progress.js"></script>
 </head>
 
 <body>
@@ -22,7 +23,9 @@
             pb-search {
                 display: block;
             }
-
+            pb-progress {
+                margin-bottom: 20px;
+            }
             pb-paginate {
                 margin-top: 40px;
                 margin-bottom: 10px;
@@ -38,6 +41,7 @@
             }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-progress></pb-progress>
                 <main>
                     <pb-search id="search-form" place-holder="Enter query">
                         <div class="targets">

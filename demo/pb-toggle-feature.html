@@ -19,14 +19,14 @@
 
 <body>
     <h1>Using pb-toggle-feature with pb-view</h1>
-    <div><i>Plain Reading View</i> toggles off various forms of highlights in the text for undisturbed reading
+    <p><i>Plain Reading View</i> toggles off various forms of highlights in the text for undisturbed reading
         experience.
         Foreign language passages ("<i>amor est doctor amoris</i>) will not be italicized, current passage will not be
         highlighted as cursor moves into its area, and popups on persons ("<i>Johanes Dantiscus</i>"), places
         ("<i>Polonia</i>"") and choice elements ("<i>V.S./Vuestra Señoria</i>") will be disabled. This toggle operates
         client-side, see <code>pb-toggle-feature name="highlight1"</code> for configuration.
-    </div>
-    <div>
+    </p>
+    <p>
         <i>Diplomatic View</i> toggles between two values for the <code>mode</code> parameter ("norm" and "diplomatic").
         This parameter is passed on to the server and available in the ODD to inform PM transformations - as a result
         treatment of choice elements changes, e.g. abbreviations are presented in their original form ("<i>V.S./Vuestra
@@ -37,7 +37,7 @@
         Three last toggles all influence server-side processing thus require making a request to the server when
         the setting is changed. Client-side toggles ("Plain Reading View" in this case) are applied afterwards to the
         results returned from the server.
-    </div>
+    </p>
     <pb-demo-snippet>
         <template>
             <style>
@@ -90,15 +90,15 @@
         </template>
     </pb-demo-snippet>
     <h1>Toggling features without content reload</h1>
-    <div>This demo demonstrates possibility of toggling certain features entirely client-side. <i>Plain Reading View</i>
+    <p>This demo demonstrates possibility of toggling certain features entirely client-side. <i>Plain Reading View</i>
         toggle behaves exactly like in previous example but <i>Normalized View</i> functionality is equivalent to the
         <i>Diplomatic View</i> from the previous example but avoids making a request to the server. This result is
         achieved by toggling CSS classes on selected elements (see <code>pb-toggle-feature name="norm2"</code> for
         configuration). Please note that results of the PM transformations via ODD need to be prepared in a way that
         returns content required by both toggle states and matching CSS specifications need to be also passed (see
         "dantiscus.odd" treatment of e.g. <code>.choice</code>, <code>.choice-alternate</code> and <code>br</code>).
-    </div>
-    <div>
+    </p>
+    <p>
         <i>Diplomatic View</i> toggles between two values for the <code>mode</code> parameter ("norm" and "diplomatic").
         This parameter is passed on to the server and available in the ODD to inform PM transformations - as a result
         treatment of choice elements changes, e.g. abbreviations are expanded ("<i>V.S./Vuestra Señoria</i>").
@@ -108,7 +108,7 @@
         Three last toggles all influence server-side processing thus require making a request to the server when
         the setting is changed. Client-side toggles ("Plain Reading View" in this case) are applied afterwards to the
         results returned from the server.
-    </div>
+    </p>
     <pb-demo-snippet>
         <template>
             <style>
@@ -154,8 +154,8 @@
         </template>
     </pb-demo-snippet>
     <h1>Using pb-toggle-feature with pb-load</h1>
-    <div><code>pb-toggle-feature</code> component may be also combined with <code>pb-load</code> when necessary. Toggle
-        parameters will be available for PM</div>
+    <p><code>pb-toggle-feature</code> component may be also combined with <code>pb-load</code> when necessary. Toggle
+        parameters will be available for PM</p>
     <pb-demo-snippet>
         <template>
             <style>
