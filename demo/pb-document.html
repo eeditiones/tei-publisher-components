@@ -5,17 +5,16 @@
 
         <title>pb-document Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
-                demo-snippet {
-                    position: relative;
-                }
+    </head>
 
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 main {
                     display: flex;
                     justify-content: space-between;
@@ -24,13 +23,7 @@
                 pb-view {
                     flex: 1 0;
                 }
-            </style>
-        </custom-style>
-    </head>
-
-    <body>
-        <demo-snippet>
-            <template>
+                </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>
                     <pb-document id="document2" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
@@ -42,6 +35,6 @@
                     </main>
                 </pb-page>
             </template>
-        </demo-snippet>
+        </pb-demo-snippet>
     </body>
 </html>

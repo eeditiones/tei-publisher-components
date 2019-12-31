@@ -5,8 +5,7 @@
 
         <title>pb-view Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
@@ -18,8 +17,12 @@
         <script type="module" src="../src/pb-progress.js"></script>
         <script type="module" src="../src/pb-drawer.js"></script>
         <script type="module" src="../src/pb-link.js"></script>
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 body {
                     --paper-fab-background: #35424b;
                 }
@@ -57,13 +60,7 @@
                 pb-navigation[direction=forward] {
                     right: 20px;
                 }
-            </style>
-        </custom-style>
-    </head>
-
-    <body>
-        <demo-snippet>
-            <template>
+                </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
                     <div class="toolbar">
@@ -91,6 +88,6 @@
                     </main>
                 </pb-page>
             </template>
-        </demo-snippet>
+        </pb-demo-snippet>
     </body>
 </html>

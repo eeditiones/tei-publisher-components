@@ -6,12 +6,15 @@
 
     <title>pb-select-odd Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-leaflet-map.js"></script>
     <script type="module" src="../src/pb-geolocation.js"></script>
-    <custom-style>
-        <style is="custom-style" include="demo-pages-shared-styles">
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
             main {
                 display: flex;
                 flex-direction: row;
@@ -22,13 +25,7 @@
                 width: 640px;
                 height: 480px;
             }
-        </style>
-    </custom-style>
-</head>
-
-<body>
-    <demo-snippet>
-        <template>
+            </style>
             <main>
                 <ul>
                     <li>
@@ -48,7 +45,7 @@
                     access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" />
             </main>
         </template>
-    </demo-snippet>
+    </pb-demo-snippet>
 </body>
 
 </html>

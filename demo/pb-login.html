@@ -5,25 +5,22 @@
 
         <title>pb-login Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-login.js"></script>
         <script type="module" src="../src/pb-restricted.js"></script>
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
-                pb-login {
-                    --pb-login-link-color: #886666;
-                }
-            </style>
-        </custom-style>
     </head>
 
     <body>
-        <demo-snippet>
+        <pb-demo-snippet>
             <template>
+                <style type="text/css">
+                pb-login {
+                    --pb-login-link-color: #886666;
+                }
+                </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
@@ -53,6 +50,6 @@
                     </div>
                 </paper-dialog>
             </template>
-        </demo-snippet>
+        </pb-demo-snippet>
     </body>
 </html>

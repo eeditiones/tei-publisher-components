@@ -5,29 +5,22 @@
 
         <title>pb-popover Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-popover.js"></script>
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
                 body {
                     --paper-fab-background: #35424b;
-                }
-
-                demo-snippet {
-                    position: relative;
                 }
 
                 pb-popover {
                     --pb-link-color: rgb(224, 140, 13);
                 }
-            </style>
-        </custom-style>
-    </head>
-
-    <body>
-        <demo-snippet>
-            <template>
+                </style>
                 <main>
                     <p>Lorem <pb-popover>ipsum dolor<span slot="alternate">At vero eos et accusam et justo duo dolores<br> 
                             et ea rebum.</span></pb-popover> sit amet, consetetur sadipscing elitr,<br>
@@ -42,6 +35,6 @@
                         Lorem ipsum dolor sit amet.</p>
                 </main>
             </template>
-        </demo-snippet>
+        </pb-demo-snippet>
     </body>
 </html>

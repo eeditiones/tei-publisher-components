@@ -7,7 +7,6 @@ import { pbMixin } from './pb-mixin';
  *
  * @customElement
  * @polymer
- * @demo demo/pb-edit-odd.html
  * @appliesMixin pbMixin
  */
 export class PbEditXml extends pbMixin(LitElement) {

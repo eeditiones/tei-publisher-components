@@ -7,7 +7,8 @@ import { pbMixin } from './pb-mixin.js';
  *
  * @customElement pb-facsimile
  * @polymer
- * @demo demo/pb-facsimile.html
+ * @demo demo/pb-facsimile.html Simple demo
+ * @demo demo/pb-facsimile-2.html Align text page with facsimile
  * @appliesMixin pbMixin
  */
 export class PbFacsimile extends pbMixin(LitElement) {

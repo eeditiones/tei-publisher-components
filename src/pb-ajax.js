@@ -15,7 +15,6 @@ import { pbMixin } from './pb-mixin.js';
  *
  * @customElement
  * @polymer
- * @demo demo/pb-ajax.html
  * @appliesMixin pbMixin
  */
 export class PbAjax extends pbMixin(LitElement) {

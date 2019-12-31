@@ -5,39 +5,31 @@
 
         <title>pb-message Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
-
-        <script type="module" src="../src/pb-message.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-
-
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
-                pb-message {
-                    width:400px;
-                }
-            </style>
-        </custom-style>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     </head>
 
     <body>
-        <demo-snippet>
+        <pb-demo-snippet>
             <template>
+                <style>
+                    pb-message {
+                        width:400px;
+                    }
+                </style>
                 <pb-message id="msg"></pb-message>
 
                 <button onclick="init();">show message</button>
                 <button onclick="confirm();">show confirmation</button>
-            </template>
-        </demo-snippet>
 
-        <script type="application/javascript">
-            function init(){
-                document.getElementById('msg').show("a title", 'a message');
-            }
-            function confirm(){
-                document.getElementById('msg').confirm("a confirmation message", 'confirm?');
-            }
-        </script>
+                <script type="application/javascript">
+                    function init(){
+                        document.getElementById('msg').show("a title", 'a message');
+                    }
+                    function confirm(){
+                        document.getElementById('msg').confirm("a confirmation message", 'confirm?');
+                    }
+                </script>
+            </template>
+        </pb-demo-snippet>
     </body>
 </html>

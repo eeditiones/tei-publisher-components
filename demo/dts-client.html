@@ -3,31 +3,24 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-document Demo</title>
+        <title>dts-client Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/dts-select-endpoint.js"></script>
         <script type="module" src="../src/dts-client.js"></script>
         <script type="module" src="../src/pb-paginate.js"></script>
-        <custom-style>
-            <style is="custom-style" include="demo-pages-shared-styles">
-                demo-snippet {
-                    position: relative;
-                }
-
-                pb-paginate {
-                    margin-bottom: 10px;
-                }
-            </style>
-        </custom-style>
     </head>
 
     <body>
-        <demo-snippet>
+        <pb-demo-snippet>
             <template>
+                <style type="text/css">
+                    pb-paginate {
+                        margin-bottom: 10px;
+                    }
+                </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <!-- Display two document views side by side -->
                     <main>
@@ -38,27 +31,27 @@
                         </dts-client>
                     </main>
                 </pb-page>
+                <script>
+                    // configuration for the DTS endpoints
+                    const dtsConfig = [
+                        {
+                            "url": "http://localhost:8080/exist/apps/vangogh/api/dts",
+                            "title": "Van Gogh Letters"
+                        },
+                        {
+                            "url": "http://localhost:8080/exist/apps/shakespeare-pm/api/dts",
+                            "title": "Shakespeare Plays"
+                        },
+                        {
+                            "url": "http://texts.alpheios.net/api/dts",
+                            "title": "Alpheios Project"
+                        }
+                    ];
+                    window.addEventListener('WebComponentsReady', () => {
+                        document.getElementById('endpoints').endpoints = dtsConfig;
+                    });
+                </script>
             </template>
-        </demo-snippet>
-        <script>
-            // configuration for the DTS endpoints
-            const dtsConfig = [
-                {
-                    "url": "http://localhost:8080/exist/apps/vangogh/api/dts",
-                    "title": "Van Gogh Letters"
-                },
-                {
-                    "url": "http://localhost:8080/exist/apps/shakespeare-pm/api/dts",
-                    "title": "Shakespeare Plays"
-                },
-                {
-                    "url": "http://texts.alpheios.net/api/dts",
-                    "title": "Alpheios Project"
-                }
-            ];
-            window.addEventListener('WebComponentsReady', () => {
-                document.getElementById('endpoints').endpoints = dtsConfig;
-            });
-        </script>
+        </pb-demo-snippet>        
     </body>
 </html>

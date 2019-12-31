@@ -6,44 +6,15 @@
 
     <title>pb-toggle-feature Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
     <script type="module" src="../src/pb-toggle-feature.js"></script>
     <script type="module" src="../src/pb-view.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-navigation.js"></script>
-    <custom-style>
-        <style is="custom-style" include="demo-pages-shared-styles">
-            body {
-                --paper-fab-background: #35424b;
-            }
-
-            demo-snippet {
-                position: relative;
-            }
-
-            main {
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .toolbar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #E0E0E0;
-            }
-
-            pb-toggle-feature {
-                display: block;
-            }
-        </style>
-    </custom-style>
 </head>
 
 <body>
@@ -67,8 +38,27 @@
         the setting is changed. Client-side toggles ("Plain Reading View" in this case) are applied afterwards to the
         results returned from the server.
     </div>
-    <demo-snippet>
+    <pb-demo-snippet>
         <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
@@ -98,7 +88,7 @@
                 </main>
             </pb-page>
         </template>
-    </demo-snippet>
+    </pb-demo-snippet>
     <h1>Toggling features without content reload</h1>
     <div>This demo demonstrates possibility of toggling certain features entirely client-side. <i>Plain Reading View</i>
         toggle behaves exactly like in previous example but <i>Normalized View</i> functionality is equivalent to the
@@ -119,8 +109,27 @@
         the setting is changed. Client-side toggles ("Plain Reading View" in this case) are applied afterwards to the
         results returned from the server.
     </div>
-    <demo-snippet>
+    <pb-demo-snippet>
         <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
                 <div class="toolbar">
@@ -143,12 +152,31 @@
                 </main>
             </pb-page>
         </template>
-    </demo-snippet>
+    </pb-demo-snippet>
     <h1>Using pb-toggle-feature with pb-load</h1>
     <div><code>pb-toggle-feature</code> component may be also combined with <code>pb-load</code> when necessary. Toggle
         parameters will be available for PM</div>
-    <demo-snippet>
+    <pb-demo-snippet>
         <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-document id="document3" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
@@ -165,7 +193,7 @@
                 </main>
             </pb-page>
         </template>
-    </demo-snippet>
+    </pb-demo-snippet>
 </body>
 
 </html>
