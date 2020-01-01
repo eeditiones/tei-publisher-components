@@ -45,7 +45,8 @@ export class PbDemoSnippet extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         const template = this.querySelector('template');
-        this.code = template.innerHTML;
+        this.code = PbDemoSnippet.removeIndent(template.innerHTML);
+        this.code = this.code.replace(/\s*<style.*>.*?<\/style>\s*/gs, '');
         const clone = document.importNode(template.content, true);
         this.appendChild(clone);
     }
@@ -73,7 +74,7 @@ export class PbDemoSnippet extends LitElement {
         }
     }
 
-    _loadProject() {
+    async _loadProject() {
         if (this._editorLoaded) {
             const container = this.shadowRoot.getElementById('container');
             const div = document.createElement('div');
@@ -94,18 +95,30 @@ export class PbDemoSnippet extends LitElement {
         const style = this.querySelector('style');
         let css = '';
         if (style) {
-            css = `<style type="text/css">${style.innerHTML}</style>`;
+            css = style.innerHTML;
         }
         let mainCode = this.code.replace(/(endpoint="[^"]+")/, 'endpoint="https://teipublisher.com/exist/apps/tei-publisher"');
-        mainCode = mainCode.replace(/\s*<style.*>.*?<\/style>\s*/gs, '');
-        mainCode = PbDemoSnippet.indent(PbDemoSnippet.removeIndent(mainCode), 2);
-
+        mainCode = PbDemoSnippet.indent(mainCode, 2);
         const code = `<html>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    ${css}
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
+
+        body {
+            font-size: 16px;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            line-height: 1.42857;
+            font-weight: 300;
+            color: #333333;
+
+            --paper-tooltip-delay-in: 200;
+        }
+
+        ${css}
+    </style>
     <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
     <script type="module" src="/node_modules/@teipublisher/pb-components/pb-components.js"></script>
