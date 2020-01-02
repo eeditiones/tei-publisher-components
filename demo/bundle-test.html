@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>Bundle Test</title>
+    <link rel="stylesheet" href="demo.css">
+    <script type="module" src="../dist/pb-components-bundle.js"></script>
+    <script type="module" src="../dist/pb-facsimile-bundle.js"></script>
+    <script type="module" src="../dist/pb-leaflet-map.js"></script>
+</head>
+
+<body>
+    <style type="text/css">
+        body {
+            --paper-fab-background: #35424b;
+        }
+        
+        div {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #999999;
+        }
+        
+        .map {
+            justify-content: space-between;
+        }
+        
+        pb-facsimile {
+            flex: 1 1;
+            max-width: 50vw;
+            --pb-facsimile-height: 360px;
+            margin-right: 20px;
+        }
+        
+        pb-leaflet-map {
+            width: 640px;
+            height: 480px;
+        }
+    </style>
+    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+        <app-header-layout>
+            <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
+                <app-toolbar class="toolbar" sticky="sticky">
+                    <h3>Test Bundles</h3>
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left">
+                        <paper-icon-button icon="icons:chevron-left" />
+                    </pb-navigation>
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right">
+                        <paper-icon-button icon="icons:chevron-right" />
+                    </pb-navigation>
+                </app-toolbar>
+            </app-header>
+            <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+            <div>
+                <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/" default-zoom-level="0" show-navigator="show-navigator" show-navigation-control="show-navigation-control">
+                </pb-facsimile>
+
+
+                <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']" append-footnotes>
+                </pb-view>
+            </div>
+            <div class="map">
+                <ul>
+                    <li>
+                        <pb-geolocation longitude="20.99761963" latitude="52.23621035" label="Warsaw">Warszawa
+                        </pb-geolocation>
+                    </li>
+                    <li>
+                        <pb-geolocation longitude="13.33920479" latitude="52.50671377" label="Berlin">Berlin
+                        </pb-geolocation>
+                    </li>
+                    <li>
+                        <pb-geolocation longitude="2.32003101" latitude="48.85881005" label="Paris">Paris
+                        </pb-geolocation>
+                    </li>
+                </ul>
+                <pb-leaflet-map zoom="11" access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" />
+            </div>
+        </app-header-layout>
+    </pb-page>
+</body>
+
+</html>

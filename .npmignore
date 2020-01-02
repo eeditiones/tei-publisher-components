@@ -8,9 +8,7 @@ osd.rollup.config.js
 assets/openseadragon.esm.js
 tsconfig.json
 *.html
-index.js
 analysis.json
-*.js.map
 .vscode/
 .editorconfig
 *.tgz

@@ -761,11 +761,11 @@ export class PbView extends pbMixin(LitElement) {
             }
 
             a[rel=footnote], pb-footnote-ref {
-                @apply --pb-footnote-ref;
-            }
-
-            .footnotes {
-                @apply --pb-footnotes;
+                font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
+                vertical-align: top;
+                color: var(--pb-footnote-color, var(--pb-text-color-primary, #333333));
+                text-decoration: none;
+                padding: var(--pb-footnote-padding, 0 0 0 .25em);
             }
 
             .list dt {
@@ -775,7 +775,7 @@ export class PbView extends pbMixin(LitElement) {
             .footnote .fn-number {
                 float: left;
 
-                @apply --pb-footnote-number;
+                font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
             }
 
             .content {

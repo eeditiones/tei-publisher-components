@@ -5,10 +5,10 @@ import analyze from 'rollup-plugin-analyzer';
 const production = process.env.BUILD === 'production';
 
 export default {
-    input: 'index.js',
+    input: ['src/pb-components-bundle.js', 'src/pb-facsimile.js', 'src/pb-leaflet-map.js'],
     output: {
-        file: 'pb-components.js',
-        format: 'iife',
+        dir: 'dist',
+        format: 'es',
         sourcemap: true
     },
     plugins: [

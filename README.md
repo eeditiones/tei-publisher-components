@@ -19,7 +19,15 @@ For the full functionality, please install the `litelement` branch of TEI Publis
 
 ## Building
 
-Run `npm run build:production` to generate a single `bundle.js` containing all components and their dependencies.
+Run `npm run build:production` to generate a set of bundle files in `dist`, containing all components and their dependencies:
+
+| File                           | Description                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| `dist/pb-components-bundle.js` | (required) the base components, including text views and all core functionality |
+| `dist/pb-facsimile.js`         | (optional) support for viewing facsimiles via IIIF                              |
+| `dist/pb-leaflet-map.js`       | (optional) support for displaying maps                                          |
+
+Bundles build on each other, so you always need to at least include `pb-components-bundle.js` in your HTML page.
 
 ## Development
 

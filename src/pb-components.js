@@ -1,8 +1,6 @@
 import './pb-browse-docs.js';
 import './pb-collapse.js';
 import './pb-document.js';
-import './pb-facsimile.js';
-import './pb-facs-link.js';
 import './pb-highlight.js';
 import './pb-link.js';
 import './pb-load.js';
@@ -33,7 +31,6 @@ import './pb-edit-xml.js';
 import './pb-upload.js';
 import './pb-select-odd.js';
 import './pb-select-template.js';
-import './pb-leaflet-map.js';
 import './pb-geolocation.js';
 import './pb-code-highlight.js';
 import './dts-select-endpoint.js';

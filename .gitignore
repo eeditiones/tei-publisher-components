@@ -1,7 +1,6 @@
 node_modules
-build
 .DS_Store
 .firebase
 analysis.json
-pb-components.js*
 assets
+dist
