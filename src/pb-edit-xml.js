@@ -5,6 +5,7 @@ import { pbMixin } from './pb-mixin';
 /**
  * Open eXide to edit a given source document.
  *
+ * @demo demo/pb-edit-xml.html
  * @customElement
  * @polymer
  * @appliesMixin pbMixin
@@ -42,16 +43,28 @@ export class PbEditXml extends pbMixin(LitElement) {
         this.title = '';
     }
 
-    attributeChangedCallback(attr, oldValue, newValue) {
+    connectedCallback() {
+        super.connectedCallback();
         PbEditXml.waitOnce('pb-page-ready', (options) => {
-            const host = /^(.*:\/+[^\/]+)\/.*$/.exec(options.endpoint);
-            this._href = `${host[1]}/exist/apps/eXide/`;
+            if (options.endpoint === '.') {
+                this._href = '/exist/apps/eXide/';
+            } else {
+                const host = /^(.*:\/+[^/]+)\/.*$/.exec(options.endpoint);
+                this._href = `${host[1]}/exist/apps/eXide/`;
+            }
         });
     }
 
     render() {
+        // if the target is within the same origin as the current page, we can communicate with an 
+        // already opened eXide, if not, only option is to open a new window.
+        if (new URL(this._href).origin === this.getUrl().origin) {
+            return html`
+                <a href="${this._href}" target="eXide" title="${this.title}" @click="${this.open}"><slot></slot></a>
+            `;
+        }
         return html`
-            <a href="${this._href}" target="eXide" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
+            <a href="${this._href}/index.html?open=${this.path}" title="${this.title}"><slot></slot></a>
         `;
     }
 
@@ -72,7 +85,8 @@ export class PbEditXml extends pbMixin(LitElement) {
         this.path = path;
     }
 
-    open() {
+    open(ev) {
+        ev.preventDefault();
         let href = this._href;
         let path = this.path;
         if (this.src) {
@@ -80,18 +94,19 @@ export class PbEditXml extends pbMixin(LitElement) {
             path = sourceComponent.getFullPath();
             href = sourceComponent.sourceView;
         }
+
         // try to retrieve existing eXide window
         const exide = window.open("", "eXide");
         if (exide && !exide.closed) {
             // check if eXide is really available or it's an empty page
             const app = exide.eXide;
             if (app) {
-                console.log("using existing eXide to open %s", path);
+                console.log("<pb-edit-xml> using existing eXide to open %s", path);
                 // eXide is there
                 exide.eXide.app.findDocument(path);
                 exide.focus();
             } else {
-                console.log("opening new eXide for %s", path);
+                console.log("<pb-edit-xml> opening new eXide for %s", path);
                 window.eXide_onload = function () {
                     exide.eXide.app.findDocument(path);
                 };
@@ -99,11 +114,6 @@ export class PbEditXml extends pbMixin(LitElement) {
                 exide.location = href;
             }
         }
-    }
-
-    _handleClick(ev) {
-        ev.preventDefault();
-        this.open();
     }
 }
 customElements.define('pb-edit-xml', PbEditXml);
