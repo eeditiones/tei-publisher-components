@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
 import './pb-popover.js';
@@ -246,6 +247,16 @@ export class PbView extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
+        const id = this.getParameter('id');
+        if (id && !this.xmlId) {
+            this.xmlId = id;
+        }
+
+        const action = this.getParameter('action');
+        if (action && action === 'search') {
+            this.highlight = true;
+        }
+
         const nodeId = this.getParameter('root');
         if (this.view === 'single') {
             this.nodeId = null;
@@ -301,9 +312,9 @@ export class PbView extends pbMixin(LitElement) {
     animate() {
         // animate new element if 'animation' property is 'true'
         if (this.animation) {
-            if (this.lastDirection == 'forward') {
+            if (this.lastDirection === 'forward') {
                 anime({
-                    targets: this.$.view,
+                    targets: this.shadowRoot.getElementById('view'),
                     opacity: [0, 1],
                     translateX: [1000, 0],
                     duration: 300,
@@ -311,7 +322,7 @@ export class PbView extends pbMixin(LitElement) {
                 });
             } else {
                 anime({
-                    targets: this.$.view,
+                    targets: this.shadowRoot.getElementById('view'),
                     opacity: [0, 1],
                     translateX: [-1000, 0],
                     duration: 300,
