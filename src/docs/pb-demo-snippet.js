@@ -46,7 +46,7 @@ export class PbDemoSnippet extends LitElement {
         super.connectedCallback();
         const template = this.querySelector('template');
         this.code = PbDemoSnippet.removeIndent(template.innerHTML);
-        this.code = this.code.replace(/\s*<style.*>.*?<\/style>\s*/gs, '');
+        this.code = this.code.replace(/\s*<style[\s\S]*>[\s\S]*?<\/style>\s*/g, '');
         const clone = document.importNode(template.content, true);
         this.appendChild(clone);
     }
