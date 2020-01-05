@@ -157,7 +157,7 @@ export class PbDemoSnippet extends LitElement {
     }
 
     static removeIndent(input) {
-        const indents = input.match(/^[^\S\n\r]*(?=\S)/gm);
+        const indents = input.match(/^[^\S]*(?=\S)/gm);
 
         if (!indents || !indents[0].length)
             return input;
@@ -184,7 +184,7 @@ export class PbDemoSnippet extends LitElement {
             pb-code-highlight {
                 display: none;
                 padding: 8px 4px;
-                background-color: var(--google-grey-100, #999);
+                background-color: #f0f0f0;
             }
             pb-code-highlight.open {
                 display: block;

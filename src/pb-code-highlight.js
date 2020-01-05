@@ -6,7 +6,10 @@ import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 const { Prism } = window;
 
 /**
- *
+ * Highlight a code snippet. The snippet may either be passed in a template child
+ * element, which could contain HTML or text. If no template child is present, the
+ * component will take any text content contained in it and highlight it. One can also
+ * pass the code to be highlighted in the `code` property.
  *
  * @customElement  pb-code-highlight
  * @polymer
@@ -36,7 +39,12 @@ export class PbCodeHighlight extends LitElement {
     render() {
         if (!this.code) {
             const template = this.querySelector('template');
-            this.code = template.innerHTML;
+            if (template) {
+                this.code = template.innerHTML;
+            } else {
+                this.code = this.textContent;
+                this.innerHTML = '';
+            }
         }
 
         this.code = Prism.plugins.NormalizeWhitespace.normalize(this.code);
