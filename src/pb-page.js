@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import './pb-i18n-config.js';
 
 class PbPage extends pbMixin(LitElement) {
 
@@ -40,7 +41,7 @@ class PbPage extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`<slot></slot>`;
+        return html`<pb-i18n-config></pb-i18n-config><slot></slot>`;
     }
 
     static get styles() {

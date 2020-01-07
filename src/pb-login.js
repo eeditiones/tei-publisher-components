@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -55,6 +56,7 @@ export class PbLogin extends pbMixin(LitElement) {
              */
             loginLabel: {
                 type: String,
+                reflect: true,
                 attribute: 'login-label'
             },
             /**
@@ -62,6 +64,7 @@ export class PbLogin extends pbMixin(LitElement) {
              */
             logoutLabel: {
                 type: String,
+                reflect: true,
                 attribute: 'logout-label'
             },
             loginIcon: {
@@ -85,8 +88,8 @@ export class PbLogin extends pbMixin(LitElement) {
     constructor() {
         super();
         this.loggedIn = false;
-        this.loginlabel = 'Login';
-        this.logoutLabel = 'Logged in as ';
+        this.loginLabel = 'login.login';
+        this.logoutLabel = 'login.as';
         this.user = '';
         this.groups = [];
         this.loginIcon = 'account-circle';
@@ -121,29 +124,29 @@ export class PbLogin extends pbMixin(LitElement) {
             <a href="#" @click="${this._show}" title="${this.user}">
                 ${
             this.loggedIn ?
-                html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${this.logoutLabel} ${this.user}</span>` :
-                html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${this.loginLabel}</span>`
+                html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${translate(this.logoutLabel, { user: this.user })}</span>` :
+                html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${translate(this.loginLabel)}</span>`
             }                
             </a>
 
             <paper-dialog id="loginDialog" no-cancel-on-outside-click no-cancel-on-esc-key>
-                <h2>Login</h2>
+                <h2>${translate('login.login')}</h2>
                 <paper-dialog-scrollable>
                     <form action="login">
-                        <paper-input id="user" name="user" label="User" value="${this.user}"></paper-input>
-                        <paper-input id="password" name="password" label="Password" type="password"></paper-input>
+                        <paper-input id="user" name="user" label="${translate('login.user')}" value="${this.user}"></paper-input>
+                        <paper-input id="password" name="password" label="${translate('login.password')}" type="password"></paper-input>
                         <input id="logout" type="hidden" name="logout"></input>
                     </form>
                     ${this._invalid ?
                 html`
-                            <p id="message">Wrong password or invalid user
-                            ${this.group ? html`(must be member of group ${this.group})` : null}
+                            <p id="message">${translate('login.invalid')}
+                            ${this.group ? html`(${translate('login.requiredGroup', { group: this.group })})` : null}
                             </p>
                         `: null
             }
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button autofocus @click="${this._confirmLogin}">Login</paper-button>
+                    <paper-button autofocus @click="${this._confirmLogin}">${translate(this.loginLabel)}</paper-button>
                 </div>
             </paper-dialog>
 

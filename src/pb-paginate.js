@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin';
+import { translate } from "./pb-i18n.js";
 
 /**
  * Display a pagination control from which the user can select a page to view
@@ -35,6 +36,10 @@ export class PbPaginate extends pbMixin(LitElement) {
                 type: Number,
                 attribute: 'per-page'
             },
+            /**
+             * i18n key to use for looking up the message showing number of items in list
+             * or fixed label to display
+             */
             foundLabel: {
                 type: String,
                 attribute: 'found-label'
@@ -77,6 +82,7 @@ export class PbPaginate extends pbMixin(LitElement) {
         this.pageCount = 10;
         this.range = 5;
         this.pages = [];
+        this.foundLabel = 'browse.items';
     }
 
     connectedCallback() {
@@ -92,7 +98,7 @@ export class PbPaginate extends pbMixin(LitElement) {
                 ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${(ev) => this._handleClick(item, index)}">${item.label}</span>`)}
                 <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
 
-                <span class="found">${this.foundLabel}: ${this.total}</span>
+                <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
             </template>
             `;
         }

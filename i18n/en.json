@@ -1,0 +1,32 @@
+{
+    "language": "Language",
+    "contents": "Contents",
+    "browse": {
+        "sort": "Sort by",
+        "filter": "Filter by",
+        "items": "Found {{count}} item",
+        "items_plural": "Found {{count}} items",
+        "title": "Title",
+        "author": "Author",
+        "modificationDate": "Modification Date",
+        "file": "Filename"
+    },
+    "demo": {
+        "showCode": {
+            "show": "Show Code",
+            "hide": "Hide Code"
+        },
+        "editCode": {
+            "show": "Edit Code",
+            "hide": "Close Editor"
+        }
+    },
+    "login": {
+        "login": "Login",
+        "as": "Logged in as {{user}}",
+        "user": "User",
+        "password": "Password",
+        "invalid": "Wrong password or invalid user",
+        "requiredGroup": "must be member of group {{group}}"
+    }
+}

@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="demo.css">
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+    <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-lang.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-browse-docs.js"></script>
     <script type="module" src="../src/pb-paginate.js"></script>
@@ -68,17 +70,21 @@
                 }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                <pb-login id="login" login-label="Login" logout-label="Logged in as " group="tei"></pb-login>
+                <pb-login id="login" group="tei"></pb-login>
+                <pb-lang label="language" selected="de">
+                    <paper-item value="en">English</paper-item>
+                    <paper-item value="de">German</paper-item>
+                </pb-lang>
                 <pb-progress subscribe="docs"></pb-progress>
                 <pb-restricted login="login">
                     <pb-upload id="upload" emit="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
                 </pb-restricted>
                 <pb-browse-docs id="document-list" url="templates/documents.html" sort-label="i18n(sort-by)"
-                    sort-options='[{"label": "Title", "value": "title"},{"label": "Author", "value": "author"},{"label": "Modification Date", "value": "default"}]'
+                    sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
                     sort-by="title"
-                    filter-options='[{"label": "Title", "value": "title"},{"label": "Author", "value": "author"},{"label": "File name", "value": "file"}]'
+                    filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
                     filter-by="title" auto="auto" history="history" login="login" emit="docs" subscribe="docs">
-                    <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5" found-label="i18n(browsing)"
+                    <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
                         emit="docs" subscribe="docs"></pb-paginate>
                 </pb-browse-docs>
             </pb-page>

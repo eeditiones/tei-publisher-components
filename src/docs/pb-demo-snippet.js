@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import StackBlitzSDK from '@stackblitz/sdk';
-import '../pb-code-highlight';
+import { translate } from "../pb-i18n.js";
+import '../pb-code-highlight.js';
 
 /**
  * Viewer for demo code.
@@ -37,8 +38,8 @@ export class PbDemoSnippet extends LitElement {
         super();
         this.title = 'Demo code';
         this.code = 'Loading ...';
-        this._showCodeLabel = 'Show Code';
-        this._editCodeLabel = 'Edit Code';
+        this._showCodeLabel = 'demo.showCode.show';
+        this._editCodeLabel = 'demo.editCode.show';
         this._editorLoaded = false;
     }
 
@@ -57,8 +58,8 @@ export class PbDemoSnippet extends LitElement {
             <pb-code-highlight id="source" language="html" .code="${this.code}"></pb-code-highlight>
             <div id="container"></div>
             <div class="buttons">
-                <button class="pretty-button" @click="${this._showCode}">${this._showCodeLabel}</button>
-                <button class="pretty-button" @click="${this._loadProject}">${this._editCodeLabel}</button>
+                <button class="pretty-button" @click="${this._showCode}">${translate(this._showCodeLabel)}</button>
+                <button class="pretty-button" @click="${this._loadProject}">${translate(this._editCodeLabel)}</button>
             </div>
         `;
     }
@@ -67,10 +68,10 @@ export class PbDemoSnippet extends LitElement {
         const source = this.shadowRoot.getElementById('source');
         if (source.classList.contains('open')) {
             source.classList.remove('open');
-            this._showCodeLabel = 'Show Code';
+            this._showCodeLabel = 'demo.showCode.show';
         } else {
             source.classList.add('open');
-            this._showCodeLabel = 'Hide Code';
+            this._showCodeLabel = 'demo.showCode.hide';
         }
     }
 
@@ -81,12 +82,12 @@ export class PbDemoSnippet extends LitElement {
             div.id = 'container';
             this.shadowRoot.replaceChild(div, container);
             this._editorLoaded = false;
-            this._editCodeLabel = 'Edit Code';
+            this._editCodeLabel = 'demo.editCode.show';
             return;
         }
 
         this._editorLoaded = true;
-        this._editCodeLabel = 'Close Editor';
+        this._editCodeLabel = 'demo.editCode.hide';
 
         const source = this.shadowRoot.getElementById('source');
         source.classList.remove('open');

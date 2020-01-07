@@ -17,6 +17,7 @@
         <script type="module" src="../src/pb-progress.js"></script>
         <script type="module" src="../src/pb-drawer.js"></script>
         <script type="module" src="../src/pb-link.js"></script>
+        <script type="module" src="../src/pb-i18n.js"></script>
     </head>
 
     <body>
@@ -70,7 +71,7 @@
                     <pb-drawer toggle="tocToggle" class="tocDrawer" emit="toc" subscribe="transcription">
                         <div class="drawer-content">
                             <h3>
-                                <i18n:text key="contents">Contents</i18n:text>
+                                <pb-i18n key="contents">Contents</pb-i18n>
                             </h3>
                             <pb-load url="templates/toc.html?target=transcription" src="document1" subscribe="toc" load-once>Loading...</pb-load>
                         </div>

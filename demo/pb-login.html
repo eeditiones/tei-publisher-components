@@ -6,8 +6,6 @@
         <title>pb-login Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-login.js"></script>
         <script type="module" src="../src/pb-restricted.js"></script>
@@ -25,7 +23,7 @@
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
                     <main>
-                        <pb-login id="loginElem" login-label="Login" logout-label="Logged in as "></pb-login>
+                        <pb-login id="loginElem"></pb-login>
 
                         <pb-restricted login="loginElem">
                             <p>This paragraph will only be shown if a user is logged in.</p>
@@ -36,19 +34,6 @@
                         </pb-restricted>
                     </main>
                 </pb-page>
-                <paper-dialog id="downloadDialog">
-                    <h2>
-                        Generating File...
-                    </h2>
-                    <paper-dialog-scrollable>
-                        Generating a file may take a while ...
-                    </paper-dialog-scrollable>
-                    <div class="buttons">
-                        <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                            close
-                        </paper-button>
-                    </div>
-                </paper-dialog>
             </template>
         </pb-demo-snippet>
     </body>

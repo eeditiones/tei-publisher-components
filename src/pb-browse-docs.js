@@ -1,5 +1,6 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
+import { translate, get } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -21,16 +22,14 @@ export class PbBrowseDocs extends PbLoad {
     static get properties() {
         return {
             sortBy: {
-                type: String,
-                attribute: 'sort-by'
+                type: String
             },
             sortOptions: {
                 type: Array,
                 attribute: 'sort-options'
             },
             sortLabel: {
-                type: String,
-                attribute: 'sort-label'
+                type: String
             },
             filter: {
                 type: String
@@ -42,6 +41,9 @@ export class PbBrowseDocs extends PbLoad {
             filterOptions: {
                 type: Array,
                 attribute: 'filter-options'
+            },
+            filterByLabel: {
+                type: String
             },
             facets: {
                 type: Object
@@ -75,22 +77,16 @@ export class PbBrowseDocs extends PbLoad {
 
     constructor() {
         super();
-        this.sortBy = 'default';
-        this.sortOptions = [
-            {
-                label: 'Modification Date',
-                value: 'default'
-            }
-        ];
-        this.sortLabel = 'Sort';
+        this.sortOptions = [];
+        this.sortLabel = 'browse.sort';
         this.filter = '';
-        this.filterBy = 'title';
         this.filterOptions = [
             {
                 label: 'Title',
                 value: 'title'
             }
         ];
+        this.filterByLabel = 'browse.filter';
         this._allowModification = false;
         this._suggestions = [];
     }
@@ -98,11 +94,13 @@ export class PbBrowseDocs extends PbLoad {
     connectedCallback() {
         super.connectedCallback();
 
+        this.sortBy = 'default';
         const sortParam = this.getParameter('sort');
         if (sortParam) {
             this.sortBy = sortParam;
         }
 
+        this.filterBy = 'title';
         const filterParam = this.getParameter('filter');
         if (filterParam) {
             this.filter = filterParam;
@@ -141,18 +139,18 @@ export class PbBrowseDocs extends PbLoad {
     render() {
         return html`
             <div class="toolbar">
-                <paper-dropdown-menu id="sort" label="${this.sortLabel}">
+                <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}">
                     <paper-listbox selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
                     ${this.sortOptions.map(option =>
-            html`<paper-item value="${option.value}">${option.label}</paper-item>`
+            html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
         )}
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <div>
-                    <paper-dropdown-menu id="filterSelect" label="Filter by">
+                    <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}">
                         <paper-listbox selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
                         ${this.filterOptions.map(option =>
-            html`<paper-item value="${option.value}">${option.label}</paper-item>`
+            html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
         )}
                         </paper-listbox>
                     </paper-dropdown-menu>
