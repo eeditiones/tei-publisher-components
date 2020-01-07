@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-item';
@@ -42,6 +43,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
         super();
         this.initializing = true;
         this.items = [];
+        this.label = 'document.selectFeature';
     }
 
     connectedCallback() {
@@ -99,7 +101,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-dropdown-menu id="menu" label="${this.label}">
+            <paper-dropdown-menu id="menu" label="${translate(this.label)}">
                 <paper-listbox id="list" slot="dropdown-content" selected="${this.selected}">
                     ${this.items.map((item) => html`<paper-item>${item.name}</paper-item>`)}
                 </paper-listbox>

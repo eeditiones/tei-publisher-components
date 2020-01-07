@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
@@ -19,8 +20,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
     static get properties() {
         return {/** The label to show on top of the dropdown menu */
             label: {
-                type: String,
-                value: 'Template'
+                type: String
             },
             /** Currently selected ODD. If this property is set, the component
              * will immediately load the list of ODDs from the server and select
@@ -38,7 +38,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        this.label = 'Template';
+        this.label = 'document.selectTemplate';
         this._templates = [];
     }
 
@@ -53,7 +53,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-dropdown-menu id="menu" label="${this.label}" name="${this.name}">
+            <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}">
                 <paper-listbox id="templates" slot="dropdown-content" class="dropdown-content" 
                     selected="${this.template}" attr-for-selected="value"
                     @selected-item-changed="${this._selected}">

@@ -8,7 +8,12 @@
     "title": "Titel",
     "author": "Autor",
     "modificationDate": "Änderungsdatum",
-    "file": "Dateiname"
+    "file": "Dateiname",
+    "confirmDeletion": "Möchten Sie die Datei wirklich löschen?",
+    "confirmDeletion_plural": "Möchten Sie wirklich {{count}} Dateien löschen?",
+    "delete": "Löschen",
+    "no": "Nein",
+    "yes": "Ja"
   },
   "demo": {
     "showCode": {
@@ -28,5 +33,22 @@
     "invalid": "Falsches Passwort oder ungültiger Benutzer",
     "requiredGroup": "muss Mitglied der Gruppe {{group}} sein"
   },
-  "contents": "Inhalt"
+  "document": {
+    "contents": "Inhalt",
+    "selectODD": "ODD Auswählen",
+    "selectTemplate": "Template Auswählen",
+    "selectFeature": "Feature auswählen"
+  },
+  "upload": {
+    "drop": "Dateien vom Typ {{accept}} hier hinziehen zum Hochladen.",
+    "upload": "Hochladen"
+  },
+  "search": {
+    "placeholder": "Suche nach",
+    "headings": "Überschriften durchsuchen",
+    "sections": "Abschnitte durchsuchen"
+  },
+  "dts": {
+    "endpoint": "Server wählen"
+  }
 }

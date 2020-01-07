@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-ajax';
 import '@polymer/iron-form';
@@ -48,6 +49,7 @@ export class PbSearch extends pbMixin(LitElement) {
         this.value = '';
         this.redirect = false;
         this.submitOnLoad = false;
+        this.placeHolder = 'search.placeholder';
     }
 
     connectedCallback() {
@@ -77,7 +79,7 @@ export class PbSearch extends pbMixin(LitElement) {
         return html`
             <iron-form id="ironform" allow-redirect="${this.redirect}">
                 <form id="searchPageForm" method="get" action="${this.action}" accept="text/html">
-                    <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${this.placeHolder}"
+                    <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeHolder)}"
                         value="${this.value}" always-float-label>
                         <iron-icon icon="search" @click="${this._doSearch}" slot="prefix"></iron-icon>
                     </paper-input>

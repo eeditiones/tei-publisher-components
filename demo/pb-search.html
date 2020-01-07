@@ -14,6 +14,7 @@
     <script type="module" src="../src/pb-search.js"></script>
     <script type="module" src="../src/pb-paginate.js"></script>
     <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-i18n.js"></script>
 </head>
 
 <body>
@@ -43,10 +44,10 @@
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-progress></pb-progress>
                 <main>
-                    <pb-search id="search-form" place-holder="Enter query">
+                    <pb-search id="search-form">
                         <div class="targets">
-                            <paper-checkbox name="tei-target" value="tei-text">Search sections</paper-checkbox>
-                            <paper-checkbox name="tei-target" value="tei-head">Search headings</paper-checkbox>
+                            <paper-checkbox name="tei-target" value="tei-text"><pb-i18n key="search.sections">Search sections</pb-i18n></paper-checkbox>
+                            <paper-checkbox name="tei-target" value="tei-head"><pb-i18n key="search.headings">Search headings</pb-i18n></paper-checkbox>
                         </div>
                     </pb-search>
                     <pb-paginate per-page="10" range="5"></pb-paginate>

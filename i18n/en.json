@@ -1,6 +1,11 @@
 {
     "language": "Language",
-    "contents": "Contents",
+    "document": {
+        "contents": "Contents",
+        "selectODD": "Select ODD",
+        "selectTemplate": "Select Template",
+        "selectFeature": "Select Feature"
+    },
     "browse": {
         "sort": "Sort by",
         "filter": "Filter by",
@@ -9,7 +14,16 @@
         "title": "Title",
         "author": "Author",
         "modificationDate": "Modification Date",
-        "file": "Filename"
+        "file": "Filename",
+        "delete": "Delete",
+        "confirmDeletion": "Are you sure you want to delete the file?",
+        "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
+        "yes": "Yes",
+        "no": "no"
+    },
+    "upload": {
+        "upload": "Upload",
+        "drop": "Drop {{accept}} files here to upload."
     },
     "demo": {
         "showCode": {
@@ -28,5 +42,13 @@
         "password": "Password",
         "invalid": "Wrong password or invalid user",
         "requiredGroup": "must be member of group {{group}}"
+    },
+    "search": {
+        "placeholder": "Enter Query",
+        "sections": "Search sections",
+        "headings": "Search headings"
+    },
+    "dts": {
+        "endpoint": "Select Endpoint"
     }
 }

@@ -1,5 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@vaadin/vaadin-upload';
 import '@polymer/paper-button';
 
@@ -71,8 +72,8 @@ export class PbUpload extends pbMixin(LitElement) {
     render() {
         return html`
             <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]">
-                <span slot="drop-label">Drop ${this.accept} files here to upload.</span>
-                <paper-button id="uploadBtn" slot="add-button">upload</paper-button>
+                <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
+                <paper-button id="uploadBtn" slot="add-button">${translate('upload.upload')}</paper-button>
             </vaadin-upload>
         `;
     }

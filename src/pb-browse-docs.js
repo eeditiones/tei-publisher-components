@@ -1,6 +1,6 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
-import { translate, get } from "./pb-i18n.js";
+import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -163,9 +163,9 @@ export class PbBrowseDocs extends PbLoad {
             </div>
             <div class="toolbar">
                 <slot name="toolbar"></slot>
-                <paper-button id="delete" title="i18n(delete)" class="${this._canModify(this._allowModification)}">
+                <paper-button id="delete" title="${translate('browse.delete')}" class="${this._canModify(this._allowModification)}">
                     <iron-icon icon="delete"></iron-icon>
-                    <span class="label">Delete</span>
+                    <span class="label">${translate('browse.delete')}</span>
                 </paper-button>
             </div>
             <slot></slot>
@@ -188,17 +188,13 @@ export class PbBrowseDocs extends PbLoad {
                 @response="${this._updateSuggestions}"></iron-ajax>
 
             <paper-dialog id="deleteDialog">
-                <h2>Delete</h2>
+                <h2>${translate('browse.delete')}</h2>
                 <paper-dialog-scrollable>
-                    ${
-            this._hasMultipleSelected(this._file, this._selected) ?
-                html`<p>Are you sure you want to delete ${this._selected.length} files?</p>` :
-                html`<p>Are you sure you want to delete the file ${this._file}?</p>`
-            }
+                    <p>${translate('browse.confirmDeletion', { count: (this._selected ? this._selected.length : 0) })}</p>
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">Yes</paper-button>
-                    <paper-button dialog-confirm="dialog-cancel">no</paper-button>
+                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('browse.yes')}</paper-button>
+                    <paper-button dialog-confirm="dialog-cancel">${translate('browse.no')}</paper-button>
                 </div>
             </paper-dialog>
         `;
