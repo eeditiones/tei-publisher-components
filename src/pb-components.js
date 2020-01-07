@@ -5,7 +5,6 @@ import './pb-highlight.js';
 import './pb-link.js';
 import './pb-load.js';
 import './pb-mixin.js';
-import './pb-i18n-mixin.js';
 import './pb-navigation.js';
 import './pb-page.js';
 import './pb-paginate.js';
