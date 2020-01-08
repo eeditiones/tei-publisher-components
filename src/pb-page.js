@@ -49,7 +49,7 @@ class PbPage extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`<pb-i18n-config .path="${this.locales}"></pb-i18n-config><slot></slot>`;
+        return html`<pb-i18n-config path="${this.locales}"></pb-i18n-config><slot></slot>`;
     }
 
     static get styles() {
