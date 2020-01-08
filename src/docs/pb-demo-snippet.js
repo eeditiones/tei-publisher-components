@@ -98,7 +98,9 @@ export class PbDemoSnippet extends LitElement {
         if (style) {
             css = style.innerHTML;
         }
-        let mainCode = this.code.replace(/(endpoint="[^"]+")/, 'endpoint="https://teipublisher.com/exist/apps/tei-publisher"');
+        let mainCode = this.code.replace(/(endpoint="[^"]+")/,
+            'endpoint="https://teipublisher.com/exist/apps/tei-publisher" locales="/node_modules/@teipublisher/pb-components/i18n/{{lng}}.json"'
+        );
         mainCode = PbDemoSnippet.indent(mainCode, 2);
         const code = `<html>
   <head>
@@ -122,7 +124,9 @@ export class PbDemoSnippet extends LitElement {
     </style>
     <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type="module" src="/node_modules/@teipublisher/pb-components/pb-components.js"></script>
+    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
+    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-facsimile.js"></script>
+    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-leaflet-map.js"></script>
     <title>TEI Publisher Webcomponent Sample</title>
   </head>
   <body>
