@@ -50,5 +50,10 @@
   },
   "dts": {
     "endpoint": "Server wählen"
+  },
+  "dialogs": {
+    "close": "Schließen",
+    "error": "Ooops",
+    "serverError": "Die Anfrage an den Server schlug fehl."
   }
 }

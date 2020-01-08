@@ -40,6 +40,7 @@ export class PbI18nConfig extends pbMixin(LitElement) {
             .use(LanguageDetector)
             .use(XHR)
             .init({
+                fallbackLng: 'en',
                 debug: true,
                 detection: {
                     lookupQuerystring: 'lang'

@@ -1,5 +1,10 @@
 {
     "language": "Language",
+    "dialogs": {
+        "error": "Ooops",
+        "close": "Close",
+        "serverError": "The request to the server failed."
+    },
     "document": {
         "contents": "Contents",
         "selectODD": "Select ODD",

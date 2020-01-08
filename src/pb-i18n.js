@@ -20,10 +20,8 @@ function isConnected(part) {
 }
 
 function removeDisconnectedParts() {
-    console.log('running cleanup');
     Object.keys(partCache).forEach((part) => {
         if (!isConnected(part)) {
-            console.log('dropping disconnected part: %o', part);
             partCache.delete(part);
         }
     });
@@ -121,6 +119,7 @@ export class PbI18n extends LitElement {
         document.addEventListener('pb-i18n-update', () => {
             this._translated = get(this.key);
         });
+        this._translated = get(this.key);
     }
 
     render() {

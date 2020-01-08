@@ -1,7 +1,10 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
+import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
 import './pb-popover.js';
 import './pb-highlight.js';
 
@@ -387,6 +390,23 @@ export class PbView extends pbMixin(LitElement) {
         this._column1 = null;
         this._column2 = null;
         this._footnotes = null;
+    }
+
+    _handleError() {
+        this.emitTo('pb-end-update');
+        this._clear();
+        const loader = this.shadowRoot.getElementById('loadContent');
+        let message;
+        const { response } = loader.lastError;
+        if (response) {
+            message = response.message;
+        } else {
+            message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
+        }
+        const content = `
+            <p><pb-i18n key="dialogs.error"></pb-i18n>: ${message}</p>
+        `;
+        this._replaceContent({ content });
     }
 
     _handleContent() {
@@ -810,13 +830,23 @@ export class PbView extends pbMixin(LitElement) {
                 <div id="content">${this._content}</div>
                 <div id="footnotes">${this._footnotes}</div>
             </div>
+            <paper-dialog id="errorDialog">
+                <h2>${translate('dialogs.error')}</h2>
+                <paper-dialog-scrollable></paper-dialog-scrollable>
+                <div class="buttons">
+                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                    ${translate('dialogs.close')}
+                    </paper-button>
+                </div>
+            </paper-dialog>
             <iron-ajax
                 id="loadContent"
                 url="${this.getEndpoint()}/${this.url}"
                 verbose
                 handle-as="json"
                 method="get"
-                @response="${this._handleContent}"></iron-ajax>
+                @response="${this._handleContent}"
+                @error="${this._handleError}"></iron-ajax>
       `;
     }
 
