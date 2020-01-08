@@ -16,6 +16,13 @@ class PbPage extends pbMixin(LitElement) {
             },
             endpoint: {
                 type: String
+            },
+            /**
+             * Optional URL pattern for retrieving i18n language files.
+             * Should be an URL of the form `/i18n/{{lng}}.json`.
+             */
+            locales: {
+                type: String
             }
         };
     }
@@ -23,6 +30,7 @@ class PbPage extends pbMixin(LitElement) {
     constructor() {
         super();
         this.endpoint = ".";
+        this.locales = '/i18n/{{lng}}.json';
     }
 
     connectedCallback() {
@@ -41,7 +49,7 @@ class PbPage extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`<pb-i18n-config></pb-i18n-config><slot></slot>`;
+        return html`<pb-i18n-config .path="${this.locales}"></pb-i18n-config><slot></slot>`;
     }
 
     static get styles() {
