@@ -124,9 +124,7 @@ export class PbDemoSnippet extends LitElement {
     </style>
     <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
-    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-facsimile.js"></script>
-    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-leaflet-map.js"></script>
+    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-components-all.js"></script>
     <title>TEI Publisher Webcomponent Sample</title>
   </head>
   <body>
