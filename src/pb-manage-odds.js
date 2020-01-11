@@ -9,6 +9,7 @@ import '@polymer/paper-icon-button';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
 import './pb-edit-xml.js';
@@ -154,10 +155,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
             <pb-restricted login="login">
                 <iron-form id="ironform">
                     <form>
-                        <paper-input name="new_odd" label="File name of the ODD (without suffix)" required auto-validate pattern="[a-zA-Z0-9-_]+"></paper-input>
-                        <paper-input name="title" label="Title for display" auto-validate required></paper-input>
-                        <paper-button .disabled="${!this._valid}" id="createBtn" @click="${this._createODD}"><iron-icon icon="create"></iron-icon>Create</paper-button>
-                        <paper-button .disabled="${!this._valid}" id="createByEx" @click="${this._createByExample}"><iron-icon icon="build"></iron-icon>Create from examples</paper-button>
+                        <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"></paper-input>
+                        <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required></paper-input>
+                        <paper-button .disabled="${!this._valid}" id="createBtn" @click="${this._createODD}"><iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}</paper-button>
+                        <paper-button .disabled="${!this._valid}" id="createByEx" @click="${this._createByExample}"><iron-icon icon="build"></iron-icon>${translate('odd.manage.create-from-example')}</paper-button>
                     </form>
                 </iron-form>
             </pb-restricted>
@@ -170,13 +171,13 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 @response="${this._update}"></iron-ajax>
 
             <paper-dialog id="deleteDialog">
-                <h2>Delete</h2>
+                <h2>${translate('browse.delete')}</h2>
                 <paper-dialog-scrollable>
-                    <p>Are you sure you want to delete the ODD file ${this.file}?</p>
+                    <p>${translate('odd.manage.delete', {file: this.file})}</p>
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">Yes</paper-button>
-                    <paper-button dialog-confirm="dialog-cancel">no</paper-button>
+                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('dialogs.yes')}</paper-button>
+                    <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
                 </div>
             </paper-dialog>
         `;

@@ -6,6 +6,8 @@
         <title>pb-message Demo</title>
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-message.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
     </head>
 
     <body>
@@ -16,19 +18,21 @@
                         width:400px;
                     }
                 </style>
-                <pb-message id="msg"></pb-message>
+                <pb-page>
+                    <pb-message id="msg"></pb-message>
 
-                <button onclick="init();">show message</button>
-                <button onclick="confirm();">show confirmation</button>
+                    <button onclick="init();">Show Message</button>
+                    <button onclick="confirm();">Show Confirmation</button>
 
-                <script type="application/javascript">
-                    function init(){
-                        document.getElementById('msg').show("a title", 'a message');
-                    }
-                    function confirm(){
-                        document.getElementById('msg').confirm("a confirmation message", 'confirm?');
-                    }
-                </script>
+                    <script type="application/javascript">
+                        function init() {
+                            document.getElementById('msg').show("a title", 'a message');
+                        }
+                        function confirm() {
+                            document.getElementById('msg').confirm("a confirmation message", 'confirm?');
+                        }
+                    </script>
+                </pb-page>
             </template>
         </pb-demo-snippet>
     </body>

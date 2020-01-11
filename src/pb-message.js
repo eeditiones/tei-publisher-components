@@ -2,6 +2,7 @@ import { LitElement, html,css } from 'lit-element';
 import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
 import '@polymer/paper-button/paper-button';
+import { translate } from "./pb-i18n.js";
 
 /**
  * Show a dialog with buttons. Used by editor.
@@ -66,9 +67,9 @@ export class PbMessage extends LitElement {
             <paper-dialog-scrollable id="message" class="message" tabindex="0">${this.message}</paper-dialog-scrollable>
 
             <div class="buttons">
-                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">Close</paper-button>
-                <paper-button id="confirm" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">Yes</paper-button>
-                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">No</paper-button>
+                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>
+                <paper-button id="confirm" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.yes')}</paper-button>
+                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</paper-button>
             </div>
         </paper-dialog>
         `;

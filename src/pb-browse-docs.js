@@ -193,8 +193,8 @@ export class PbBrowseDocs extends PbLoad {
                     <p>${translate('browse.confirmDeletion', { count: (this._selected ? this._selected.length : 0) })}</p>
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('browse.yes')}</paper-button>
-                    <paper-button dialog-confirm="dialog-cancel">${translate('browse.no')}</paper-button>
+                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('dialogs.yes')}</paper-button>
+                    <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
                 </div>
             </paper-dialog>
         `;

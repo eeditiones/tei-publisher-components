@@ -1,5 +1,27 @@
 {
   "language": "Sprache",
+  "menu": {
+    "documentation": "Dokumentation",
+    "appGenerator": "Anwendungsgenerator",
+    "admin": {
+      "appGenerator": "Anwendung generieren",
+      "edit-odd": "ODD editieren",
+      "recompile": "ODD neu übersetzen",
+      "title": "Administration"
+    },
+    "news": "Neuigkeiten",
+    "download": {
+      "epub-download": "Als ePub ebook herunterladen",
+      "fo-source": "FO Quelle",
+      "latex-source": "TeX Quelle",
+      "pdf-fo": "PDF (FO Version)",
+      "pdf-latex": "PDF (LaTeX Version)",
+      "pdf-title": "Als PDF herunterladen",
+      "single-page": "Auf einer Seite anzeigen",
+      "title": "Download",
+      "view-tei": "TEI XML ansehen"
+    }
+  },
   "browse": {
     "sort": "Sortiere nach",
     "filter": "Filtere nach",
@@ -12,8 +34,9 @@
     "confirmDeletion": "Möchten Sie die Datei wirklich löschen?",
     "confirmDeletion_plural": "Möchten Sie wirklich {{count}} Dateien löschen?",
     "delete": "Löschen",
-    "no": "Nein",
-    "yes": "Ja"
+    "documents": "Dokumente",
+    "collections": "Lokale Sammlung",
+    "dts": "Distributed Text Services (experimentell)"
   },
   "demo": {
     "showCode": {
@@ -49,11 +72,32 @@
     "sections": "Abschnitte durchsuchen"
   },
   "dts": {
-    "endpoint": "Server wählen"
+    "endpoint": "Server wählen",
+    "note": "Experimentell: Zugriff auf externe Editionen über DTS API"
   },
   "dialogs": {
+    "no": "Nein",
+    "yes": "Ja",
     "close": "Schließen",
     "error": "Ooops",
-    "serverError": "Die Anfrage an den Server schlug fehl."
+    "serverError": "Die Anfrage an den Server schlug fehl.",
+    "generatingFile": "Erzeuge Datei...",
+    "downloadMessage": "Das Erzeugen einer Datei zum Download kann bis zu mehrere Minuten dauern. Bitte warten Sie. Das Fenster sollte sich automatisch schließen, sobald der Download beendet wurde.",
+    "loading": "Lade ..."
+  },
+  "odd": {
+    "files": "ODD Dateien",
+    "manage": {
+      "create": "Erzeugen",
+      "create-from-example": "Aus Beispielen erzeugen",
+      "delete": "Möchten Sie die ODD-Datei {{file}} wirklich löschen?",
+      "title": "Titel für die Anzeige",
+      "filename": "Dateiname des ODD (ohne Suffix)"
+    }
+  },
+  "facets": {
+    "genre": "Genre",
+    "language": "Sprache",
+    "show": "Zeige 50 häufigste"
   }
 }
