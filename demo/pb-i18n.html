@@ -8,9 +8,10 @@
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../src/pb-i18n-config.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-i18n.js"></script>
     <script type="module" src="../src/pb-lang.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-card/paper-card.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
 </head>
 
@@ -20,16 +21,21 @@
             <style>
                 pb-lang { --pb-lang-input-color: #303030; }
             </style>
-            <pb-lang label="language" selected="en">
-                <paper-item value="de">German</paper-item>
-                <paper-item value="en">English</paper-item>
-            </pb-lang>
-            <pb-i18n-config></pb-i18n-config>
-            <ul>
-                <li><pb-i18n key="language">Language</pb-i18n></li>
-                <li><pb-i18n key="browse.items">Items</pb-i18n></li>
-                <li><pb-i18n key="undefined">No translation provided</pb-i18n></li>
-            </ul>
+            <pb-page>
+                <pb-lang label="language" selected="en">
+                    <paper-item value="de">German</paper-item>
+                    <paper-item value="en">English</paper-item>
+                </pb-lang>
+                <ul>
+                    <li data-i18n="language">Language</li>
+                    <li><pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n></li>
+                    <li><pb-i18n key="browse.items" options='{"count": 1}'>Items</pb-i18n></li>
+                    <li><pb-i18n key="undefined">No translation provided</pb-i18n></li>
+                </ul>
+                <paper-card data-i18n="[heading]language" heading="i18n(language)">
+                    <div class="card-content">Attributes can be translated as well (card heading above)</div>
+                </paper-card>
+            </pb-page>
         </template>
     </pb-demo-snippet>
 </body>

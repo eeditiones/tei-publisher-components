@@ -4,6 +4,7 @@ import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 
 /**
  * Triggers an action on the server and shows a dialog
@@ -67,7 +68,7 @@ export class PbAjax extends pbMixin(LitElement) {
                 <paper-dialog-scrollable>${unsafeHTML(this._message)}</paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                        <i18n:text key="close">Close</i18n:text>
+                    ${translate('dialogs.close')}
                     </paper-button>
                 </div>
             </paper-dialog>

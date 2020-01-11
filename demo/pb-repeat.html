@@ -9,7 +9,7 @@
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-repeat.js"></script>
-        <script type="module" src="../src/pb-i18n-config.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
     </head>
 
     <body>
@@ -24,29 +24,30 @@
                         display: block;
                     }
                 </style>
-                <pb-i18n-config></pb-i18n-config>
-                <iron-form id="form">
-                    <form action="">
-                        <pb-repeat>
-                            <template>
-                                <label>First name:</label>
-                                <input type="text" name="first">
-                                <label>Surname:</label>
-                                <input type="text" name="surname">
-                                <label>Title:</label>
-                                <select name="title">
-                                    <option></option>
-                                    <option>Dr.</option>
-                                    <option>Prof.</option>
-                                </select>
-                                <label>Vegetarian:</label>
-                                <input type="checkbox" name="veggie">
-                            </template>
-                        </pb-repeat>
-                        <button type="submit">Save</button>
-                    </form>
-                </iron-form>
-                <pre id="output"></pre>
+                <pb-page>
+                    <iron-form id="form">
+                        <form action="">
+                            <pb-repeat>
+                                <template>
+                                    <label>First name:</label>
+                                    <input type="text" name="first">
+                                    <label>Surname:</label>
+                                    <input type="text" name="surname">
+                                    <label>Title:</label>
+                                    <select name="title">
+                                        <option></option>
+                                        <option>Dr.</option>
+                                        <option>Prof.</option>
+                                    </select>
+                                    <label>Vegetarian:</label>
+                                    <input type="checkbox" name="veggie">
+                                </template>
+                            </pb-repeat>
+                            <button type="submit">Save</button>
+                        </form>
+                    </iron-form>
+                    <pre id="output"></pre>
+                </pb-page>
                 <script>
                     window.addEventListener('WebComponentsReady', () => {
                         const form = document.getElementById('form');

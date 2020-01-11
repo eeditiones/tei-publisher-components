@@ -7,7 +7,7 @@
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-code-highlight.js"></script>
-        <script type="module" src="../src/pb-i18n-config.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
     </head>
 
     <body>
@@ -16,22 +16,23 @@
                 <style>
                     pb-code-highlight { margin-bottom: 1em; padding: 8px; border: 1px solid #C0C0C0; }
                 </style>
-                <pb-i18n-config></pb-i18n-config>
-                <pb-code-highlight language="xquery">
-                    for $i in $root//tei:placeName
-                    order by $i descending
-                    return
-                        &lt;li&gt;{$i/string()}&lt;li&gt;
-                </pb-code-highlight>
-                <pb-code-highlight language="html">
-                    <template>
-                        <pb-view src="document1" odd="graves" subscribe="letter" emit="letter"
-                            wait-for="pb-leaflet-map">
-                            <pb-param name="mode" value="facets" />
-                        </pb-view>
-                    </template>
-                </pb-code-highlight>
-                <pb-code-highlight language="javascript" code="function(name) {&#10;    return 'Hello ' + name;&#10;};"></pb-code-highlight>
+                <pb-page>
+                    <pb-code-highlight language="xquery">
+                        for $i in $root//tei:placeName
+                        order by $i descending
+                        return
+                            &lt;li&gt;{$i/string()}&lt;li&gt;
+                    </pb-code-highlight>
+                    <pb-code-highlight language="html">
+                        <template>
+                            <pb-view src="document1" odd="graves" subscribe="letter" emit="letter"
+                                wait-for="pb-leaflet-map">
+                                <pb-param name="mode" value="facets" />
+                            </pb-view>
+                        </template>
+                    </pb-code-highlight>
+                    <pb-code-highlight language="javascript" code="function(name) {&#10;    return 'Hello ' + name;&#10;};"></pb-code-highlight>
+                </pb-page>
             </template>
         </pb-demo-snippet>
     </body>

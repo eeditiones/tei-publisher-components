@@ -101,6 +101,13 @@ export class PbI18n extends LitElement {
             key: {
                 type: String
             },
+            /**
+             * Optional interpolation parameters to be passed to the
+             * translation function
+             */
+            options: {
+                type: Object
+            },
             _translated: {
                 type: String
             },
@@ -111,15 +118,21 @@ export class PbI18n extends LitElement {
     constructor() {
         super();
         this.key = 'missing-key';
+        this.options = null;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        document.addEventListener('pb-i18n-update', () => {
-            this._translated = get(this.key);
-        });
-        this._translated = get(this.key);
+        document.addEventListener('pb-i18n-update', this._translate.bind(this));
+        this._translate();
+    }
+
+    _translate() {
+        const transl = get(this.key, this.options);
+        if (transl && transl !== this.key) {
+            this._translated = transl;
+        }
     }
 
     render() {
