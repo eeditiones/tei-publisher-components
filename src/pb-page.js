@@ -25,12 +25,29 @@ class PbPage extends pbMixin(LitElement) {
              */
             locales: {
                 type: String
+            },
+            /**
+             * Will be set while the component is loading and unset when
+             * it is fully loaded. Use to avoid flash of unstyled content
+             * via CSS: set `unresolved` on `pb-page` in the HTML and
+             * add a CSS rule like:
+             * 
+             * ```css
+             * pb-page[unresolved] {
+             *     display: none;
+             * }
+             * ```
+             */
+            unresolved: {
+                type: Boolean,
+                reflect: true
             }
         };
     }
 
     constructor() {
         super();
+        this.unresolved = true;
         this.endpoint = ".";
         this.locales = '/i18n/{{lng}}.json';
     }
@@ -74,6 +91,8 @@ class PbPage extends pbMixin(LitElement) {
                 this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
             }, []);
         });
+
+        this.unresolved = false;
 
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
         this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());

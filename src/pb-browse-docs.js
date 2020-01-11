@@ -1,6 +1,6 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
-import { translate, get } from "./pb-i18n.js";
+import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
