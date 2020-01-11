@@ -1,6 +1,6 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
-import { translate } from "./pb-i18n.js";
+import { translate, get } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -22,7 +22,8 @@ export class PbBrowseDocs extends PbLoad {
     static get properties() {
         return {
             sortBy: {
-                type: String
+                type: String,
+                attribute: 'sort-by'
             },
             sortOptions: {
                 type: Array,
@@ -110,6 +111,18 @@ export class PbBrowseDocs extends PbLoad {
         this.facets = this.getParametersMatching(/^facet-.*$/);
 
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
+        document.addEventListener('pb-i18n-update', () => {
+            // clear paper-listbox selection after language updates
+            const lb = this.shadowRoot.getElementById('sort-list');
+            let old = lb.selected;
+            lb.selected = undefined;
+            lb.selected = old;
+
+            const fl = this.shadowRoot.getElementById('filter-list');
+            old = fl.selected;
+            fl.selected = undefined;
+            fl.selected = old;
+        });
     }
 
     firstUpdated() {
@@ -124,23 +137,16 @@ export class PbBrowseDocs extends PbLoad {
             }, []);
             this._allowModification = login.loggedIn && this._loggedIn(login.user, login.groups);
         }
-        super.firstUpdated();
-    }
 
-    attributeChangedCallback(attr, oldValue, newValue) {
-        super.attributeChangedCallback(attr, oldValue, newValue);
-        switch (attr) {
-            case 'sortBy':
-                this._sort(newValue, oldValue);
-                break;
-        }
+        this.shadowRoot.getElementById('sort-list').addEventListener('selected-item-changed', this._sort.bind(this));
+        super.firstUpdated();
     }
 
     render() {
         return html`
             <div class="toolbar">
                 <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}">
-                    <paper-listbox selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
+                    <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
                     ${this.sortOptions.map(option =>
             html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
         )}
@@ -148,7 +154,7 @@ export class PbBrowseDocs extends PbLoad {
                 </paper-dropdown-menu>
                 <div>
                     <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}">
-                        <paper-listbox selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
+                        <paper-listbox id="filter-list" selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
                         ${this.filterOptions.map(option =>
             html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
         )}
@@ -284,22 +290,29 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     _filter() {
-        this.setParameter('filter', this.filter);
-        this.setParameter('filterBy', this.filterBy);
-        this.pushHistory('filter docs');
+        const filter = this.shadowRoot.getElementById('filterString').value;
+        const filterBy = this.shadowRoot.getElementById('filter-list').selected;
+        if (typeof filter !== 'undefined') {
+            console.log('<pb-browse-docs> Filter by %s', filter);
+            this.filter = filter;
+            this.setParameter('filter', filter);
+            this.setParameter('filterBy', filterBy);
+            this.pushHistory('filter docs');
 
-        this.load();
+            this.load();
+        }
     }
 
-    _sort(newValue, oldValue) {
-        if (typeof oldValue == 'undefined' || typeof newValue == 'undefined') {
-            return;
+    _sort() {
+        const sortBy = this.shadowRoot.getElementById('sort-list').selected;
+        if (sortBy && sortBy !== this.sortBy) {
+            console.log('<pb-browse-docs> Sorting by %s', sortBy);
+            this.sortBy = sortBy;
+            this.setParameter('sort', sortBy);
+            this.pushHistory('sort docs');
+
+            this.load();
         }
-
-        this.setParameter('sort', this.sortBy);
-        this.pushHistory('sort docs');
-
-        this.load();
     }
 
     _facets(ev) {
