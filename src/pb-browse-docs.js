@@ -80,6 +80,7 @@ export class PbBrowseDocs extends PbLoad {
         super();
         this.sortOptions = [];
         this.sortLabel = 'browse.sort';
+        this.sortBy = 'default';
         this.filter = '';
         this.filterOptions = [
             {
@@ -88,6 +89,7 @@ export class PbBrowseDocs extends PbLoad {
             }
         ];
         this.filterByLabel = 'browse.filter';
+        this.filterBy = 'title';
         this._allowModification = false;
         this._suggestions = [];
     }
@@ -95,13 +97,11 @@ export class PbBrowseDocs extends PbLoad {
     connectedCallback() {
         super.connectedCallback();
 
-        this.sortBy = 'default';
         const sortParam = this.getParameter('sort');
         if (sortParam) {
             this.sortBy = sortParam;
         }
 
-        this.filterBy = 'title';
         const filterParam = this.getParameter('filter');
         if (filterParam) {
             this.filter = filterParam;
