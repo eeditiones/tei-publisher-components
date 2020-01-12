@@ -48,7 +48,9 @@ import '@polymer/paper-checkbox';
  *
  * @customElement
  * @polymer
- * @demo demo/pb-toggle-feature.html
+ * @demo demo/pb-toggle-feature.html Using pb-toggle-feature with pb-view
+ * @demo demo/pb-toggle-feature2.html Toggling features without content reload
+ * @demo demo/pb-toggle-feature3.html Using pb-toggle-feature with pb-load
  * @appliesMixin pbMixin
  */
 export class PbToggleFeature extends pbMixin(LitElement) {
