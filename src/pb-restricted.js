@@ -51,6 +51,11 @@ export class PbRestricted extends pbMixin(LitElement) {
     }
 
     render() {
+        if (this.show) {
+            this.style.display = '';
+        } else {
+            this.style.display = 'none';
+        }
         return html`
             ${this.show ? html`<slot></slot>` : null}
         `;

@@ -140,7 +140,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     <!-- TODO this toolbar should only appear once per ODD files papercard -->
                     <app-toolbar>
                         <pb-restricted login="login">
-                            <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd" dialog="messageDialog">
+                            <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd">
+                                <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                 <paper-icon-button icon="update"></paper-icon-button>
                             </pb-ajax>
                             <paper-icon-button icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>

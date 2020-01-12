@@ -29,15 +29,16 @@ export class PbAjax extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             * title of link that triggers the request
+             * Title of link that triggers the request
              */
             title: {
                 type: String
             },
             /**
-             * id of a dialog component used to display the response to the request.
+             * If set, emits an event with the given name to the channel
+             * this component is subscribed to.
              */
-            dialog: {
+            event: {
                 type: String
             },
             _message: {
@@ -55,7 +56,6 @@ export class PbAjax extends pbMixin(LitElement) {
     render() {
         return html`
             <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
-
             <iron-ajax
                 id="loadContent"
                 verbose
@@ -63,8 +63,14 @@ export class PbAjax extends pbMixin(LitElement) {
                 method="get"
                 @error="${this._handleError}"
                 @response="${this._handleResponse}"></iron-ajax>
+            ${this.dialogTemplate}
+        `;
+    }
+
+    get dialogTemplate() {
+        return html`
             <paper-dialog id="messageDialog">
-                <h2><slot name="title">Action</slot></h2>
+                <slot name="title"><h2>Action</h2></slot>
                 <paper-dialog-scrollable>${unsafeHTML(this._message)}</paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
@@ -79,6 +85,9 @@ export class PbAjax extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
+            }
+            slot[name="title"] {
+                margin: 0;
             }
         `;
     }
@@ -96,7 +105,12 @@ export class PbAjax extends pbMixin(LitElement) {
         this._message = resp;
         const dialog = this.shadowRoot.getElementById('messageDialog');
         dialog.open();
+        
         this.emitTo('pb-end-update');
+
+        if (this.event) {
+            this.emitTo(this.event);
+        }
     }
 
     _handleError() {
