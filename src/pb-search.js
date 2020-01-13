@@ -11,6 +11,9 @@ import '@polymer/paper-checkbox';
 /**
  * Implements a basic search form, which can be extended with additional inputs.
  *
+ * @cssprop --pb-search-label-color Color of the label and underline
+ * @cssprop --pb-search-input-color Text color for input field
+ * @cssprop --pb-search-focus-color Color for label and underline if input has focus
  * @customElement
  * @polymer
  * @demo demo/pb-search.html
@@ -100,19 +103,10 @@ export class PbSearch extends pbMixin(LitElement) {
 
     static get styles() {
         return css`
-            paper-input {
-                --paper-input-container-input:{
-                    color: var(--pb-search-input, #000000);
-                    border: white;
-                };
-                --paper-input-container-label: {
-                    color:var(--pb-search-label, --paper-grey-500);
-                };
-            }
-            paper-autocomplete-suggestions {
-                --suggestions-item: {
-                    color: var(--pb-search-suggestions, #000000);
-                };
+            :host {
+                --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
+                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000));
+                --paper-input-container-focus-color: var(--pb-search-focus-color, var(--paper-grey-500, #303030));
             }
         `;
     }
