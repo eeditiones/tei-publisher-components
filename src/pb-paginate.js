@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 
 /**
@@ -21,13 +21,15 @@ export class PbPaginate extends pbMixin(LitElement) {
              * total number of pages
              */
             total: {
-                type: Number
+                type: Number,
+                reflect: true
             },
             /**
              * start page
              */
             start: {
-                type: Number
+                type: Number,
+                reflect: true
             },
             /**
              * amount of entries per page
@@ -92,25 +94,21 @@ export class PbPaginate extends pbMixin(LitElement) {
     }
 
     render() {
-        if (this.total) {
-            return html`
-                <span @click="${this._handleFirst}"><iron-icon icon="first-page"></iron-icon></span>
-                ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${(ev) => this._handleClick(item, index)}">${item.label}</span>`)}
-                <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
+        return html`
+            <span @click="${this._handleFirst}"><iron-icon icon="first-page"></iron-icon></span>
+            ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}">${item.label}</span>`)}
+            <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
 
-                <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
-            </template>
-            `;
-        }
-    }
-
-    attributeChangedCallback(attr, oldValue, newValue) {
-        super.attributeChangedCallback(attr, oldValue, newValue);
-
+            <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
+        `;
     }
 
     static get styles() {
         return css`
+            :host([total="0"]) {
+                display: none;
+            }
+
             :host {
                 display: flex;
                 flex-direction: row;
