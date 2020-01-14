@@ -85,7 +85,6 @@ export class PbEditApp extends pbMixin(LitElement) {
     }
 
     _doSubmit() {
-        console.log('submit');
         this.emitTo('pb-start-update');
         const form = this.shadowRoot.getElementById('form');
         form.submit();
@@ -175,6 +174,43 @@ export class PbEditApp extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
+            }
+            paper-dropdown-menu {
+                width: 100%;
+                max-width: 864px;
+            }
+            fieldset {
+                margin-top: 16px;
+                padding: 0;
+                border: 0;
+            }
+            legend {
+                color: #909090;
+            }
+
+            paper-dialog {
+                min-width: 420px;
+                max-width: 640px;
+                min-height: 128px;
+            }
+
+            paper-dialog h2 {
+                background-color: #607D8B;
+                padding: 16px 8px;
+                margin-top: 0;
+                color: #F0F0F0;
+            }
+
+            .content {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .content a {
+                display: block;
+                flex: 1 0;
             }
         `;
     }
