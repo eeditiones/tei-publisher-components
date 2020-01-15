@@ -42,6 +42,18 @@ export class PbEditApp extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+        document.addEventListener('pb-i18n-update', () => {
+            // clear paper-listbox selection after language updates
+            const lb = this.shadowRoot.getElementById('defaultView');
+            let old = lb.selected;
+            lb.selected = undefined;
+            lb.selected = old;
+
+            const fl = this.shadowRoot.getElementById('index');
+            old = fl.selected;
+            fl.selected = undefined;
+            fl.selected = old;
+        });
     }
 
     firstUpdated() {
