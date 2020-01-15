@@ -36,6 +36,5 @@ import './pb-facs-link.js';
 import './pb-code-highlight.js';
 import './pb-i18n.js';
 import './pb-repeat.js';
-import './pb-edit-app.js';
 import './dts-select-endpoint.js';
 import './dts-client.js';
