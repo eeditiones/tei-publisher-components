@@ -5,7 +5,6 @@ polymer.json
 karma.conf.js
 rollup.config.js
 osd.rollup.config.js
-assets/openseadragon.esm.js
 tsconfig.json
 *.html
 analysis.json
