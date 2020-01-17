@@ -155,14 +155,16 @@ export class PbLoad extends pbMixin(LitElement) {
         }
     }
 
+    getURL() {
+        return this.getEndpoint() + '/' + this.url;
+    }
+
     load(ev) {
         if (this.loadOnce && this.loaded) {
             return;
         }
 
         this.emitTo('pb-start-update');
-
-        const url = this.getEndpoint() + '/' + this.url;
 
         let params = {};
 
@@ -191,7 +193,7 @@ export class PbLoad extends pbMixin(LitElement) {
         console.log("<pb-load> Loading %s with parameters %o", this.url, params);
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.params = params;
-        loader.url = url;
+        loader.url = this.getURL();
         loader.generateRequest();
 
         if (this.loadOnce) {
@@ -266,7 +268,7 @@ export class PbLoad extends pbMixin(LitElement) {
             this.start = parseInt(start);
         }
         this.emitTo('pb-results-received', {
-            "count": parseInt(total),
+            "count": total ? parseInt(total, 10) : 0,
             "start": this.start,
             "params": this.shadowRoot.getElementById('loadContent').params
         });

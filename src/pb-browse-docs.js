@@ -46,6 +46,9 @@ export class PbBrowseDocs extends PbLoad {
             filterByLabel: {
                 type: String
             },
+            collection: {
+                type: String
+            },
             facets: {
                 type: Object
             },
@@ -256,6 +259,10 @@ export class PbBrowseDocs extends PbLoad {
         `;
     }
 
+    getURL() {
+        return this.collection ? `${super.getURL()}/${this.collection}` : super.getURL();
+    }
+
     prepareParameters(params) {
         params.sort = this.sortBy;
         if (this.filter) {
@@ -330,6 +337,14 @@ export class PbBrowseDocs extends PbLoad {
 
     _onLoad(content) {
         this.shadowRoot.getElementById('delete').addEventListener('click', this._handleDelete.bind(this));
+        this.querySelectorAll('[data-collection]').forEach(link => {
+            link.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                this.collection = link.getAttribute('data-collection');
+                console.log('<pb-browse-docs> loading collection %s', this.collection);
+                this.load();
+            });
+        });
     }
 
     _handleDelete(target, ev) {
