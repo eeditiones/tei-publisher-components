@@ -150,10 +150,10 @@ export class PbLogin extends pbMixin(LitElement) {
                 </div>
             </paper-dialog>
 
-            <iron-ajax id="checkLogin"
-                    handle-as="json" @response="${this._handleResponse}"
-                    content-type="application/x-www-form-urlencoded"
-                    method="POST"></iron-ajax>
+            <iron-ajax id="checkLogin" with-credentials
+                handle-as="json" @response="${this._handleResponse}"
+                content-type="application/x-www-form-urlencoded"
+                method="POST"></iron-ajax>
         `;
     }
 
