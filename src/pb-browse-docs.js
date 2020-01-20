@@ -142,6 +142,7 @@ export class PbBrowseDocs extends PbLoad {
         }
 
         this.shadowRoot.getElementById('sort-list').addEventListener('selected-item-changed', this._sort.bind(this));
+        this.shadowRoot.getElementById('delete').addEventListener('click', this._handleDelete.bind(this));
         super.firstUpdated();
     }
 
@@ -204,6 +205,15 @@ export class PbBrowseDocs extends PbLoad {
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('dialogs.yes')}</paper-button>
                     <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
+                </div>
+            </paper-dialog>
+            <paper-dialog id="errorDialog">
+                <h2>${translate('dialogs.error')}</h2>
+                <paper-dialog-scrollable></paper-dialog-scrollable>
+                <div class="buttons">
+                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                    ${translate('dialogs.close')}
+                    </paper-button>
                 </div>
             </paper-dialog>
         `;
@@ -336,8 +346,14 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     _onLoad(content) {
-        this.shadowRoot.getElementById('delete').addEventListener('click', this._handleDelete.bind(this));
-        this.querySelectorAll('[data-collection]').forEach(link => {
+        const div = content.querySelector('[data-root]');
+        const collection = div && div.getAttribute('data-root');
+        const writable = div && div.classList.contains('writable');
+        this.emitTo('pb-collection', {
+            writable,
+            collection
+        });
+        content.querySelectorAll('[data-collection]').forEach(link => {
             link.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.collection = link.getAttribute('data-collection');
@@ -354,14 +370,6 @@ export class PbBrowseDocs extends PbLoad {
             this._selected = selected;
             deleteDialog.open();
         }
-    }
-
-    _hasMultipleSelected(_file, _selected) {
-        return _selected && _selected.length > 0;
-    }
-
-    _hasOneSelected(_file, _selected) {
-        return _file;
     }
 
     _confirmDelete() {

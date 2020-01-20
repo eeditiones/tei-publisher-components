@@ -32,13 +32,6 @@
                 body {
                     --paper-fab-background: #35424b;
                 }
-                main {
-                    display: flex;
-                }
-                pb-load {
-                    max-width: 33%;
-                    margin-right: 20px;
-                }
                 .transcription {
                     margin-left: auto;
                     margin-right: auto;
@@ -72,28 +65,36 @@
                 .documents app-toolbar {
                     font-size: 14px;
                 }
-                pb-login {
+                .toolbar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
                     margin-bottom: 10px;
+                    border-bottom: 1px solid #a0a0a0;
                 }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                <pb-login id="login" group="tei"></pb-login>
-                <pb-lang label="language" selected="de">
-                    <paper-item value="en">English</paper-item>
-                    <paper-item value="de">German</paper-item>
-                </pb-lang>
+                <div class="toolbar">
+                    <pb-login id="login" group="tei" no-check></pb-login>
+                    <pb-lang label="language" selected="de">
+                        <paper-item value="en">English</paper-item>
+                        <paper-item value="de">German</paper-item>
+                    </pb-lang>
+                </div>
                 <pb-progress subscribe="docs"></pb-progress>
-                <pb-restricted login="login">
-                    <pb-upload id="upload" emit="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
-                </pb-restricted>
-                <pb-browse-docs id="document-list" url="collection/"
-                    sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
-                    sort-by="title"
-                    filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
-                    filter-by="title" auto="auto" history="history" login="login" emit="docs" subscribe="docs">
-                    <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
-                        emit="docs" subscribe="docs"></pb-paginate>
-                </pb-browse-docs>
+                <main>
+                    <pb-restricted login="login">
+                        <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
+                    </pb-restricted>
+                    <pb-browse-docs id="document-list" url="collection/"
+                        sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
+                        sort-by="title"
+                        filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
+                        filter-by="title" auto="auto" history="history" login="login" emit="docs" subscribe="docs">
+                        <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
+                            emit="docs" subscribe="docs"></pb-paginate>
+                    </pb-browse-docs>
+                </main>
             </pb-page>
         </template>
     </pb-demo-snippet>

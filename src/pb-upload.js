@@ -28,6 +28,9 @@ export class PbUpload extends pbMixin(LitElement) {
             accept: {
                 type: String
             },
+            enabled: {
+                type: Boolean
+            },
             ...super.properties
         };
     }
@@ -36,6 +39,10 @@ export class PbUpload extends pbMixin(LitElement) {
         if (super.connectedCallback) {
             super.connectedCallback();
         }
+        this.subscribeTo('pb-collection', (ev) => {
+            this.enabled = ev.detail.writable;
+            this.target = ev.detail.collection;
+        });
     }
 
     firstUpdated() {
@@ -70,8 +77,10 @@ export class PbUpload extends pbMixin(LitElement) {
     }
 
     render() {
+        this.style.display = this.enabled ? '' : 'none';
         return html`
-            <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]">
+            <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
+                with-credentials>
                 <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
                 <paper-button id="uploadBtn" slot="add-button">${translate('upload.upload')}</paper-button>
             </vaadin-upload>

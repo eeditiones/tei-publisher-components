@@ -128,11 +128,11 @@ export class PbLoad extends pbMixin(LitElement) {
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
-                <h2>Error</h2>
+                <h2>${translate('dialogs.error')}</h2>
                 <paper-dialog-scrollable></paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                        Closes
+                    ${translate('dialogs.close')}
                     </paper-button>
                 </div>
             </paper-dialog>
@@ -232,7 +232,7 @@ export class PbLoad extends pbMixin(LitElement) {
             div.innerHTML = resp;
             div.slot = '';
             this.appendChild(div);
-            this._onLoad(this);
+            this._onLoad(div);
         }
 
         this.emitTo('pb-end-update');
