@@ -14,8 +14,16 @@ import '@polymer/paper-progress';
 export class PbProgress extends pbMixin(LitElement) {
     static get properties() {
         return {
+            _disabled: {
+                type: Boolean
+            },
             ...super.properties
         };
+    }
+
+    constructor() {
+        super();
+        this._disabled = true;
     }
 
     connectedCallback() {
@@ -25,13 +33,10 @@ export class PbProgress extends pbMixin(LitElement) {
         this.subscribeTo('pb-end-update', this._endUpdate.bind(this));
     }
 
-    firstUpdated() {
-        this.shadowRoot.getElementById('progress').disabled = true;
-    }
-
     render() {
+        this.style.visibility = this._disabled ? 'hidden' : 'visible';
         return html`
-            <paper-progress id="progress" indeterminate></paper-progress>
+            <paper-progress id="progress" indeterminate ?disabled="${this._disabled}"></paper-progress>
         `;
     }
 
@@ -49,14 +54,11 @@ export class PbProgress extends pbMixin(LitElement) {
     }
 
     _startUpdate() {
-        this.style.visibility = 'visible';
-        this.shadowRoot.getElementById('progress').disabled = false;
-        console.log('<pb-progress> start update');
+        this._disabled = false;
     }
 
     _endUpdate() {
-        this.style.visibility = 'hidden';
-        this.shadowRoot.getElementById('progress').disabled = true;
+        this._disabled = true;
     }
 }
 customElements.define('pb-progress', PbProgress);
