@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/paper-tooltip';
@@ -60,7 +61,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 </paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                        Close
+                        ${translate('dialogs.close')}
                     </paper-button>
                 </div>
             </paper-dialog>`;
@@ -72,6 +73,11 @@ export class PbPopover extends pbMixin(LitElement) {
                 display: inline;
                 padding: 0;
                 margin: 0;
+                --paper-tooltip-background: var(--pb-popover-background-color, var(--pb-color-inverse));
+                --paper-tooltip-text-color: var(--pb-popover-color, var(--pb-color-primary));
+            }
+            [name=alternate] {
+                font: var(--pb-popover-font, var(--pb-base-font));
             }
             #link {
                 color: var(--pb-popover-link-color, var(--pb-link-color));

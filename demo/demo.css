@@ -1,13 +1,24 @@
 @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
 
 body {
-    font-size: 16px;
-    font-family: 'Roboto', 'Noto', sans-serif;
-    line-height: 1.42857;
-    font-weight: 300;
-    color: #333333;
+    --pb-base-font-size: 16px;
+    --pb-base-line-height: 1.42857;
+    --pb-base-font: 300 var(--pb-base-font-size)/var(--pb-base-line-height) 'Roboto', 'Noto', sans-serif;
+    --pb-color-primary: #303030;
+    --pb-color-inverse: #F0F0F0;
+    --pb-color-lighter: #35424b;
 
     --paper-tooltip-delay-in: 200;
+
+    --pb-footnote-size: 75%;
+    --pb-footnote-color: #303030;
+    --pb-footnote-padding: 0 0 0 .25em;
+
+    --pb-popover-background-color: var(--pb-color-inverse);
+    --pb-popover-font-size: 16px;
+
+    font: var(--pb-base-font);
+    color: var(--pb-color-primary);
 }
 
 h1, h2, h3, h4, h5, h6 {
