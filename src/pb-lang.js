@@ -37,10 +37,10 @@ export class PbLang extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-i18n-update', (ev) => {
-            this.selected = ev.detail.language;
+            this.selected = ev.detail.language.replace(/^([^-]+).*$/, '$1');
         }, []);
         PbLang.waitOnce('pb-i18n-update', (options) => {
-            this.selected = options.language;
+            this.selected = options.language.replace(/^([^-]+).*$/, '$1');
         });
     }
 
