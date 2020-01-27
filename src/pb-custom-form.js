@@ -38,6 +38,7 @@ export class PbCustomForm extends PbLoad {
                 verbose
                 handle-as="text"
                 method="get"
+                with-credentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
@@ -66,7 +67,7 @@ export class PbCustomForm extends PbLoad {
 
     _submit() {
         const json = this.shadowRoot.getElementById('ironform').serializeForm();
-        this.emitTo('pb-search-resubmit', {'params': json});
+        this.emitTo('pb-search-resubmit', { 'params': json });
     }
 
     _parseHeaders(xhr) {

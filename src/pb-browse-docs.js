@@ -186,7 +186,7 @@ export class PbBrowseDocs extends PbLoad {
                 verbose
                 handle-as="text"
                 method="get"
-                withCredentials
+                with-credentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <iron-ajax
@@ -195,6 +195,7 @@ export class PbBrowseDocs extends PbLoad {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._updateSuggestions}"></iron-ajax>
 
             <paper-dialog id="deleteDialog">

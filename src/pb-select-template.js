@@ -61,7 +61,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
                 </paper-listbox>
             </paper-dropdown-menu>
 
-            <iron-ajax id="getTemplates"
+            <iron-ajax id="getTemplates" with-credentials
                 handle-as="json" @response="${this._handleTemplatesResponse}"
                 method="GET"></iron-ajax>
         `;

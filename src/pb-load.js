@@ -124,7 +124,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
-                withCredentials
+                with-credentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">

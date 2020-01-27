@@ -61,6 +61,7 @@ export class PbAjax extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
+                with-credentials
                 @error="${this._handleError}"
                 @response="${this._handleResponse}"></iron-ajax>
             ${this.dialogTemplate}
@@ -105,7 +106,7 @@ export class PbAjax extends pbMixin(LitElement) {
         this._message = resp;
         const dialog = this.shadowRoot.getElementById('messageDialog');
         dialog.open();
-        
+
         this.emitTo('pb-end-update');
 
         if (this.event) {

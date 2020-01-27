@@ -97,6 +97,7 @@ export class PbSearch extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._updateSuggestions}"></iron-ajax>
         `;
     }

@@ -199,6 +199,7 @@ export class DtsClient extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._handleResponse}"
                 @error="${this._handleError}"></iron-ajax>
             <iron-ajax
@@ -206,6 +207,7 @@ export class DtsClient extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._handlePreview}"
                 @error="${this._handleError}"></iron-ajax>
         `;

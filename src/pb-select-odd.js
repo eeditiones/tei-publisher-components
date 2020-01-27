@@ -77,6 +77,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._update}"></iron-ajax>
         `;
     }

@@ -169,12 +169,13 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._update}"></iron-ajax>
 
             <paper-dialog id="deleteDialog">
                 <h2>${translate('browse.delete')}</h2>
                 <paper-dialog-scrollable>
-                    <p>${translate('odd.manage.delete', {file: this.file})}</p>
+                    <p>${translate('odd.manage.delete', { file: this.file })}</p>
                 </paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('dialogs.yes')}</paper-button>

@@ -845,6 +845,7 @@ export class PbView extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
+                with-credentials
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
       `;
