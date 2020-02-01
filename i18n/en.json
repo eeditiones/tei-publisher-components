@@ -86,7 +86,9 @@
   },
   "dts": {
     "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "note": "Experimental: access other editions which expose the DTS API",
+    "licence": "Licence",
+    "import": "Import to local database"
   },
   "odd": {
     "files": "ODD Files",

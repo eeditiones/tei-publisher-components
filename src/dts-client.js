@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
 import '@polymer/iron-icon';
 import '@polymer/iron-icons';
@@ -199,7 +200,6 @@ export class DtsClient extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
-                with-credentials
                 @response="${this._handleResponse}"
                 @error="${this._handleError}"></iron-ajax>
             <iron-ajax
@@ -207,7 +207,6 @@ export class DtsClient extends pbMixin(LitElement) {
                 verbose
                 handle-as="json"
                 method="get"
-                with-credentials
                 @response="${this._handlePreview}"
                 @error="${this._handleError}"></iron-ajax>
         `;
@@ -250,9 +249,9 @@ export class DtsClient extends pbMixin(LitElement) {
                         <a href="#" @click="${(ev) => this._preview(ev, member)}">${member.title}</a>
                     </h4>
                     <p class="creator">${DtsClient._getCreator(member)}</p>
-                    ${license ? html`<p class="license"><a href="${license}">License</a></p>` : ''}
+                    ${license ? html`<p class="license"><a href="${license}">${translate('dts.licence')}</a></p>` : ''}
                 </div>
-                <iron-icon title="Import to local database" icon="icons:file-download" 
+                <iron-icon title="${translate('dts.import')}" icon="icons:file-download" 
                     @click="${(ev) => this._download(ev, member)}">
                 </iron-icon>
             </div>

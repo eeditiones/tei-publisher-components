@@ -77,7 +77,9 @@
   },
   "dts": {
     "endpoint": "Server wählen",
-    "note": "Experimentell: Zugriff auf externe Editionen über DTS API"
+    "note": "Experimentell: Zugriff auf externe Editionen über DTS API",
+    "import": "In lokale Datenbank importieren",
+    "licence": "Lizenz"
   },
   "dialogs": {
     "no": "Nein",
