@@ -1,6 +1,9 @@
 node_modules
-.DS_Store
-.firebase
+.*
+!.editorconfig
+!.npmignore
+!.gitignore
+!.vscode
 analysis.json
 assets
 dist
