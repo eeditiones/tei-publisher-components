@@ -1,6 +1,6 @@
-import { LitElement, html,css } from 'lit-element'
+import { LitElement, html, css } from 'lit-element'
 import '@polymer/iron-ajax/iron-ajax.js';
-import CodeMirror from '../node_modules/codemirror/src/codemirror.js';
+import CodeMirror from 'codemirror/src/codemirror.js';
 
 import modeXquery from "../assets/codemirror/mode/xquery/xquery.js";
 import modeCss from "../assets/codemirror/mode/css/css.js";
@@ -555,7 +555,7 @@ export class PbCodeEditor extends LitElement {
              */
             code: {
                 type: String,
-                reflect:true
+                reflect: true
             },
             /**
              * the language mode e.g. 'javascript' or 'xquery'.
@@ -581,8 +581,8 @@ export class PbCodeEditor extends LitElement {
             label: {
                 type: String
             },
-            linter:{
-                attribute:true
+            linter: {
+                attribute: true
             }
         };
     }
@@ -590,7 +590,7 @@ export class PbCodeEditor extends LitElement {
     constructor() {
         super();
         this.code = '';
-        this.mode =  'javascript';
+        this.mode = 'javascript';
         this.placeholder = '[Empty]';
         this.tabSize = 2;
         this.label = '';
@@ -611,7 +611,7 @@ export class PbCodeEditor extends LitElement {
 
     attributeChangedCallback(name, old, value) {
         super.attributeChangedCallback(name, old, value);
-        if(name === 'code'){
+        if (name === 'code') {
             this.setSource(value);
             this.code = value;
             this.requestUpdate();
@@ -723,25 +723,25 @@ export class PbCodeEditor extends LitElement {
      * call refresh() to update the view after external changes have occured. Might be needed after dynamic
      * changes of the UI.
      */
-    refresh () {
+    refresh() {
         if (!this._editor) return;
         this._editor.refresh();
     }
 
     setCode(value) {
         this.code = value
-        this.dispatchEvent(new CustomEvent('code-changed', {composed:true, bubbles:true, detail: {code: this.code}}));
+        this.dispatchEvent(new CustomEvent('code-changed', { composed: true, bubbles: true, detail: { code: this.code } }));
     }
 
-    _handleLintError(e){
+    _handleLintError(e) {
         console.error('error while linting: ', e.detail);
 
         const error = e.detail.error.message;
-        if(error.includes('404')){
+        if (error.includes('404')) {
             const url = this.shadowRoot.getElementById('lint').url;
-            this.dispatchEvent(new CustomEvent('linting-error', {composed:true, bubbles:true, detail: {error: 'linting service unavailable', url:url}}));
-        }else{
-            this.dispatchEvent(new CustomEvent('linting-error', {composed:true, bubbles:true, detail: {error: error}}));
+            this.dispatchEvent(new CustomEvent('linting-error', { composed: true, bubbles: true, detail: { error: 'linting service unavailable', url: url } }));
+        } else {
+            this.dispatchEvent(new CustomEvent('linting-error', { composed: true, bubbles: true, detail: { error: error } }));
         }
 
 
