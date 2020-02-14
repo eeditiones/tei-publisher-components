@@ -1,12 +1,10 @@
 // @ts-nocheck
-import {LitElement, html, css} from 'lit-element'
-import {pbMixin} from './pb-mixin.js';
+import { LitElement, html, css } from 'lit-element'
+import { pbMixin } from './pb-mixin.js';
+import "./pb-drawer.js";
+import { repeat } from 'lit-html/directives/repeat';
+import { ifDefined } from 'lit-html/directives/if-defined';
 
-import {repeat} from 'lit-html/directives/repeat';
-import {ifDefined} from 'lit-html/directives/if-defined';
-
-import '@polymer/app-layout/app-drawer-layout/app-drawer-layout';
-import '@polymer/app-layout/app-drawer/app-drawer';
 import '@vaadin/vaadin-tabs/vaadin-tabs';
 import '@vaadin/vaadin-tabs/vaadin-tab';
 
@@ -24,8 +22,8 @@ import './pb-odd-elementspec-editor.js';
 import './pb-message.js';
 
 
-import {settings} from './settings.js';
-import {PbOddElementspecEditor} from "./pb-odd-elementspec-editor";
+import { settings } from './settings.js';
+import { PbOddElementspecEditor } from "./pb-odd-elementspec-editor";
 
 /**
  * ODD editor component
@@ -62,17 +60,20 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
             }
             
-            app-drawer-layout{
-                width:100%;
-                height:100%;
+            #layout {
+                display: flex;
+                width: 100%;
             }
 
-            app-drawer {
-                z-index: 100;
-                color: black;
-                background: white;
-                overflow:auto;
+            #drawer {
+                width: 300px;
+                flex: 1;
             }
+
+            .specs {
+                flex: 2;
+            }
+            
             app-drawer .wrapper{
                 padding:10px;
                 height:100%;
@@ -256,7 +257,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
             },
             titleShort: {
                 type: String,
-                reflect: true
+                reflect: true,
+                attribute: 'title-short'
             },
             description: {
                 type: String
@@ -264,8 +266,9 @@ export class PbOddEditor extends pbMixin(LitElement) {
             namespace: {
                 type: String
             },
-            rootpath: {
-                type: String
+            rootPath: {
+                type: String,
+                attribute: 'root-path'
             },
             loading: {
                 type: Boolean
@@ -274,10 +277,12 @@ export class PbOddEditor extends pbMixin(LitElement) {
                 type: String
             },
             outputPrefix: {
-                type: String
+                type: String,
+                attribute: 'output-prefix'
             },
             outputRoot: {
-                type: String
+                type: String,
+                attribute: 'output-root'
             },
             currentSelection: {
                 type: Object
@@ -335,15 +340,16 @@ export class PbOddEditor extends pbMixin(LitElement) {
         return html`
         <iron-ajax id="loadContent" url="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"
                 handle-as="json" content-type="application/x-www-form-urlencoded"
+                with-credentials
                 method="GET"></iron-ajax>
 
         <iron-ajax id="saveOdd" url="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"
                 handle-as="json" content-type="application/x-www-form-urlencoded"
+                with-credentials
                 method="POST"></iron-ajax>
 
-
-        <app-drawer-layout id="layout" fullbleed>
-            <app-drawer id="drawer" slot="drawer">
+        <div id="layout">
+            <div id="drawer">
                 <div class="wrapper">
                     <slot id="slot"></slot>
                     <h3>
@@ -368,7 +374,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
                     <h3>ElementSpecs</h3>
                     <div class="navlist">
                         ${repeat(this.elementSpecs, (i) => i.ident, (i, index) =>
-                        html`
+            html`
                             <paper-item id="es_${i.ident}"
                                 index="${index}"
                                 @click="${(ev) => this._openElementSpec(ev, index)}">${i.ident}</paper-item>
@@ -376,7 +382,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
                     </div>
                 </div>
 
-            </app-drawer>
+            </div>
             <section class="specs" id="specs">
     
                 <paper-card class="metadata">
@@ -390,10 +396,10 @@ export class PbOddEditor extends pbMixin(LitElement) {
                                          @change="${this._inputTitle}"></paper-input>
                             <paper-input id="titleShort" name="short-title" .value="${this.titleShort}" label="Short title"
                                          placeholder="[Short title for display]"
-                                         @change="${(e) => this.titleShort=e.composedPath()[0].value}"></paper-input>
+                                         @change="${(e) => this.titleShort = e.composedPath()[0].value}"></paper-input>
                             <paper-input id="description" name="description" .value="${ifDefined(this.description)}" label="Description"
                                       placeholder="[Description of the ODD]"
-                                      @change="${(e) => this.description=e.composedPath()[0].value}"></paper-input>
+                                      @change="${(e) => this.description = e.composedPath()[0].value}"></paper-input>
                             <paper-input id="source" name="source" ?value="${this.source}" label="Source ODD"
                                          placeholder="[ODD to inherit from]"
                                          @change="${(e) => this.source = e.composedPath()[0].value}"></paper-input>
@@ -411,7 +417,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
                 <div class="editingView">
                     <vaadin-tabs id="tabs" selected="${this.tabIndex}">
                         ${repeat(this.tabs, (i) => i.id, (i, index) =>
-            html`
+                html`
                             <vaadin-tab name="${i}" @click="${(e) => this._selectTab(e, i)}"><span style="padding-right:20px;">${i}</span><paper-icon-button icon="close" @click="${(ev) => this._closeTabHandler(ev, index)}"></paper-icon-button></vaadin-tab>
                         `)}                    
                     </vaadin-tabs>
@@ -420,7 +426,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
                 </div>
             </section>
             
-        </app-drawer-layout>
+        </div>
 
 
         <pb-message id="dialog" hidden></pb-message>
@@ -492,7 +498,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         editSrc.setPath(this.rootPath + '/' + this.odd);
         // this.shadowRoot.getElementById('editSource').setPath(this.rootPath + '/' + this.odd)
 
-        const params = {odd: this.odd, root: this.rootPath};
+        const params = { odd: this.odd, root: this.rootPath };
 
         // this.$.loadContent.params = params;
         this.loadContent.params = params;
@@ -526,7 +532,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         document.dispatchEvent(new CustomEvent('pb-end-update'));
     }
 
-    _updateAutoComplete(){
+    _updateAutoComplete() {
         const jumpTo = this.shadowRoot.getElementById('jumpTo');
         jumpTo.source = this.elementSpecs.map(this._specMapper);
     }
@@ -538,7 +544,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
      * @param index
      * @private
      */
-    _navlistActiveChanged(e,index){
+    _navlistActiveChanged(e, index) {
         // set the paper-item active that got the click
         this.selectedNavIndex = index;
         this.requestUpdate();
@@ -573,7 +579,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.requestUpdate();
     }
 
-    _updateElementspec(elementSpec){
+    _updateElementspec(elementSpec) {
         // const spec = this.elementSpecs.find(theSpec => theSpec.ident === specIdent);
 
         // reset - delete current element if there's one
@@ -669,7 +675,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
     }
 
     _copy(e) {
-       // console.log('odd-editor._copy ', e);
+        // console.log('odd-editor._copy ', e);
         this.clipboard = e.detail.model;
         const clone = JSON.parse(JSON.stringify(e.detail.model));
         this.clipboard = clone;
@@ -709,9 +715,9 @@ export class PbOddEditor extends pbMixin(LitElement) {
     addShowToModel(model) {
         if (model.models) {
             const extendedModels = model.models.map(m => this.addShowToModel(m))
-            return {...model, models: extendedModels, show: false}
+            return { ...model, models: extendedModels, show: false }
         }
-        return {...model, show: false}
+        return { ...model, show: false }
     }
 
     addElementSpec(ev) {
@@ -803,8 +809,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
         const mode = elementSpec.mode ? ` mode="${elementSpec.mode}"` : '';
         const indent2 = indent + this.indentString
         const models = elementSpec.models
-        .map(m => this.serializeModel(indent2, m))
-        .join('')
+            .map(m => this.serializeModel(indent2, m))
+            .join('')
 
         return `${indent}<elementSpec ident="${elementSpec.ident}"${mode}>\n${models}${indent}</elementSpec>\n`;
     }
@@ -878,7 +884,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         const data = this.serializeOdd()
         console.log('serialised ODD:', data)
 
-        this.shadowRoot.getElementById('dialog').show("Saving ...");
+        this.shadowRoot.getElementById('dialog').show("Save", "Saving ...");
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
         saveOdd.params = null;
@@ -892,8 +898,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
         };
         const request = saveOdd.generateRequest();
         request.completes
-        .then(this.handleSaveComplete.bind(this))
-        .catch(this.handleSaveError.bind(this));
+            .then(this.handleSaveComplete.bind(this))
+            .catch(this.handleSaveError.bind(this));
     }
 
     static _renderReport(report) {
@@ -916,7 +922,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
     handleSaveComplete(req) {
         const data = req.response;
-        const report = data.report.map(this._renderReport);
+        const report = data.report.map(PbOddEditor._renderReport);
         const msg = `<div class="list-group">${report.join('')}</div>`;
         this.shadowRoot.getElementById('dialog').set("Saved", msg);
         document.dispatchEvent(new CustomEvent('pb-end-update'));
@@ -993,7 +999,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         // console.log('handleElementSpecChanged ',e);
         const elementSpec = this.elementSpecs.find(es => es.ident === e.detail.ident);
         const index = this.elementSpecs.indexOf(elementSpec)
-        const newSpec = {...elementSpec, models: e.detail.models}
+        const newSpec = { ...elementSpec, models: e.detail.models }
         const allSpecs = [...this.elementSpecs]
         allSpecs.splice(index, 1, newSpec)
         this.elementSpecs = allSpecs;
@@ -1001,7 +1007,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
     }
 
-    _inputTitle(e){
+    _inputTitle(e) {
         this.title = ev.composedPath()[0].value;
     }
 

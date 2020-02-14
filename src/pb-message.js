@@ -1,7 +1,8 @@
-import { LitElement, html,css } from 'lit-element';
+import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
 import '@polymer/paper-button/paper-button';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from "./pb-i18n.js";
 
 /**
@@ -34,37 +35,37 @@ export class PbMessage extends LitElement {
              */
             title: {
                 type: String,
-                reflect:true
+                reflect: true
             },
             /**
              * type of message. Can be either 'message' or 'confirm'. In case of confirm the buttons 'yes' and 'no'
              * will be shown and the dialog becomes modal.
              */
-            type:{
+            type: {
                 type: String
             },
             /**
              * main message text to be shown on dialog.
              */
-            message:{
-                type:String,
-                reflect:true
+            message: {
+                type: String,
+                reflect: true
             }
         };
     }
 
     constructor() {
         super();
-        this.title='';
-        this.message='';
-        this.type='message'; //defaults to 'message'
+        this.title = '';
+        this.message = '';
+        this.type = 'message'; //defaults to 'message'
     }
 
     render() {
         return html`
         <paper-dialog id="modal" ?modal="${this.isConfirm()}">
             <h2 id="title">${this.title}</h2>
-            <paper-dialog-scrollable id="message" class="message" tabindex="0">${this.message}</paper-dialog-scrollable>
+            <paper-dialog-scrollable id="message" class="message" tabindex="0">${unsafeHTML(this.message)}</paper-dialog-scrollable>
 
             <div class="buttons">
                 <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>
@@ -95,13 +96,13 @@ export class PbMessage extends LitElement {
 
 
         // don't know about the purpose of this promise in the original code.
-/*
-        return new Promise(function(resolve, reject) {
-            const confirm = this.shadowRoot.getElementById('confirm');
-            confirm.addEventListener('click', resolve, { once: true });;
-            // this.$.confirm.addEventListener('click', resolve, { once: true });
-        }.bind(this));
-*/
+        /*
+                return new Promise(function(resolve, reject) {
+                    const confirm = this.shadowRoot.getElementById('confirm');
+                    confirm.addEventListener('click', resolve, { once: true });;
+                    // this.$.confirm.addEventListener('click', resolve, { once: true });
+                }.bind(this));
+        */
     }
 
     set(title, message) {
