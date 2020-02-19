@@ -22,14 +22,27 @@ import '@polymer/paper-item';
 export class DtsSelectEndpoint extends pbMixin(LitElement) {
     static get properties() {
         return {
+            /**
+             * The currently selected endpoint. Will be set from URL parameter if present.
+             */
             endpoint: {
                 type: String
             },
             label: {
                 type: String
             },
+            /**
+             * Array of endpoints to select from, each being an object with
+             * properties `url` and `title`.
+             */
             endpoints: {
                 type: Array
+            },
+            /**
+             * Set to true to automatically select the first endpoint
+             */
+            auto: {
+                type: Boolean
             },
             ...super.properties
         };
@@ -51,7 +64,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
         super.updated();
         if (changedProperties.has('endpoints')) {
             const item = this.shadowRoot.getElementById('endpoints').selectedItem;
-            if (!item && this.endpoints.length > 0) {
+            if (!item && this.auto && this.endpoints.length > 0) {
                 this.endpoint = this.endpoints[0].url;
             }
         }
@@ -62,7 +75,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
             <paper-dropdown-menu id="menu" label="${translate(this.label)}">
                 <paper-listbox id="endpoints" slot="dropdown-content" class="dropdown-content" selected="${this.endpoint}" attr-for-selected="value"
                     @selected-item-changed="${this._selected}">
-                    ${this.endpoints.map((ep) => html`<paper-item value="${ep.url}">${ep.title}</paper-item>`)}
+                    ${this.endpoints.map((ep) => html`<paper-item value="${ep.url ? ep.url : ''}">${ep.title}</paper-item>`)}
                 </paper-listbox>
             </paper-dropdown-menu>
         `;
@@ -82,6 +95,9 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
             return;
         }
         const newEndpoint = item.getAttribute('value');
+        if (!newEndpoint) {
+            return;
+        }
         this.setParameter('endpoint', newEndpoint);
         this.pushHistory('dts-endpoint');
         console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
