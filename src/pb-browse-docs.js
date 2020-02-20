@@ -113,6 +113,8 @@ export class PbBrowseDocs extends PbLoad {
 
         this.facets = this.getParametersMatching(/^facet-.*$/);
 
+        this.collection = this.getParameter('collection');
+
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
         document.addEventListener('pb-i18n-update', () => {
             // clear paper-listbox selection after language updates
@@ -361,6 +363,8 @@ export class PbBrowseDocs extends PbLoad {
             link.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.collection = link.getAttribute('data-collection');
+                this.setParameter('collection', this.collection);
+                this.pushHistory('browse collection');
                 console.log('<pb-browse-docs> loading collection %s', this.collection);
                 this.load();
             });
