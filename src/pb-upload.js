@@ -28,9 +28,6 @@ export class PbUpload extends pbMixin(LitElement) {
             accept: {
                 type: String
             },
-            enabled: {
-                type: Boolean
-            },
             ...super.properties
         };
     }
@@ -40,7 +37,6 @@ export class PbUpload extends pbMixin(LitElement) {
             super.connectedCallback();
         }
         this.subscribeTo('pb-collection', (ev) => {
-            this.enabled = ev.detail.writable;
             this.target = ev.detail.collection;
         });
     }
@@ -77,7 +73,6 @@ export class PbUpload extends pbMixin(LitElement) {
     }
 
     render() {
-        this.style.display = this.enabled ? '' : 'none';
         return html`
             <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
                 with-credentials>

@@ -354,6 +354,9 @@ export class PbBrowseDocs extends PbLoad {
             writable,
             collection
         });
+        document.querySelectorAll('[can-write]').forEach((elem) => {
+            elem.disabled = !writable;
+        });
         content.querySelectorAll('[data-collection]').forEach(link => {
             link.addEventListener('click', (ev) => {
                 ev.preventDefault();

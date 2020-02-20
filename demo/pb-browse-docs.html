@@ -83,7 +83,7 @@
                 </div>
                 <pb-progress subscribe="docs"></pb-progress>
                 <main>
-                    <pb-restricted login="login">
+                    <pb-restricted login="login" can-write>
                         <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
                     </pb-restricted>
                     <pb-browse-docs id="document-list" url="collection/"

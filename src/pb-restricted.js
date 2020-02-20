@@ -57,7 +57,7 @@ export class PbRestricted extends pbMixin(LitElement) {
             this.style.display = 'none';
         }
         return html`
-            ${this.show ? html`<slot></slot>` : null}
+            ${this.show && !this.disabled ? html`<slot></slot>` : null}
         `;
     }
 
