@@ -15,21 +15,19 @@
         <pb-demo-snippet>
             <template>
                 <style>
-                body {
-                    --paper-fab-background: #35424b;
-                }
-
                 pb-popover {
-                    --pb-link-color: rgb(224, 140, 13);
+                    color: rgb(224, 140, 13);
                 }
-                pb-popover [slot=alternate] {
+                pb-popover [slot="alternate"] {
+                    display: block;
+                    max-width: 256px;
                     font-size: 13px;
                 }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <main>
-                        <p>Lorem <pb-popover>ipsum dolor<span slot="alternate">At vero eos et accusam et justo duo dolores<br> 
-                                et ea rebum.</span></pb-popover> sit amet, consetetur sadipscing elitr,<br>
+                        <p>Lorem <pb-popover>ipsum dolor sit amet<span slot="alternate">At vero eos et accusam et justo duo dolores<br> 
+                                et ea rebum.</span></pb-popover>, consetetur sadipscing elitr,<br>
                             sed diam nonumy eirmod tempor invidunt ut labore et dolore<br>
                             magna aliquyam erat, sed diam voluptua. At vero eos et accusam<br> 
                             et justo duo dolores et ea "<pb-popover>rebum<span slot="alternate">Popup</span></pb-popover>". Stet clita kasd gubergren,<br> 

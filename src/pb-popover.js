@@ -80,8 +80,8 @@ export class PbPopover extends pbMixin(LitElement) {
                 font: var(--pb-popover-font, var(--pb-base-font));
             }
             #link {
-                color: var(--pb-popover-link-color, var(--pb-link-color));
-                text-decoration: none;
+                color: var(--pb-popover-link-color, var(--pb-link-color, inherit));
+                text-decoration: var(--pb-popover-link-decoration, var(--pb-link-text-decoration, inherit));
                 cursor: text;
             }
             #link.persistent {
