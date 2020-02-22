@@ -14,6 +14,8 @@ import '@polymer/paper-checkbox';
  * @cssprop --pb-search-label-color Color of the label and underline
  * @cssprop --pb-search-input-color Text color for input field
  * @cssprop --pb-search-focus-color Color for label and underline if input has focus
+ * @cssprop --pb-search-suggestions-color Color for the labels shown in the suggestions dropdown
+ * @cssprop --pb-search-suggestions-background Background for the suggestions dropdown
  * @customElement
  * @polymer
  * @demo demo/pb-search.html
@@ -80,6 +82,18 @@ export class PbSearch extends pbMixin(LitElement) {
 
     render() {
         return html`
+            <custom-style>
+                <style>
+                    :host {
+                        --suggestions-item: {
+                            color: var(--pb-search-suggestions-color, black);
+                        };
+                        --suggestions-wrapper: {
+                            background: var(--pb-search-suggestions-background, white);
+                        }
+                    }
+                </style>
+            </custom-style>
             <iron-form id="ironform" allow-redirect="${this.redirect}">
                 <form id="searchPageForm" method="get" action="${this.action}" accept="text/html">
                     <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeHolder)}"
@@ -106,7 +120,7 @@ export class PbSearch extends pbMixin(LitElement) {
         return css`
             :host {
                 --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
-                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000));
+                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000);;
                 --paper-input-container-focus-color: var(--pb-search-focus-color, var(--paper-grey-500, #303030));
             }
         `;
