@@ -832,6 +832,7 @@ export class PbOddModelEditor extends LitElement {
     }
 
     _updateParam(e, index) {
+        this.parameters[index].name = e.detail.name;
         this.parameters[index].value = e.detail.value;
         this._fireModelChanged('parameters', this.parameters);
     }

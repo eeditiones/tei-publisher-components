@@ -48,7 +48,8 @@ export class PbOddParameterEditor extends LitElement {
         return html`
         <div class="wrapper">
             
-            <paper-autocomplete id="combo" text="${this.name}" placeholder="[Param name]" label="Name" .source="[]"></paper-autocomplete>
+            <paper-autocomplete id="combo" text="${this.name}" placeholder="[Param name]" label="Name" 
+                @focused-changed="${this._handleCodeChange}" .source="[]"></paper-autocomplete>
 
             <pb-code-editor id="editor"
                         label="Parameter"
@@ -140,7 +141,6 @@ export class PbOddParameterEditor extends LitElement {
 
     firstUpdated(changedProperties) {
         // console.log('parameters firstupdated ', changedProperties);
-
         this.selected = this.parameters[this.behaviour] || [];
         this.requestUpdate();
     }
@@ -159,13 +159,6 @@ export class PbOddParameterEditor extends LitElement {
         this.dispatchEvent(new CustomEvent('parameter-remove', {}));
     }
 
-    getData() {
-        return {
-            name: this.shadowRoot.getElementById('combo').text,
-            value: this.shadowRoot.getElementById('editor').getSource()
-        };
-    }
-
     /*
         _handleChange(e) {
             console.log('_handleChange ', e);
@@ -178,8 +171,8 @@ export class PbOddParameterEditor extends LitElement {
     _handleCodeChange(e) {
         console.log('_handleCodeChange ', e);
         this.value = this.shadowRoot.getElementById('editor').getSource();
+        this.name = this.shadowRoot.getElementById('combo').text;
         this.dispatchEvent(new CustomEvent('parameter-changed', { composed: true, bubbles: true, detail: { name: this.name, value: this.value } }));
-
     }
 
 

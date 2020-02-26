@@ -702,6 +702,9 @@ export class PbCodeEditor extends LitElement {
      * @returns {String} the sourcecode
      */
     getSource() {
+        if (!this._editor) {
+            return '';
+        }
         return this._editor.getValue();
     }
 
