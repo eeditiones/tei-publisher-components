@@ -42,6 +42,8 @@
     "add-panel": "Add View"
   },
   "browse": {
+    "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
+    "login": "to upload files or see administrative functions (default user: 'tei', password: 'simple').",
     "sort": "Sort by",
     "filter": "Filter by",
     "items": "Found {{count}} item",
@@ -55,7 +57,20 @@
     "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
     "documents": "Documents",
     "collections": "Local Collection",
-    "dts": "Distributed Text Services (Experimental)"
+    "dts": "Distributed Text Services (Experimental)",
+    "demo": {
+      "title": "TEI Publisher Demo Collection",
+      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+    },
+    "playground": {
+      "title": "Playground",
+      "description": "A writable collection into which you can upload your own documents for testing."
+    },
+    "documentation": {
+      "title": "Documentation",
+      "description": "Documentation and News using Docbook XML."
+    },
+    "up": "Up"
   },
   "upload": {
     "upload": "Upload",
@@ -86,9 +101,7 @@
   },
   "dts": {
     "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API",
-    "licence": "Licence",
-    "import": "Import to local database"
+    "note": "Experimental: access other editions which expose the DTS API"
   },
   "odd": {
     "files": "ODD Files",
