@@ -34,10 +34,6 @@ export class PbOddParameterEditor extends LitElement {
             paper-dropdown-menu{
                 align-self:start;
             }
-            pb-code-editor {
-                height: 40px;
-            }
-
             paper-icon-button{
                 align-self:center;
             }

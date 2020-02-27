@@ -151,16 +151,6 @@ export class PbOddEditor extends pbMixin(LitElement) {
             .renditions {
                 margin-top: 10px;
             }
-            .CodeMirror {
-                height: auto;
-                margin-left: 10px;
-                padding-bottom: 7px;
-                margin-bottom: 7px;
-                border-bottom: 1px solid #E0E0E0;
-            }
-            .CodeMirror-empty {
-                color: #C0C0C0;
-            }
             .icons{
                 display:inline-block;
                 white-space: nowrap;

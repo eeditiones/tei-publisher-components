@@ -35,9 +35,6 @@ export class PbOddRenditionEditor extends LitElement {
             paper-dropdown-menu{
             }
             
-            pb-code-editor {
-                height: 40px;
-            }
             paper-icon-button{
                 align-self:center;
             }

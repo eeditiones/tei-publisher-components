@@ -209,16 +209,9 @@ export class PbOddModelEditor extends LitElement {
                 background:var(--paper-grey-200);
             }
             
-            pb-code-editor{
-                height:60px;
-                margin-bottom:20px;
+            pb-code-editor {
+                margin-bottom: 20px;
             }
-            
-            pb-code-editor#template{
-                height:300px;
-                margin-bottom:30px;
-            }
-            
         `;
     }
 

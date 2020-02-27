@@ -216,7 +216,6 @@ export class PbCodeEditor extends LitElement {
                 /* See overflow: hidden in .CodeMirror */
                 margin-bottom: -30px; margin-right: -30px;
                 padding-bottom: 30px;
-                height: 100%;
                 outline: none; /* Prevent dragging from highlighting the element */
                 position: relative;
             }
@@ -253,12 +252,10 @@ export class PbCodeEditor extends LitElement {
 
             .CodeMirror-gutters {
                 position: absolute; left: 0; top: 0;
-                min-height: 100%;
                 z-index: 3;
             }
             .CodeMirror-gutter {
                 white-space: normal;
-                height: 100%;
                 display: inline-block;
                 vertical-align: top;
                 margin-bottom: -30px;
