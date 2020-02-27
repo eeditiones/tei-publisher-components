@@ -329,21 +329,14 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.selectedNavIndex = 0;
     }
 
-    connectedCallback() {
-        console.log('odd-editor connected');
-        super.connectedCallback();
-        const pathname = window.location.pathname;
-        this.basePath = pathname.substring(0, pathname.lastIndexOf('/components'));
-    }
-
     render() {
         return html`
-        <iron-ajax id="loadContent" url="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"
+        <iron-ajax id="loadContent"
                 handle-as="json" content-type="application/x-www-form-urlencoded"
                 with-credentials
                 method="GET"></iron-ajax>
 
-        <iron-ajax id="saveOdd" url="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"
+        <iron-ajax id="saveOdd"
                 handle-as="json" content-type="application/x-www-form-urlencoded"
                 with-credentials
                 method="POST"></iron-ajax>
@@ -502,7 +495,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
         // this.$.loadContent.params = params;
         this.loadContent.params = params;
-
+        this.loadContent.url = `${this.getEndpoint()}/modules/editor.xql`;
         const request = this.loadContent.generateRequest();
 
         request.completes.then(r => this.handleOdd(r));
@@ -592,6 +585,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         newElementSpec.ident = elementSpec.ident;
         newElementSpec.models = elementSpec.models;
         newElementSpec.mode = elementSpec.mode;
+        newElementSpec.endpoint = this._endpoint;
         currentElement.appendChild(newElementSpec);
     }
 
@@ -735,7 +729,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
             ident
         };
         this.loadContent.params = params;
-
+        this.loadContent.url = `${this.getEndpoint()}/modules/editor.xql`;
         let request = this.loadContent.generateRequest();
         request.completes.then(this._handleElementSpecResponse.bind(this));
     }
@@ -887,6 +881,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.shadowRoot.getElementById('dialog').show("Save", "Saving ...");
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
+        saveOdd.url = `${this.getEndpoint()}/modules/editor.xql`;
         saveOdd.params = null;
         saveOdd.body = {
             action: "save",

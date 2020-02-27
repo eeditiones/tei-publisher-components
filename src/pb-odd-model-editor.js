@@ -318,6 +318,9 @@ export class PbOddModelEditor extends LitElement {
             },
             hasCustomBehaviour: {
                 type: Boolean
+            },
+            endpoint: {
+                type: String
             }
         };
     }
@@ -447,6 +450,7 @@ export class PbOddModelEditor extends LitElement {
                 <pb-code-editor id="predicate"
                      code="${this.predicate}"   
                      mode="xquery"
+                     linter="${this.endpoint}/modules/editor.xql"
                      label="Predicate"
                      placeholder="[Define further conditions that have to be met (in xquery)]"
                      @code-changed="${this._updatePredicate}"></pb-code-editor>
@@ -498,6 +502,7 @@ export class PbOddModelEditor extends LitElement {
                                        behaviour="${this.behaviour}"
                                        name="${parameter.name}"
                                        value="${parameter.value}"
+                                       endpoint="${this.endpoint}"
                                        @parameter-remove="${(e) => this._removeParam(e, index)}"
                                        @parameter-changed="${(e) => this._updateParam(e, index)}"
                                        ></pb-odd-parameter-editor>
@@ -545,6 +550,7 @@ export class PbOddModelEditor extends LitElement {
                     .renditions="${model.renditions}"
                     .template="${model.template}"
                     .show="${model.show}"
+                    endpoint="${this.endpoint}"
                     @model-remove="${this._removeModel}"
                     @model-move-down="${this._moveModelDown}"
                     @model-move-up="${this._moveModelUp}"

@@ -55,7 +55,7 @@ export class PbOddParameterEditor extends LitElement {
                         label="Parameter"
                         mode="xquery"
                         code="${this.value}"
-                        linter="${this.linter}"></pb-code-editor>
+                        linter="${this.endpoint}/modules/editor.xql"></pb-code-editor>
 
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
@@ -87,7 +87,7 @@ export class PbOddParameterEditor extends LitElement {
             parameters: {
                 type: Object
             },
-            linter: {
+            endpoint: {
                 type: String
             }
 
@@ -128,7 +128,7 @@ export class PbOddParameterEditor extends LitElement {
         };
 
         this.selected = '';
-        this.linter = '';
+        this.endpoint = '';
 
     }
 
