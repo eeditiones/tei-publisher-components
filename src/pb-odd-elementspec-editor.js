@@ -234,7 +234,6 @@ export class PbOddElementspecEditor extends LitElement {
     }
 
     _setCurrentSelection(index, target) {
-        console.log('_setCurrentSelection ', target);
         const targetModel = this.shadowRoot.querySelectorAll('pb-odd-model-editor')[index];
         if (!targetModel) { return; }
         if (targetModel.hasAttribute('currentselection')) return;

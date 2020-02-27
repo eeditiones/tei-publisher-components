@@ -49,14 +49,13 @@ export class PbOddParameterEditor extends LitElement {
         <div class="wrapper">
             
             <paper-autocomplete id="combo" text="${this.name}" placeholder="[Param name]" label="Name" 
-                @focused-changed="${this._handleCodeChange}" .source="[]"></paper-autocomplete>
+                .source="[]"></paper-autocomplete>
 
             <pb-code-editor id="editor"
                         label="Parameter"
                         mode="xquery"
                         code="${this.value}"
-                        linter="${this.linter}"
-                        @code-changed="${this._handleCodeChange}"></pb-code-editor>
+                        linter="${this.linter}"></pb-code-editor>
 
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
@@ -143,6 +142,9 @@ export class PbOddParameterEditor extends LitElement {
         // console.log('parameters firstupdated ', changedProperties);
         this.selected = this.parameters[this.behaviour] || [];
         this.requestUpdate();
+
+        this.shadowRoot.getElementById('combo').addEventListener('focused-changed', this._handleCodeChange.bind(this));
+        this.shadowRoot.getElementById('editor').addEventListener('code-changed', this._handleCodeChange.bind(this));
     }
 
     refreshEditor() {
