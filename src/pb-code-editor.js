@@ -647,7 +647,6 @@ export class PbCodeEditor extends LitElement {
 
         this._editor = cm;
         if (this.mode === 'xquery' && this.linter !== '') {
-            console.log('linter at ', this.linter);
             CodeMirror.registerHelper("lint", "xquery", this.lintXQuery.bind(this));
         }
     }
@@ -685,7 +684,7 @@ export class PbCodeEditor extends LitElement {
                         message: data.message,
                         severity: "error",
                         from: CodeMirror.Pos(data.line - 1, data.column),
-                        to: CodeMirror.Pos(data.line - 1, data.column + 1)
+                        to: CodeMirror.Pos(data.line - 1, data.column + 3)
                     }]);
                 }
                 else {
