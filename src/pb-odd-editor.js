@@ -830,7 +830,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
             this.serializeAttribute('useSourceRendition', model.sourcerend)
         ].join('')
 
-        const desc = this.desc ? nestedIndent + '<desc>' + this.desc + '</desc>\n' : '';
+        const desc = model.desc ? nestedIndent + '<desc>' + model.desc + '</desc>\n' : '';
 
         // innerXML += this.serializeTag('model', nestedIndent);
         const models = model.models.map(m => this.serializeModel(nestedIndent, m)).join('');
