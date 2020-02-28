@@ -93,7 +93,10 @@ export class PbDemoSnippet extends LitElement {
         source.classList.remove('open');
         this._showCodeLabel = 'Show Code';
 
-        const style = this.querySelector('style');
+        let style = this.querySelector('custom-style');
+        if (!style) {
+            style = this.querySelector('style');
+        }
         let css = '';
         if (style) {
             css = style.innerHTML;
@@ -107,21 +110,23 @@ export class PbDemoSnippet extends LitElement {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <style type="text/css">
-        @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
+    <custom-style>
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
 
-        body {
-            font-size: 16px;
-            font-family: 'Roboto', 'Noto', sans-serif;
-            line-height: 1.42857;
-            font-weight: 300;
-            color: #333333;
+            body {
+                font-size: 16px;
+                font-family: 'Roboto', 'Noto', sans-serif;
+                line-height: 1.42857;
+                font-weight: 300;
+                color: #333333;
 
-            --paper-tooltip-delay-in: 200;
-        }
+                --paper-tooltip-delay-in: 200;
+            }
 
-        ${css}
-    </style>
+            ${css}
+        </style>
+    </custom-style>
     <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
     <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-components-all.js"></script>
