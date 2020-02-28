@@ -632,7 +632,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
     }
 
     static replaceChars(match) {
-        return this.replaceCharMap[match];
+        return PbOddEditor.replaceCharMap[match];
     }
 
     jumpTo(e) {
@@ -990,7 +990,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
     }
 
-    _inputTitle(e) {
+    _inputTitle(ev) {
         this.title = ev.composedPath()[0].value;
     }
 
