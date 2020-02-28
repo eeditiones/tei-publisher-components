@@ -759,11 +759,10 @@ export class PbOddEditor extends pbMixin(LitElement) {
         elem[idx].focus();
     }
 
-
     removeElementSpec(ev) {
         const ident = ev.detail.target.ident;
         this.shadowRoot.getElementById('dialog')
-            .confirm('Delete', `Really delete the element ${ident}?`)
+            .confirm('Delete', `Really delete the element spec for '${ident}'?`)
             .then(() => {
                 const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
                 this.elementSpecs.splice(targetIndex, 1);
@@ -919,11 +918,15 @@ export class PbOddEditor extends pbMixin(LitElement) {
         document.dispatchEvent(new CustomEvent('pb-end-update'));
     }
 
-    static _reload(e) {
-        //todo: or should just the odd be loaded again?
-        if (confirm('Any unsaved changes will be lost. Continue?')) {
-            location.reload(true);
-        }
+    _reload() {
+        this.shadowRoot.getElementById('dialog')
+            .confirm('Reload?', 'Any unsaved changes will be lost. Continue?')
+            .then(() => {
+                this.load();
+                this.tabs = [];
+                this.tabIndex = 0;
+                this.shadowRoot.getElementById('currentElement').innerHTML = '';
+            }, () => null);
     }
 
     _setCurrentSelection(e) {
