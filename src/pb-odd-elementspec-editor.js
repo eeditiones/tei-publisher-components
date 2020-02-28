@@ -219,6 +219,7 @@ export class PbOddElementspecEditor extends LitElement {
 
     _remove(ev) {
         this.dispatchEvent(new CustomEvent('element-spec-removed', {
+            composed: true, bubbles: true,
             detail: { target: this }
         }));
     }

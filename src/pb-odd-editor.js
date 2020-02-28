@@ -441,6 +441,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.addEventListener('current-changed', this._changeSelection);
         this.addEventListener('odd-copy', e => this._copy(e));
         this.addEventListener('odd-paste', e => this._paste(e));
+        this.addEventListener('element-spec-removed', this.removeElementSpec.bind(this));
 
         window.addEventListener('beforeunload', () => 'Any unsaved changes will be lost. Continue?');
 
