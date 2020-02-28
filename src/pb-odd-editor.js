@@ -21,8 +21,7 @@ import '@polymer/paper-checkbox/paper-checkbox';
 import './pb-odd-elementspec-editor.js';
 import './pb-message.js';
 
-
-import { settings } from './settings.js';
+import { get as i18n, translate } from "./pb-i18n.js";
 import { PbOddElementspecEditor } from "./pb-odd-elementspec-editor";
 
 /**
@@ -339,22 +338,22 @@ export class PbOddEditor extends pbMixin(LitElement) {
                         <span>${this.odd}</span>
 
                         <span class="icons">
-                            <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="ODD Source"></paper-icon-button></pb-edit-xml>
-                            <paper-icon-button @click="${this._reload}" icon="refresh" title="Refresh"></paper-icon-button>
-                            <paper-icon-button @click="${this.save}" icon="save" title="Save" ?disabled="${!this.loggedIn}"></paper-icon-button>
+                            <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="${translate('odd.editor.odd-source')}"></paper-icon-button></pb-edit-xml>
+                            <paper-icon-button @click="${this._reload}" icon="refresh" title="${translate('odd.editor.reload')}"></paper-icon-button>
+                            <paper-icon-button @click="${this.save}" icon="save" title="${translate('odd.editor.save')}" ?disabled="${!this.loggedIn}"></paper-icon-button>
                         </span>
                     </h3>
                     <div id="new-element" class="input-group">
-                        <paper-input id="identNew" label="Add Element" always-float-label="always-float-label">
+                        <paper-input id="identNew" label="${translate('odd.editor.add-element')}" always-float-label="always-float-label">
                             <paper-icon-button slot="suffix" @click="${this.addElementSpec}" icon="add" tabindex="-1"></paper-icon-button>
                         </paper-input>
                     </div>
 
                     <div id="jump-to">
-                        <paper-autocomplete id="jumpTo" label="Jump to ..." always-float-label="always-float-label"></paper-autocomplete>
+                        <paper-autocomplete id="jumpTo" label="${translate('odd.editor.jump-to')}" always-float-label="always-float-label"></paper-autocomplete>
                     </div>
                     
-                    <h3>ElementSpecs</h3>
+                    <h3>${translate('odd.editor.specs')}</h3>
                     <div class="navlist">
                         ${repeat(this.elementSpecs, (i) => i.ident, (i, index) =>
             html`
@@ -374,22 +373,22 @@ export class PbOddEditor extends pbMixin(LitElement) {
                             ${this._computedTitle()}
                         </h4>
                         <div slot="collapse-content">
-                            <paper-input id="title" name="title" value="${this.title}" label="Title"
-                                         placeholder="[Title of the ODD]"
+                            <paper-input id="title" name="title" value="${this.title}" label="${translate('odd.editor.title')}"
+                                         placeholder="[${translate('odd.editor.title-placeholder')}]"
                                          @change="${this._inputTitle}"></paper-input>
-                            <paper-input id="titleShort" name="short-title" .value="${this.titleShort}" label="Short title"
-                                         placeholder="[Short title for display]"
+                            <paper-input id="titleShort" name="short-title" .value="${this.titleShort}" label="${translate('odd.editor.title-short')}"
+                                         placeholder="[${translate('odd.editor.title-short-placeholder')}]"
                                          @change="${(e) => this.titleShort = e.composedPath()[0].value}"></paper-input>
-                            <paper-input id="description" name="description" .value="${ifDefined(this.description)}" label="Description"
-                                      placeholder="[Description of the ODD]"
+                            <paper-input id="description" name="description" .value="${ifDefined(this.description)}" label="${translate('odd.editor.description-label')}"
+                                      placeholder="[${translate('editor.odd.description-placeholder')}]"
                                       @change="${(e) => this.description = e.composedPath()[0].value}"></paper-input>
-                            <paper-input id="source" name="source" ?value="${this.source}" label="Source ODD"
-                                         placeholder="[ODD to inherit from]"
+                            <paper-input id="source" name="source" ?value="${this.source}" label="${translate('editor.odd.source-label')}"
+                                         placeholder="[${translate('odd.editor.source-placeholder')}]"
                                          @change="${(e) => this.source = e.composedPath()[0].value}"></paper-input>
                             <paper-checkbox id="useNamespace" checked="${this.useNamespace}"
-                                            title="Check for using a different namespace than TEI"></paper-checkbox>
+                                            title="${translate('odd.editor.use-namespace')}"></paper-checkbox>
                             <paper-input id="namespace" name="namespace" .value="${this.namespace}" label="Namespace" ?disabled="${this.nsDisabled()}"
-                                         placeholder="[Default namespace URI (if not TEI)]"
+                                         placeholder="[${translate('odd.editor.namespace-placeholder')}]"
                                          @change="(e) => this.namespace = e.composedPath()[0].value"></paper-input>
                         </div>
                     </pb-collapse>
@@ -619,10 +618,6 @@ export class PbOddEditor extends pbMixin(LitElement) {
         }
     }
 
-    static resolve(url) {
-        return new URL(url, settings.publisherLocation).href;
-    }
-
     static get replaceCharMap() {
         return {
             '"': '&quot;',
@@ -762,7 +757,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
     removeElementSpec(ev) {
         const ident = ev.detail.target.ident;
         this.shadowRoot.getElementById('dialog')
-            .confirm('Delete', `Really delete the element spec for '${ident}'?`)
+            .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }))
             .then(() => {
                 const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
                 this.elementSpecs.splice(targetIndex, 1);
@@ -773,7 +768,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
                 const tabName = selectedTab.getAttribute('name');
                 const idx = this.tabs.indexOf(tabName);
                 this._closeTab(idx);
-            });
+            }, () => null);
     }
 
     serializeOdd() {
@@ -867,7 +862,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         const data = this.serializeOdd()
         console.log('serialised ODD:', data)
 
-        this.shadowRoot.getElementById('dialog').show("Save", "Saving ...");
+        this.shadowRoot.getElementById('dialog').show(i18n("odd.editor.save"), i18n('odd.editor.saving'));
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
         saveOdd.url = `${this.getEndpoint()}/modules/editor.xql`;
@@ -908,7 +903,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         const data = req.response;
         const report = data.report.map(PbOddEditor._renderReport);
         const msg = `<div class="list-group">${report.join('')}</div>`;
-        this.shadowRoot.getElementById('dialog').set("Saved", msg);
+        this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
         document.dispatchEvent(new CustomEvent('pb-end-update'));
     }
 
@@ -920,7 +915,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
     _reload() {
         this.shadowRoot.getElementById('dialog')
-            .confirm('Reload?', 'Any unsaved changes will be lost. Continue?')
+            .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'))
             .then(() => {
                 this.load();
                 this.tabs = [];
