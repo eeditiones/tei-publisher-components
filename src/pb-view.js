@@ -762,9 +762,6 @@ export class PbView extends pbMixin(LitElement) {
                 grid-column-gap: var(--pb-view-column-gap, 10px);
             }
 
-            #column1, #column2 {
-                @apply --pb-view-column;
-            }
             .margin-note {
                 display: none;
             }
@@ -807,14 +804,6 @@ export class PbView extends pbMixin(LitElement) {
                 float: left;
 
                 font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
-            }
-
-            .content {
-                @apply --pb-content-theme;
-            }
-
-            .highlight {
-                @apply --pb-highlight-theme;
             }
         `;
     }
