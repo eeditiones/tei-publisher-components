@@ -761,22 +761,21 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
 
     removeElementSpec(ev) {
-        if (confirm('really delete?')) {
+        const ident = ev.detail.target.ident;
+        this.shadowRoot.getElementById('dialog')
+            .confirm('Delete', `Really delete the element ${ident}?`)
+            .then(() => {
+                const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
+                this.elementSpecs.splice(targetIndex, 1);
+                this.requestUpdate();
 
-            const ident = ev.detail.target.ident;
-            const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
-            this.elementSpecs.splice(targetIndex, 1);
-            this.requestUpdate();
 
-
-            const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
-            const tabName = selectedTab.getAttribute('name');
-            const idx = this.tabs.indexOf(tabName);
-            this._closeTab(idx);
-
-        }
+                const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
+                const tabName = selectedTab.getAttribute('name');
+                const idx = this.tabs.indexOf(tabName);
+                this._closeTab(idx);
+            });
     }
-
 
     serializeOdd() {
         const ns = this.useNamespace ? ` ns="${this.namespace}"` : '';

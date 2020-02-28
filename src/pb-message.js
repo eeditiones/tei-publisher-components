@@ -70,39 +70,51 @@ export class PbMessage extends LitElement {
             <div class="buttons">
                 <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>
                 <paper-button id="confirm" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.yes')}</paper-button>
-                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</paper-button>
+                <paper-button id="reject" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</paper-button>
             </div>
         </paper-dialog>
         `;
     }
 
-    firstUpdated(changedProperties) {
+    firstUpdated() {
         // this.shadowRoot.getElementById('modal').open();
         this.modal = this.shadowRoot.getElementById('modal');
 
     }
 
+    /**
+     * Open a modal dialog to display a message to the user.
+     * 
+     * @param {string} title The title of the dialog
+     * @param {string} message The message to display in the dialog body
+     */
     show(title, message) {
         this.type = 'message';
         this.set(title, message);
+        this.modal.modal = false;
         this.modal.open();
     }
 
+    /**
+     * Open a modal dialog to prompt the user for confirmation.
+     * Returns a promise which will be resolved upon confirmation
+     * and rejected otherwise.
+     * 
+     * @param {string} title The title of the dialog
+     * @param {string} message The message to display in the dialog body
+     * @returns {Promise} promise which will be resolved upon confirmation and rejected otherwise
+     */
     confirm(title, message) {
         this.type = 'confirm';
         this.set(title, message);
         this.modal.modal = true;
         this.modal.open();
-
-
-        // don't know about the purpose of this promise in the original code.
-        /*
-                return new Promise(function(resolve, reject) {
-                    const confirm = this.shadowRoot.getElementById('confirm');
-                    confirm.addEventListener('click', resolve, { once: true });;
-                    // this.$.confirm.addEventListener('click', resolve, { once: true });
-                }.bind(this));
-        */
+        const confirm = this.shadowRoot.getElementById('confirm');
+        const cancel = this.shadowRoot.getElementById('reject');
+        return new Promise((resolve, reject) => {
+            confirm.addEventListener('click', resolve, { once: true });
+            cancel.addEventListener('click', reject, { once: true })
+        });
     }
 
     set(title, message) {
