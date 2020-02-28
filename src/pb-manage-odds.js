@@ -142,12 +142,12 @@ export class PbManageOdds extends pbMixin(LitElement) {
                         <pb-restricted login="login">
                             <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd">
                                 <h2 slot="title">${translate('menu.admin.recompile')}</h2>
-                                <paper-icon-button icon="update"></paper-icon-button>
+                                <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
                             </pb-ajax>
-                            <paper-icon-button icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>
+                            <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>
                         </pb-restricted>
                         <pb-edit-xml path="${odd.path}">
-                            <paper-icon-button icon="code"></paper-icon-button>
+                            <paper-icon-button title="Edit ODD" icon="code"></paper-icon-button>
                         </pb-edit-xml>
                     </app-toolbar>
                 </div>
@@ -158,8 +158,13 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     <form>
                         <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"></paper-input>
                         <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required></paper-input>
-                        <paper-button .disabled="${!this._valid}" id="createBtn" @click="${this._createODD}"><iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}</paper-button>
-                        <paper-button .disabled="${!this._valid}" id="createByEx" @click="${this._createByExample}"><iron-icon icon="build"></iron-icon>${translate('odd.manage.create-from-example')}</paper-button>
+                        <paper-button .disabled="${!this._valid}" id="createBtn" @click="${this._createODD}">
+                            <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
+                        </paper-button>
+                        <paper-button .disabled="${!this._valid}" id="createByEx" @click="${this._createByExample}">
+                            <iron-icon icon="build"></iron-icon>
+                            ${translate('odd.manage.create-from-example')}
+                        </paper-button>
                     </form>
                 </iron-form>
             </pb-restricted>
@@ -170,7 +175,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 handle-as="json"
                 method="get"
                 with-credentials
-                @response="${this._update}"></iron-ajax>
+                @response="${this._update}">
+            </iron-ajax>
 
             <paper-dialog id="deleteDialog">
                 <h2>${translate('browse.delete')}</h2>
@@ -178,8 +184,12 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     <p>${translate('odd.manage.delete', { file: this.file })}</p>
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">${translate('dialogs.yes')}</paper-button>
-                    <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
+                    <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}">
+                        ${translate('dialogs.yes')}
+                    </paper-button>
+                    <paper-button dialog-confirm="dialog-cancel">
+                        ${translate('dialogs.no')}
+                    </paper-button>
                 </div>
             </paper-dialog>
         `;
@@ -210,6 +220,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
 
             .odd app-toolbar {
                 flex: 1 0;
+                justify-content: flex-end;  
+                padding: 0;  
             }
 
             pb-restricted {
