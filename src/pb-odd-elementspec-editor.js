@@ -13,6 +13,7 @@ import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-styles/color';
 import '@polymer/paper-item/paper-item';
 import '@polymer/iron-collapse/iron-collapse';
+import './pb-message.js';
 import './pb-odd-model-editor.js';
 
 /**
@@ -181,6 +182,7 @@ export class PbOddElementspecEditor extends LitElement {
                 ></pb-odd-model-editor>
             `)}
         </div>
+        <pb-message id="dialog"></pb-message>
         `;
     }
 
@@ -253,13 +255,14 @@ export class PbOddElementspecEditor extends LitElement {
         const { model } = ev.target;
         const index = this.models.indexOf(model)
 
-        if (confirm('really delete?')) {
-            const models = [...this.models];
-            models.splice(index, 1);
-            this.models = models;
-            this.dispatchEvent(new CustomEvent('element-spec-changed', { composed: true, bubbles: true, detail: { action: "models", ident: this.ident, models: this.models } }));
-            // this.requestUpdate();
-        }
+        this.shadowRoot.getElementById('dialog')
+            .confirm('Delete Model?', 'Do you really want to delete the selected model?')
+            .then(() => {
+                const models = [...this.models];
+                models.splice(index, 1);
+                this.models = models;
+                this.dispatchEvent(new CustomEvent('element-spec-changed', { composed: true, bubbles: true, detail: { action: "models", ident: this.ident, models: this.models } }));
+            }, () => null);
     }
 
     _moveModelDown(ev) {
