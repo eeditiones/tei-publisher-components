@@ -26,6 +26,7 @@
     "license": "GPL-3.0-or-later",
     "dependencies": {
         "@cwmr/paper-autocomplete": "^4.0.0",
+        "@lrnwebcomponents/es-global-bridge": "^2.4.0",
         "@polymer/app-layout": "^3.1.0",
         "@polymer/iron-ajax": "^3.0.1",
         "@polymer/iron-collapse": "^3.0.1",
@@ -54,8 +55,8 @@
         "@vaadin/vaadin-tabs": "^3.0.5",
         "@vaadin/vaadin-upload": "^4.2.2",
         "@webcomponents/webcomponentsjs": "latest",
-        "codemirror": "^5.50.2",
         "animejs": "^3.1.0",
+        "codemirror": "^5.50.2",
         "i18next": "^19.0.2",
         "i18next-browser-languagedetector": "^4.0.1",
         "i18next-xhr-backend": "^3.2.2",

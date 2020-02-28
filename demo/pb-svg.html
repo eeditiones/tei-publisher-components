@@ -6,25 +6,51 @@
 
     <title>pb-svg Demo</title>
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script type="module" src="../node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-svg.js"></script>
 </head>
 
 <body>
-    <demo-snippet>
+    <pb-demo-snippet>
         <template>
+            <style>
+                body {
+                    --pb-svg-height: 50vh;
+                    --pb-svg-width: 640px;
+                }
+            </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                <!-- Display facsimile -->
                 <main>
-                    <div>
-                        <pb-svg
-                            url="http://localhost:8080/exist/apps/tei-publisher/resources/images/tei-publisher-logo-contrast-color.svg">
-                        </pb-svg>
-                    </div>
+                    <button onclick="swap();">Swap image</button>
+                    <pb-svg
+                        url="https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg">
+                    </pb-svg>
                 </main>
+                <script type="application/javascript">
+                    const files = [
+                        'https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg',
+                        'https://upload.wikimedia.org/wikipedia/commons/f/f2/Air_conditioning_unit-en.svg',
+                        'https://upload.wikimedia.org/wikipedia/commons/2/21/Horse_anatomy.svg'
+                    ];
+
+                    let current = 0;
+                    function swap() {
+                        current++;
+                        if (current === files.length) {
+                            current = 0;
+                        }
+                        const ev = new CustomEvent('pb-show-annotation', {
+                            detail: {
+                                file: files[current]
+                            }
+                        });
+                        document.dispatchEvent(ev);
+                    }
+                </script>
             </pb-page>
         </template>
-    </demo-snippet>
+    </pb-demo-snippet>
 </body>
 
 </html>
