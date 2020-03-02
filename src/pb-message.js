@@ -63,7 +63,7 @@ export class PbMessage extends LitElement {
 
     render() {
         return html`
-        <paper-dialog id="modal" ?modal="${this.isConfirm()}">
+        <paper-dialog id="modal">
             <h2 id="title">${this.title}</h2>
             <paper-dialog-scrollable id="message" class="message" tabindex="0">${unsafeHTML(this.message)}</paper-dialog-scrollable>
 
@@ -91,7 +91,8 @@ export class PbMessage extends LitElement {
     show(title, message) {
         this.type = 'message';
         this.set(title, message);
-        this.modal.modal = false;
+        this.modal.noCancelOnOutsideClick = false;
+        this.modal.noCancelOnEscKey = false;
         this.modal.open();
     }
 
@@ -107,7 +108,8 @@ export class PbMessage extends LitElement {
     confirm(title, message) {
         this.type = 'confirm';
         this.set(title, message);
-        this.modal.modal = true;
+        this.modal.noCancelOnOutsideClick = true;
+        this.modal.noCancelOnEscKey = true;
         this.modal.open();
         const confirm = this.shadowRoot.getElementById('confirm');
         const cancel = this.shadowRoot.getElementById('reject');
