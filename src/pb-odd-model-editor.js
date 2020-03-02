@@ -18,8 +18,9 @@ import '@polymer/iron-collapse/iron-collapse.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';
 import './pb-code-editor.js';
+import './pb-message.js';
 
-
+import { get as i18n, translate } from "./pb-i18n.js";
 
 
 /**
@@ -437,7 +438,7 @@ export class PbOddModelEditor extends LitElement {
                     </paper-listbox>
                 </paper-dropdown-menu>
 
-                <paper-input id="desc" .value="${this.desc}" placeholder="[Document the model]"
+                <paper-input id="desc" .value="${this.desc}" placeholder="${translate('odd.editor.model.description-placeholder')}"
                     label="Description" @change="${this._inputDesc}"></paper-input>
 
                 <pb-code-editor id="predicate"
@@ -445,7 +446,7 @@ export class PbOddModelEditor extends LitElement {
                      mode="xquery"
                      linter="${this.endpoint}/modules/editor.xql"
                      label="Predicate"
-                     placeholder="[Define further conditions that have to be met (in xquery)]"
+                     placeholder="${translate('odd.editor.model.predicate-placeholder')}"
                      @code-changed="${this._updatePredicate}"></pb-code-editor>
                
                 ${this._isModel()
@@ -463,15 +464,15 @@ export class PbOddModelEditor extends LitElement {
                                         `)}
                                     </paper-listbox>
                                 </paper-dropdown-menu>
-                                <span style="align-self:center;justify-self: center;"> or </span>
-                                <paper-input id="custombehaviour" label="" .value="" @input="${this._handleCustomBehaviour}" placeHolder="[Custom Behaviour]"></paper-input>
+                                <span style="align-self:center;justify-self: center;"> ${translate('odd.editor.model.link-with-or')} </span>
+                                <paper-input id="custombehaviour" label="" .value="" @input="${this._handleCustomBehaviour}" placeHolder="${translate('odd.editor.model.custom-behaviour-placeholder')}"></paper-input>
                                 <span></span>
                             </div>
 
                                 
     
                             <paper-input id="css" .value="${this.css}"
-                                placeholder="[Define CSS class name (for external CSS)]"
+                                placeholder="${translate('odd.editor.model.css-class-placeholder')}"
                                 label="CSS Class"
                                 @change="${this._inputCss}"></paper-input>
                                 
@@ -479,7 +480,7 @@ export class PbOddModelEditor extends LitElement {
                                              code="${this.template}"
                                              mode="${this.output}"
                                              label="Template"
-                                             placeholder="[Define code template to apply to content]"
+                                             placeholder="${translate('odd.editor.model.template-placeholder')}"
                                              @code-changed="${this._updateTemplate}"></pb-code-editor>
                         </div>
         
@@ -553,8 +554,9 @@ export class PbOddModelEditor extends LitElement {
                     ></pb-odd-model-editor>
             `)}
     
-            </div>
+            </div> 
         </form> 
+        <pb-message id="dialog"></pb-message>
         `;
     }
 
@@ -698,19 +700,21 @@ export class PbOddModelEditor extends LitElement {
     }
 
     _removeModel(ev) {
+        console.log('_removeModel ', ev);
         ev.stopPropagation();
         const { model } = ev.target;
         const index = this.model.models.indexOf(model)
 
-        if (confirm('really delete?')) {
-            const oldModel = this.model;
-            const models = [...this.model.models];
-            models.splice(index, 1);
-            this.model = { ...oldModel, models };
-            this.models = models;
-            this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
-            this.requestUpdate();
-        }
+        this.shadowRoot.getElementById('dialog')
+            .confirm(i18n('odd.editor.model.delete-model-label'), i18n('odd.editor.model.delete-model-message'))
+            .then(() => {
+                const oldModel = this.model;
+                const models = [...this.model.models];
+                models.splice(index, 1);
+                this.model = { ...oldModel, models };
+                this.models = models;
+                this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
+            }, () => null);
     }
 
     _moveModelDown(ev) {

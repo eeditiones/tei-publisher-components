@@ -8,6 +8,8 @@ import addonDisplayPlaceholder from "../assets/codemirror/addon/display/placehol
 import addonEditMatchBracket from "../assets/codemirror/addon/edit/matchbrackets.js";
 import addonLint from "../assets/codemirror/addon/lint/lint.js";
 
+import { get as i18n, translate } from "./pb-i18n.js";
+
 modeXquery(CodeMirror);
 modeCss(CodeMirror);
 addonDisplayPlaceholder(CodeMirror);
@@ -588,7 +590,7 @@ export class PbCodeEditor extends LitElement {
         super();
         this.code = '';
         this.mode = 'javascript';
-        this.placeholder = '[Empty]';
+        this.placeholder = i18n('odd.editor.model.empty');
         this.tabSize = 2;
         this.label = '';
         this.linter = '';

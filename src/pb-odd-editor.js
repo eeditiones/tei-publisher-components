@@ -380,9 +380,9 @@ export class PbOddEditor extends pbMixin(LitElement) {
                                          placeholder="[${translate('odd.editor.title-short-placeholder')}]"
                                          @change="${(e) => this.titleShort = e.composedPath()[0].value}"></paper-input>
                             <paper-input id="description" name="description" .value="${ifDefined(this.description)}" label="${translate('odd.editor.description-label')}"
-                                      placeholder="[${translate('editor.odd.description-placeholder')}]"
+                                      placeholder="[${translate('odd.editor.description-placeholder')}]"
                                       @change="${(e) => this.description = e.composedPath()[0].value}"></paper-input>
-                            <paper-input id="source" name="source" ?value="${this.source}" label="${translate('editor.odd.source-label')}"
+                            <paper-input id="source" name="source" ?value="${this.source}" label="${translate('odd.editor.source-label')}"
                                          placeholder="[${translate('odd.editor.source-placeholder')}]"
                                          @change="${(e) => this.source = e.composedPath()[0].value}"></paper-input>
                             <paper-checkbox id="useNamespace" checked="${this.useNamespace}"

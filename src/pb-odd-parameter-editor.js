@@ -10,6 +10,8 @@ import '@cwmr/paper-autocomplete/paper-autocomplete';
 
 import './pb-code-editor.js';
 
+import { get as i18n, translate } from "./pb-i18n.js";
+
 /**
  * represents an odd parameter element for editing
  *
@@ -44,7 +46,7 @@ export class PbOddParameterEditor extends LitElement {
         return html`
         <div class="wrapper">
             
-            <paper-autocomplete id="combo" text="${this.name}" placeholder="[Param name]" label="Name" 
+            <paper-autocomplete id="combo" text="${this.name}" placeholder="${translate('odd.editor.model.param-name-placeholder')}" label="Name" 
                 .source="[]"></paper-autocomplete>
 
             <pb-code-editor id="editor"

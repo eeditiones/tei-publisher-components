@@ -16,6 +16,8 @@ import '@polymer/iron-collapse/iron-collapse';
 import './pb-message.js';
 import './pb-odd-model-editor.js';
 
+import { get as i18n, translate } from "./pb-i18n.js";
+
 /**
  * A wrapper for the popular codemirror code editor.
  *
@@ -256,7 +258,7 @@ export class PbOddElementspecEditor extends LitElement {
         const index = this.models.indexOf(model)
 
         this.shadowRoot.getElementById('dialog')
-            .confirm('Delete Model?', 'Do you really want to delete the selected model?')
+            .confirm(i18n('odd.editor.model.delete-model-label'), i18n('odd.editor.model.delete-model-message'))
             .then(() => {
                 const models = [...this.models];
                 models.splice(index, 1);
