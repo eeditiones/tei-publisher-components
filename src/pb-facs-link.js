@@ -43,9 +43,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`
-            <a href="#" @mouseover="${this._mouseoverListener}"><slot></slot></a>
-        `;
+        return html`<a href="#" @mouseover="${this._mouseoverListener}" @click="${(ev) => ev.preventDefault()}"><slot></slot></a>`;
     }
 
     static get styles() {
