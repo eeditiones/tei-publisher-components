@@ -456,8 +456,6 @@ export class PbOddModelEditor extends LitElement {
                                 <paper-dropdown-menu label="behaviour" id="behaviourMenu" ?disabled="${this.hasCustomBehaviour}">
                                     <paper-listbox id="behaviour" slot="dropdown-content" attr-for-selected="value"
                                                    selected="${this.behaviour}" @iron-select="${this._selectBehaviour}">
-                                           <paper-item value=""></paper-item>
-    
                                         ${this.behaviours.map((item) =>
                     html`
                                             <paper-item value="${item}">${item}</paper-item>
@@ -465,7 +463,7 @@ export class PbOddModelEditor extends LitElement {
                                     </paper-listbox>
                                 </paper-dropdown-menu>
                                 <span style="align-self:center;justify-self: center;"> ${translate('odd.editor.model.link-with-or')} </span>
-                                <paper-input id="custombehaviour" label="" .value="" @input="${this._handleCustomBehaviour}" placeHolder="${translate('odd.editor.model.custom-behaviour-placeholder')}"></paper-input>
+                                <paper-input id="custombehaviour" label="" @input="${this._handleCustomBehaviour}" placeHolder="${translate('odd.editor.model.custom-behaviour-placeholder')}"></paper-input>
                                 <span></span>
                             </div>
 
@@ -558,6 +556,15 @@ export class PbOddModelEditor extends LitElement {
         </form> 
         <pb-message id="dialog"></pb-message>
         `;
+    }
+
+    firstUpdated() {
+        super.firstUpdated();
+
+        this.hasCustomBehaviour = this.behaviours.indexOf(this.behaviour) < 0;
+        if (this.hasCustomBehaviour) {
+            this.shadowRoot.getElementById('custombehaviour').value = this.behaviour;
+        }
     }
 
     updated(_changedProperties) {
@@ -902,6 +909,7 @@ export class PbOddModelEditor extends LitElement {
 
         // en-/disable behaviour menu
         if (this.behaviour === '') {
+            this.behaviour = 'inline';
             this.hasCustomBehaviour = false;
         } else {
             this.hasCustomBehaviour = true;
