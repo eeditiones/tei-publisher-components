@@ -2,7 +2,6 @@
   "language": "Sprache",
   "menu": {
     "documentation": "Dokumentation",
-    "appGenerator": "Anwendungsgenerator",
     "admin": {
       "appGenerator": "Anwendung generieren",
       "edit-odd": "ODD editieren",
