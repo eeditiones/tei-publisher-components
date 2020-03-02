@@ -385,11 +385,10 @@ export class PbOddEditor extends pbMixin(LitElement) {
                             <paper-input id="source" name="source" ?value="${this.source}" label="${translate('odd.editor.source-label')}"
                                          placeholder="[${translate('odd.editor.source-placeholder')}]"
                                          @change="${(e) => this.source = e.composedPath()[0].value}"></paper-input>
-                            <paper-checkbox id="useNamespace" checked="${this.useNamespace}"
-                                            title="${translate('odd.editor.use-namespace')}"></paper-checkbox>
-                            <paper-input id="namespace" name="namespace" .value="${this.namespace}" label="Namespace" ?disabled="${this.nsDisabled()}"
+                            <paper-checkbox id="useNamespace" @change="${this.setUseNamespace}">${translate('odd.editor.use-namespace')}</paper-checkbox>
+                            <paper-input id="namespace" name="namespace" value="${this.namespace}" label="Namespace" ?disabled="${!this.useNamespace}"
                                          placeholder="[${translate('odd.editor.namespace-placeholder')}]"
-                                         @change="(e) => this.namespace = e.composedPath()[0].value"></paper-input>
+                                         @change="${(e) => this.namespace = e.composedPath()[0].value}"></paper-input>
                         </div>
                     </pb-collapse>
                 </paper-card>
@@ -417,6 +416,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
     }
 
     firstUpdated(changedProperties) {
+        this.shadowRoot.getElementById('useNamespace').checked = this.useNamespace;
+
         // console.log('firstUpdated ', changedProperties);
         // console.log('firstUpdated endpoint', this.getEndpoint());
         // console.log('firstUpdated rootpath', this.rootPath);
@@ -460,6 +461,10 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
     }
 
+    setUseNamespace() {
+        this.useNamespace = this.shadowRoot.getElementById('useNamespace').checked;
+    }
+
     async load() {
         if (this.loading) {
             return;
@@ -498,8 +503,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.titleShort = data.titleShort;
         this.description = data.description;
 
-        this.namespace = data.namespace;
-        this.useNamespace = (this.namespace != null);
+        this.namespace = data.namespace != null ? data.namespace : '';
+        this.useNamespace = data.namespace != null;
 
         //update elementSpecs
         this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
@@ -513,6 +518,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
 
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
+
+        document.title = this.titleShort;
     }
 
     _updateAutoComplete() {
