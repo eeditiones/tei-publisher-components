@@ -103,11 +103,11 @@ export class PbOddParameterEditor extends LitElement {
         this.currentParameters = [];
         this.parameters = {
             '': [],
-            alternate: ["default", "alternate"],
+            alternate: ["default", "alternate", "persistent"],
             anchor: ["content", "id"],
             block: ["content"],
             body: ["content"],
-            break: ["content", "type"],
+            break: ["content", "type", "label"],
             cell: ["content"],
             cit: ["content", "source"],
             "document": ["content"],
@@ -115,9 +115,9 @@ export class PbOddParameterEditor extends LitElement {
             graphic: ["content", "url", "width", "height", "scale", "title"],
             heading: ["content", "level"],
             inline: ["content"],
-            link: ["content", "link"],
-            list: ["content"],
-            listItem: ["content"],
+            link: ["content", "uri", "target"],
+            list: ["content", "type"],
+            listItem: ["content", "n"],
             metadata: ["content"],
             note: ["content", "place", "label"],
             omit: [],
@@ -126,7 +126,8 @@ export class PbOddParameterEditor extends LitElement {
             section: ["content"],
             table: ["content"],
             text: ["content"],
-            title: ["content"]
+            title: ["content"],
+            webcomponent: ["content", "name"]
         };
 
         this.selected = '';
