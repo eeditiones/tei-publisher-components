@@ -47,7 +47,7 @@ export class PbOddParameterEditor extends LitElement {
         <div class="wrapper">
             
             <paper-autocomplete id="combo" text="${this.name}" placeholder="${translate('odd.editor.model.param-name-placeholder')}" label="Name" 
-                .source="[]"></paper-autocomplete>
+                .source="${this._currentParameters}"></paper-autocomplete>
 
             <pb-code-editor id="editor"
                         label="Parameter"
@@ -85,6 +85,9 @@ export class PbOddParameterEditor extends LitElement {
             parameters: {
                 type: Object
             },
+            _currentParameters: {
+                type: Array
+            },
             endpoint: {
                 type: String
             }
@@ -97,9 +100,10 @@ export class PbOddParameterEditor extends LitElement {
         this.name = '';
         this.value = '';
         this.behaviour = '';
+        this.currentParameters = [];
         this.parameters = {
             '': [],
-            alternate: ["content", "default", "alternate"],
+            alternate: ["default", "alternate"],
             anchor: ["content", "id"],
             block: ["content"],
             body: ["content"],
@@ -116,7 +120,7 @@ export class PbOddParameterEditor extends LitElement {
             listItem: ["content"],
             metadata: ["content"],
             note: ["content", "place", "label"],
-            omit: ["content"],
+            omit: [],
             paragraph: ["content"],
             row: ["content"],
             section: ["content"],
@@ -134,6 +138,13 @@ export class PbOddParameterEditor extends LitElement {
         super.connectedCallback();
         this.value = this.value.trim();
         this.dispatchEvent(new CustomEvent('parameter-connected', { composed: true, bubbles: true, detail: { target: this } }));
+    }
+
+    attributeChangedCallback(name, old, value) {
+        super.attributeChangedCallback(name, old, value);
+        if (name === 'behaviour') {
+            this._currentParameters = this.parameters[value];
+        }
     }
 
     firstUpdated(changedProperties) {
