@@ -8,7 +8,7 @@
       "appGenerator": "Generator aplikacji",
       "edit-odd": "Edytuj ODD"
     },
-    "news": "News",
+    "news": "Aktualności",
     "download": {
       "title": "Pobierz",
       "pdf-latex": "PDF (via LaTeX)",
@@ -17,19 +17,19 @@
       "fo-source": "FO (kod źródłowy)",
       "latex-source": "TeX (kod źródłowy)",
       "single-page": "Jedna strona",
-      "epub-download": "Download as epub ebook",
-      "view-tei": "View TEI XML"
+      "epub-download": "Pobierz w formacie ePub",
+      "view-tei": "Widok TEI XML"
     }
   },
   "dialogs": {
-    "error": "Ooops",
+    "error": "Auć",
     "close": "Zamknj",
     "yes": "Tak",
     "no": "Nie",
     "serverError": "Zapytanie do serwera nie powiodło się.",
     "generatingFile": "Generowanie pliku...",
     "downloadMessage": "Generowanie pliku do pobrania może potrwać kilka minut. Proszę czekać. To okno powinno zamknąć się automatycznie kiedy pobieranie zostanie zakończone.",
-    "loading": "Loading ..."
+    "loading": "Ładowanie ..."
   },
   "document": {
     "contents": "Treść",
@@ -70,7 +70,7 @@
       "title": "Dokumentacja",
       "description": "Dokumentacja oraz Nowości (w formacie Docbook XML)."
     },
-    "up": "Up"
+    "up": "W górę"
   },
   "upload": {
     "upload": "Prześlij",
