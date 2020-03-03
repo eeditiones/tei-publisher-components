@@ -690,6 +690,7 @@ export class PbOddModelEditor extends LitElement {
             models: [],
             parameters: [],
             renditions: [],
+            template: '',
             show: true
         };
 
