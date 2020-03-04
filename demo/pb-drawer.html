@@ -28,19 +28,29 @@
                     --paper-fab-background: #35424b;
                 }
 
-                pb-progress {
-                    position: absolute;
-                    top: 0;
-                    width: 100%;
-                }
                 demo-snippet {
                     position: relative;
                 }
 
                 main {
+                    height: 70vh;
+                    overflow: auto;
                     display: flex;
                     justify-content: center;
                     position: relative;
+                }
+
+                pb-drawer {
+                    background-color: #f0f0f0;
+                }
+                
+                pb-drawer ul {
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                }
+                pb-drawer ul ul {
+                    padding-left: 20px;
                 }
 
                 .toolbar {
@@ -48,7 +58,7 @@
                 }
 
                 pb-navigation {
-                    position: absolute;
+                    position: fixed;
                     bottom: 45%;
                     --paper-fab-background: #35424b;
                     color: white;
@@ -68,7 +78,7 @@
                         <paper-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list"></paper-icon-button>
                     </div>
                     <pb-progress></pb-progress>
-                    <pb-drawer toggle="tocToggle" class="tocDrawer" emit="toc" subscribe="transcription">
+                    <pb-drawer id="toc" toggle="tocToggle" class="tocDrawer" emit="toc" subscribe="transcription">
                         <div class="drawer-content">
                             <h3>
                                 <pb-i18n key="document.contents">Contents</pb-i18n>

@@ -13,7 +13,6 @@ import "@polymer/iron-ajax";
  *
  * @customElement  pb-select-template
  * @polymer
- * @demo demo/pb-select-odd.html
  * @appliesMixin pbMixin
  */
 export class PbSelectTemplate extends pbMixin(LitElement) {

@@ -120,7 +120,7 @@ export class PbSearch extends pbMixin(LitElement) {
         return css`
             :host {
                 --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
-                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000);;
+                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000));
                 --paper-input-container-focus-color: var(--pb-search-focus-color, var(--paper-grey-500, #303030));
             }
         `;
