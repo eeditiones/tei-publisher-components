@@ -316,6 +316,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.tabs = [];
         this.tabIndex = undefined;
         this.selectedNavIndex = 0;
+        this.cssFile = '';
     }
 
     render() {
@@ -389,6 +390,9 @@ export class PbOddEditor extends pbMixin(LitElement) {
                             <paper-input id="namespace" name="namespace" value="${this.namespace}" label="Namespace" ?disabled="${!this.useNamespace}"
                                          placeholder="[${translate('odd.editor.namespace-placeholder')}]"
                                          @change="${(e) => this.namespace = e.composedPath()[0].value}"></paper-input>
+                            <paper-input name="cssFile" value="${this.cssFile}" label="External CSS File"
+                                placeholder="[External CSS file with additional class definitions]"
+                                @change="${(e) => this.cssFile = e.composedPath()[0].value}"></paper-input>
                         </div>
                     </pb-collapse>
                 </paper-card>
@@ -502,14 +506,14 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.title = data.title;
         this.titleShort = data.titleShort;
         this.description = data.description;
-
+        this.cssFile = data.cssFile == null ? '' : data.cssFile;
         this.namespace = data.namespace != null ? data.namespace : '';
         this.useNamespace = data.namespace != null;
 
-        //update elementSpecs
+        // update elementSpecs
         this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
 
-        //init auto-complete list
+        // init auto-complete list
         // const jumpTo = this.shadowRoot.getElementById('jumpTo');
         // jumpTo.source = this.elementSpecs.map(this._specMapper);
         this._updateAutoComplete();
@@ -519,7 +523,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
 
-        document.title = this.titleShort;
+        document.title = this.titleShort || this.title;
     }
 
     _updateAutoComplete() {
@@ -784,10 +788,11 @@ export class PbOddEditor extends pbMixin(LitElement) {
         const description = this.description ? ` <desc>${this.description}</desc>` : '';
         const title = `${this.indentString}<title>${this.title}${description}</title>\n`;
         const titleShort = this.titleShort ? `${this.indentString}<title type="short">${this.titleShort}</title>\n` : '';
+        const cssFile = this.cssFile ? `${this.indentString}<rendition source="${this.cssFile}"/>\n` : '';
         const elementSpecs = this.elementSpecs
             .map(e => this.serializeElementSpec(this.indentString, e)).join('');
 
-        return `<schemaSpec xmlns="http://www.tei-c.org/ns/1.0" xmlns:pb="http://teipublisher.com/1.0"${ns}${source}>\n${title}${titleShort}${elementSpecs}</schemaSpec>\n`
+        return `<schemaSpec xmlns="http://www.tei-c.org/ns/1.0" xmlns:pb="http://teipublisher.com/1.0"${ns}${source}>\n${title}${titleShort}${cssFile}\n${elementSpecs}</schemaSpec>\n`
     }
 
     serializeElementSpec(indent, elementSpec) {
