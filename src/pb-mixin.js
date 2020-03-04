@@ -447,7 +447,6 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 return doc;
             }
         }
-        console.log('document not found: %s', this.src);
         return null;
     }
 
