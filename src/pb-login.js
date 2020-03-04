@@ -129,7 +129,7 @@ export class PbLogin extends pbMixin(LitElement) {
             }                
             </a>
 
-            <paper-dialog id="loginDialog" no-cancel-on-outside-click no-cancel-on-esc-key>
+            <paper-dialog id="loginDialog">
                 <h2>${translate('login.login')}</h2>
                 <paper-dialog-scrollable>
                     <form action="login">
