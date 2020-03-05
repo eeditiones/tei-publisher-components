@@ -5,37 +5,6 @@ if (!window.TeiPublisher) {
     TeiPublisher.url = new URL(window.location.href);
 }
 
-const ARROW_KEY = /^arrow/;
-
-const registeredElements = {};
-
-function normalizeKey(key) {
-    key = key.toLowerCase();
-    if (ARROW_KEY.test(key)) {
-        return key.replace('arrow', '');
-    }
-    return key;
-}
-
-const handleKeydown = event => {
-    if (event.defaultPrevented) {
-        return; // Should do nothing if the key event was already consumed.
-    }
-
-    const key = normalizeKey(event.key);
-    if (registeredElements[key]) {
-        // Use `every` so we can break from the loop if there's an override
-        registeredElements[key].every(element => {
-            event.stopPropagation();
-            element.keyPressed(key);
-            // If the element is not an override, return true to keep iterating over elements
-            return !element.override;
-        });
-    }
-};
-
-window.addEventListener('keydown', handleKeydown, true);
-
 /**
  * Global set to record the names of the channels for which a 
  * `pb-ready` event was fired.
@@ -119,23 +88,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 type: Boolean,
                 reflect: true
             },
-            /**
-             * Register a shortcut key: when pressed, the handler function assigned to property `keyPressed`
-             * will be called. By default the function does nothing and should be set by subclasses.
-             */
-            keyboard: {
-                type: String
-            },
             override: {
                 type: Boolean
-            },
-            /**
-             * Can be assigned to a keyboard handler function which will be called whenever the key
-             * named by property `keyboard` is pressed. The function receives no arguments.
-             */
-            keyPressed: {
-                type: Function,
-                attribute: 'key-pressed'
             },
             _endpoint: {
                 type: String
@@ -146,7 +100,6 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     constructor() {
         super();
         this._isReady = false;
-        this.keyPressed = function () { };
         this.disabled = false;
     }
 
@@ -155,15 +108,6 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         PbMixin.waitOnce('pb-page-ready', (options) => {
             this._endpoint = options.endpoint;
         });
-    }
-
-    attributeChangedCallback(attr, oldValue, newValue) {
-        super.attributeChangedCallback(attr, oldValue, newValue);
-        if (attr === 'keyboard') {
-            this.__register(newValue, oldValue);
-        } else if (attr === 'override') {
-            this.__override(this.keyboard);
-        }
     }
 
     /**
@@ -534,40 +478,5 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     getEndpoint() {
         return this._endpoint;
-    }
-
-    __register(newKey, oldKey) {
-        oldKey = oldKey ? normalizeKey(oldKey) : oldKey;
-        newKey = newKey ? normalizeKey(newKey) : newKey;
-        if (oldKey && registeredElements[oldKey]) {
-            const i = registeredElements[oldKey].indexOf(this);
-            if (i != -1) {
-                registeredElements[oldKey].splice(i, 1);
-                if (registeredElements[oldKey].length === 0) {
-                    delete registeredElements[oldKey];
-                }
-            }
-        }
-        if (newKey) {
-            if (!registeredElements[newKey]) {
-                registeredElements[newKey] = [];
-            }
-            if (this.override) {
-                registeredElements[newKey].unshift(this);
-            } else {
-                registeredElements[newKey].push(this);
-            }
-        }
-    }
-
-    __override(key) {
-        key = key ? normalizeKey(key) : key;
-        if (key && registeredElements[key]) {
-            const i = registeredElements[key].indexOf(this);
-            if (i != -1) {
-                registeredElements[key].splice(i, 1);
-                registeredElements[key].unshift(this);
-            }
-        }
     }
 }

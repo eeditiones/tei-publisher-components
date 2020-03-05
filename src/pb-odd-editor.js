@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { LitElement, html, css } from 'lit-element'
 import { pbMixin } from './pb-mixin.js';
+import { pbHotkeys } from './pb-hotkeys.js';
 import "./pb-drawer.js";
 import { repeat } from 'lit-html/directives/repeat';
 import { ifDefined } from 'lit-html/directives/if-defined';
@@ -31,7 +32,7 @@ import { PbOddElementspecEditor } from "./pb-odd-elementspec-editor";
  * @polymer
  * @demo demo/pb-odd-editor.html
  */
-export class PbOddEditor extends pbMixin(LitElement) {
+export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     static get styles() {
         return css`
@@ -289,7 +290,6 @@ export class PbOddEditor extends pbMixin(LitElement) {
                 type: Number,
                 reflect: true
             }
-
         };
     }
 
@@ -317,6 +317,9 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.tabIndex = undefined;
         this.selectedNavIndex = 0;
         this.cssFile = '';
+        this.hotkeys = {
+            save: 'ctrl+shift+s'
+        }
     }
 
     render() {
@@ -341,7 +344,8 @@ export class PbOddEditor extends pbMixin(LitElement) {
                         <span class="icons">
                             <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="${translate('odd.editor.odd-source')}"></paper-icon-button></pb-edit-xml>
                             <paper-icon-button @click="${this._reload}" icon="refresh" title="${translate('odd.editor.reload')}"></paper-icon-button>
-                            <paper-icon-button @click="${this.save}" icon="save" title="${translate('odd.editor.save')}" ?disabled="${!this.loggedIn}"></paper-icon-button>
+                            <paper-icon-button @click="${this.save}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}" 
+                                ?disabled="${!this.loggedIn}"></paper-icon-button>
                         </span>
                     </h3>
                     <div id="new-element" class="input-group">
@@ -462,7 +466,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         this.load();
         this.inited = true;
 
-
+        this.registerHotkey('save', this.save.bind(this));
     }
 
     setUseNamespace() {
@@ -587,6 +591,7 @@ export class PbOddEditor extends pbMixin(LitElement) {
         newElementSpec.models = elementSpec.models;
         newElementSpec.mode = elementSpec.mode;
         newElementSpec.endpoint = this._endpoint;
+        newElementSpec.hotkeys = this.hotkeys;
         currentElement.appendChild(newElementSpec);
     }
 

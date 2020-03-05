@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
+import { pbHotkeys } from "./pb-hotkeys.js";
 
 /**
  * Navigate backward/forward in a document. This component does not implement any functionality itself.
@@ -11,7 +12,7 @@ import { pbMixin } from './pb-mixin';
  * @appliesMixin pbMixin
  * @demo demo/pb-view.html
  */
-export class PbNavigation extends pbMixin(LitElement) {
+export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     static get properties() {
         return {
@@ -24,6 +25,12 @@ export class PbNavigation extends pbMixin(LitElement) {
             },
             _buttonClass: {
                 type: String
+            },
+            /**
+             * Register a shortcut key, e.g. 'left' or 'shift+left'
+             */
+            keyboard: {
+                type: String
             }
         };
     }
@@ -32,13 +39,20 @@ export class PbNavigation extends pbMixin(LitElement) {
         super();
         this.direction = 'forward';
         this._buttonClass = '';
-        this.keyPressed = (ev) => this.emitTo('pb-navigate', { direction: this.direction });
     }
 
     connectedCallback() {
         super.connectedCallback();
 
+        if (this.keyboard) {
+            this.hotkeys = {
+                'next': this.keyboard
+            }
+        }
+        
         this.subscribeTo('pb-update', this._update.bind(this));
+
+        this.registerHotkey('next', () => this.emitTo('pb-navigate', { direction: this.direction }));
     }
 
     _update(ev) {
