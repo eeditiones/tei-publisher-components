@@ -1,16 +1,28 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-icon';
+import '@polymer/iron-icons';
 import '@polymer/iron-collapse';
 
 
 /**
- * An iron-collapse with additional trigger section and optional expand/collapse icons.
- * Mainly used for the table of contents.
+ * A collapsible block: in collapsed state it only shows a header and expands if clicked.
+ * The header should go into slot `collapse-trigger`, the content into `collapse-content`.
+ * Example:
+ * 
+ * ```html
+ * <pb-collapse>
+ *   <div slot="collapse-trigger">
+ *       Metadata
+ *   </div>
+ *   <pb-view slot="collapse-content" src="document1" subscribe="transcription" xpath="//teiHeader"></pb-view>
+ * </pb-collapse>
+ * ```
  *
  * @customElement
  * @polymer
  * @appliesMixin pbMixin
+ * @demo ../demo/pb-collapse.html
  */
 export class PbCollapse extends pbMixin(LitElement) {
     static get properties() {
