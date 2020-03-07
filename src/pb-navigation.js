@@ -58,14 +58,14 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
     _update(ev) {
         if (this.direction === 'forward') {
             if (ev.detail.data.next) {
-                this._buttonClass = '';
+                this.disabled = false;
             } else {
-                this._buttonClass = 'inactive';
+                this.disabled = true;
             }
         } else if (ev.detail.data.previous) {
-                this._buttonClass = '';
+            this.disabled = false;
         } else {
-            this._buttonClass = 'inactive';
+            this.disabled = true;
         }
     }
 
@@ -75,7 +75,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     render() {
         return html`
-            <a id="button" @click="${this._handleClick}" class="${this._buttonClass}"><slot></slot></a>
+            <a id="button" @click="${this._handleClick}"><slot></slot></a>
         `;
     }
 
@@ -84,8 +84,8 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
             :host {
                 display: inline;
             }
-            .inactive {
-                visibility: hidden;
+            :host([disabled]) {
+                display: none;
             }
         `;
     }
