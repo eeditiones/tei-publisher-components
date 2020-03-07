@@ -39,7 +39,9 @@
     "normalized": "Widok znormalizowany",
     "plain": "Widok do czytania",
     "view-type": "Widok strony",
-    "add-panel": "Dodaj panel"
+    "add-panel": "Dodaj panel",
+    "caveat-heading": "Caveat",
+    "caveat": "Eksperymentuj z różnymi kombinacjami szablonów i plików ODD. Proszę zwrócić uwagę, że nie wszystkie kombinacje prowadzą do sensownych rezultatów w połączeniu z danym dokumentem źródłowym. Dla przykładu do wygenerowania mapy niezbędne jest zawarcie w dokumencie koordynat geograficznych, zaś Widok wg strony zakłada, że są one oznakowane. W przypadku kiedy zamiast fragmentu strony widoczny jest komunikat 'zapytanie do serwera nie przyniosło rezultatu' lub podobny, jest to najczęściej symptom niedopasowania pomiędzy dokumentem źródłowym a ODD lub szablonem strony."
   },
   "browse": {
     "description": "Eksperymentuj i wypróbuj rezultaty zastosowania rozmaitych plików ODD dołączonych do naszej aplikacji. Zaimportuj własne pliki źródłowe i utwórz własny plik ODD dostosowany do Twoich potrzeb.",
