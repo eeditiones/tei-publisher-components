@@ -146,7 +146,8 @@
         "template-placeholder": "[Define code template to apply to content]",
         "param-name-placeholder": "[Param name]",
         "empty": "[Empty]"
-      }
+      },
+      "css-source": "Open CSS file"
     }
   },
   "facets": {

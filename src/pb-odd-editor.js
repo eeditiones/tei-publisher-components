@@ -136,6 +136,18 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 margin-bottom: 10px;
             }
 
+            .metadata .extCssEdit {
+                display: flex;
+                align-items: center;
+                padding: 0;
+            }
+            .metadata .extCssEdit paper-input {
+                flex: 2;
+            }
+            .metadata .extCssEdit pb-edit-xml {
+                width: 40px;
+            }
+
             #jump-to {
                 margin-top: 1em;
             }
@@ -318,7 +330,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         this.selectedNavIndex = 0;
         this.cssFile = '';
         this.hotkeys = {
-            save: 'ctrl+shift+s'
+            save: 'ctrl+shift+s,command+shift+s'
         }
     }
 
@@ -394,9 +406,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                             <paper-input id="namespace" name="namespace" value="${this.namespace}" label="Namespace" ?disabled="${!this.useNamespace}"
                                          placeholder="[${translate('odd.editor.namespace-placeholder')}]"
                                          @change="${(e) => this.namespace = e.composedPath()[0].value}"></paper-input>
-                            <paper-input name="cssFile" value="${this.cssFile}" label="External CSS File"
-                                placeholder="[External CSS file with additional class definitions]"
-                                @change="${(e) => this.cssFile = e.composedPath()[0].value}"></paper-input>
+                            <div class="extCssEdit">
+                                <paper-input name="cssFile" value="${this.cssFile}" label="External CSS File"
+                                    placeholder="[External CSS file with additional class definitions]"
+                                    @change="${this._cssFileChanged}"></paper-input>
+                                <pb-edit-xml id="editCSS"><paper-icon-button icon="create" title="${translate('odd.editor.css-source')}"></paper-icon-button></pb-edit-xml>
+                            </div>
                         </div>
                     </pb-collapse>
                 </paper-card>
@@ -514,6 +529,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         this.namespace = data.namespace != null ? data.namespace : '';
         this.useNamespace = data.namespace != null;
 
+        if (this.cssFile) {
+            const editCss = this.shadowRoot.getElementById('editCSS');
+            editCss.setPath(this.rootPath + '/' + this.cssFile);
+        }
+
         // update elementSpecs
         this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
 
@@ -533,6 +553,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     _updateAutoComplete() {
         const jumpTo = this.shadowRoot.getElementById('jumpTo');
         jumpTo.source = this.elementSpecs.map(this._specMapper);
+    }
+
+    _cssFileChanged(e) {
+        this.cssFile = e.composedPath()[0].value;
+        if (this.cssFile) {
+            const editCss = this.shadowRoot.getElementById('editCSS');
+            editCss.setPath(this.rootPath + '/' + this.cssFile);
+        }
     }
 
     /**
