@@ -6,7 +6,13 @@ const production = process.env.BUILD === 'production';
 
 export default [
     {
-        input: ['src/pb-components-bundle.js', 'src/pb-facsimile.js', 'src/pb-leaflet-map.js', 'src/pb-odd-editor.js'],
+        input: [
+            'src/pb-components-bundle.js',
+            'src/pb-facsimile.js',
+            'src/pb-leaflet-map.js',
+            'src/pb-odd-editor.js',
+            'src/pb-edit-app.js'
+        ],
         output: {
             dir: 'dist',
             format: 'es',

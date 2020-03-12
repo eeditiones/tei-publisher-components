@@ -5,6 +5,7 @@ polymer.json
 karma.conf.js
 rollup.config.js
 osd.rollup.config.js
+codemirror.rollup.config.js
 tsconfig.json
 *.html
 analysis.json
