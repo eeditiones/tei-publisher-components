@@ -752,6 +752,17 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         if (!ident || ident.length === 0) {
             return;
         }
+        const existingSpec = this.elementSpecs.find((spec) => spec.ident === ident);
+        if (existingSpec) {
+            console.log('<pb-odd-editor> element spec to be added already exists: %s', ident);
+            const id = `#es_${ident}`;
+            const target = this.shadowRoot.querySelector(id);
+            if (!target) {
+                return
+            }
+            target.click();
+            return;
+        }
         const params = {
             action: "find",
             odd: this.odd,
