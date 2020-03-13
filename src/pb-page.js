@@ -81,6 +81,7 @@ class PbPage extends pbMixin(LitElement) {
         const options = {
             fallbackLng: 'en',
             defaultNS: 'common',
+            ns: ['common'],
             debug: false,
             detection: {
                 lookupQuerystring: 'lang'
