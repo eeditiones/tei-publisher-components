@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
+import Backend from 'i18next-chained-backend';
 import { pbMixin } from './pb-mixin.js';
 
 class PbPage extends pbMixin(LitElement) {
@@ -20,8 +21,10 @@ class PbPage extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             * Optional URL pattern for retrieving i18n language files.
-             * Should be an URL of the form `/i18n/{{lng}}.json`.
+             * Optional URL pointing to a directory from which additional i18n 
+             * language files will be loaded. Naming of the files should follow 
+             * the pattern `app-{{lng}}.json`,
+             * where `{{lng}}` is the code for the language, e.g. 'de' or 'en'.
              */
             locales: {
                 type: String
@@ -49,7 +52,6 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
-        this.locales = '/i18n/{{lng}}.json';
     }
 
     connectedCallback() {
@@ -64,17 +66,33 @@ class PbPage extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
 
+        const defaultLocales = new URL('../i18n/', import.meta.url).href + '{{lng}}.json';
+        let userLocales = this.locales;
+        if (this.locales) {
+            userLocales = `${this.locales}/{{ns}}-{{lng}}.json`;
+        }
         i18next
             .use(LanguageDetector)
-            .use(XHR)
+            .use(Backend)
             .init({
                 fallbackLng: 'en',
+                fallbackNS: 'common',
+                defaultNS: 'app',
+                ns: ['app', 'common'],
                 debug: true,
                 detection: {
                     lookupQuerystring: 'lang'
                 },
                 backend: {
-                    loadPath: this.locales
+                    backends: [XHR, XHR],
+                    backendOptions: [
+                        {
+                            loadPath: userLocales
+                        },
+                        {
+                            loadPath: defaultLocales
+                        }
+                    ]
                 }
             }).then((t) => {
                 // initialized and ready to go!
