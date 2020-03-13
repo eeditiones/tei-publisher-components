@@ -66,8 +66,9 @@ class PbPage extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
 
-        const defaultLocales = new URL('../i18n/', import.meta.url).href + '{{lng}}.json';
-        const userLocales = this.locales ? `${this.locales}/{{ns}}-{{lng}}.json` : null;
+        const defaultLocales = new URL('../i18n/', import.meta.url).href + '{{ns}}/{{lng}}.json';
+        const userLocales = this.locales ? `${this.locales}/{{ns}}/{{lng}}.json` : null;
+        console.log('<pb-page> Loading locales. common: %s; app: %s', defaultLocales, userLocales);
         const backends = userLocales ? [XHR, XHR] : [XHR];
         const backendOptions = [{
             loadPath: defaultLocales
@@ -79,7 +80,8 @@ class PbPage extends pbMixin(LitElement) {
         }
         const options = {
             fallbackLng: 'en',
-            debug: true,
+            defaultNS: 'common',
+            debug: false,
             detection: {
                 lookupQuerystring: 'lang'
             },
