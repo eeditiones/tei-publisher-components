@@ -644,9 +644,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         else if (this.tabIndex > 0 && this.tabIndex >= index) {
             // decrease tabIndex by one
             this.tabIndex -= 1;
-        }
 
-        this.requestUpdate();
+            const currentTab = this.tabs[this.tabIndex];
+            this._selectTab(null, currentTab);
+        }
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
