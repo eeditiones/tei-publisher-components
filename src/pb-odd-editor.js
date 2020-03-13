@@ -66,12 +66,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             }
 
             #drawer {
-                width: 300px;
                 flex: 1;
             }
 
             .specs {
                 flex: 2;
+                overflow: auto;
             }
             
             app-drawer .wrapper{
