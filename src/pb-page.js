@@ -67,34 +67,37 @@ class PbPage extends pbMixin(LitElement) {
         super.firstUpdated();
 
         const defaultLocales = new URL('../i18n/', import.meta.url).href + '{{lng}}.json';
-        let userLocales = this.locales;
-        if (this.locales) {
-            userLocales = `${this.locales}/{{ns}}-{{lng}}.json`;
+        const userLocales = this.locales ? `${this.locales}/{{ns}}-{{lng}}.json` : null;
+        const backends = userLocales ? [XHR, XHR] : [XHR];
+        const backendOptions = [{
+            loadPath: defaultLocales
+        }];
+        if (userLocales) {
+            backendOptions.unshift({
+                loadPath: userLocales
+            });
+        }
+        const options = {
+            fallbackLng: 'en',
+            debug: true,
+            detection: {
+                lookupQuerystring: 'lang'
+            },
+            backend: {
+                backends,
+                backendOptions
+            }
+        };
+        if (userLocales) {
+            options.defaultNS = 'app';
+            options.fallbackNS = 'common';
+            options.ns = ['app', 'common'];
         }
         i18next
             .use(LanguageDetector)
             .use(Backend)
-            .init({
-                fallbackLng: 'en',
-                fallbackNS: 'common',
-                defaultNS: 'app',
-                ns: ['app', 'common'],
-                debug: true,
-                detection: {
-                    lookupQuerystring: 'lang'
-                },
-                backend: {
-                    backends: [XHR, XHR],
-                    backendOptions: [
-                        {
-                            loadPath: userLocales
-                        },
-                        {
-                            loadPath: defaultLocales
-                        }
-                    ]
-                }
-            }).then((t) => {
+            .init(options)
+            .then((t) => {
                 // initialized and ready to go!
                 this._translate = t;
                 this._updateI18n(t);
