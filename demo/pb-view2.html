@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-view Demo</title>
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-document.js"></script>
+        <script type="module" src="../src/pb-view.js"></script>
+        <script type="module" src="../src/pb-navigation.js"></script>
+        <script type="module" src="../src/pb-progress.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
+                body {
+                    --paper-fab-background: #35424b;
+                }
+
+                demo-snippet {
+                    position: relative;
+                }
+
+                main {
+                    height: 70vh;
+                    overflow: auto;
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                pb-navigation {
+                    position: fixed;
+                    bottom: 55%;
+                    --paper-fab-background: #35424b;
+                    color: white;
+                }
+
+                pb-navigation[direction=backward] {
+                    left: 20px;
+                }
+
+                pb-navigation[direction=forward] {
+                    right: 20px;
+                }
+                </style>
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                    <pb-progress></pb-progress>
+                    <section class="breadcrumbs">
+                        <pb-view id="title-view1" src="document1">
+                            <pb-param name="mode" value="breadcrumbs"/>
+                        </pb-view>
+                    </section>
+                    <main>
+                        <!-- Navigate to previous page -->
+                        <pb-navigation direction="backward" keyboard="left">
+                            <paper-fab icon="icons:chevron-left"></paper-fab>
+                        </pb-navigation>
+                        <pb-view id="view1" src="document1" append-footnotes animation fix-links></pb-view>
+                        <!-- Navigate to next page -->
+                        <pb-navigation direction="forward" keyboard="right">
+                            <paper-fab icon="icons:chevron-right"></paper-fab>
+                        </pb-navigation>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

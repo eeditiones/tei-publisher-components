@@ -65,6 +65,17 @@
                 .documents app-toolbar {
                     font-size: 14px;
                 }
+
+                .documents img {
+                margin-right: 40px;
+                }
+
+                @media (max-width: 1023px) {
+                    .documents img {
+                        display: none;
+                    }
+                }
+                
                 .toolbar {
                     display: flex;
                     justify-content: space-between;
@@ -86,7 +97,7 @@
                     <pb-restricted login="login" can-write>
                         <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
                     </pb-restricted>
-                    <pb-browse-docs id="document-list" url="collection/"
+                    <pb-browse-docs id="document-list" url="collection/" fix-links
                         sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
                         sort-by="title"
                         filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'

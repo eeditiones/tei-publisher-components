@@ -41,7 +41,8 @@ import './pb-highlight.js';
  * @customElement
  * @polymer
  * @appliesMixin pbMixin
- * @demo demo/pb-view.html
+ * @demo demo/pb-view.html View TEI document
+ * @demo demo/pb-view2.html View Docbook document
  */
 export class PbView extends pbMixin(LitElement) {
 
@@ -178,6 +179,13 @@ export class PbView extends pbMixin(LitElement) {
             */
             direction: {
                 type: String
+            },
+            /**
+             * If set, relative links (img, a) will be made absolute.
+             */
+            fixLinks: {
+                type: Boolean,
+                attribute: 'fix-links'
             },
             /**
             * wether to animate the view when new page is loaded. Defaults to 'false' meaning that no
@@ -439,6 +447,7 @@ export class PbView extends pbMixin(LitElement) {
         }
         this.xmlId = null;
 
+        this._fixLinks(elem);
         this._applyToggles(elem);
 
         const eventOptions = {
@@ -520,6 +529,23 @@ export class PbView extends pbMixin(LitElement) {
         link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
 
         this._style = link;
+    }
+
+    _fixLinks(content) {
+        if (this.fixLinks) {
+            const doc = this.getDocument();
+            const base = new URL(doc.path, `${this.getEndpoint()}/`);
+            content.querySelectorAll('img').forEach((image) => {
+                const oldSrc = image.getAttribute('src');
+                const src = new URL(oldSrc, base);
+                image.src = src;
+            });
+            content.querySelectorAll('a').forEach((link) => {
+                const oldHref = link.getAttribute('href');
+                const href = new URL(oldHref, base);
+                link.href = href;
+            });
+        }
     }
 
     _initFootnotes(content) {

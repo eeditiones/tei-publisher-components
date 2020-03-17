@@ -51,6 +51,13 @@ export class PbLoad extends pbMixin(LitElement) {
                 type: Boolean
             },
             /**
+             * If set, relative links (img, a) will be made absolute.
+             */
+            fixLinks: {
+                type: Boolean,
+                attribute: 'fix-links'
+            },
+            /**
              * Start offset to use for showing paginated content.
              */
             start: {
@@ -223,6 +230,7 @@ export class PbLoad extends pbMixin(LitElement) {
             this.style.display = 'none';
             document.querySelectorAll(this.container).forEach((elem) => {
                 elem.innerHTML = resp
+                this._fixLinks(elem);
                 this._onLoad(elem);
             });
         } else {
@@ -233,6 +241,7 @@ export class PbLoad extends pbMixin(LitElement) {
             div.innerHTML = resp;
             div.slot = '';
             this.appendChild(div);
+            this._fixLinks(div);
             this._onLoad(div);
         }
 
@@ -273,6 +282,21 @@ export class PbLoad extends pbMixin(LitElement) {
             "start": this.start,
             "params": this.shadowRoot.getElementById('loadContent').params
         });
+    }
+
+    _fixLinks(content) {
+        if (this.fixLinks) {
+            content.querySelectorAll('img').forEach((image) => {
+                const oldSrc = image.getAttribute('src');
+                const src = new URL(oldSrc, this.getURL());
+                image.src = src;
+            });
+            content.querySelectorAll('a').forEach((link) => {
+                const oldHref = link.getAttribute('href');
+                const href = new URL(oldHref, this.getURL());
+                link.href = href;
+            });
+        }
     }
 
     _onLoad(content) {
