@@ -55,7 +55,7 @@ export class PbPopover extends pbMixin(LitElement) {
 
     static _renderDialog() {
         return html`<paper-dialog id="dialog" dynamic-align no-overlap horizontal-align="left" vertical-align="top">
-                <h2><slot name="title"></slot></h2>
+                <slot name="title"></slot>
                 <paper-dialog-scrollable>
                     <slot name="alternate"></slot>
                 </paper-dialog-scrollable>
@@ -78,6 +78,12 @@ export class PbPopover extends pbMixin(LitElement) {
             }
             [name=alternate] {
                 font: var(--pb-popover-font, var(--pb-base-font));
+            }
+            [name=title] {
+                display: block;
+                font: var(--pb-popover-title-font, var(--pb-heading-font));
+                margin: var(--pb-popover-title-margin, 20px 0);
+                padding: var(--pb-popover-title-padding, 0);
             }
             #link {
                 color: inherit;

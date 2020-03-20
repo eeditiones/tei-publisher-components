@@ -20,6 +20,8 @@
                             color: rgb(224, 140, 13);
                             text-decoration: underline;
 
+                            --pb-popover-title-font: var(--pb-heading-font-weight) 1.2em/var(--pb-heading-line-height) var(--pb-heading-font-family);
+
                             --paper-tooltip: {
                                 max-width: var(--pb-popover-max-width, 512px);
                                 text-align: left;
@@ -40,9 +42,9 @@
                             et justo duo dolores et ea "<pb-popover>rebum<span slot="alternate">Popup</span></pb-popover>". Stet clita kasd gubergren,<br> 
                             no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem<br>
                             ipsum dolor sit amet, consetetur sadipscing elitr, sed diam<br>
-                            nonumy eirmod <pb-popover persistent>tempor invidunt<br> ut labore<span slot="alternate">This is a persistent tooltip</span><span slot="title">The Title</span></pb-popover> et dolore magna aliquyam<br> 
+                            nonumy eirmod "<pb-popover persistent>tempor invidunt<br> ut labore<span slot="alternate">This is a persistent tooltip</span><span slot="title">The Title</span></pb-popover>" et dolore magna aliquyam<br> 
                             erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
-                            et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est<br>
+                            et ea rebum. <pb-popover persistent>Stet clita kasd gubergren<span slot="alternate">A persistent tooltip without title</span></pb-popover>, no sea takimata sanctus est<br>
                             Lorem ipsum dolor sit amet.</p>
                     </main>
                 </pb-page>
