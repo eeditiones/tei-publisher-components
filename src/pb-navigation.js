@@ -23,9 +23,6 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
             direction: {
                 type: String
             },
-            _buttonClass: {
-                type: String
-            },
             /**
              * Register a shortcut key, e.g. 'left' or 'shift+left'
              */
@@ -38,7 +35,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
     constructor() {
         super();
         this.direction = 'forward';
-        this._buttonClass = '';
+        this.disabled = true;
     }
 
     connectedCallback() {

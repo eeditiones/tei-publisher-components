@@ -19,35 +19,41 @@
         <pb-demo-snippet>
             <template>
                 <style type="text/css">
-                body {
-                    --paper-fab-background: #35424b;
-                }
-
-                demo-snippet {
+                pb-page {
                     position: relative;
                 }
 
-                main {
+                #view1 {
                     height: 70vh;
                     overflow: auto;
-                    position: relative;
                     display: flex;
                     justify-content: center;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
 
-                pb-navigation {
-                    position: fixed;
-                    bottom: 55%;
-                    --paper-fab-background: #35424b;
-                    color: white;
+                @media (min-width: 769px) {
+                    #view1, footer {
+                        max-width: 60vw;
+                    }
                 }
 
-                pb-navigation[direction=backward] {
-                    left: 20px;
+                footer {
+                    position: relative;
+                    margin-top: 10px;
+                    bottom: 0;
+                    background-color: #f2f2f2;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
 
-                pb-navigation[direction=forward] {
-                    right: 20px;
+                pb-navigation[disabled] {
+                    display: block;
+                    visibility: hidden;
+                }
+
+                pb-navigation[direction="forward"] {
+                    float: right;
                 }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
@@ -58,17 +64,21 @@
                     <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
                         <pb-param name="header" value="short"/>
                     </pb-view>
-                    <main>
+                    <pb-view id="view1" src="document1" view="page" append-footnotes animation></pb-view>
+                    <footer>
+                       <!-- Navigate to next page -->
+                       <pb-navigation direction="forward" keyboard="right">
+                            <paper-button>
+                                <iron-icon icon="icons:chevron-right"></iron-icon>
+                            </paper-button>
+                        </pb-navigation>
                         <!-- Navigate to previous page -->
                         <pb-navigation direction="backward" keyboard="left">
-                            <paper-fab icon="icons:chevron-left"></paper-fab>
+                            <paper-button>
+                                <iron-icon icon="icons:chevron-left"></iron-icon>
+                            </paper-button>
                         </pb-navigation>
-                        <pb-view id="view1" src="document1" view="page" append-footnotes animation></pb-view>
-                        <!-- Navigate to next page -->
-                        <pb-navigation direction="forward" keyboard="right">
-                            <paper-fab icon="icons:chevron-right"></paper-fab>
-                        </pb-navigation>
-                    </main>
+                    </footer>
                 </pb-page>
             </template>
         </pb-demo-snippet>
