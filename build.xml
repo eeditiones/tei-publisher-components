@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="all" name="pb-components-api">
+    <property name="project.app" value="pb-components-api"/>
+    <property name="project.version" value="0.9.9"/>
+    <property name="demo.dir" value="./demo"/>
+    <property name="build" value="${demo.dir}/build"/>
+
+    <target name="all" depends="xar"/>
+
+    <target name="rebuild" depends="clean,all"/>
+
+    <target name="prepare" depends="clean">
+        <mkdir dir="${build}"/>
+        <copy todir="${build}/demo">
+            <fileset dir="${demo.dir}">
+                <include name="*.html"/>
+                <include name="*.css"/>
+                <include name="i18n/**"/>
+            </fileset>            
+        </copy>
+        <copy file="docs.html" tofile="${build}/index.html"/>
+        <copy todir="${build}">
+            <fileset dir=".">
+                <include name="analysis.json"/>
+            </fileset>
+            <fileset dir="${demo.dir}">
+                <include name="expath-pkg.xml"/>
+                <include name="repo.xml"/>
+                <include name="controller.xql"/>
+            </fileset>
+        </copy>
+        
+        <replaceregexp match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-leaflet-map.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-facsimile.js">&lt;/script>'>
+            <fileset dir="${build}/demo">
+                <include name="*.html"/>
+            </fileset>
+        </replaceregexp>
+        <replaceregexp file="${build}/index.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/iron-component-page.js">&lt;/script>'></replaceregexp>
+    </target>
+    
+    <target name="clean">
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="xar" depends="prepare">
+        <zip destfile="${build}/${project.app}-${project.version}.xar">
+            <fileset dir="${build}">
+                <exclude name=".git*"/>
+                <exclude name="*.xar"/>
+            </fileset>
+        </zip>
+    </target>
+
+</project>

@@ -11,12 +11,13 @@ export default [
             'src/pb-facsimile.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
-            'src/pb-edit-app.js'
+            'src/pb-edit-app.js',
+            '@polymer/iron-component-page/iron-component-page.js'
         ],
         output: {
             dir: 'dist',
             format: 'es',
-            sourcemap: true
+            sourcemap: !production
         },
         plugins: [
             resolve(),

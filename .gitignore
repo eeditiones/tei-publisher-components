@@ -7,3 +7,4 @@ node_modules
 analysis.json
 assets
 dist
+demo/build
