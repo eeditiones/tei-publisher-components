@@ -12,3 +12,4 @@ analysis.json
 .vscode/
 .editorconfig
 *.tgz
+build.xml
