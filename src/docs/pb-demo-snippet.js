@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import StackBlitzSDK from '@stackblitz/sdk';
 import { translate } from "../pb-i18n.js";
 import '../pb-code-highlight.js';
+
+const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher6";
 
 /**
  * Viewer for demo code.
@@ -27,20 +28,15 @@ export class PbDemoSnippet extends LitElement {
             },
             _editCodeLabel: {
                 type: String
-            },
-            _vm: {
-                type: Object
             }
         };
     }
 
     constructor() {
         super();
-        this.title = 'Demo code';
+        this.title = 'TEI Publisher Webcomponents Example';
         this.code = 'Loading ...';
         this._showCodeLabel = 'demo.showCode.show';
-        this._editCodeLabel = 'demo.editCode.show';
-        this._editorLoaded = false;
     }
 
     connectedCallback() {
@@ -53,13 +49,72 @@ export class PbDemoSnippet extends LitElement {
     }
 
     render() {
+        let cpCode = this.code.replace(/(endpoint="[^"]+")/,
+            `endpoint="${codePenEndpoint}"`
+        );
+        cpCode = PbDemoSnippet.indent(cpCode, 2);
+
+        let style = this.querySelector('custom-style');
+        if (!style) {
+            style = this.querySelector('style');
+        }
+        let css = '';
+        if (style) {
+            css = style.innerHTML;
+        }
+        const cpCss = `
+@import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
+
+body {
+    margin: 10px 20px;
+    font-size: 16px;
+    font-family: 'Roboto', 'Noto', sans - serif;
+    line-height: 1.42857;
+    font-weight: 300;
+    color: #333333;
+
+    --paper-tooltip-delay-in: 200;
+}
+
+${PbDemoSnippet.removeIndent(css)}`;
+        const cpHtml = `
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <title>${ this.title}</title>
+        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
+        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-facsimile.js"></script>
+        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-leaflet-map.js"></script>
+    </head>
+
+    <body>
+    ${ cpCode}
+    </body>
+</html>`;
+
+        const cpOptions = {
+            title: this.title,
+            html: cpHtml,
+            html_pre_processor: "none",
+            css: cpCss,
+            css_starter: "normalize",
+            template: false,
+            editors: 110
+        };
+
         return html`
             <div class="snippet"><slot></slot></div>
             <pb-code-highlight id="source" language="html" .code="${this.code}"></pb-code-highlight>
             <div id="container"></div>
             <div class="buttons">
                 <button class="pretty-button" @click="${this._showCode}">${translate(this._showCodeLabel)}</button>
-                <button class="pretty-button" @click="${this._loadProject}">${translate(this._editCodeLabel)}</button>
+                <form action="https://codepen.io/pen/define" method="POST" target="_blank">
+                    <input type="hidden" name="data" .value="${JSON.stringify(cpOptions)}">
+                    <button class="pretty-button" type="submit">${translate('demo.editCode.show')}</button>
+                </form>
             </div>
         `;
     }
@@ -73,95 +128,6 @@ export class PbDemoSnippet extends LitElement {
             source.classList.add('open');
             this._showCodeLabel = 'demo.showCode.hide';
         }
-    }
-
-    async _loadProject() {
-        if (this._editorLoaded) {
-            const container = this.shadowRoot.getElementById('container');
-            const div = document.createElement('div');
-            div.id = 'container';
-            this.shadowRoot.replaceChild(div, container);
-            this._editorLoaded = false;
-            this._editCodeLabel = 'demo.editCode.show';
-            return;
-        }
-
-        this._editorLoaded = true;
-        this._editCodeLabel = 'demo.editCode.hide';
-
-        const source = this.shadowRoot.getElementById('source');
-        source.classList.remove('open');
-        this._showCodeLabel = 'Show Code';
-
-        let style = this.querySelector('custom-style');
-        if (!style) {
-            style = this.querySelector('style');
-        }
-        let css = '';
-        if (style) {
-            css = style.innerHTML;
-        }
-        let mainCode = this.code.replace(/(endpoint="[^"]+")/,
-            'endpoint="https://teipublisher.com/exist/apps/tei-publisher" locales="/node_modules/@teipublisher/pb-components/i18n/{{lng}}.json"'
-        );
-        mainCode = PbDemoSnippet.indent(mainCode, 2);
-        const code = `<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <custom-style>
-        <style>
-            @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
-
-            body {
-                font-size: 16px;
-                font-family: 'Roboto', 'Noto', sans-serif;
-                line-height: 1.42857;
-                font-weight: 300;
-                color: #333333;
-
-                --paper-tooltip-delay-in: 200;
-            }
-
-            ${css}
-        </style>
-    </custom-style>
-    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-    <script type="module" src="/node_modules/@teipublisher/pb-components/dist/pb-components-all.js"></script>
-    <title>TEI Publisher Webcomponent Sample</title>
-  </head>
-  <body>
-    ${mainCode}
-  </body>
-</html>`;
-        const project = {
-            title: this.title,
-            files: {
-                'index.html': code,
-                'index.js': ''
-            },
-            settings: {
-                compile: {
-                    action: 'refresh'
-                }
-            },
-            description: 'TEI Publisher Example',
-            template: 'javascript',
-            dependencies: {
-                "@teipublisher/pb-components": "^0.9.1"
-            }
-        };
-        const container = this.shadowRoot.getElementById('container');
-        StackBlitzSDK.embedProject(container, project, {
-            forceEmbedLayout: true,
-            view: 'both',
-            hideExplorer: false,
-            hideNavigation: false,
-            height: 640,
-            openFile: 'index.html'
-        }).then(vm => { this._vm = vm; });
     }
 
     static removeIndent(input) {
