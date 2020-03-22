@@ -30,10 +30,16 @@
             </fileset>
         </copy>
         
-        <replaceregexp match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-leaflet-map.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-facsimile.js">&lt;/script>'>
+        <replaceregexp match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>'>
             <fileset dir="${build}/demo">
                 <include name="*.html"/>
+                <exclude name="pb-odd-editor.html"/>
+                <exclude name="pb-leaflet-map.html"/>
             </fileset>
+        </replaceregexp>
+        <replaceregexp file="${build}/demo/pb-leaflet-map.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-leaflet-map.js">&lt;/script>'>
+        </replaceregexp>
+        <replaceregexp file="${build}/demo/pb-odd-editor.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-odd-editor.js">&lt;/script>'>
         </replaceregexp>
         <replaceregexp file="${build}/index.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/iron-component-page.js">&lt;/script>'></replaceregexp>
     </target>
