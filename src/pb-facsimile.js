@@ -205,9 +205,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     _clearAll() {
-        this.resetZoom()
-        this.viewer.clearOverlays()
-        this.facsimiles = []
+        if (!this.viewer) {
+            return;
+        }
+        this.resetZoom();
+        this.viewer.clearOverlays();
+        this.facsimiles = [];
     }
 
     _fragmentUpdateListener(event) {
