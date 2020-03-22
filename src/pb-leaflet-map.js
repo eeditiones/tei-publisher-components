@@ -55,8 +55,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.crs = 'EPSG3857';
         this.accessToken = '';
         this._markers = [];
-        this.imagesPath = '../assets/leaflet';
-        this.cssPath = this.imagesPath;
+        this.imagesPath = '../images/leaflet';
+        this.cssPath = '../css/leaflet';
     }
 
     connectedCallback() {
@@ -125,8 +125,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     }
 
     render() {
+        const cssPath = new URL(this.cssPath, import.meta.url).href;
         return html`
-            <link rel="stylesheet" href="${this.cssPath}/leaflet.css"/>
+            <link rel="stylesheet" href="${cssPath}/leaflet.css"/>
             <div id="map"></div>
         `;
     }
@@ -149,7 +150,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             return;
         }
 
-        L.Icon.Default.imagePath = this.imagesPath;
+        L.Icon.Default.imagePath = new URL(this.imagesPath, import.meta.url).href;
 
         let crs;
         switch (this.crs) {

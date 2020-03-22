@@ -19,7 +19,7 @@
                     pb-code-highlight { margin-bottom: 1em; }
                 </style>
                 <pb-page>
-                    <pb-code-highlight language="xquery">
+                    <pb-code-highlight language="xquery" line-numbers>
                         for $i in $root//tei:placeName
                         order by $i descending
                         return
@@ -42,7 +42,7 @@
                             line-height: 1.2;
                         }
                     </pb-code-highlight>
-                    <pb-code-highlight language="xml" theme="coy">
+                    <pb-code-highlight language="xml" theme="coy" line-numbers>
                         <template>
                             <elementSpec ident="section">
                                 <modelSequence predicate="$parameters?mode='breadcrumbs'">

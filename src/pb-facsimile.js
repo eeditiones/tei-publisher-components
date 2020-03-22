@@ -109,7 +109,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.showHomeControl = true;
         this.showNavigationControl = true;
         this.src = '';
-        this.prefixUrl = '../assets/openseadragon/';
+        this.prefixUrl = '../images/openseadragon/';
     }
 
     connectedCallback() {
@@ -151,9 +151,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     // Init openseadragon
     _initOpenSeadragon() {
+        const prefixUrl = new URL(this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"), import.meta.url).href;
         this.viewer = osd({
             element: this.shadowRoot.getElementById('viewer'),
-            prefixUrl: this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"),
+            prefixUrl,
             preserveViewport: true,
             sequenceMode: true,
             showZoomControl: true,

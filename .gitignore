@@ -6,5 +6,7 @@ node_modules
 !.vscode
 analysis.json
 assets
+images/
+css/
 dist
 demo/build

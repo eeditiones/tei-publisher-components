@@ -1,5 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
+import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
 
 const production = process.env.BUILD === 'production';
@@ -24,6 +25,26 @@ export default [
             production && terser(),
             analyze({
                 summaryOnly: true
+            }),
+            copy({
+                targets: [
+                    {
+                        src: './node_modules/leaflet/dist/leaflet.css',
+                        dest: './css/leaflet'
+                    },
+                    {
+                        src: './node_modules/leaflet/dist/images/*',
+                        dest: './images/leaflet'
+                    },
+                    {
+                        src: './node_modules/openseadragon/build/openseadragon/images/*',
+                        dest: './images/openseadragon'
+                    },
+                    {
+                        src: './node_modules/prismjs/themes/*',
+                        dest: './css/prismjs'
+                    }
+                ]
             })
         ]
     },

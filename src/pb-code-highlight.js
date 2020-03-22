@@ -39,6 +39,10 @@ export class PbCodeHighlight extends LitElement {
             theme: {
                 type: String
             },
+            lineNumbers: {
+                type: Boolean,
+                attribute: 'line-numbers'
+            },
             _styles: {
                 type: String
             }
@@ -49,6 +53,7 @@ export class PbCodeHighlight extends LitElement {
         super();
         this.language = 'xml';
         this.theme = 'default';
+        this.lineNumbers = false;
     }
 
     connectedCallback() {
@@ -100,7 +105,7 @@ export class PbCodeHighlight extends LitElement {
         if (this.code) {
             return html`
                 ${this._styles}
-                <pre class="line-numbers language-${this.language}"><code>${this.code}</code></pre>
+                <pre class="${this.lineNumbers ? 'line-numbers' : ''} language-${this.language}"><code>${this.code}</code></pre>
             `;
         }
         return html`<pre class="line-numbers"><code>Formatting ...<code></pre>`;
@@ -108,7 +113,7 @@ export class PbCodeHighlight extends LitElement {
 
     static async loadTheme(theme) {
         const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
-        const resource = new URL('../assets/prismjs/', import.meta.url).href + themeName;
+        const resource = new URL('../css/prismjs/', import.meta.url).href + themeName;
         console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
 
         const fetchedStyles = await fetch(resource).then(async response => response.text()).catch(e => '');
@@ -124,6 +129,48 @@ export class PbCodeHighlight extends LitElement {
             pre {
                 margin: 0;
                 white-space:pre-wrap;
+            }
+            pre.line-numbers {
+                position: relative;
+                padding-left: 3.8em;
+                counter-reset: linenumber;
+            }
+
+            pre.line-numbers > code {
+                position: relative;
+                white-space: inherit;
+            }
+
+            .line-numbers .line-numbers-rows {
+                position: absolute;
+                pointer-events: none;
+                top: 0;
+                font-size: 100%;
+                left: -3.8em;
+                width: 3em; /* works for line-numbers below 1000 lines */
+                letter-spacing: -1px;
+                border-right: 1px solid #999;
+
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+            }
+
+            .line-numbers-rows > span {
+                pointer-events: none;
+                display: block;
+                counter-increment: linenumber;
+                height: auto !important;
+            }
+
+            .line-numbers-rows > span:before {
+                content: counter(linenumber);
+                color: #999;
+                display: block;
+                padding-right: 0.8em;
+                text-align: right;
             }
         `;
     }
