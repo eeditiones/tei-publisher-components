@@ -9,7 +9,6 @@ export default [
     {
         input: [
             'src/pb-components-bundle.js',
-            'src/pb-facsimile.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
@@ -35,6 +34,10 @@ export default [
                     {
                         src: './node_modules/leaflet/dist/images/*',
                         dest: './images/leaflet'
+                    },
+                    {
+                        src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
+                        dest: './lib'
                     },
                     {
                         src: './node_modules/openseadragon/build/openseadragon/images/*',

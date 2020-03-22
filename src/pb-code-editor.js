@@ -2,11 +2,11 @@ import { LitElement, html, css } from 'lit-element'
 import '@polymer/iron-ajax/iron-ajax.js';
 import CodeMirror from 'codemirror/src/codemirror.js';
 
-import modeXquery from "../assets/codemirror/mode/xquery/xquery.js";
-import modeCss from "../assets/codemirror/mode/css/css.js";
-import addonDisplayPlaceholder from "../assets/codemirror/addon/display/placeholder.js";
-import addonEditMatchBracket from "../assets/codemirror/addon/edit/matchbrackets.js";
-import addonLint from "../assets/codemirror/addon/lint/lint.js";
+import modeXquery from "../lib/codemirror/mode/xquery/xquery.js";
+import modeCss from "../lib/codemirror/mode/css/css.js";
+import addonDisplayPlaceholder from "../lib/codemirror/addon/display/placeholder.js";
+import addonEditMatchBracket from "../lib/codemirror/addon/edit/matchbrackets.js";
+import addonLint from "../lib/codemirror/addon/lint/lint.js";
 
 import { get as i18n, translate } from "./pb-i18n.js";
 

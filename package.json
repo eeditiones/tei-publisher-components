@@ -5,8 +5,8 @@
     "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
     "main": "index.html",
     "scripts": {
-        "build": "npm run clean && npm run osd && npm run codemirror && rollup -c rollup.config.js",
-        "build:production": "npm run clean && npm run osd && npm run codemirror && rollup -c rollup.config.js --environment BUILD:production",
+        "build": "npm run clean && npm run codemirror && rollup -c rollup.config.js",
+        "build:production": "npm run clean && npm run codemirror && rollup -c rollup.config.js --environment BUILD:production",
         "start": "npm run build && npm run docs && es-dev-server --app-index docs.html --node-resolve --open --watch",
         "test": "karma start",
         "test:watch": "karma start --auto-watch=true --single-run=false",
@@ -17,9 +17,8 @@
         "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
         "lint": "npm run lint:eslint && npm run lint:prettier",
         "format": "npm run format:eslint && npm run format:prettier",
-        "clean": "rimraf dist && rimraf assets && rimraf css && rimraf images",
+        "clean": "rimraf dist && rimraf lib && rimraf css && rimraf images",
         "prepare": "npm run build:production",
-        "osd": "rollup -c osd.rollup.config.js",
         "codemirror": "rollup -c codemirror.rollup.config.js"
     },
     "author": "Wolfgang Meier",

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import osd from "../assets/openseadragon.esm.js";
+import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
 
 /**
@@ -120,9 +120,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        this._initOpenSeadragon();
-
-        this.signalReady();
+        window.ESGlobalBridge.requestAvailability();
+        const path = new URL('../lib/openseadragon.min.js', import.meta.url).href;
+        window.ESGlobalBridge.instance.load("openseadragon", path);
+        window.addEventListener(
+            "es-bridge-openseadragon-loaded",
+            this._initOpenSeadragon.bind(this),
+            { once: true }
+        );
     }
 
     render() {
@@ -152,7 +157,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     // Init openseadragon
     _initOpenSeadragon() {
         const prefixUrl = new URL(this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"), import.meta.url).href;
-        this.viewer = osd({
+        this.viewer = OpenSeadragon({
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,
             preserveViewport: true,
@@ -175,6 +180,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
         this.viewer.addHandler('open', this.resetZoom.bind(this));
         this._facsimileObserver();
+
+        this.signalReady();
     }
 
     _facsimileObserver() {
@@ -257,7 +264,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 this.viewer.viewport.getBounds(true));
 
             // scroll into view?
-            if (!currentRect.containsPoint(new osd.Point(x1, y1))) {
+            if (!currentRect.containsPoint(new OpenSeadragon.Point(x1, y1))) {
                 this.viewer.viewport.fitBoundsWithConstraints(
                     this.viewer.viewport.imageToViewportRectangle(x1, y1, currentRect.width, currentRect.height));
             }

@@ -86,7 +86,6 @@ ${PbDemoSnippet.removeIndent(css)}`;
 
         <title>${ this.title}</title>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
-        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-facsimile.js"></script>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-leaflet-map.js"></script>
     </head>
 
