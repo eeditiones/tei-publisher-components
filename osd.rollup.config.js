@@ -21,6 +21,10 @@ export default {
                 {
                     src: './node_modules/openseadragon/build/openseadragon/images/*',
                     dest: './assets/openseadragon'
+                },
+                {
+                    src: './node_modules/prismjs/themes/*',
+                    dest: './assets/prismjs'
                 }
             ]
         }),

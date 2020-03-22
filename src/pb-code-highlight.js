@@ -2,8 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import "prismjs/prism";
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
-
-const { Prism } = window;
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 /**
  * Highlight a code snippet. The snippet may either be passed in a template child
@@ -25,7 +24,22 @@ export class PbCodeHighlight extends LitElement {
             language: {
                 type: String
             },
+            /**
+             * The code to be highlighted as a string. If not set,
+             * this will be populated from either a template child element
+             * or the element's text content.
+             */
             code: {
+                type: String
+            },
+            /**
+             * Highlighting theme to use: 'coy', 'dark', 'funky', 'okaida', 'solarizedlight',
+             * 'tomorrow', 'twilight' or 'default'.
+             */
+            theme: {
+                type: String
+            },
+            _styles: {
                 type: String
             }
         };
@@ -34,45 +48,72 @@ export class PbCodeHighlight extends LitElement {
     constructor() {
         super();
         this.language = 'xml';
+        this.theme = 'default';
     }
 
-    render() {
+    connectedCallback() {
+        super.connectedCallback();
+        const theme = this.getAttribute('theme');
+        if (theme === null) {
+            this.setAttribute('theme', 'default');
+        }
+    }
+
+    firstUpdated() {
+        super.firstUpdated();
+
         if (!this.code) {
             const template = this.querySelector('template');
             if (template) {
-                this.code = template.innerHTML;
+                this.code = Prism.plugins.NormalizeWhitespace.normalize(template.innerHTML);
             } else {
-                this.code = this.textContent;
-                this.innerHTML = '';
+                this.code = Prism.plugins.NormalizeWhitespace.normalize(this.textContent);
             }
         }
-
-        this.code = Prism.plugins.NormalizeWhitespace.normalize(this.code);
-
-        const container = document.createElement('pre');
-        const code = document.createElement('code');
-        container.appendChild(code);
-
-        const html = Prism.highlight(this.code, this._determineLang());
-        code.innerHTML = html;
-        this.shadowRoot.appendChild(container);
     }
 
-    _determineLang() {
-        switch (this.language) {
-            case 'xquery':
-                return Prism.languages.xquery;
-            case 'xml':
-                return Prism.languages.xml;
-            case 'html':
-                return Prism.languages.html;
-            case 'css':
-                return Prism.languages.css;
-            case 'javascript':
-                return Prism.languages.javascript;
+    attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        switch (name) {
+            case 'theme':
+                PbCodeHighlight.loadTheme(newValue).then((styles) => {
+                    this._styles = styles;
+                });
+                break;
             default:
-                return Prism.languages.markup;
+                break;
         }
+    }
+
+    updated(changedProperties) {
+        super.updated(changedProperties);
+        if (changedProperties.has('code')) {
+            this.highlight();
+        }
+    }
+
+    highlight() {
+        Prism.highlightAllUnder(this.shadowRoot);
+    }
+
+    render() {
+        if (this.code) {
+            return html`
+                ${this._styles}
+                <pre class="line-numbers language-${this.language}"><code>${this.code}</code></pre>
+            `;
+        }
+        return html`<pre class="line-numbers"><code>Formatting ...<code></pre>`;
+    }
+
+    static async loadTheme(theme) {
+        const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
+        const resource = new URL('../assets/prismjs/', import.meta.url).href + themeName;
+        console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
+
+        const fetchedStyles = await fetch(resource).then(async response => response.text()).catch(e => '');
+
+        return html`<style>${fetchedStyles}</style>`;
     }
 
     static get styles() {
@@ -83,123 +124,6 @@ export class PbCodeHighlight extends LitElement {
             pre {
                 margin: 0;
                 white-space:pre-wrap;
-            }
-            /**
-            * prism.js default theme for JavaScript, CSS and HTML
-            * Based on dabblet (http://dabblet.com)
-            * @author Lea Verou
-            */
-            code[class*="language-"],
-            pre[class*="language-"] {
-            color: black;
-            background: none;
-            text-shadow: 0 1px white;
-            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-            text-align: left;
-            white-space: pre;
-            word-spacing: normal;
-            word-break: normal;
-            word-wrap: normal;
-            line-height: 1.5;
-            -moz-tab-size: 4;
-            -o-tab-size: 4;
-            tab-size: 4;
-            -webkit-hyphens: none;
-            -moz-hyphens: none;
-            -ms-hyphens: none;
-            hyphens: none;
-            }
-            pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-            code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-            text-shadow: none;
-            background: #b3d4fc;
-            }
-            pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-            code[class*="language-"]::selection, code[class*="language-"] ::selection {
-            text-shadow: none;
-            background: #b3d4fc;
-            }
-            @media print {
-            code[class*="language-"],
-            pre[class*="language-"] {
-            text-shadow: none;
-            }
-            }
-            /* Code blocks */
-            pre[class*="language-"] {
-            padding: 1em;
-            margin: .5em 0;
-            overflow: auto;
-            }
-            :not(pre) > code[class*="language-"],
-            pre[class*="language-"] {
-            background: #f5f2f0;
-            }
-            /* Inline code */
-            :not(pre) > code[class*="language-"] {
-            padding: .1em;
-            border-radius: .3em;
-            white-space: normal;
-            }
-            .token.comment,
-            .token.prolog,
-            .token.doctype,
-            .token.cdata {
-            color: slategray;
-            }
-            .token.punctuation {
-            color: #999;
-            }
-            .namespace {
-            opacity: .7;
-            }
-            .token.property,
-            .token.tag,
-            .token.boolean,
-            .token.number,
-            .token.constant,
-            .token.symbol,
-            .token.deleted {
-            color: #905;
-            }
-            .token.selector,
-            .token.attr-name,
-            .token.string,
-            .token.char,
-            .token.builtin,
-            .token.inserted {
-            color: #690;
-            }
-            .token.operator,
-            .token.entity,
-            .token.url,
-            .language-css .token.string,
-            .style .token.string {
-            color: #a67f59;
-            background: hsla(0, 0%, 100%, .5);
-            }
-            .token.atrule,
-            .token.attr-value,
-            .token.keyword {
-            color: #07a;
-            }
-            .token.function {
-            color: #DD4A68;
-            }
-            .token.regex,
-            .token.important,
-            .token.variable {
-            color: #e90;
-            }
-            .token.important,
-            .token.bold {
-            font-weight: bold;
-            }
-            .token.italic {
-            font-style: italic;
-            }
-            .token.entity {
-            cursor: help;
             }
         `;
     }

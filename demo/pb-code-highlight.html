@@ -16,7 +16,7 @@
         <pb-demo-snippet>
             <template>
                 <style>
-                    pb-code-highlight { margin-bottom: 1em; padding: 8px; border: 1px solid #C0C0C0; }
+                    pb-code-highlight { margin-bottom: 1em; }
                 </style>
                 <pb-page>
                     <pb-code-highlight language="xquery">
@@ -25,7 +25,7 @@
                         return
                             &lt;li&gt;{$i/string()}&lt;li&gt;
                     </pb-code-highlight>
-                    <pb-code-highlight language="html">
+                    <pb-code-highlight language="html" theme="okaidia">
                         <template>
                             <pb-view src="document1" odd="graves" subscribe="letter" emit="letter"
                                 wait-for="pb-leaflet-map">
@@ -33,7 +33,30 @@
                             </pb-view>
                         </template>
                     </pb-code-highlight>
-                    <pb-code-highlight language="javascript" code="function(name) {&#10;    return 'Hello ' + name;&#10;};"></pb-code-highlight>
+                    <pb-code-highlight language="javascript" theme="funky"
+                        code="function(name) {&#10;    return 'Hello ' + name;&#10;};"></pb-code-highlight>
+                    <pb-code-highlight language="css" theme="solarizedlight">
+                        h1, h2, h3, h4, h5, h6 {
+                            font-family: "Oswald",Verdana,"Helvetica", sans-serif; 
+                            font-weight: 400 !important;
+                            line-height: 1.2;
+                        }
+                    </pb-code-highlight>
+                    <pb-code-highlight language="xml" theme="coy">
+                        <template>
+                            <elementSpec ident="section">
+                                <modelSequence predicate="$parameters?mode='breadcrumbs'">
+                                    <model behaviour="inline">
+                                        <param name="content" value="$get(.)/ancestor::section/title"/>
+                                    </model>
+                                    <model behaviour="inline">
+                                        <param name="content" value="title"/>
+                                    </model>
+                                </modelSequence>
+                                <model behaviour="block"/>
+                            </elementSpec>
+                        </template>
+                    </pb-code-highlight>
                 </pb-page>
             </template>
         </pb-demo-snippet>
