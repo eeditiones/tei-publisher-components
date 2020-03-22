@@ -3,7 +3,7 @@ import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
 
 /**
- *
+ * View zoomable images using a IIIF server.
  *
  * @customElement pb-facsimile
  * @polymer
@@ -19,7 +19,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             *  Set to false to prevent the appearance of the default navigation controls.
+             * Set to false to prevent the appearance of the default navigation controls.
              * Note that if set to false, the customs buttons set by the options
              * zoomInButton, zoomOutButton etc, are rendered inactive.
              */
@@ -175,9 +175,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
             constrainDuringPan: true
         });
 
-
-        this.init = true;
-
         this.viewer.addHandler('open', this.resetZoom.bind(this));
         this._facsimileObserver();
 
@@ -185,6 +182,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     _facsimileObserver() {
+        if (!this.viewer) {
+            return;
+        }
         if (this.facsimiles.length === 0) { return this.viewer.close() }
         const uris = this.facsimiles.map(fac => {
             if (this.type === 'iiif') {
@@ -227,6 +227,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     _showAnnotationListener(event) {
+        if (!this.viewer) {
+            return;
+        }
         const overlayId = 'runtime-overlay'
 
         // remove old overlay
@@ -295,6 +298,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     // reset zoom
     resetZoom() {
+        if (!this.viewer) {
+            return;
+        }
         this.viewer.viewport.goHome();
     }
 
