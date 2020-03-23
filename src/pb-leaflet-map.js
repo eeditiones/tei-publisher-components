@@ -55,8 +55,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.crs = 'EPSG3857';
         this.accessToken = '';
         this._markers = [];
-        this.imagesPath = '../images/leaflet';
-        this.cssPath = '../css/leaflet';
+        this.imagesPath = '../images/leaflet/';
+        this.cssPath = '../css/leaflet/';
     }
 
     connectedCallback() {
