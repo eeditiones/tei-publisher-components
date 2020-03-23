@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="all" name="pb-components-api">
-    <property name="project.app" value="pb-components-api"/>
-    <property name="project.version" value="0.9.11"/>
     <property name="demo.dir" value="./demo"/>
+    <xmlproperty file="${demo.dir}/expath-pkg.xml"/>
+    <property name="project.app" value="${package(abbrev)}"/>
+    <property name="project.version" value="${package(version)}"/>
     <property name="build" value="${demo.dir}/build"/>
 
     <target name="all" depends="xar"/>
