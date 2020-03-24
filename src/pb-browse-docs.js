@@ -150,6 +150,18 @@ export class PbBrowseDocs extends PbLoad {
 
     render() {
         return html`
+            <custom-style>
+                <style>
+                    :host {
+                        --suggestions-item: {
+                            color: var(--pb-search-suggestions-color, black);
+                        };
+                        --suggestions-wrapper: {
+                            background: var(--pb-search-suggestions-background, white);
+                        }
+                    }
+                </style>
+            </custom-style>
             <div class="toolbar">
                 <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}">
                     <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
@@ -226,14 +238,14 @@ export class PbBrowseDocs extends PbLoad {
         return css`
             :host {
                 display: block;
-
-                --justify-toolbar-content:space-between;
-                --display-toolbar:flex;
+                --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
+                --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000));
+                --paper-input-container-focus-color: var(--pb-search-focus-color, var(--paper-grey-500, #303030));
             }
 
             .toolbar {
-                display: var(--display-toolbar);
-                justify-content: var(--justify-toolbar-content);
+                display: flex;
+                justify-content: var(--pb-browse-toolbar-justify-content);
             }
 
             [name="toolbar"] {
@@ -252,22 +264,6 @@ export class PbBrowseDocs extends PbLoad {
 
             .hidden {
                 display: none;
-            }
-
-            paper-autocomplete-suggestions {
-                --suggestions-item: {
-                    color: var(--pb-search-suggestions, #000000);
-                };
-            }
-
-            paper-dropdown-menu, paper-input {
-                --paper-input-container-input:{
-                    color: var(--pb-search-input, #000000);
-                    border: white;
-                };
-                --paper-input-container-label: {
-                    color:var(--pb-search-label, --paper-grey-500);
-                };
             }
         `;
     }

@@ -59,11 +59,8 @@ export class PbLang extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
-
                 --paper-input-container-input-color: var(--pb-lang-input-color, black);
-                --paper-input-container-label: {
-                    color:var(--pb-lang-label-color, --paper-grey-100);
-                };
+                --paper-input-container-color: var(--pb-lang-label-color, --paper-grey-100);
             }
         `;
     }
