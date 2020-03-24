@@ -11,8 +11,7 @@ export default [
             'src/pb-components-bundle.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
-            'src/pb-edit-app.js',
-            '@polymer/iron-component-page/iron-component-page.js'
+            'src/pb-edit-app.js'
         ],
         output: {
             dir: 'dist',
@@ -52,18 +51,27 @@ export default [
         ]
     },
     {
+        input: '@polymer/iron-component-page/iron-component-page.js',
+        output: {
+            file: 'dist/iron-component-page.js',
+            format: 'es',
+            sourcemap: !production
+        },
+        plugins: [
+            resolve(),
+            production && terser()
+        ]
+    },
+    {
         input: 'src/pb-components-all.js',
         output: {
             file: 'dist/pb-components-all.js',
             format: 'iife',
-            sourcemap: true
+            sourcemap: !production
         },
         plugins: [
             resolve(),
-            production && terser(),
-            analyze({
-                summaryOnly: true
-            })
+            production && terser()
         ]
     }
 ]
