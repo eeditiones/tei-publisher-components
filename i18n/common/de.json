@@ -39,7 +39,9 @@
     "normalized": "Normalisierte Ansicht",
     "plain": "Leseansicht",
     "view-type": "Seitenansicht",
-    "add-panel": "Ansicht hinzufügen"
+    "add-panel": "Ansicht hinzufügen",
+    "caveat-heading": "Achtung",
+    "caveat": "Die Optionen hier erlauben es, mit verschiedenen Seitenvorlagen und ODDs zu experimentieren. Bitte beachten Sie, dass nicht jede Kombination für jedes Dokument Sinn macht. Zum Beispiel ist eine Karte nur sinnvoll, wenn Koordinaten vorhanden sind. Ebenso erfordert eine seitenweise Ansicht, dass Seitenumbrüche ausgezeichnet wurden. Die Fehlermeldung 'the server did not return any content' weißt in der Regel auf solche Unstimmigkeiten zwischen Markup, ODD und Seitenvorlage hin."
   },
   "browse": {
     "description": "Diese Anwendung dient vorrangig zum Experimentieren mit verschiedenen Dokumenten und deren Transformationen über das TEI Processing Model. Es können eigene Dateien hochgeladen und neue ODDs erstellt werden.",

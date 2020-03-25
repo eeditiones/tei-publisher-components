@@ -26,7 +26,7 @@
     "close": "Chiudi",
     "yes": "Sì",
     "no": "No",
-    "serverError": "The request to the server failed.",
+    "serverError": "La richiesta al server non ha funzionato.",
     "generatingFile": "Sto preparando i documenti...",
     "downloadMessage": "La preparazione dei documenti per essere scaricati può richiedere qualche minuto. Si prega di attendere. Questo messaggio si chiuderà automaticamente al completamento dell'operazione.",
     "loading": "Caricamento ..."
@@ -35,11 +35,13 @@
     "contents": "Contenuti",
     "selectODD": "Scegli ODD",
     "selectTemplate": "Scegli il template",
-    "selectFeature": "Select Feature",
+    "selectFeature": "Scegli la funzionalità",
     "normalized": "Vista normalizzata",
     "plain": "Vista di lettura semplice",
     "view-type": "Vista di pagina",
-    "add-panel": "Aggiungi una visualizzazione"
+    "add-panel": "Aggiungi una visualizzazione",
+    "caveat-heading": "Caveat",
+    "caveat": "Prova diversi modelli di pagina e diverse ODD, semplicemente cambiando le impostazioni che trovi qui. Fai attenzione al fatto che non tutte le combinazioni di impostazioni funzionano su tutti i documenti. Per esempio, per visualizzare una mappa serviranno delle coordinate codificate e pre-processate a seconda dei risultati che si vogliono ottenere; la visualizzazione per pagine implica che i salti di pagina siano codificati nel testo. Se vedi il messaggio \"the server did not return any content / il server non dà risultati\" si tratta probabilmente di questo problema, cioé di una non corrispondenza tra dati codificati, ODD e modello di pagina."
   },
   "browse": {
     "description": "Usa questa applicazione per sperimentare e provare vari ODD contenenti istruzioni dei TEI Processing Model. Carica i tuoi file e crea un ODD personalizzato.",

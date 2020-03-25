@@ -39,7 +39,9 @@
     "normalized": "Normalisert visning",
     "plain": "Klartekst visning",
     "view-type": "Sidevisning",
-    "add-panel": "Legg til visning"
+    "add-panel": "Legg til visning",
+    "caveat-heading": "Pass på",
+    "caveat": "Utforsk forskjellige sidemaler og ODDer ved å endre disse egenskapene. Merk at ikke alle kombinasjoner av egenskaper er fornuftig for alle dokument. For eksempel vil ikke kart bli produsert uten at koordinater er riktig kodet og sidevisning avhenger av at input fil har pb-elementer. Om du ser en beskjed om at 'serveren har ikke returnert noe innhold' er det som oftest et tegn på manglende koordinering av kodet data, ODD og sidemaler."
   },
   "browse": {
     "description": "Bruk denne appen til å prøveforskjellige ODD-filer med forskjellig konfigurasjoner. Last opp dine egne filer og lag egne skreddersydde ODD-filer.",
@@ -106,11 +108,11 @@
   "odd": {
     "files": "ODD-filer",
     "manage": {
-      "filename": "Navn for ODD-filen (uten suffix)",
+      "filename": "Navn for ODD (uten suffix)",
       "title": "Tittel for visning",
       "create": "Opprett",
       "create-from-example": "Opprett fra eksempler",
-      "delete": "Er du sikker på at du vil slette ODD filen {{file}}?"
+      "delete": "Er du sikker på at du vil slette ODD-filen {{file}}?"
     },
     "editor": {
       "delete-spec": "Vil du slette element spec for '{{ident}}'?",
@@ -120,19 +122,19 @@
       "reload": "Last på nytt",
       "reload-confirm": "Ulagrede endringer vil gå tapt. Vil du fortsette?",
       "add-element": "Legg til element",
-      "odd-source": "ODD-kilde",
+      "odd-source": "ODD-kildekode",
       "specs": "Element Specs",
       "jump-to": "Hopp til element...",
       "title-short": "Kortform tittel",
       "title-short-placeholder": "Kortform visningstittel",
       "description-label": "Beskrivelse",
       "description-placeholder": "Beskrivelse av ODD-fil",
-      "source-label": "Base ODD-fil",
-      "source-placeholder": "ODD-fil å arve fra",
+      "source-label": "Base ODD",
+      "source-placeholder": "ODD å arve fra",
       "use-namespace": "Velg for å bruke et annet namespace enn TEI",
       "namespace-placeholder": "Standard namespace URI (om ikke TEI)",
       "title": "Tittel",
-      "title-placeholder": "Tittel for ODD-fil",
+      "title-placeholder": "Tittel for ODD",
       "model": {
         "delete-model-label": "Slett modell?",
         "delete-model-message": "Ønsker du virkelig å slette den valgte modellen?",

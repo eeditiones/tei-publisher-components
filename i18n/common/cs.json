@@ -39,7 +39,9 @@
     "normalized": "Normalizované zobrazení",
     "plain": "Zobrazení pro čtení",
     "view-type": "Zobrazení strany",
-    "add-panel": "Přidat zobrazení"
+    "add-panel": "Přidat zobrazení",
+    "caveat-heading": "Upozornění",
+    "caveat": "Pohrajte si s nastavením a vyzkoušejte různé šablony stránek a ODD. Ne všechny kombinace však dávají smysl u všech dokumentů. Například pro vykreslení mapy musíte zadat souřadnice a správně je zpracovat, zobrazení strany předpokládá použití elementů pro začátek strany (&lt;pb&gt;) ap. Pokud uvidíte že, ‚server nevrátil žádný obsah‘, obvykle to znamená nesoulad mezi daty a způsobem jejich zpracování v dokumentu, zvoleným ODD a šablonou stránky."
   },
   "browse": {
     "description": "Pomocí této aplikace můžete experimentovat a vyzkoušet různé ODD s instrukcemi pro zpracování modelu. Nahrajte vlastní soubory a vytvořte vlastní ODD.",

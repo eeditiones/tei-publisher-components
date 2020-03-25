@@ -1,81 +1,81 @@
 {
-  "language": "Γλώσσα",
+  "language": "שפה",
   "menu": {
-    "documentation": "Τεκμηρίωση",
+    "documentation": "Documentation",
     "admin": {
-      "title": "Διαχειριστής",
-      "recompile": "Σύνταξη ODD",
-      "appGenerator": "Δημιουργία εφαρμογής",
-      "edit-odd": "Επεξεργασία ODD"
+      "title": "Admin",
+      "recompile": "בניה (קימפול) מחדש של ODD",
+      "appGenerator": "App Generator",
+      "edit-odd": "Edit ODD"
     },
-    "news": "Νέα",
+    "news": "חדשות",
     "download": {
-      "title": "Μεταφόρτωση",
+      "title": "הורדה",
       "pdf-latex": "PDF (LaTeX Version)",
       "pdf-fo": "PDF (FO Version)",
-      "pdf-title": "Μεταφόρτωση ως PDF",
-      "fo-source": "FO πηγή",
-      "latex-source": "TeX κώδικας",
-      "single-page": "Μονή σελίδα",
-      "epub-download": "Μεταφόρτωση ως epub ebook",
-      "view-tei": "Προβολή  TEI XML"
+      "pdf-title": "הורדת קובץ PDF",
+      "fo-source": "FO Source",
+      "latex-source": "מקור TeX",
+      "single-page": "דף אחד",
+      "epub-download": "הורדה כספר אלקטרוני - epub",
+      "view-tei": "תציג TEI-XML"
     }
   },
   "dialogs": {
-    "error": "Ουπς!",
-    "close": "Κλείσιμο",
-    "yes": "Ναι",
-    "no": "όχι",
-    "serverError": "The request to the server failed.",
-    "generatingFile": "Δημιουργία αρχείου...",
-    "downloadMessage": "Η δημιουργία αρχείου για μεταφόρτωση ενδέχεται να κρατήσει μερικά λεπτά. Παρακαλώ περιμένετε. Αυτ΄ό το παράθυρο θα κλείσει αυτόματα μόλις ολοκληρωθεί η διαδικασία.",
-    "loading": "Φόρτωση σε εξέλιξη..."
+    "error": "Ooops",
+    "close": "סגור",
+    "yes": "כן",
+    "no": "לא",
+    "serverError": "הפניה לשרת נכשלה.",
+    "generatingFile": "יוצר קובץ...",
+    "downloadMessage": "יצירת קובץ יכולה לקחת כמה דקות. אנא להמתין. חלון זה אמור להיסגר באופן אוטומטי כשההורדה הסתיימה.",
+    "loading": "טוען..."
   },
   "document": {
-    "contents": "Περιεχόμενα",
-    "selectODD": "Επιλέξτε ODD",
-    "selectTemplate": "Επιλέξτε πρότυπο",
+    "contents": "תכנים",
+    "selectODD": "בחר ב-ODD",
+    "selectTemplate": "בחר בתבנית",
     "selectFeature": "Select Feature",
-    "normalized": "Normalized View",
-    "plain": "Plain Reading View",
-    "view-type": "Page View",
-    "add-panel": "Add View",
-    "caveat-heading": "Προσοχή!",
+    "normalized": "תגוגה מנורמלת",
+    "plain": "תצוגה לפי יחידות טקסטואליות",
+    "view-type": "תצוגה לפי עמוד",
+    "add-panel": "הוסף פאנל",
+    "caveat-heading": "Caveat",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
     "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
     "login": "to upload files or see administrative functions (default user: 'tei', password: 'simple').",
-    "sort": "Ταξινόμηση κατά",
-    "filter": "Φιλτράρισμα κατά",
+    "sort": "סדר לפי",
+    "filter": "מיין לפי",
     "items": "Found {{count}} item",
-    "items_plural": "Found {{count}} items",
-    "title": "Τίτλος",
-    "author": "Δημιουργός",
-    "modificationDate": "Modification Date",
-    "file": "Όνομα αρχείου",
-    "delete": "Διαγραφή",
-    "confirmDeletion": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αρχείο;",
-    "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
-    "documents": "Έγγραφα",
-    "collections": "Local Collection",
-    "dts": "Distributed Text Services (Experimental)",
+    "items_plural": "נמצאו {{count}} תוצאות",
+    "title": "כותרת",
+    "author": "מחבר",
+    "modificationDate": "תאריך שינוי",
+    "file": "שם הקובץ",
+    "delete": "מחק",
+    "confirmDeletion": "האם אתה בטוח למחוק את הקובץ?",
+    "confirmDeletion_plural": "האם אתה בטוח למחוק את {[count]} הקבצים?",
+    "documents": "מסמכים",
+    "collections": "אוסף מקומי",
+    "dts": "שירותי DTS",
     "demo": {
       "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
-      "title": "Χώρος δοκιμών",
+      "title": "ארגז חול",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "documentation": {
-      "title": "Τεκμηρίωση",
-      "description": "Documentation and News using Docbook XML."
+      "title": "תיעוד",
+      "description": "Documentation (using Docbook XML)."
     },
     "up": "Up"
   },
   "upload": {
-    "upload": "Ανεβάστε",
+    "upload": "Upload",
     "drop": "Drop {{accept}} files here to upload."
   },
   "demo": {
@@ -84,22 +84,22 @@
       "hide": "Hide Code"
     },
     "editCode": {
-      "show": "Edit Code",
+      "show": "עריכת הקוד",
       "hide": "Close Editor"
     }
   },
   "login": {
-    "login": "Σύνδεση",
-    "as": "Έχετε συνδεθεί ως  {{χρήστης}}",
-    "user": "Χρήστης",
-    "password": "Κωδικός πρόσβασης",
+    "login": "Login",
+    "as": "Logged in as {{user}}",
+    "user": "שם משתמש.ת",
+    "password": "Password",
     "invalid": "Wrong password or invalid user",
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
     "placeholder": "Enter Query",
-    "sections": "Αναζήτηση ενοτήτων",
-    "headings": "Αναζήτηση κεφαλίδων"
+    "sections": "Search sections",
+    "headings": "Search headings"
   },
   "dts": {
     "endpoint": "Select Endpoint",
@@ -110,24 +110,24 @@
     "manage": {
       "filename": "File name of the ODD (without suffix)",
       "title": "Title for display",
-      "create": "Δημιουργία",
+      "create": "Create",
       "create-from-example": "Create from examples",
       "delete": "Are you sure you want to delete the ODD file {{file}}?"
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Save",
-      "saving": "Saving ...",
-      "saved": "Saved",
-      "reload": "Reload",
-      "reload-confirm": "Any unsaved changes will be lost. Continue?",
-      "add-element": "Add Element",
-      "odd-source": "ODD Source",
+      "save": "שמירה",
+      "saving": "שומר...",
+      "saved": "נשמר",
+      "reload": "טען מחדש",
+      "reload-confirm": "כל השינויים שלא נשמרו יימחקו. המשך?",
+      "add-element": "הוספת פריט",
+      "odd-source": "מקור ODD",
       "specs": "Element Specs",
       "jump-to": "Jump to element ...",
-      "title-short": "Short title",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
+      "title-short": "כותרת מקוצרת",
+      "title-short-placeholder": "כותרת מקוצרת לתצוגה",
+      "description-label": "תיאור",
       "description-placeholder": "Description of the ODD",
       "source-label": "Base ODD",
       "source-placeholder": "ODD to inherit from",
@@ -136,11 +136,11 @@
       "title": "Title",
       "title-placeholder": "Title of the ODD",
       "model": {
-        "delete-model-label": "Delete Model?",
-        "delete-model-message": "Do you really want to delete the selected model?",
+        "delete-model-label": "למחוק את המודל?",
+        "delete-model-message": "האם באמת התכוונת למחוק את המודל הנבחר?",
         "description-placeholder": "[Document the model]",
         "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "or",
+        "link-with-or": "או",
         "css-class-placeholder": "[Define CSS class name (for external CSS)]",
         "custom-behaviour-placeholder": "[Custom Behaviour]",
         "template-placeholder": "[Define code template to apply to content]",
@@ -152,7 +152,7 @@
   "facets": {
     "show": "Show top 50",
     "genre": "Genre",
-    "language": "Language"
+    "language": "שפה"
   },
   "appgen": {
     "account": {
@@ -160,7 +160,7 @@
       "owner": "The user account who will own the app.",
       "password": "Password for the user owning this app."
     },
-    "submit": "Save/Generate",
+    "submit": "שמירה/יצירה",
     "index": {
       "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
       "label": "Default Full Text Index",
@@ -169,13 +169,13 @@
     },
     "view": {
       "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
-      "div": "By division (chapter/section...)",
-      "page": "By page"
+      "div": "לפי חלוקת הטקסט (פרק, פרשה...)",
+      "page": "לפי עמוד"
     },
     "label": "Default View",
     "template": {
-      "help": "Choose the HTML template to be used as default",
-      "label": "HTML Template"
+      "help": "בחירת תבנית HTML שתשמש כברירת מחדל",
+      "label": "תבנית HTML"
     },
     "title": {
       "help": "Title of the app which will be shown e.g. in the dashboard",
@@ -184,13 +184,13 @@
     "collection": "Name of subcollection to hold TEI documents",
     "abbrev": {
       "label": "Short name to be used in URLs and file names",
-      "placeholder": "Short name"
+      "placeholder": "שם קצר"
     },
     "uri": "URL to uniquely identify the app",
     "dialog": {
       "title": "App generated"
     },
-    "open": "Open",
+    "open": "פתיחה",
     "success": "Your app has been successfully generated!"
   }
 }
