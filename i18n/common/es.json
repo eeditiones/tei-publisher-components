@@ -1,5 +1,5 @@
 {
-  "language": "Language",
+  "language": "Idioma",
   "menu": {
     "documentation": "Documentación",
     "admin": {
@@ -8,7 +8,7 @@
       "appGenerator": "Generador de aplicaciones",
       "edit-odd": "Editar el ODD"
     },
-    "news": "News",
+    "news": "Noticias",
     "download": {
       "title": "Descargar",
       "pdf-latex": "PDF (versión LaTeX)",
@@ -16,179 +16,179 @@
       "pdf-title": "Descargar en PDF",
       "fo-source": "Código fuente FO",
       "latex-source": "Código fuente TeX",
-      "single-page": "Página única",
+      "single-page": "Una sola página",
       "epub-download": "Descargar como ePub",
-      "view-tei": "Ver el TEI XML original"
+      "view-tei": "Ver el TEI XML"
     }
   },
   "dialogs": {
-    "error": "Ooops",
+    "error": "¡Vaya!",
     "close": "Cerrar",
     "yes": "Sí",
     "no": "No",
-    "serverError": "The request to the server failed.",
+    "serverError": "La solicitud al servidor ha fallado.",
     "generatingFile": "Generando el archivo...",
-    "downloadMessage": "Generar el archivo para su descarga puede llevar algunos minutos. Espere, por favor. Este mensaje debería cerrarse automáticamente cuando la descarga esté completa.",
-    "loading": "Loading ..."
+    "downloadMessage": "Generar el archivo para su descarga puede tardar algunos minutos. Espere, por favor. Este mensaje debería cerrarse automáticamente cuando la descarga esté completa.",
+    "loading": "Cargando ..."
   },
   "document": {
     "contents": "Índice",
-    "selectODD": "Select ODD",
-    "selectTemplate": "Select Template",
-    "selectFeature": "Select Feature",
-    "normalized": "Normalized View",
-    "plain": "Plain Reading View",
-    "view-type": "Page View",
-    "add-panel": "Add View"
+    "selectODD": "Seleccionar ODD",
+    "selectTemplate": "Seleccionar Plantilla",
+    "selectFeature": "Seleccionar una característica",
+    "normalized": "Vista normalizada",
+    "plain": "Vista de lectura sencilla",
+    "view-type": "Ver por páginas",
+    "add-panel": "Añadir Vista"
   },
   "browse": {
-    "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
-    "login": "to upload files or see administrative functions (default user: 'tei', password: 'simple').",
+    "description": "Utiliza esta aplicación para experimentar y probar varios ODDs redactados a partir de diferentes instrucciones del modelo de procesamiento. Carga tus propios archivos y crea un ODD personalizado.",
+    "login": "para subir archivos o ver funciones administrativas (usuario predeterminado: 'tei', contraseña: 'simple').",
     "sort": "Ordenar por",
-    "filter": "Filter by",
-    "items": "Found {{count}} item",
-    "items_plural": "Found {{count}} items",
+    "filter": "Filtrar por",
+    "items": "Se ha encontrado {{count}} elemento",
+    "items_plural": "Se han encontrado {{count}} elementos",
     "title": "Título",
     "author": "Autor",
-    "modificationDate": "Modification Date",
-    "file": "Filename",
+    "modificationDate": "Fecha de modificación",
+    "file": "Nombre del archivo",
     "delete": "Borrar",
-    "confirmDeletion": "Are you sure you want to delete the file?",
-    "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
+    "confirmDeletion": "¿Seguro que quieres eliminar el archivo?",
+    "confirmDeletion_plural": "¿Seguro que quieres eliminar {{count}} archivos?",
     "documents": "Documentos",
-    "collections": "Local Collection",
-    "dts": "Distributed Text Services (Experimental)",
+    "collections": "Colección local",
+    "dts": "Servicios de texto distribuidos (versión experimental)",
     "demo": {
-      "title": "TEI Publisher Demo Collection",
-      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+      "title": "Muestrario de publicaciones basadas en TEI Publisher",
+      "description": "Documentos que ejemplifican algunas funcionalidades del programa. La selección no es exhaustiva, pero sí representa una parte de lo que puede hacerse. Agradeceremos que contribuyas a aumentar la muestra con tus propios propios casos de uso."
     },
     "playground": {
-      "title": "Playground",
-      "description": "A writable collection into which you can upload your own documents for testing."
+      "title": "Pruebas",
+      "description": "Una colección con permisos de escritura en la que puedes cargar tus propios documentos para probarlos."
     },
     "documentation": {
       "title": "Documentación",
-      "description": "Documentation and News using Docbook XML."
+      "description": "Documentación (usando Docbook XML)."
     },
-    "up": "Up"
+    "up": "Arriba"
   },
   "upload": {
     "upload": "Cargar",
-    "drop": "Drop {{accept}} files here to upload."
+    "drop": "Arrastra {{accept}} archivos aquí para cargarlos."
   },
   "demo": {
     "showCode": {
-      "show": "Show Code",
-      "hide": "Hide Code"
+      "show": "Mostrar el código",
+      "hide": "Ocultar el código"
     },
     "editCode": {
-      "show": "Edit Code",
-      "hide": "Close Editor"
+      "show": "Editar el código",
+      "hide": "Cerrar el editor"
     }
   },
   "login": {
     "login": "Conectarse",
-    "as": "Logged in as {{user}}",
+    "as": "Sesión iniciada como {{user}}",
     "user": "Usuario",
     "password": "Contraseña",
-    "invalid": "Wrong password or invalid user",
-    "requiredGroup": "must be member of group {{group}}"
+    "invalid": "Contraseña incorrecta o usuario no válido",
+    "requiredGroup": "debe ser miembro del grupo {{group}}"
   },
   "search": {
-    "placeholder": "Enter Query",
-    "sections": "Buscar en el texto",
+    "placeholder": "Escribe el término a buscar",
+    "sections": "Buscar en secciones",
     "headings": "Buscar en títulos"
   },
   "dts": {
-    "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "endpoint": "Seleccionar punto final",
+    "note": "Experimental: acceder a otras ediciones que exponen la API DTS"
   },
   "odd": {
-    "files": "ODD Files",
+    "files": "Archivos ODD",
     "manage": {
-      "filename": "File name of the ODD (without suffix)",
-      "title": "Title for display",
+      "filename": "Nombre del archivo ODD (sin sufijo)",
+      "title": "Título para mostrar",
       "create": "Crear",
-      "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "create-from-example": "Crear a partir de ejemplos",
+      "delete": "¿Seguro que quieres eliminar el archivo {{file}}?"
     },
     "editor": {
-      "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Save",
-      "saving": "Saving ...",
-      "saved": "Saved",
-      "reload": "Reload",
-      "reload-confirm": "Any unsaved changes will be lost. Continue?",
-      "add-element": "Add Element",
-      "odd-source": "ODD Source",
-      "specs": "Element Specs",
-      "jump-to": "Jump to element ...",
-      "title-short": "Short title",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
-      "description-placeholder": "Description of the ODD",
-      "source-label": "Base ODD",
-      "source-placeholder": "ODD to inherit from",
-      "use-namespace": "Check for using a different namespace than TEI",
-      "namespace-placeholder": "Default namespace URI (if not TEI)",
-      "title": "Title",
-      "title-placeholder": "Title of the ODD",
+      "delete-spec": "¿Realmente deseas eliminar la especificación del elemento '{{ident}}'?",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "saved": "Guardado",
+      "reload": "Volver a cargar",
+      "reload-confirm": "Se perderán los cambios no guardados. ¿Continuar?",
+      "add-element": "Añadir elemento",
+      "odd-source": "Código fuente del ODD",
+      "specs": "Especificaciones de elementos",
+      "jump-to": "Ir al elemento ...",
+      "title-short": "Título corto",
+      "title-short-placeholder": "Título corto para mostrar",
+      "description-label": "Descripción",
+      "description-placeholder": "Descripción del ODD",
+      "source-label": "ODD Base",
+      "source-placeholder": "ODD del que heredar",
+      "use-namespace": "Comprobar el uso de un espacio de nombres diferente al TEI",
+      "namespace-placeholder": "URI por defecto del espacio de nombres (si no es TEI)",
+      "title": "Título",
+      "title-placeholder": "Título del ODD",
       "model": {
-        "delete-model-label": "Delete Model?",
-        "delete-model-message": "Do you really want to delete the selected model?",
-        "description-placeholder": "[Document the model]",
-        "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "or",
-        "css-class-placeholder": "[Define CSS class name (for external CSS)]",
-        "custom-behaviour-placeholder": "[Custom Behaviour]",
-        "template-placeholder": "[Define code template to apply to content]",
-        "param-name-placeholder": "[Param name]",
-        "empty": "[Empty]"
+        "delete-model-label": "¿Eliminar el modelo?",
+        "delete-model-message": "¿Seguro que desea eliminar el modelo seleccionado?",
+        "description-placeholder": "[Documentar el modelo]",
+        "predicate-placeholder": "[Definir otras condiciones que deben cumplirse (en xquery)]",
+        "link-with-or": "o",
+        "css-class-placeholder": "[Definir nombre de clase CSS (para CSS externo)]",
+        "custom-behaviour-placeholder": "[Behaviour personalizado]",
+        "template-placeholder": "[Definir plantilla de código para aplicar al contenido]",
+        "param-name-placeholder": "[Nombre del parámetro]",
+        "empty": "[Vacío]"
       }
     }
   },
   "facets": {
-    "show": "Show top 50",
-    "genre": "Genre",
-    "language": "Language"
+    "show": "Mostrar top 50",
+    "genre": "Género",
+    "language": "Idioma"
   },
   "appgen": {
     "account": {
-      "user": "User account for administrative tasks. The user will be created if it does not yet exist.",
-      "owner": "The user account who will own the app.",
-      "password": "Password for the user owning this app."
+      "user": "Cuenta de usuario para tareas administrativas. El usuario será creado si aún no existe.",
+      "owner": "La cuenta de usuario que será propietaria de la aplicación.",
+      "password": "Contraseña para el usuario propietario de esta aplicación."
     },
-    "submit": "Save/Generate",
+    "submit": "Guardar/generar",
     "index": {
-      "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
-      "label": "Default Full Text Index",
-      "index-div": "Create on division",
-      "index-text": "Create on text"
+      "help": "Definir el bloque más pequeño a partir del que se crea el índice de texto completo. Para documentos organizados en divisiones suele ser preferible usar 'Crear por divisiones'. Si no hay divisiones, elija \"Crear por texto\".",
+      "label": "Índice de texto completo por defecto",
+      "index-div": "Crear por divisiones",
+      "index-text": "Crear por texto"
     },
     "view": {
-      "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
-      "div": "By division (chapter/section...)",
-      "page": "By page"
+      "help": "Elija lo que se muestra por defecto al navegar por el texto: vista por páginas o por divisiones completas. La vista por página exige que el TEI XML esté correctamente marcado con etiquetas &lt;tei:pb&gt;.",
+      "div": "Por divisiones (capítulo/sección...)",
+      "page": "Por páginas"
     },
-    "label": "Default View",
+    "label": "Vista predeterminada",
     "template": {
-      "help": "Choose the HTML template to be used as default",
-      "label": "HTML Template"
+      "help": "Elija la plantilla HTML a utilizar por defecto",
+      "label": "Plantilla HTML"
     },
     "title": {
-      "help": "Title of the app which will be shown e.g. in the dashboard",
-      "label": "Title of the app"
+      "help": "Título de la aplicación a mostrar, por ejemplo, en el panel de control",
+      "label": "Título de la aplicación"
     },
-    "collection": "Name of subcollection to hold TEI documents",
+    "collection": "Nombre de la subcolección que contendrá los documentos TEI",
     "abbrev": {
-      "label": "Short name to be used in URLs and file names",
-      "placeholder": "Short name"
+      "label": "Nombre abreviado para URLs y nombres de archivo",
+      "placeholder": "Nombre abreviado"
     },
-    "uri": "URL to uniquely identify the app",
+    "uri": "URL para identificar la aplicación de forma única",
     "dialog": {
-      "title": "App generated"
+      "title": "Aplicación generada"
     },
-    "open": "Open",
-    "success": "Your app has been successfully generated!"
+    "open": "Abrir",
+    "success": "¡Tu aplicación ha sido generada con éxito!"
   }
 }

@@ -16,14 +16,14 @@
       "pdf-title": "Pobierz w formacie PDF",
       "fo-source": "FO (kod źródłowy)",
       "latex-source": "TeX (kod źródłowy)",
-      "single-page": "Jedna strona",
+      "single-page": "Widok ciągły",
       "epub-download": "Pobierz w formacie ePub",
       "view-tei": "Widok TEI XML"
     }
   },
   "dialogs": {
     "error": "Auć",
-    "close": "Zamknj",
+    "close": "Zamknij",
     "yes": "Tak",
     "no": "Nie",
     "serverError": "Zapytanie do serwera nie powiodło się.",
@@ -38,10 +38,8 @@
     "selectFeature": "Wybierz ustawienie",
     "normalized": "Widok znormalizowany",
     "plain": "Widok do czytania",
-    "view-type": "Widok strony",
-    "add-panel": "Dodaj panel",
-    "caveat-heading": "Caveat",
-    "caveat": "Eksperymentuj z różnymi kombinacjami szablonów i plików ODD. Proszę zwrócić uwagę, że nie wszystkie kombinacje prowadzą do sensownych rezultatów w połączeniu z danym dokumentem źródłowym. Dla przykładu do wygenerowania mapy niezbędne jest zawarcie w dokumencie koordynat geograficznych, zaś Widok wg strony zakłada, że są one oznakowane. W przypadku kiedy zamiast fragmentu strony widoczny jest komunikat 'zapytanie do serwera nie przyniosło rezultatu' lub podobny, jest to najczęściej symptom niedopasowania pomiędzy dokumentem źródłowym a ODD lub szablonem strony."
+    "view-type": "Podział wg stron",
+    "add-panel": "Dodaj panel"
   },
   "browse": {
     "description": "Eksperymentuj i wypróbuj rezultaty zastosowania rozmaitych plików ODD dołączonych do naszej aplikacji. Zaimportuj własne pliki źródłowe i utwórz własny plik ODD dostosowany do Twoich potrzeb.",
@@ -66,11 +64,11 @@
     },
     "playground": {
       "title": "Poletko eksperymentalne",
-      "description": "Kolekcja z prawem zapisu plików. Tutaj można zaimportować własne pliki źródłowe dla celów testowych."
+      "description": "Kolekcja z prawem zapisu plików. Tutaj można zapisać własne pliki źródłowe dla celów testowych."
     },
     "documentation": {
       "title": "Dokumentacja",
-      "description": "Dokumentacja oraz Nowości (w formacie Docbook XML)."
+      "description": "Dokumentacja (w formacie Docbook XML)."
     },
     "up": "W górę"
   },
@@ -81,7 +79,7 @@
   "demo": {
     "showCode": {
       "show": "Pokaż kod źródłowy",
-      "hide": "Ukryj kod źródłowu"
+      "hide": "Ukryj kod źródłowy"
     },
     "editCode": {
       "show": "Edytuj kod źródłowy",
@@ -122,7 +120,7 @@
       "reload": "Odśwież",
       "reload-confirm": "Zmiany, które nie zostały zapisane będą utracone. Czy kontynuować?",
       "add-element": "Dodaj element",
-      "odd-source": "Kod źródłowy",
+      "odd-source": "Kod źródłowy ODD",
       "specs": "Specyfikacje (elementSpec)",
       "jump-to": "Przejdź do elementu ...",
       "title-short": "Skrócony tytuł",
@@ -134,15 +132,15 @@
       "use-namespace": "Zaznacz, jeżeli zamierzasz używać innych standardów niż TEI",
       "namespace-placeholder": "Default namespace URI (jeżeli inna niż TEI)",
       "title": "Tytuł",
-      "title-placeholder": "Tytuł pliku ODD",
+      "title-placeholder": "Nazwa pliku ODD",
       "model": {
         "delete-model-label": "Usunąć model?",
         "delete-model-message": "Czy na pewno chcesz usunąć wybrany model?",
         "description-placeholder": "[Dokumentacja modelu]",
-        "predicate-placeholder": "[Warunki, dla których dany model obowiązuje (w xquery)]",
+        "predicate-placeholder": "[Warunki, dla których dany model obowiązuje (w XQuery)]",
         "link-with-or": "lub",
         "css-class-placeholder": "[Klasa CSS (z zewnętrznego arkusza CSS)]",
-        "custom-behaviour-placeholder": "[Behaviour niestandardowe]",
+        "custom-behaviour-placeholder": "[Behaviour (niestandardowe)]",
         "template-placeholder": "[Szablon (zostanie zastosowany do parametru content)]",
         "param-name-placeholder": "[Nazwa parametru]",
         "empty": "[Brak]"
@@ -150,15 +148,15 @@
     }
   },
   "facets": {
-    "show": "Pokaż 50 najczęstszych",
+    "show": "Pokaż top 50",
     "genre": "Gatunek",
     "language": "Język"
   },
   "appgen": {
     "account": {
       "user": "Nazwa konta administratora. Konto zostanie utworzone, jeżeli jeszcze nie istnieje.",
-      "owner": "Konto użytkownika - właściciela aplikacji.",
-      "password": "Hasło do konta użytkownika - właściciela aplikacji."
+      "owner": "Konto administratora aplikacji.",
+      "password": "Hasło do konta administratora aplikacji."
     },
     "submit": "Zapisz/Generuj",
     "index": {
@@ -168,9 +166,9 @@
       "index-text": "Utwórz indeks dla elementu text"
     },
     "view": {
-      "help": "Wybierz sposób wyświetlania dokumentu: strona po stronie lub według sekcji. Widok strona po stronie zakłada, że kod źródłowy TEI zawiera odpowiednio rozmieszczone znaczniki &lt;tei:pb&gt;.",
+      "help": "Wybierz sposób wyświetlania dokumentu: strona po stronie lub według sekcji. Widok według stron zakłada, że kod źródłowy TEI zawiera odpowiednio rozmieszczone znaczniki &lt;tei:pb&gt;.",
       "div": "Według sekcji (rozdział/sekcja...)",
-      "page": "Strona po stronie"
+      "page": "Według stron"
     },
     "label": "Widok domyślny",
     "template": {
@@ -179,16 +177,16 @@
     },
     "title": {
       "help": "Tytuł aplikacji pokazywany m. in. w aplikacji Dashboard",
-      "label": "Tytuł aplikacji"
+      "label": "Nazwa aplikacji"
     },
     "collection": "Nazwa kolekcji zawierającej dokumenty źródłowe",
     "abbrev": {
       "label": "Nazwa skrócona - używana w adresach URL oraz nazwach plików i kolekcji",
       "placeholder": "Nazwa skrócona"
     },
-    "uri": "URL jednoznacznie identyfikujący aplikację.",
+    "uri": "URL jednoznacznie identyfikujący aplikację",
     "dialog": {
-      "title": "Applikacja została wygenerowana"
+      "title": "Aplikacja została wygenerowana"
     },
     "open": "Otwórz",
     "success": "Twoja aplikacja została pomyślnie wygenerowana!"

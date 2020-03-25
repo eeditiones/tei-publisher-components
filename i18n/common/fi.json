@@ -1,79 +1,79 @@
 {
-  "language": "Langage",
+  "language": "Kieli",
   "menu": {
     "documentation": "Documentation",
     "admin": {
-      "title": "Administration",
-      "recompile": "Recompiler l'ODD",
-      "appGenerator": "Générateur d'applications",
-      "edit-odd": "Editer l'ODD"
+      "title": "Ylläpito",
+      "recompile": "Recompile ODD",
+      "appGenerator": "App Generator",
+      "edit-odd": "Edit ODD"
     },
-    "news": "Actualités",
+    "news": "Uutiset",
     "download": {
-      "title": "Télécharger",
-      "pdf-latex": "PDF (version LaTeX)",
-      "pdf-fo": "PDF (version XSL-FO)",
-      "pdf-title": "Télécharger PDF",
-      "fo-source": "Source XSL-FO",
-      "latex-source": "Source TeX",
-      "single-page": "Page unique",
-      "epub-download": "Télécharger un ebook (format ePub)",
-      "view-tei": "Voir la source XML TEI"
+      "title": "Lataa",
+      "pdf-latex": "PDF (LaTeX versio)",
+      "pdf-fo": "PDF (FO versio)",
+      "pdf-title": "Lataa PDF",
+      "fo-source": "FO Source",
+      "latex-source": "TeX Source",
+      "single-page": "Single Page",
+      "epub-download": "Lataa epub kirja",
+      "view-tei": "View TEI XML"
     }
   },
   "dialogs": {
-    "error": "Oups !",
-    "close": "Fermer",
-    "yes": "Oui",
-    "no": "non",
-    "serverError": "La requête au serveur a échoué.",
-    "generatingFile": "Génération du fichier...",
-    "downloadMessage": "La génération d'un fichier à télécharger peut prendre quelques minutes. Merci de patienter. Cette boîte de dialogue se fermera automatiquement à la fin du téléchargement.",
-    "loading": "Chargement ..."
+    "error": "Hups",
+    "close": "Sulje",
+    "yes": "Kyllä",
+    "no": "ei",
+    "serverError": "The request to the server failed.",
+    "generatingFile": "Generating File...",
+    "downloadMessage": "Generating a file for download may take up to a few minutes. Please wait. This dialog should close automatically when the download has completed.",
+    "loading": "Lataa..."
   },
   "document": {
-    "contents": "Contenus",
-    "selectODD": "Sélectionner un ODD",
-    "selectTemplate": "Sélectionner un template",
-    "selectFeature": "Select Feature",
-    "normalized": "Vue normalisée",
-    "plain": "Vue de lecture plein texte",
-    "view-type": "Vues page",
+    "contents": "Sisältö",
+    "selectODD": "Valitse ODD",
+    "selectTemplate": "Valitse malli",
+    "selectFeature": "Valitse ominaisuus",
+    "normalized": "Normalized View",
+    "plain": "Plain Reading View",
+    "view-type": "Page View",
     "add-panel": "Add View"
   },
   "browse": {
     "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
     "login": "to upload files or see administrative functions (default user: 'tei', password: 'simple').",
-    "sort": "Trier par",
-    "filter": "Filtrer selon",
+    "sort": "Lajittelujärjestys",
+    "filter": "Suodata",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
-    "title": "Titre",
-    "author": "Auteur",
-    "modificationDate": "Date de modification",
-    "file": "Nom de fichier",
-    "delete": "Supprimer",
-    "confirmDeletion": "Are you sure you want to delete the file?",
-    "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
-    "documents": "Documents",
+    "title": "Otsikko",
+    "author": "Tekijä",
+    "modificationDate": "Muokkauspäivä",
+    "file": "Tiedoston nimi",
+    "delete": "Poista",
+    "confirmDeletion": "Haluatko varmasti poistaa tämän tiedoston?",
+    "confirmDeletion_plural": "Haluatko varmasti poistaa {{count}} tiedostoa?",
+    "documents": "Dokumentit",
     "collections": "Local Collection",
     "dts": "Distributed Text Services (Experimental)",
     "demo": {
-      "title": "Collection de démonstration de TEI Publisher",
+      "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
-      "title": "Playground",
+      "title": "Leikkikenttä",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "documentation": {
       "title": "Documentation",
-      "description": "Documentation and News using Docbook XML."
+      "description": "Documentation (using Docbook XML)."
     },
     "up": "Up"
   },
   "upload": {
-    "upload": "Upload de fichier",
+    "upload": "Upload",
     "drop": "Drop {{accept}} files here to upload."
   },
   "demo": {
@@ -87,17 +87,17 @@
     }
   },
   "login": {
-    "login": "Se connecter",
+    "login": "Login",
     "as": "Logged in as {{user}}",
-    "user": "Utilisateur",
-    "password": "Mot de passe",
+    "user": "User",
+    "password": "Password",
     "invalid": "Wrong password or invalid user",
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
     "placeholder": "Enter Query",
-    "sections": "dans le texte",
-    "headings": "dans les titres de sections"
+    "sections": "Search sections",
+    "headings": "Search headings"
   },
   "dts": {
     "endpoint": "Select Endpoint",
@@ -108,22 +108,22 @@
     "manage": {
       "filename": "File name of the ODD (without suffix)",
       "title": "Title for display",
-      "create": "Créer",
+      "create": "Create",
       "create-from-example": "Create from examples",
       "delete": "Are you sure you want to delete the ODD file {{file}}?"
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Save",
-      "saving": "Saving ...",
-      "saved": "Saved",
-      "reload": "Reload",
-      "reload-confirm": "Any unsaved changes will be lost. Continue?",
-      "add-element": "Add Element",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "saved": "Tallennettu",
+      "reload": "Päivitä",
+      "reload-confirm": "Kaikki tallentamattomat muutokset menetetään. Haluatko edetä?",
+      "add-element": "Lisää elementti",
       "odd-source": "ODD Source",
       "specs": "Element Specs",
       "jump-to": "Jump to element ...",
-      "title-short": "Short title",
+      "title-short": "Lyhyt otsikko",
       "title-short-placeholder": "Short title for display",
       "description-label": "Description",
       "description-placeholder": "Description of the ODD",
@@ -131,14 +131,14 @@
       "source-placeholder": "ODD to inherit from",
       "use-namespace": "Check for using a different namespace than TEI",
       "namespace-placeholder": "Default namespace URI (if not TEI)",
-      "title": "Titre",
-      "title-placeholder": "Title of the ODD",
+      "title": "Otsikko",
+      "title-placeholder": "ODD:n otsikko",
       "model": {
-        "delete-model-label": "Supprimer le modèle ?",
-        "delete-model-message": "Do you really want to delete the selected model?",
+        "delete-model-label": "Delete Model?",
+        "delete-model-message": "Haluatko todella poistaa valitut mallit (modellit)?",
         "description-placeholder": "[Document the model]",
         "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "ou",
+        "link-with-or": "tai",
         "css-class-placeholder": "[Define CSS class name (for external CSS)]",
         "custom-behaviour-placeholder": "[Custom Behaviour]",
         "template-placeholder": "[Define code template to apply to content]",
@@ -148,47 +148,47 @@
     }
   },
   "facets": {
-    "show": "Montrer les 50 premiers",
-    "genre": "Genre",
-    "language": "Langage"
+    "show": "Näytä ensimmäiset 50",
+    "genre": "Laji",
+    "language": "Kieli"
   },
   "appgen": {
     "account": {
-      "user": "Compte utilisateur pour les tâches d'administration. L'utilisateur sera créé s'il n'existe pas encore.",
-      "owner": "Le compte utilisateur qui sera propriétaire de l'application.",
-      "password": "Mot de passe de l'utilisateur propriétaire de l'application."
+      "user": "User account for administrative tasks. The user will be created if it does not yet exist.",
+      "owner": "The user account who will own the app.",
+      "password": "Password for the user owning this app."
     },
-    "submit": "Sauvegarder et générer",
+    "submit": "Tallenna/Luo",
     "index": {
       "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
-      "label": "Index plein texte par défaut",
-      "index-div": "Créer sur une division",
-      "index-text": "Créer sur le texte"
+      "label": "Default Full Text Index",
+      "index-div": "Create on division",
+      "index-text": "Create on text"
     },
     "view": {
       "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
       "div": "By division (chapter/section...)",
-      "page": "Par page"
+      "page": "Sivu sivulta"
     },
-    "label": "Default View",
+    "label": "Oletusnäkymä",
     "template": {
-      "help": "Choose the HTML template to be used as default",
-      "label": "HTML Template"
+      "help": "Valitse HTML-malli mikä käytetään oletuksena",
+      "label": "HTML-malli"
     },
     "title": {
       "help": "Title of the app which will be shown e.g. in the dashboard",
-      "label": "Nom de l'application"
+      "label": "Äppin otsikko"
     },
-    "collection": "Nom de la sous-collection pour conserver les documents TEI",
+    "collection": "Name of subcollection to hold TEI documents",
     "abbrev": {
-      "label": "Nom abrégé à utiliser dans les URL et les noms de fichiers",
-      "placeholder": "Nom abrégé"
+      "label": "Short name to be used in URLs and file names",
+      "placeholder": "Lyhyt nimi"
     },
-    "uri": "URL pour identifier l'application de manière unique",
+    "uri": "URL to uniquely identify the app",
     "dialog": {
       "title": "App generated"
     },
-    "open": "Ouvrir",
-    "success": "Votre application a été générée avec succès !"
+    "open": "Avaa",
+    "success": "Your app has been successfully generated!"
   }
 }

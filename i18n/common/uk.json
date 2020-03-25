@@ -1,0 +1,194 @@
+{
+  "language": "Мова",
+  "menu": {
+    "documentation": "Документація",
+    "admin": {
+      "title": "Адмін",
+      "recompile": "Recompile ODD",
+      "appGenerator": "Генератор программа",
+      "edit-odd": "Редагувати ODD"
+    },
+    "news": "Новини",
+    "download": {
+      "title": "Завантажити",
+      "pdf-latex": "PDF (версія LaTeX)",
+      "pdf-fo": "PDF (версія FO)",
+      "pdf-title": "Завантажити у форматі PDF",
+      "fo-source": "Код FO",
+      "latex-source": "Код TeX",
+      "single-page": "Одна сторінка",
+      "epub-download": "Завантажити як ePub ebook",
+      "view-tei": "Дивитись XML"
+    }
+  },
+  "dialogs": {
+    "error": "Ой!",
+    "close": "Закрити",
+    "yes": "Так",
+    "no": "ні",
+    "serverError": "Помилка запиту на сервер.",
+    "generatingFile": "Створення файлу...",
+    "downloadMessage": "Генерація файлу для завантаження може зайняти кілька хвилин. Будь ласка, зачекайте. Це діалогове вікно має закритися автоматично, коли завантаження завершено.",
+    "loading": "Завантаження..."
+  },
+  "document": {
+    "contents": "Зміст",
+    "selectODD": "Вибрати ODD",
+    "selectTemplate": "Вибрати шаблон",
+    "selectFeature": "Вибрати властивості",
+    "normalized": "Нормалізоване представлення",
+    "plain": "Простий Вид",
+    "view-type": "Вид сторінки",
+    "add-panel": "Додати відображення"
+  },
+  "browse": {
+    "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
+    "login": "для завантаження файлів або перегляду адміністративних функцій (користувач за замовчуванням: 'tei', пароль: 'simple').",
+    "sort": "Сортувати по",
+    "filter": "Фільтрувати за",
+    "items": "Знайдено {{count}} елемент",
+    "items_plural": "Знайдено {{count}} елементів",
+    "title": "Назва",
+    "author": "Автор",
+    "modificationDate": "Дата останньої зміни",
+    "file": "Імені файлу",
+    "delete": "Видалити",
+    "confirmDeletion": "Ви дійсно бажаєте видалити цей файл?",
+    "confirmDeletion_plural": "Ви дійсно бажаєте видалити ці {{count}} файли?",
+    "documents": "Документи",
+    "collections": "Локальна колекція",
+    "dts": "Distributed Text Services (експериментальні)",
+    "demo": {
+      "title": "Колекція TEI Publisher Демо",
+      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+    },
+    "playground": {
+      "title": "Ігровий майданчик",
+      "description": "Колекція, що доступна для запису, до якої можна завантажити власні документи для тестування."
+    },
+    "documentation": {
+      "title": "Документація",
+      "description": "Документація (з використанням Docbook XML)."
+    },
+    "up": "Вище"
+  },
+  "upload": {
+    "upload": "Відвантажити",
+    "drop": "Для завантаження файлу {{accept}} перетягніть його сюди."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Показати код",
+      "hide": "Сховати код"
+    },
+    "editCode": {
+      "show": "Редагувати код",
+      "hide": "Закрити редактор"
+    }
+  },
+  "login": {
+    "login": "Логін",
+    "as": "Увійшли як {{user}}",
+    "user": "Користувач",
+    "password": "Пароль",
+    "invalid": "Неправильний пароль або неправильний користувач",
+    "requiredGroup": "потрібно бути членом групи {{group}}"
+  },
+  "search": {
+    "placeholder": "Введіть запит",
+    "sections": "Пошук секції",
+    "headings": "Пошук в заголовках"
+  },
+  "dts": {
+    "endpoint": "Вибрати endpoint",
+    "note": "Експериментально: доступ до інших видань, що викривають DTS API"
+  },
+  "odd": {
+    "files": "ODD файли",
+    "manage": {
+      "filename": "Ім'я файлу ODD (без суфікса)",
+      "title": "Назва для відображення",
+      "create": "Створити",
+      "create-from-example": "Створити із прикладів",
+      "delete": "Ви дійсно бажаєте видалити ODD файл {{file}}?"
+    },
+    "editor": {
+      "delete-spec": "Дійсно видалити специфікацію елемента для '{{ident}}'?",
+      "save": "Зберегти",
+      "saving": "Зберігається...",
+      "saved": "Збережено",
+      "reload": "Оновити",
+      "reload-confirm": "Усі незбережені зміни буде втрачено. Продовжити?",
+      "add-element": "Додати елемент",
+      "odd-source": "Код ODD",
+      "specs": "Специфікації (elementSpec)",
+      "jump-to": "Перейти до елементу ...",
+      "title-short": "Коротка назва",
+      "title-short-placeholder": "Коротка назва для відображення",
+      "description-label": "Описання",
+      "description-placeholder": "Описання ODD",
+      "source-label": "Базовий ODD",
+      "source-placeholder": "ODD у спадок від",
+      "use-namespace": "Перевірте, чи використовується інший namespace, ніж TEI",
+      "namespace-placeholder": "Default namespace URI (якщо не TEI)",
+      "title": "Назва",
+      "title-placeholder": "Назва ODD",
+      "model": {
+        "delete-model-label": "Видалити модель?",
+        "delete-model-message": "Ви дійсно хочете видалити вибрані модельи?",
+        "description-placeholder": "[Документація моделья]",
+        "predicate-placeholder": "[Визначити подальші умови, які мають бути виконані (в XQuery)]",
+        "link-with-or": "або",
+        "css-class-placeholder": "[Визначити ім'я CSS класу (для зовнішніх CSS)]",
+        "custom-behaviour-placeholder": "[Свою behaviour]",
+        "template-placeholder": "[Визначити шаблон коду для застосування до вмісту]",
+        "param-name-placeholder": "[Param name]",
+        "empty": "[Порожньо]"
+      }
+    }
+  },
+  "facets": {
+    "show": "Показувати топ 50",
+    "genre": "Жанр",
+    "language": "Мова"
+  },
+  "appgen": {
+    "account": {
+      "user": "User account for administrative tasks. The user will be created if it does not yet exist.",
+      "owner": "The user account who will own the app.",
+      "password": "Пароль для користувача, що володіє цією app."
+    },
+    "submit": "Зберегти/Генерувати",
+    "index": {
+      "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
+      "label": "Стандартний текстовий індекс",
+      "index-div": "Створити на розділ",
+      "index-text": "Створити на тексті"
+    },
+    "view": {
+      "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
+      "div": "Поділ (розділ...)",
+      "page": "По сторінці"
+    },
+    "label": "Типовий вид",
+    "template": {
+      "help": "Виберіть HTML шаблон для використання в якості типового",
+      "label": "HTML шаблон"
+    },
+    "title": {
+      "help": "Заголовок програми, який буде показано, напр. в головній панелі",
+      "label": "Назва програми"
+    },
+    "collection": "Ім'я підколекції, щоб тримати документи TEI",
+    "abbrev": {
+      "label": "Коротке ім'я для використання в URL-адресах та іменах файлів",
+      "placeholder": "Коротке ім'я"
+    },
+    "uri": "URL для однозначно визначення програми",
+    "dialog": {
+      "title": "Створено програм"
+    },
+    "open": "Відкрити",
+    "success": "Архів був успішно створений!"
+  }
+}
