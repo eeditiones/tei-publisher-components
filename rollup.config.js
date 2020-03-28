@@ -2,6 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
+import replace from '@rollup/plugin-replace';
 
 const production = process.env.BUILD === 'production';
 
@@ -24,6 +25,9 @@ export default [
             analyze({
                 summaryOnly: true
             }),
+            replace({
+                'process.env.NODE_ENV': JSON.stringify('production')
+            }),
             copy({
                 targets: [
                     {
@@ -45,6 +49,14 @@ export default [
                     {
                         src: './node_modules/prismjs/themes/*',
                         dest: './css/prismjs'
+                    },
+                    {
+                        src: './node_modules/tippy.js/dist/tippy.css',
+                        dest: './css/tippy.js'
+                    },
+                    {
+                        src: './node_modules/tippy.js/themes/*.css',
+                        dest: './css/tippy.js'
                     }
                 ]
             })
