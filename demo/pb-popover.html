@@ -18,13 +18,18 @@
             <template>
                 <custom-style>
                     <style>
-                        pb-popover {
+                        pb-popover, .popover {
                             color: rgb(224, 140, 13);
                             text-decoration: underline;
                         }
 
                         .pb-popover-content {
                             font-size: var(--pb-base-font-size);
+                        }
+
+                        /* Use different color for popups of class 'info' */
+                        .info .tippy-box {
+                            color: rgb(150, 192, 202);
                         }
                     </style>
                 </custom-style>
@@ -39,8 +44,10 @@
                             ipsum dolor sit amet, consetetur sadipscing elitr, sed diam<br>
                             nonumy eirmod "<pb-popover theme="light-border" persistent>tempor invidunt<br> ut labore<span slot="alternate">This is a persistent tooltip</span></pb-popover>" et dolore magna aliquyam<br> 
                             erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
-                            et ea rebum. <pb-popover persistent>Stet clita kasd gubergren<span slot="alternate">A persistent tooltip without title</span></pb-popover>, no sea takimata sanctus est<br>
-                            Lorem ipsum dolor sit amet.</p>
+                            et ea rebum. <pb-popover persistent>Stet clita kasd gubergren<span slot="alternate">A persistent tooltip</span></pb-popover>, no sea takimata sanctus est<br>
+                            <span class="popover" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
+                        <pb-popover for="lorem" add-class="info">This popover is connected to its trigger element
+                            using the 'for' attribute.</pb-popover>
                     </main>
                 </pb-page>
             </template>
