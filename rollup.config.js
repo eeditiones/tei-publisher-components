@@ -49,14 +49,6 @@ export default [
                     {
                         src: './node_modules/prismjs/themes/*',
                         dest: './css/prismjs'
-                    },
-                    {
-                        src: './node_modules/tippy.js/dist/tippy.css',
-                        dest: './css/tippy.js'
-                    },
-                    {
-                        src: './node_modules/tippy.js/themes/*.css',
-                        dest: './css/tippy.js'
                     }
                 ]
             })

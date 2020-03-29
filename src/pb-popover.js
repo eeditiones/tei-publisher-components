@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import tippy, { inlinePositioning } from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
+import * as themes from './pb-popover-themes.js';
 
 /**
  * Show a popover. It may either 
@@ -41,25 +42,10 @@ export class PbPopover extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             * Restrict the max width of a popup.
-             */
-            maxWidth: {
-                type: Number,
-                attribute: 'max-width'
-            },
-            /**
              * If true, show the popup on click instead of mouseover.
              */
             persistent: {
                 type: Boolean
-            },
-            /**
-             * Add the given class to the HTML element showing the popup content.
-             * Use to distinguish between different types of popups.
-             */
-            addClass: {
-                type: String,
-                attribute: 'add-class'
             }
         };
     }
@@ -68,7 +54,6 @@ export class PbPopover extends pbMixin(LitElement) {
         super();
         this.persistent = false;
         this.theme = null;
-        this.maxWidth = null;
         this.for = null;
     }
 
@@ -76,16 +61,24 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.disabled) {
             return html`<slot></slot>`;
         }
-        if (this.for) {
-            return html`<span class="hidden"><slot></slot></span>`;
+        let styles = null;
+        if (this.theme) {
+            const theme = themes[themes.camelize(this.theme)];
+            if (theme) {
+                styles = html`<style type="text/css">${theme}</style>`;
+            }
         }
-        return html`<a id="link" href="#" class="${this.persistent ? 'persistent' : ''}"><slot></slot></a><slot name="alternate"></slot>`;
+
+        if (this.for) {
+            return html`${styles}<span class="hidden"><slot></slot></span>`;
+        }
+        return html`${styles}<a id="link" href="#" class="${this.persistent ? 'persistent' : ''}"><slot></slot></a><slot name="alternate"></slot>`;
     }
 
     firstUpdated() {
         super.firstUpdated();
 
-        this.injectStyles();
+        // this.injectStyles();
 
         let target;
         let slot;
@@ -97,25 +90,21 @@ export class PbPopover extends pbMixin(LitElement) {
             slot = this.shadowRoot.querySelector('[name=alternate]');
         }
         if (target && slot) {
-            const content = slot.assignedNodes().map((node) => {
-                if (node.nodeType === 1) {
-                    return node.innerHTML;
-                }
-                return node.nodeValue;
-            }).join();
+            const content = document.createElement('div');
+            slot.assignedNodes().forEach((node) => {
+                content.appendChild(document.importNode(node, true));
+            });
             const options = {
                 content,
                 allowHTML: true,
-                appendTo: document.body,
+                appendTo: this.shadowRoot,
+                placement: 'auto',
                 interactive: true,
                 ignoreAttributes: true,
+                boundary: 'viewport',
                 inlinePositioning: true,
                 plugins: [inlinePositioning],
-                onCreate: (instance) => {
-                    if (this.addClass) {
-                        instance.popper.className += this.addClass;
-                    }
-                }
+                maxWidth: 'none'
             };
             if (this.persistent) {
                 options.trigger = 'click';
@@ -123,49 +112,34 @@ export class PbPopover extends pbMixin(LitElement) {
             if (this.theme) {
                 options.theme = this.theme;
             }
-            if (this.maxWidth) {
-                options.maxWidth = this.maxWidth;
-            }
             tippy(target, options);
         }
     }
 
-    injectStyles() {
-        if (!document.head.querySelector('link[href*="tippy"]')) {
-            const resource = new URL('../css/tippy.js/tippy.css', import.meta.url);
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = resource;
-            document.head.appendChild(link);
-        }
-
-        if (this.theme && !document.head.querySelector(`link[href*="${this.theme}"]`)) {
-            const resource = new URL(`../css/tippy.js/${this.theme}.css`, import.meta.url);
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = resource;
-            document.head.appendChild(link);
-        }
-    }
-
     static get styles() {
-        return css`
-            :host {
-                display: inline;
-            }
-            [name=alternate], .hidden {
-                display: none;
-            }
-            #link {
-                display: inline;
-                color: inherit;
-                text-decoration: var(--pb-popover-link-decoration, var(--pb-link-text-decoration, inherit));
-                cursor: text;
-            }
-            #link.persistent {
-                cursor: pointer;
-            }
-        `;
+        return [
+            themes.base,
+            css`
+                :host {
+                    display: inline;
+                }
+                [name=alternate], .hidden {
+                    display: none;
+                }
+                div {
+                    float: left;
+                }
+                #link {
+                    display: inline;
+                    color: inherit;
+                    text-decoration: var(--pb-popover-link-decoration, var(--pb-link-text-decoration, inherit));
+                    cursor: text;
+                }
+                #link.persistent {
+                    cursor: pointer;
+                }
+            `
+        ];
     }
 }
 customElements.define('pb-popover', PbPopover);
