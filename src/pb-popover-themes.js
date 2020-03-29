@@ -28,6 +28,9 @@ export const base = css`
         border-radius: 4px;
         font-size: var(--pb-popover-font-size, var(--pb-base-font-size, 14px));
         line-height: var(--pb-popover-line-height, var(--pb-base-line-height, 1.4));
+        text-align: left;
+        font-style: normal;
+        font-weight: normal;
         outline: 0;
         transition-property: transform, visibility, opacity
     }

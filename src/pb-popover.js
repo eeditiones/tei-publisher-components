@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import tippy, { inlinePositioning } from 'tippy.js';
+import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
 import * as themes from './pb-popover-themes.js';
 
@@ -18,6 +18,16 @@ import * as themes from './pb-popover-themes.js';
  * on click. Otherwise display a tooltip on mouseover.
  * 
  * `pb-popover` uses the tippy.js library for the popup.
+ * 
+ * # CSS Variables
+ * 
+ * | Variable | default |
+ * |---------|----------|
+ * | --pb-popover-theme | |
+ * | --pb-popover-link-decoration | inherit |
+ * | --pb-popover-max-height | calc(100vh - 60px) |
+ * | --pb-popover-max-width | |
+ * | --pb-popover-color | |
  *
  * @customElement
  * @polymer
@@ -39,7 +49,8 @@ export class PbPopover extends pbMixin(LitElement) {
              * The tippy theme to use. One of 'material', 'light', 'translucent' or 'light-border'.
              */
             theme: {
-                type: String
+                type: String,
+                reflect: true
             },
             /**
              * If true, show the popup on click instead of mouseover.
@@ -53,7 +64,6 @@ export class PbPopover extends pbMixin(LitElement) {
     constructor() {
         super();
         this.persistent = false;
-        this.theme = null;
         this.for = null;
     }
 
@@ -61,8 +71,9 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.disabled) {
             return html`<slot></slot>`;
         }
+        this._checkTheme();
         let styles = null;
-        if (this.theme) {
+        if (this.theme && this.theme !== 'none') {
             const theme = themes[themes.camelize(this.theme)];
             if (theme) {
                 styles = html`<style type="text/css">${theme}</style>`;
@@ -73,6 +84,17 @@ export class PbPopover extends pbMixin(LitElement) {
             return html`${styles}<span class="hidden"><slot></slot></span>`;
         }
         return html`${styles}<a id="link" href="#" class="${this.persistent ? 'persistent' : ''}"><slot></slot></a><slot name="alternate"></slot>`;
+    }
+
+    _checkTheme() {
+        if (!this.theme && this.theme !== 'none') {
+            let theme = getComputedStyle(this).getPropertyValue('--pb-popover-theme');
+            if (theme) {
+                this.theme = JSON.parse(theme);
+            } else {
+                this.theme = 'none';
+            }
+        }
     }
 
     firstUpdated() {
@@ -102,14 +124,12 @@ export class PbPopover extends pbMixin(LitElement) {
                 interactive: true,
                 ignoreAttributes: true,
                 boundary: 'viewport',
-                inlinePositioning: true,
-                plugins: [inlinePositioning],
                 maxWidth: 'none'
             };
             if (this.persistent) {
                 options.trigger = 'click';
             }
-            if (this.theme) {
+            if (this.theme && this.theme !== 'none') {
                 options.theme = this.theme;
             }
             tippy(target, options);
