@@ -522,6 +522,15 @@ export class PbView extends pbMixin(LitElement) {
         }
     }
 
+    _scrollToElement(ev, link) {
+        const target = this.shadowRoot.getElementById(link.hash.substring(1));
+        if (target) {
+            ev.preventDefault();
+            console.log('<pb-view> Scrolling to element %s', target.id);
+            target.scrollIntoView({ block: "center", inline: "nearest" });
+        }
+    }
+
     _updateStyles() {
         const link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
@@ -542,8 +551,19 @@ export class PbView extends pbMixin(LitElement) {
             });
             content.querySelectorAll('a').forEach((link) => {
                 const oldHref = link.getAttribute('href');
-                const href = new URL(oldHref, base);
-                link.href = href;
+                if (oldHref === link.hash) {
+                    link.addEventListener('click', (ev) => this._scrollToElement(ev, link));
+                } else {
+                    const href = new URL(oldHref, base);
+                    link.href = href;
+                }
+            });
+        } else {
+            content.querySelectorAll('a').forEach((link) => {
+                const oldHref = link.getAttribute('href');
+                if (oldHref === link.hash) {
+                    link.addEventListener('click', (ev) => this._scrollToElement(ev, link));
+                }
             });
         }
     }
@@ -814,7 +834,7 @@ export class PbView extends pbMixin(LitElement) {
                 }
             }
 
-            a[rel=footnote], pb-footnote-ref {
+            a[rel=footnote], pb-popover.note {
                 font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
                 vertical-align: top;
                 color: var(--pb-footnote-color, var(--pb-text-color-primary, #333333));
