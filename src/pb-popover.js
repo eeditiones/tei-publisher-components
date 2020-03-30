@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import tippy from 'tippy.js';
+import tippy from '../lib/tippy.esm.js';
 import { pbMixin } from './pb-mixin.js';
 import * as themes from './pb-popover-themes.js';
 
@@ -83,7 +83,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`${styles}<span class="hidden"><slot></slot></span>`;
         }
-        return html`${styles}<a id="link" href="#" class="${this.persistent ? 'persistent' : ''}"><slot></slot></a><slot name="alternate"></slot>`;
+        return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><slot name="alternate"></slot>`;
     }
 
     _checkTheme() {
@@ -99,8 +99,6 @@ export class PbPopover extends pbMixin(LitElement) {
 
     firstUpdated() {
         super.firstUpdated();
-
-        // this.injectStyles();
 
         let target;
         let slot;

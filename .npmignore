@@ -13,3 +13,5 @@ analysis.json
 .editorconfig
 *.tgz
 build.xml
+dist
+lib/tippy.esm.js

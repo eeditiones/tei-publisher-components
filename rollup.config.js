@@ -8,6 +8,20 @@ const production = process.env.BUILD === 'production';
 
 export default [
     {
+        input: 'node_modules/tippy.js/dist/tippy.esm.js',
+        output: {
+            dir: 'lib',
+            format: 'es',
+            sourcemap: false
+        },
+        plugins: [
+            resolve(),
+            replace({
+                'process.env.NODE_ENV': JSON.stringify('production')
+            })
+        ]
+    },
+    {
         input: [
             'src/pb-components-bundle.js',
             'src/pb-leaflet-map.js',
@@ -24,9 +38,6 @@ export default [
             production && terser(),
             analyze({
                 summaryOnly: true
-            }),
-            replace({
-                'process.env.NODE_ENV': JSON.stringify('production')
             }),
             copy({
                 targets: [
