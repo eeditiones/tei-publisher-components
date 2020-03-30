@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import tippy from '../lib/tippy.esm.js';
+import tippy from 'tippy.js/tippy.esm.js';
 import { pbMixin } from './pb-mixin.js';
 import * as themes from './pb-popover-themes.js';
 

@@ -14,4 +14,3 @@ analysis.json
 *.tgz
 build.xml
 dist
-lib/tippy.esm.js
