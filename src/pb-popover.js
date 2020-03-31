@@ -81,7 +81,7 @@ export class PbPopover extends pbMixin(LitElement) {
         }
 
         if (this.for) {
-            return html`${styles}<span class="hidden"><slot></slot></span>`;
+            return html`${styles}<div class="hidden"><slot></slot></div>`;
         }
         return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><slot name="alternate"></slot>`;
     }
@@ -103,7 +103,7 @@ export class PbPopover extends pbMixin(LitElement) {
         let target;
         let slot;
         if (this.for) {
-            target = document.getElementById(this.for);
+            target = this.getRootNode().getElementById(this.for);
             slot = this.shadowRoot.querySelector('slot');
         } else {
             target = this.shadowRoot.getElementById('link');
