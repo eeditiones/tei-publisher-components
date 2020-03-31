@@ -13,4 +13,3 @@ analysis.json
 .editorconfig
 *.tgz
 build.xml
-dist

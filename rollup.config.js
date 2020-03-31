@@ -10,7 +10,7 @@ export default [
     {
         input: 'node_modules/tippy.js/dist/tippy.esm.js',
         output: {
-            dir: 'node_modules/tippy.js/dist',
+            dir: 'lib',
             format: 'es',
             sourcemap: false
         },
