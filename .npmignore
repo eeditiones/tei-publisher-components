@@ -6,6 +6,7 @@ karma.conf.js
 rollup.config.js
 osd.rollup.config.js
 codemirror.rollup.config.js
+es-dev-server.config.js
 tsconfig.json
 *.html
 analysis.json
