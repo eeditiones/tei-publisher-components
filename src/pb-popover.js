@@ -21,13 +21,15 @@ import * as themes from './pb-popover-themes.js';
  * 
  * # CSS Variables
  * 
- * | Variable | default |
- * |---------|----------|
- * | --pb-popover-theme | |
- * | --pb-popover-link-decoration | inherit |
- * | --pb-popover-max-height | calc(100vh - 60px) |
- * | --pb-popover-max-width | |
- * | --pb-popover-color | |
+ * | Variable | Default | Description |
+ * |---------|----------|-------------|
+ * | --pb-popover-theme | | Theme to use, see property `theme` |
+ * | --pb-popover-link-decoration | inherit | text-decoration for the trigger |
+ * | --pb-popover-max-height | calc(100vh - 60px) | limit the maximum height of the popup |
+ * | --pb-popover-max-width | | limit the max width of the popup |
+ * | --pb-popover-color | | |
+ * | --pb-popover-placement | 'auto' | Preferred popup placement, see property `placement` |
+ * | --pb-popover-fallback-placement | | Fallback placements separated by space |
  *
  * @customElement
  * @polymer
@@ -49,8 +51,22 @@ export class PbPopover extends pbMixin(LitElement) {
              * The tippy theme to use. One of 'material', 'light', 'translucent' or 'light-border'.
              */
             theme: {
+                type: String
+            },
+            /**
+             * Preferred placement of the popup. One of 'auto', 'top', 'bottom', 'left', 'right'.
+             * Default is 'auto'.
+             */
+            placement: {
+                type: String
+            },
+            /**
+             * Fallback placement if there is more space on another side.
+             * Accepts same values as `placement`. Separate by space if more than one.
+             */
+            fallbackPlacement: {
                 type: String,
-                reflect: true
+                attribute: 'fallback-placement'
             },
             /**
              * If true, show the popup on click instead of mouseover.
@@ -71,7 +87,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.disabled) {
             return html`<slot></slot>`;
         }
-        this._checkTheme();
+        this._checkCSSProperties();
         let styles = null;
         if (this.theme && this.theme !== 'none') {
             const theme = themes[themes.camelize(this.theme)];
@@ -86,15 +102,24 @@ export class PbPopover extends pbMixin(LitElement) {
         return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><slot name="alternate"></slot>`;
     }
 
-    _checkTheme() {
+    _checkCSSProperties() {
         if (!this.theme && this.theme !== 'none') {
-            let theme = getComputedStyle(this).getPropertyValue('--pb-popover-theme');
-            if (theme) {
-                this.theme = JSON.parse(theme);
-            } else {
-                this.theme = 'none';
-            }
+            this.theme = this._getCSSProperty('--pb-popover-theme', 'none');
         }
+        if (!this.placement) {
+            this.placement = this._getCSSProperty('--pb-popover-placement', 'auto');
+        }
+        if (!this.fallbackPlacement) {
+            this.fallbackPlacement = this._getCSSProperty('--pb-popover-fallback-placement', null);
+        }
+    }
+
+    _getCSSProperty(name, defaultValue) {
+        const property = getComputedStyle(this).getPropertyValue(name);
+        if (property) {
+            return JSON.parse(property);
+        }
+        return defaultValue;
     }
 
     firstUpdated() {
@@ -118,7 +143,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 content,
                 allowHTML: true,
                 appendTo: this.shadowRoot,
-                placement: 'auto',
+                placement: this.placement,
                 interactive: true,
                 ignoreAttributes: true,
                 boundary: 'viewport',
@@ -129,6 +154,19 @@ export class PbPopover extends pbMixin(LitElement) {
             }
             if (this.theme && this.theme !== 'none') {
                 options.theme = this.theme;
+            }
+            if (this.fallbackPlacement) {
+                const placements = this.fallbackPlacement.split(' ');
+                options.popperOptions = {
+                    modifiers: [
+                        {
+                            name: 'flip',
+                            options: {
+                                fallbackPlacements: placements
+                            }
+                        }
+                    ]
+                }
             }
             tippy(target, options);
         }
