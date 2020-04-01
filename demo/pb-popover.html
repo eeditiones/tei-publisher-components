@@ -17,32 +17,30 @@
     <body>
         <pb-demo-snippet>
             <template>
-                <custom-style>
-                    <style>
-                        pb-popover, .trigger {
-                            color: rgb(224, 140, 13);
-                            text-decoration: underline;
-                        }
+                <style>
+                    pb-popover, .trigger {
+                        color: rgb(224, 140, 13);
+                        text-decoration: underline;
+                    }
 
-                        pb-popover {
-                            /* Default theme to use unless specified via property */
-                            --pb-popover-theme: 'light-border';
-                            --pb-popover-font-size: 14px;
-                            --pb-popover-max-width: 480px;
-                            --pb-popover-placement: "bottom";
-                            --pb-popover-fallback-placement: 'top right';
-                        }
+                    pb-popover {
+                        /* Default theme to use unless specified via property */
+                        --pb-popover-theme: 'light-border';
+                        --pb-popover-font-size: 14px;
+                        --pb-popover-max-width: 480px;
+                        --pb-popover-placement: "bottom";
+                        --pb-popover-fallback-placement: 'top right';
+                    }
 
-                        pb-popover[for="aliquyam"] {
-                            --pb-popover-font-size: 18px;
-                        }
+                    pb-popover[for="aliquyam"] {
+                        --pb-popover-font-size: 18px;
+                    }
 
-                        /* Use different color for class 'info' */
-                        .info {
-                            --pb-popover-color: rgb(150, 192, 202);
-                        }
-                    </style>
-                </custom-style>
+                    /* Use different color for class 'info' */
+                    .info {
+                        --pb-popover-color: rgb(150, 192, 202);
+                    }
+                </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <main>
                         <p>Lorem <pb-popover theme="material">ipsum dolor sit amet<span slot="alternate">At vero eos et accusam et justo duo dolores<br> 

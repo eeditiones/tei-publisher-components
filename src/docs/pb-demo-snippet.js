@@ -54,13 +54,11 @@ export class PbDemoSnippet extends LitElement {
         );
         cpCode = PbDemoSnippet.indent(cpCode, 2);
 
-        let style = this.querySelector('custom-style');
-        if (!style) {
-            style = this.querySelector('style');
-        }
+        const style = this.querySelector('style');
+
         let css = '';
         if (style) {
-            css = style.innerHTML;
+            css = style.innerText;
         }
         const cpCss = `
 @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
