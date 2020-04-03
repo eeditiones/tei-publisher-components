@@ -23,7 +23,7 @@ import '@polymer/paper-checkbox';
  */
 export class PbSearch extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             action: {
                 type: String
             },
@@ -44,9 +44,9 @@ export class PbSearch extends pbMixin(LitElement) {
             submitOnLoad: {
                 type: Boolean,
                 attribute: 'submit-on-load'
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

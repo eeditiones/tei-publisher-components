@@ -12,7 +12,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbGridAction extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * the type of action. Can be either `add` or `remove`
              *
@@ -30,8 +30,8 @@ export class PbGridAction extends pbMixin(LitElement) {
             initial: {
                 type: Number
             },
-            ...super.properties
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

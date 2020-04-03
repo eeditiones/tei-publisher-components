@@ -46,8 +46,7 @@ import './pb-highlight.js';
 export class PbView extends pbMixin(LitElement) {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
             * The id of a `pb-document` element this view should display.
             * Settings like `odd` or `view` will be taken from the `pb-document`
@@ -230,6 +229,7 @@ export class PbView extends pbMixin(LitElement) {
                 attribute: false
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -21,7 +21,7 @@ import "@polymer/neon-animation";
  */
 export class PbSelectOdd extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /** The label to show on top of the dropdown menu */
             label: {
                 type: String
@@ -40,9 +40,9 @@ export class PbSelectOdd extends pbMixin(LitElement) {
             odd: {
                 type: String,
                 notify: true
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

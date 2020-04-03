@@ -94,7 +94,7 @@ setInterval(() => whenIdle(() => removeDisconnectedParts()), 1000 * 60);
  */
 export class PbI18n extends LitElement {
     static get properties() {
-        return {
+        const props = {
             /**
              * The i18n key to use for looking up the translation.
              */
@@ -110,9 +110,9 @@ export class PbI18n extends LitElement {
             },
             _translated: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

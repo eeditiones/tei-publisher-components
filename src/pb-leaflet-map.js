@@ -12,7 +12,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             latitude: {
                 type: Number
             },
@@ -42,9 +42,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             },
             _markers: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

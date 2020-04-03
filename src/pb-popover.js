@@ -38,8 +38,7 @@ import * as themes from './pb-popover-themes.js';
  */
 export class PbPopover extends pbMixin(LitElement) {
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * The id of a trigger element (e.g. a link) to which the popover will
              * be attached. If not set, the trigger is the pb-popover itself.
@@ -75,6 +74,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

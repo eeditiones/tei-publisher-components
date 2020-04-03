@@ -16,7 +16,7 @@ import '@polymer/iron-icons';
  */
 export class DtsClient extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             baseUri: {
                 type: String
             },
@@ -34,9 +34,9 @@ export class DtsClient extends pbMixin(LitElement) {
             },
             _collectionEndpoint: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

@@ -12,7 +12,7 @@ import { pbMixin } from './pb-mixin';
  */
 export class PbFacsLink extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /** URL pointing to the facsimile image to load */
             facs: {
                 type: String
@@ -23,9 +23,9 @@ export class PbFacsLink extends pbMixin(LitElement) {
             },
             emitOnLoad: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

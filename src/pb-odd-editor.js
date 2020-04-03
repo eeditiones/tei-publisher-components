@@ -221,8 +221,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             ident: {
                 type: String
             },
@@ -303,6 +302,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 reflect: true
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

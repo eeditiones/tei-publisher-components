@@ -20,7 +20,7 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 export class PbBrowseDocs extends PbLoad {
 
     static get properties() {
-        return {
+        const props = {
             sortBy: {
                 type: String,
                 attribute: 'sort-by'
@@ -74,9 +74,9 @@ export class PbBrowseDocs extends PbLoad {
             },
             _suggestions: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

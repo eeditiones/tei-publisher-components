@@ -13,7 +13,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             // Image source
             src: {
                 type: String
@@ -94,9 +94,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
              */
             facsimiles: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

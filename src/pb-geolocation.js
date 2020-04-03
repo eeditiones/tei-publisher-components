@@ -12,7 +12,7 @@ import { PbHighlight } from "./pb-highlight.js";
  */
 export class PbGeolocation extends PbHighlight {
     static get properties() {
-        return {
+        const props = {
             longitude: {
                 type: Number
             },
@@ -24,9 +24,9 @@ export class PbGeolocation extends PbHighlight {
              */
             label: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

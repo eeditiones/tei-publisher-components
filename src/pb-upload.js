@@ -14,7 +14,7 @@ import '@polymer/paper-button';
  */
 export class PbUpload extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * the server-side script to handle the upload
              */
@@ -27,9 +27,9 @@ export class PbUpload extends pbMixin(LitElement) {
              */
             accept: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

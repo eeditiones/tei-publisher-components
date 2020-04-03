@@ -16,7 +16,7 @@ import { translate } from "./pb-i18n.js";
  */
 export class PbPaginate extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * total number of pages
              */
@@ -70,9 +70,9 @@ export class PbPaginate extends pbMixin(LitElement) {
              */
             pages: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -15,12 +15,12 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbSvg extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             url: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

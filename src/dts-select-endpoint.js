@@ -21,7 +21,7 @@ import '@polymer/paper-item';
  */
 export class DtsSelectEndpoint extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * The currently selected endpoint. Will be set from URL parameter if present.
              */
@@ -43,9 +43,9 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
              */
             auto: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

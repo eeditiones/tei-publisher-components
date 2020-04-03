@@ -15,8 +15,7 @@ import { pbMixin } from './pb-mixin';
 class PbDocument extends pbMixin(LitElement) {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * The path to the document to be loaded. Should be relative to `root`.
              */
@@ -60,6 +59,7 @@ class PbDocument extends pbMixin(LitElement) {
                 attribute: 'source-view'
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

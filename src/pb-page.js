@@ -8,8 +8,7 @@ import { pbMixin } from './pb-mixin.js';
 class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             appRoot: {
                 type: String,
                 attribute: 'app-root'
@@ -46,6 +45,7 @@ class PbPage extends pbMixin(LitElement) {
                 reflect: true
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

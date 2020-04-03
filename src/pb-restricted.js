@@ -14,7 +14,7 @@ import { pbMixin } from './pb-mixin';
  */
 export class PbRestricted extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /** Id of the pb-login element to connect to */
             login: {
                 type: String
@@ -28,9 +28,9 @@ export class PbRestricted extends pbMixin(LitElement) {
              */
             group: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

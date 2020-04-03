@@ -12,7 +12,7 @@ import { LitElement, html, css } from 'lit-element';
 export class PbCodepen extends LitElement {
 
     static get properties() {
-        return {
+        const props = {
             /**
              * The user which created the codepen
              */
@@ -43,9 +43,9 @@ export class PbCodepen extends LitElement {
              */
             preview: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

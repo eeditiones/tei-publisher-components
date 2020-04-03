@@ -15,7 +15,7 @@ import '@polymer/paper-item';
  */
 export class PbSelectFeature extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
             * The name of the feature (required). This will correspond to the name of the custom parameter
             * passed to the ODD.
@@ -34,9 +34,9 @@ export class PbSelectFeature extends pbMixin(LitElement) {
             },
             items: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
