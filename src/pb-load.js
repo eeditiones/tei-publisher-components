@@ -217,7 +217,7 @@ export class PbLoad extends pbMixin(LitElement) {
      */
     prepareParameters(params) {
         if (this.userParams) {
-            return { ...params, ...this.userParams };
+            return Object.assign(params, this.userParams);
         }
         return params;
     }

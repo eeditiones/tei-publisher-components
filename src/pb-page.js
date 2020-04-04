@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin } from './pb-mixin.js';
+import { resolveURL } from './utils.js';
 
 class PbPage extends pbMixin(LitElement) {
 
@@ -66,7 +67,7 @@ class PbPage extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
 
-        const defaultLocales = new URL('../i18n/', import.meta.url).href + '{{ns}}/{{lng}}.json';
+        const defaultLocales = resolveURL('../i18n/') + '{{ns}}/{{lng}}.json';
         const userLocales = this.locales ? `${this.locales}/{{ns}}/{{lng}}.json` : null;
         console.log('<pb-page> Loading locales. common: %s; app: %s', defaultLocales, userLocales);
         const backends = userLocales ? [XHR, XHR] : [XHR];
