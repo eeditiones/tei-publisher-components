@@ -99,7 +99,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`${styles}<div class="hidden"><slot></slot></div>`;
         }
-        return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><slot name="alternate"></slot>`;
+        return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     _checkCSSProperties() {
@@ -147,7 +147,8 @@ export class PbPopover extends pbMixin(LitElement) {
                 interactive: true,
                 ignoreAttributes: true,
                 boundary: 'viewport',
-                maxWidth: 'none'
+                maxWidth: 'none',
+                touch: 'hold'
             };
             if (this.persistent) {
                 options.trigger = 'click';
@@ -179,7 +180,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 :host {
                     display: inline;
                 }
-                [name=alternate], .hidden {
+                .hidden {
                     display: none;
                 }
                 div {
