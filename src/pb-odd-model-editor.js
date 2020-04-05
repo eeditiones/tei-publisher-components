@@ -603,7 +603,7 @@ export class PbOddModelEditor extends LitElement {
         this.toggleButtonIcon();
 
         const oldModel = this.model;
-        const newModel = { ...oldModel, show: this.show }
+        const newModel = Object.assign({}, oldModel, { show: this.show });
         this.model = newModel;
         this.refreshEditors();
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel } }));
@@ -695,9 +695,9 @@ export class PbOddModelEditor extends LitElement {
         };
 
         const oldModel = this.model;
-        const models = [...this.model.models]
+        const models = Array.from(this.model.models);
         models.unshift(newNestedModel);
-        this.model = { ...oldModel, models };
+        this.model = Object.assign({}, oldModel, models);
 
         // important to reset the listbox - otherwise next attempt to use it will fail if value has not changed
         // use querySelector here instead of 'this.$' as listbox is in it's own <template>
@@ -717,9 +717,9 @@ export class PbOddModelEditor extends LitElement {
             .confirm(i18n('odd.editor.model.delete-model-label'), i18n('odd.editor.model.delete-model-message'))
             .then(() => {
                 const oldModel = this.model;
-                const models = [...this.model.models];
+                const models = Array.from(this.model.models);
                 models.splice(index, 1);
-                this.model = { ...oldModel, models };
+                this.model = Object.assign({}, oldModel, models);
                 this.models = models;
                 this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
             }, () => null);
@@ -734,10 +734,10 @@ export class PbOddModelEditor extends LitElement {
             return;
         }
         const oldModel = this.model;
-        const models = [...this.model.models];
+        const models = Array.from(this.model.models);
         models.splice(index, 1);
         models.splice(index + 1, 0, model);
-        this.model = { ...oldModel, models };
+        this.model = Object.assign({}, oldModel, models);
 
         const targetModel = this.shadowRoot.querySelectorAll('pb-odd-model-editor')[index + 1];
         this._setCurrentSelection(index + 1, targetModel);
@@ -754,12 +754,12 @@ export class PbOddModelEditor extends LitElement {
             return;
         }
         const oldModel = this.model;
-        const models = [...this.model.models]
+        const models = Array.from(this.model.models);
         // remove element from models
         models.splice(index, 1);
         // add element to new index
         models.splice(index - 1, 0, model);
-        this.model = { ...oldModel, models };
+        this.model = Object.assign({}, oldModel, models);
 
         const targetModel = this.shadowRoot.querySelectorAll('pb-odd-model-editor')[index - 1];
         this._setCurrentSelection(index - 1, targetModel);
@@ -773,9 +773,9 @@ export class PbOddModelEditor extends LitElement {
         ev.stopPropagation();
         const oldModel = this.model;
         const index = this.model.models.indexOf(ev.detail.oldModel);
-        const models = [...this.model.models]
+        const models = Array.from(this.model.models);
         models.splice(index, 1, ev.detail.newModel);
-        this.model = { ...oldModel, models };
+        this.model = Object.assign({}, oldModel, models);
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
     }
 
@@ -884,7 +884,7 @@ export class PbOddModelEditor extends LitElement {
 
     _fireModelChanged(prop, value) {
         const oldModel = this.model;
-        this.model = { ...this.model, [prop]: value };
+        this.model = Object.assign({}, this.model, { [prop]: value });
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
         this.requestUpdate();
     }
