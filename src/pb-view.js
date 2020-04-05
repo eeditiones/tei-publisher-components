@@ -5,8 +5,6 @@ import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
-import './pb-highlight.js';
-import './pb-popover.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -447,11 +445,6 @@ export class PbView extends pbMixin(LitElement) {
         }
         this.xmlId = null;
 
-        // const popovers = elem.querySelector('pb-popover');
-        // if (popovers) {
-        //     // eslint-disable-next-line babel/no-unused-expressions
-        //     import('./pb-popover.js');
-        // }
         this._fixLinks(elem);
         this._applyToggles(elem);
 
