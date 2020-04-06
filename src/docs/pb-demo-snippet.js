@@ -83,6 +83,7 @@ ${PbDemoSnippet.removeIndent(css)}`;
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <title>${ this.title}</title>
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-leaflet-map.js"></script>
     </head>
