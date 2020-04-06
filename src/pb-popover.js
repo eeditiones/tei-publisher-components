@@ -38,8 +38,7 @@ import * as themes from './pb-popover-themes.js';
  */
 export class PbPopover extends pbMixin(LitElement) {
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * The id of a trigger element (e.g. a link) to which the popover will
              * be attached. If not set, the trigger is the pb-popover itself.
@@ -75,6 +74,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -99,7 +99,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`${styles}<div class="hidden"><slot></slot></div>`;
         }
-        return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><slot name="alternate"></slot>`;
+        return html`${styles}<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     _checkCSSProperties() {
@@ -147,7 +147,8 @@ export class PbPopover extends pbMixin(LitElement) {
                 interactive: true,
                 ignoreAttributes: true,
                 boundary: 'viewport',
-                maxWidth: 'none'
+                maxWidth: 'none',
+                touch: 'hold'
             };
             if (this.persistent) {
                 options.trigger = 'click';
@@ -179,7 +180,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 :host {
                     display: inline;
                 }
-                [name=alternate], .hidden {
+                .hidden {
                     display: none;
                 }
                 div {

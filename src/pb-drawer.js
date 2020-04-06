@@ -12,7 +12,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbDrawer extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * optional id reference to a component that allows opening/closing the drawer
              */
@@ -25,9 +25,9 @@ export class PbDrawer extends pbMixin(LitElement) {
             opened: {
                 type: Boolean,
                 reflect: true
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

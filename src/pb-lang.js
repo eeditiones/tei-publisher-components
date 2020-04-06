@@ -14,7 +14,7 @@ import { translate } from "./pb-i18n.js";
  */
 export class PbLang extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * The label for a language in the dropdown
              */
@@ -23,9 +23,9 @@ export class PbLang extends pbMixin(LitElement) {
             },
             selected: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

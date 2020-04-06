@@ -12,7 +12,7 @@ import { pbMixin } from './pb-mixin';
  */
 export class PbEditXml extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * expects a context-absolute path to the document to edit e.g. '/db/apps/tei-publisher/mytext.xml'
              */
@@ -33,9 +33,9 @@ export class PbEditXml extends pbMixin(LitElement) {
             },
             _href: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

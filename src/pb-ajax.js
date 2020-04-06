@@ -21,7 +21,7 @@ import { translate } from "./pb-i18n.js";
  */
 export class PbAjax extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * the URL to send a request to
              */
@@ -43,9 +43,9 @@ export class PbAjax extends pbMixin(LitElement) {
             },
             _message: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

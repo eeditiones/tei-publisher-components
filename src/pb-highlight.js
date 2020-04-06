@@ -25,8 +25,7 @@ import { pbMixin } from './pb-mixin';
 */
 export class PbHighlight extends pbMixin(LitElement) {
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * The key to which this element is connected.
              */
@@ -53,7 +52,8 @@ export class PbHighlight extends pbMixin(LitElement) {
             _className: {
                 type: String
             }
-        }
+        };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

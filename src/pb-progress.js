@@ -13,12 +13,12 @@ import '@polymer/paper-progress';
  */
 export class PbProgress extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             _disabled: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -13,7 +13,7 @@ import './pb-panel.js';
  */
 export class PbGrid extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * an array of panel items to display when the component is loaded. It should contain a
              * number for each panel to show, indicating the ordinal position of the template within the `<pb-panel>`
@@ -46,9 +46,9 @@ export class PbGrid extends pbMixin(LitElement) {
              */
             animation: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

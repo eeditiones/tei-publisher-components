@@ -15,16 +15,16 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbTabs extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             selected: {
                 type: Number,
                 reflect: true
             },
             _initial: {
                 type: Number
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

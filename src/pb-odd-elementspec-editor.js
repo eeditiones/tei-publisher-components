@@ -211,7 +211,7 @@ export class PbOddElementspecEditor extends LitElement {
             show: true
         };
 
-        const models = [...this.models];
+        const models = Array.from(this.models);
         models.unshift(newModel);
         this.models = models;
         this.dispatchEvent(new CustomEvent('element-spec-changed', { composed: true, bubbles: true, detail: { action: "models", ident: this.ident, models: this.models } }));
@@ -260,7 +260,7 @@ export class PbOddElementspecEditor extends LitElement {
         this.shadowRoot.getElementById('dialog')
             .confirm(i18n('odd.editor.model.delete-model-label'), i18n('odd.editor.model.delete-model-message'))
             .then(() => {
-                const models = [...this.models];
+                const models = Array.from(this.models);
                 models.splice(index, 1);
                 this.models = models;
                 this.dispatchEvent(new CustomEvent('element-spec-changed', { composed: true, bubbles: true, detail: { action: "models", ident: this.ident, models: this.models } }));
@@ -275,7 +275,7 @@ export class PbOddElementspecEditor extends LitElement {
         if (index === this.models.length) {
             return;
         }
-        const models = [...this.models]
+        const models = Array.from(this.models);
         models.splice(index, 1);
         models.splice(index + 1, 0, model);
         this.models = models;
@@ -295,7 +295,7 @@ export class PbOddElementspecEditor extends LitElement {
         if (index === 0) {
             return;
         }
-        const models = [...this.models]
+        const models = Array.from(this.models);
         // remove element from models
         models.splice(index, 1);
         // add element to new index
@@ -313,7 +313,7 @@ export class PbOddElementspecEditor extends LitElement {
         // console.log('ELEMENTSPEC.handleModelChanged ', ev.detail);
         ev.stopPropagation();
         const index = this.models.indexOf(ev.detail.oldModel);
-        const models = [...this.models]
+        const models = Array.from(this.models);
         models.splice(index, 1, ev.detail.newModel);
         this.models = models;
         this.dispatchEvent(new CustomEvent('element-spec-changed', { composed: true, bubbles: true, detail: { action: "models", ident: this.ident, models: this.models } }));

@@ -21,7 +21,7 @@ import '@polymer/iron-form';
  */
 export class PbEditApp extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             error: {
                 type: String
             },
@@ -30,9 +30,9 @@ export class PbEditApp extends pbMixin(LitElement) {
             },
             templates: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

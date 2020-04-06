@@ -3,6 +3,7 @@ import "prismjs/prism";
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import { resolveURL } from './utils.js';
 
 /**
  * Highlight a code snippet. The snippet may either be passed in a template child
@@ -113,7 +114,7 @@ export class PbCodeHighlight extends LitElement {
 
     static async loadTheme(theme) {
         const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
-        const resource = new URL('../css/prismjs/', import.meta.url).href + themeName;
+        const resource = resolveURL('../css/prismjs/') + themeName;
         console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
 
         const fetchedStyles = await fetch(resource).then(async response => response.text()).catch(e => '');

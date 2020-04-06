@@ -15,8 +15,7 @@ import { pbHotkeys } from "./pb-hotkeys.js";
 export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * The direction to navigate in, either `forward` or `backward`
              */
@@ -30,6 +29,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
                 type: String
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -46,7 +46,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
                 'next': this.keyboard
             }
         }
-        
+
         this.subscribeTo('pb-update', this._update.bind(this));
 
         this.registerHotkey('next', () => this.emitTo('pb-navigate', { direction: this.direction }));

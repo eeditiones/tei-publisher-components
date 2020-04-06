@@ -14,7 +14,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
  */
 export class PbLink extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /** Browse to an xml:id within the document */
             xmlId: {
                 type: String,
@@ -40,9 +40,9 @@ export class PbLink extends pbMixin(LitElement) {
              */
             history: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

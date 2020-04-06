@@ -18,7 +18,7 @@ import '@polymer/paper-dialog-scrollable';
 export class PbLoad extends pbMixin(LitElement) {
 
     static get properties() {
-        return {
+        const props = {
             /** The URL for the AJAX request. If a relative URL is passed, it will be resolved
              * either against the app root (if known) or the location of the webcomponent.
              */
@@ -71,9 +71,9 @@ export class PbLoad extends pbMixin(LitElement) {
             },
             userParams: {
                 type: Object
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -217,7 +217,7 @@ export class PbLoad extends pbMixin(LitElement) {
      */
     prepareParameters(params) {
         if (this.userParams) {
-            return { ...params, ...this.userParams };
+            return Object.assign(params, this.userParams);
         }
         return params;
     }

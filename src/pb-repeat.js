@@ -20,7 +20,7 @@ import '@polymer/paper-icon-button';
  */
 export class PbRepeat extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * The initial number of (empty) instances to be shown
              * (1 by default).
@@ -30,9 +30,9 @@ export class PbRepeat extends pbMixin(LitElement) {
             },
             _instances: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

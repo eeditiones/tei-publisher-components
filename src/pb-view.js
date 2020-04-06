@@ -5,7 +5,6 @@ import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
-import './pb-highlight.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -46,8 +45,7 @@ import './pb-highlight.js';
 export class PbView extends pbMixin(LitElement) {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
             * The id of a `pb-document` element this view should display.
             * Settings like `odd` or `view` will be taken from the `pb-document`
@@ -230,6 +228,7 @@ export class PbView extends pbMixin(LitElement) {
                 attribute: false
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -446,11 +445,6 @@ export class PbView extends pbMixin(LitElement) {
         }
         this.xmlId = null;
 
-        const popovers = elem.querySelector('pb-popover');
-        if (popovers) {
-            // eslint-disable-next-line babel/no-unused-expressions
-            import('./pb-popover.js');
-        }
         this._fixLinks(elem);
         this._applyToggles(elem);
 

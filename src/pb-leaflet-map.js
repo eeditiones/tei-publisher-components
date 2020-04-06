@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import * as L from 'leaflet/dist/leaflet-src.esm.js';
 import { pbMixin } from './pb-mixin.js';
+import { resolveURL } from './utils.js';
 
 /**
  * A wrapper component for [leaflet](https://leafletjs.com/) displaying a map.
@@ -12,7 +13,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             latitude: {
                 type: Number
             },
@@ -42,9 +43,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             },
             _markers: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -125,7 +126,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     }
 
     render() {
-        const cssPath = new URL(this.cssPath, import.meta.url).href;
+        const cssPath = resolveURL(this.cssPath);
         return html`
             <link rel="stylesheet" href="${cssPath}/leaflet.css"/>
             <div id="map"></div>
@@ -150,7 +151,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             return;
         }
 
-        L.Icon.Default.imagePath = new URL(this.imagesPath, import.meta.url).href;
+        L.Icon.Default.imagePath = resolveURL(this.imagesPath);
 
         let crs;
         switch (this.crs) {

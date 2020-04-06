@@ -17,7 +17,8 @@ import "@polymer/iron-ajax";
  */
 export class PbSelectTemplate extends pbMixin(LitElement) {
     static get properties() {
-        return {/** The label to show on top of the dropdown menu */
+        const props = {
+            /** The label to show on top of the dropdown menu */
             label: {
                 type: String
             },
@@ -30,9 +31,9 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
             },
             _templates: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

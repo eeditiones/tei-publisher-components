@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
+import { resolveURL } from './utils.js';
 
 /**
  * View zoomable images using a IIIF server.
@@ -13,7 +14,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             // Image source
             src: {
                 type: String
@@ -94,9 +95,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
              */
             facsimiles: {
                 type: Array
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -121,7 +122,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     firstUpdated() {
         window.ESGlobalBridge.requestAvailability();
-        const path = new URL('../lib/openseadragon.min.js', import.meta.url).href;
+        const path = resolveURL('../lib/openseadragon.min.js');
         window.ESGlobalBridge.instance.load("openseadragon", path);
         window.addEventListener(
             "es-bridge-openseadragon-loaded",
@@ -156,7 +157,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     // Init openseadragon
     _initOpenSeadragon() {
-        const prefixUrl = new URL(this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"), import.meta.url).href;
+        const prefixUrl = resolveURL(this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"));
         this.viewer = OpenSeadragon({
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,

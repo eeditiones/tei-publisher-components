@@ -25,7 +25,7 @@ import './pb-edit-xml.js';
  */
 export class PbManageOdds extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * array of ODD-files to be listed
              */
@@ -40,9 +40,9 @@ export class PbManageOdds extends pbMixin(LitElement) {
             },
             _current: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

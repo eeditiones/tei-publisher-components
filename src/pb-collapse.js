@@ -26,7 +26,7 @@ import '@polymer/iron-collapse';
  */
 export class PbCollapse extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * @deprecated
              * Corresponds to the iron-collapse's horizontal property.
@@ -72,9 +72,9 @@ export class PbCollapse extends pbMixin(LitElement) {
             },
             data: {
                 type: Object
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

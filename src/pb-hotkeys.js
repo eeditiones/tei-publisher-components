@@ -11,12 +11,12 @@ import hotkeys from 'hotkeys-js';
 export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             hotkeys: {
                 type: Object
             }
-        }
+        };
+        return Object.assign(props, super.properties);
     };
 
     constructor() {
@@ -32,7 +32,7 @@ export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
     registerHotkey(name, callback, target) {
         if (name && this.hotkeys[name]) {
             if (target) {
-                hotkeys(this.hotkeys[name], {element: target}, callback);
+                hotkeys(this.hotkeys[name], { element: target }, callback);
             } else {
                 hotkeys(this.hotkeys[name], callback);
             }
@@ -44,7 +44,7 @@ export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
             let output = [];
             const keys = this.hotkeys[name].split(/\s*,\s*/);
             keys.forEach((key) => {
-                output.push(key.replace('+','-'));
+                output.push(key.replace('+', '-'));
             });
             return output.join(', ');
         }

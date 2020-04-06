@@ -221,8 +221,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             ident: {
                 type: String
             },
@@ -303,6 +302,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 reflect: true
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -731,18 +731,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     mapElementSpec(elementSpec) {
-        return {
-            ...elementSpec,
-            models: elementSpec.models.map(m => this.addShowToModel(m))
-        }
+        return Object.assign(
+            {},
+            elementSpec,
+            { models: elementSpec.models.map(m => this.addShowToModel(m)) }
+        );
     }
 
     addShowToModel(model) {
         if (model.models) {
-            const extendedModels = model.models.map(m => this.addShowToModel(m))
-            return { ...model, models: extendedModels, show: false }
+            const extendedModels = model.models.map(m => this.addShowToModel(m));
+            return Object.assign({}, model, { models: extendedModels, show: false });
         }
-        return { ...model, show: false }
+        return Object.assign({}, model, { show: false });
     }
 
     addElementSpec(ev) {
@@ -1038,9 +1039,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     handleElementSpecChanged(e) {
         // console.log('handleElementSpecChanged ',e);
         const elementSpec = this.elementSpecs.find(es => es.ident === e.detail.ident);
-        const index = this.elementSpecs.indexOf(elementSpec)
-        const newSpec = { ...elementSpec, models: e.detail.models }
-        const allSpecs = [...this.elementSpecs]
+        const index = this.elementSpecs.indexOf(elementSpec);
+        const newSpec = Object.assign({}, elementSpec, { models: e.detail.models });
+        const allSpecs = Array.from(this.elementSpecs);
         allSpecs.splice(index, 1, newSpec)
         this.elementSpecs = allSpecs;
         // console.log('updated elementspecs ', this.elementSpecs);

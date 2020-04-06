@@ -13,7 +13,7 @@ import { pbMixin } from './pb-mixin.js';
  */
 export class PbDownload extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * optional id reference to a pb-document. If present the pb-download will allow to download the
              * referenced pb-document.
@@ -82,9 +82,9 @@ export class PbDownload extends pbMixin(LitElement) {
             },
             _token: {
                 type: String
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -114,7 +114,7 @@ export class PbDownload extends pbMixin(LitElement) {
             return;
         }
 
-        switch(name) {
+        switch (name) {
             case 'source':
                 this._target = this._computeTarget();
                 break;

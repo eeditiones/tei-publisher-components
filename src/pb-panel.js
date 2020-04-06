@@ -27,7 +27,7 @@ import '@polymer/app-layout';
  */
 export class PbPanel extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /**
              * the index of the active view
              */
@@ -48,9 +48,9 @@ export class PbPanel extends pbMixin(LitElement) {
             panels: {
                 type: Array,
                 reflect: true
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {

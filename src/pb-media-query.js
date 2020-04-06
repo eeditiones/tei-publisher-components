@@ -10,19 +10,19 @@ import { LitElement, html, css } from 'lit-element';
  */
 export class PbMediaQuery extends LitElement {
     static get properties() {
-        return {
-            ...super.properties,
+        const props = {
             /**
              * Media query to be watched by the element.
              *
              * Can be modified at run time by setting a new value.
              */
             query: { type: String },
-            match: { 
+            match: {
                 type: Boolean,
                 reflect: true
             }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -46,7 +46,7 @@ export class PbMediaQuery extends LitElement {
     }
 
     _handleResize() {
-        let {query} = this;
+        let { query } = this;
         if (!/\(.*\)$/.test(query)) {
             query = `(${query})`;
         }

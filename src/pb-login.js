@@ -19,7 +19,7 @@ import '@polymer/iron-icons';
  */
 export class PbLogin extends pbMixin(LitElement) {
     static get properties() {
-        return {
+        const props = {
             /** True if user is currently logged in */
             loggedIn: {
                 type: Boolean,
@@ -80,9 +80,9 @@ export class PbLogin extends pbMixin(LitElement) {
             },
             _hasFocus: {
                 type: Boolean
-            },
-            ...super.properties
+            }
         };
+        return Object.assign(props, super.properties);
     }
 
     constructor() {
