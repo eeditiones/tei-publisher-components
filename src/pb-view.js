@@ -185,6 +185,14 @@ export class PbView extends pbMixin(LitElement) {
                 attribute: 'fix-links'
             },
             /**
+             * If set, a refresh will be triggered if a `pb-i18n-update` event is received,
+             * e.g. due to the user selecting a different interface language.
+             */
+            useLanguage: {
+                type: Boolean,
+                attribute: 'use-language'
+            },
+            /**
             * wether to animate the view when new page is loaded. Defaults to 'false' meaning that no
             * animation takes place. If 'true' will apply a translateX transistion in forward/backward direction.
             */
@@ -288,6 +296,9 @@ export class PbView extends pbMixin(LitElement) {
         });
         this.subscribeTo('pb-i18n-update', ev => {
             this._features.language = ev.detail.language;
+            if (this.useLanguage) {
+                this._refresh();
+            }
         });
 
         this.signalReady();
