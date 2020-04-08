@@ -286,6 +286,10 @@ export class PbView extends pbMixin(LitElement) {
         this.subscribeTo('pb-zoom', ev => {
             this.zoom(ev.detail.direction);
         });
+        this.subscribeTo('pb-i18n-update', ev => {
+            this._features.language = ev.detail.language;
+        });
+
         this.signalReady();
 
         if (this.onUpdate) {
@@ -295,7 +299,12 @@ export class PbView extends pbMixin(LitElement) {
 
     firstUpdated() {
         if (!this.onUpdate) {
-            this.wait(() => this._refresh());
+            PbView.waitOnce('pb-page-ready', (data) => {
+                if (data && data.language) {
+                    this._features.language = data.language;
+                }
+                this.wait(() => this._refresh());
+            });
         }
     }
 

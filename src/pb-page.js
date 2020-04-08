@@ -30,6 +30,15 @@ class PbPage extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * If set, the element will wait for a language being set by i18n before
+             * it sends a `pb-page-ready` event. Elements like `pb-view` will wait
+             * for this event before displaying content.
+             */
+            requireLanguage: {
+                type: Boolean,
+                attribute: 'require-language'
+            },
+            /**
              * Will be set while the component is loading and unset when
              * it is fully loaded. Use to avoid flash of unstyled content
              * via CSS: set `unresolved` on `pb-page` in the HTML and
@@ -58,10 +67,12 @@ class PbPage extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.signalReady('pb-page-ready', {
-            endpoint: this.endpoint,
-            template: this.template
-        });
+        if (!this.requireLanguage) {
+            this.signalReady('pb-page-ready', {
+                endpoint: this.endpoint,
+                template: this.template
+            });
+        }
     }
 
     firstUpdated() {
@@ -106,6 +117,13 @@ class PbPage extends pbMixin(LitElement) {
                 this._translate = t;
                 this._updateI18n(t);
                 this.signalReady('pb-i18n-update', { t, language: i18next.language });
+                if (this.requireLanguage) {
+                    this.signalReady('pb-page-ready', {
+                        endpoint: this.endpoint,
+                        template: this.template,
+                        language: i18next.language
+                    });
+                }
             });
 
         this.subscribeTo('pb-i18n-language', (ev) => {
