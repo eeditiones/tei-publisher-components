@@ -295,8 +295,9 @@ export class PbView extends pbMixin(LitElement) {
             this.zoom(ev.detail.direction);
         });
         this.subscribeTo('pb-i18n-update', ev => {
+            const needsRefresh = this._features.language && this._features.language !== ev.detail.language;
             this._features.language = ev.detail.language;
-            if (this.useLanguage) {
+            if (this.useLanguage && needsRefresh) {
                 this._refresh();
             }
         });
