@@ -25,22 +25,17 @@ import '@polymer/paper-dialog-scrollable';
  * </section>
  * ```
  *
- * ## CSS Mixins
- *
- * | Custom property | Description | Default|
- * | ----------------|-------------|--------|
- * |--pb-content-theme | Mixin applied to the content view | {}|
- * |--pb-view-column-gap | Column gap in two-column mode | 10px |
- * |--pb-view-column | Mixin for formatting the two columns | {} |
- * |--pb-footnotes | Mixin for formatting footnotes | {}|
- * |--pb-footnote-ref | Mixin for formatting footnote references | {}|
- * |--pb-highlight-theme | Mixin applied to matches in the text when displaying search results | {}|
- *
- * @customElement
- * @polymer
- * @appliesMixin pbMixin
- * @demo demo/pb-view.html View TEI document
- * @demo demo/pb-view2.html View Docbook document
+ * @cssprop [--pb-view-column-gap=10px] - The gap between columns in two-column mode
+ * @cssprop --pb-footnote-size - Font size for footnote marker
+ * @cssprop --pb-footnote-color - Text color of footnote marker
+ * @cssprop --pb-footnote-padding - Padding around a footnote marker
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-update - Fired when the component received content from the server
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-navigate - When received, navigate forward or backward in the document
+ * @fires pb-zoom - When received, zoom in or out by changing font size of the content
+ * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
+ * @fires pb-toggle - When received, toggle content properties
  */
 export class PbView extends pbMixin(LitElement) {
 
@@ -906,47 +901,6 @@ export class PbView extends pbMixin(LitElement) {
                 @error="${this._handleError}"></iron-ajax>
       `;
     }
-
-    /**
-     * Fired before the element updates its content
-     *
-     * @event pb-start-update
-     * @param {object} Parameters to be passed to the request
-     */
-
-    /**
-     * Fired when the component received content from the server
-     *
-     * @event pb-update
-     * @param {Object} data the raw data returned from the server
-     * @param {HTMLElement} root the HTML element inserted as content
-     * @param {Object} params the parameters sent to the server to request the content
-     */
-
-    /**
-     * Fired after the element has finished updating its content
-     *
-     * @event pb-end-update
-     */
-
-    /**
-    * When this event is received: navigate forward or backward in the document
-    *
-    * @event pb-navigate
-    */
-
-    /**
-     * When this event is received: increase or decrease the font size of the content
-     *
-     * @event pb-zoom
-     */
-
-    /**
-     * When received, refresh the current view using the parameters passed in the
-     * event details.
-     *
-     * @event pb-refresh
-     */
 }
 
 customElements.define('pb-view', PbView);

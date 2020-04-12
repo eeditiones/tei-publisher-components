@@ -104,5 +104,8 @@
     },
     "pb-zoom": {
         "demo/pb-zoom.html": "Demo"
+    },
+    "dts-client": {
+        "demo/dts-client.html": "Demo"
     }
 }

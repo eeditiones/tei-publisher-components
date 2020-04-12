@@ -105,7 +105,7 @@ ${PbDemoSnippet.removeIndent(css)}`;
 
         return html`
             <div class="snippet"><slot></slot></div>
-            <pb-code-highlight id="source" language="html" .code="${this.code}"></pb-code-highlight>
+            <pb-code-highlight id="source" theme="coy" language="html" line-numbers .code="${this.code}"></pb-code-highlight>
             <div id="container"></div>
             <div class="buttons">
                 <button class="pretty-button" @click="${this._showCode}">${translate(this._showCodeLabel)}</button>
@@ -155,8 +155,7 @@ ${PbDemoSnippet.removeIndent(css)}`;
             }
             pb-code-highlight {
                 display: none;
-                padding: 8px 4px;
-                background-color: #f0f0f0;
+                margin-top: 30px;
             }
             pb-code-highlight.open {
                 display: block;

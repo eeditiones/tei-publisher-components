@@ -71,6 +71,50 @@ export default [
                 compress: {
                     reduce_vars: false
                 }
+            }),
+            copy({
+                targets: [
+                    {
+                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script>')
+                    },
+                    {
+                        src: 'demo/pb-odd-editor.html',
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-odd-editor.js"></script>')
+                    },
+                    {
+                        src: 'demo/pb-leaflet-map.html',
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-leaflet-map.js"></script>')
+                    },
+                    {
+                        src: 'api.html',
+                        dest: 'dist',
+                        transform: (contents) =>
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="pb-component-docs.js"></script>')
+                    },
+                    {
+                        src: ['demo/*.json', 'demo/*.css'],
+                        dest: 'dist/demo'
+                    },
+                    {
+                        src: 'demo/i18n/app/*.json',
+                        dest: 'dist/demo/i18n/app'
+                    },
+                    {
+                        src: 'pb-elements.json',
+                        dest: 'dist'
+                    },
+                    {
+                        src: 'images/*',
+                        dest: 'dist/images'
+                    }
+                ]
             })
         ]
     },

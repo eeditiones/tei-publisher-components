@@ -16,7 +16,7 @@ import '@polymer/paper-checkbox';
  *
  * For example, one may switch between page-by-page and by-division view using
  *
- * ```
+ * ```html
  * <pb-toggle-feature emit="transcription" name="view" on="page" off="div">Page View</pb-toggle-feature>
  * ```
  *
@@ -29,7 +29,7 @@ import '@polymer/paper-checkbox';
  * either a value of `dipl` or `norm`. Within processing model predicates it could be queried as
  * `$parameters?mode='norm'` to check if the normalized version should be output.
  *
- * ```
+ * ```html
  * <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
  * ```
  *
@@ -38,7 +38,7 @@ import '@polymer/paper-checkbox';
  * attributes (as an alternative to `on` and `off`). For example, in 'on' state, you may
  * want to use a different ODD and switch the view to 'page' at the same time:
  *
- * ```
+ * ```html
  * <pb-toggle-feature properties-on='{"odd": "myodd", "view": "page"}' properties-off='{"odd": "myodd-diplomatic", "view": "div"}'>
  *     Diplomatic View
  * </pb-toggle-feature>
@@ -46,12 +46,7 @@ import '@polymer/paper-checkbox';
  *
  * It is important that `pb-toggle-feature` emits and subscribes to the same channel as the target `pb-view`.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-toggle-feature.html Using pb-toggle-feature with pb-view
- * @demo demo/pb-toggle-feature2.html Toggling features without content reload
- * @demo demo/pb-toggle-feature3.html Using pb-toggle-feature with pb-load
- * @appliesMixin pbMixin
+ * @fires pb-toggle - when the feature is toggled
  */
 export class PbToggleFeature extends pbMixin(LitElement) {
 
