@@ -9,6 +9,8 @@ codemirror.rollup.config.js
 es-dev-server.config.js
 tsconfig.json
 *.html
+!dist/*.html
+!dist/demo/*.html
 analysis.json
 .vscode/
 .editorconfig

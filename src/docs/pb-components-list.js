@@ -12,6 +12,10 @@ export class PbComponentsList extends LitElement {
             json: {
                 type: Object
             },
+            withDemo: {
+                type: Boolean,
+                attribute: 'with-demo'
+            },
             _demos: {
                 type: Object
             }
@@ -21,6 +25,7 @@ export class PbComponentsList extends LitElement {
     constructor() {
         super();
         this.json = null;
+        this.withDemo = false;
     }
 
     connectedCallback() {
@@ -31,8 +36,12 @@ export class PbComponentsList extends LitElement {
         if (this.json) {
             const { tags } = this.json;
             tags.sort((a, b) => a.name.localeCompare(b.name));
+            let elements = tags;
+            if (this.withDemo) {
+                elements = tags.filter((tag) => tag.demo);
+            }
             return html`
-                ${tags.map((tag) => html`<paper-item @click="${() => PbComponentsList._viewComponent(tag)}">${tag.name}</paper-item>`)}
+                ${elements.map((tag) => html`<paper-item @click="${() => PbComponentsList._viewComponent(tag)}">${tag.name}</paper-item>`)}
             `;
         }
         return html`<div>Loading ...</div>`;

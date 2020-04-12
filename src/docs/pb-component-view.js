@@ -10,7 +10,6 @@ import '../pb-code-highlight.js';
 
 const renderer = new window.marked.Renderer();
 renderer.code = function code(code, infostring, escaped) {
-    console.log('request to output code: %s', code);
     return `<pb-code-highlight language="${infostring}" line-numbers>
         <template>${code}</template>
     </pb-code-highlight>`;
@@ -63,6 +62,10 @@ export class PbComponentView extends LitElement {
             defaultTitle: {
                 type: String,
                 attribute: 'default-title'
+            },
+            _target: {
+                type: String,
+                reflect: true
             },
             _component: {
                 type: Object
@@ -139,6 +142,9 @@ export class PbComponentView extends LitElement {
     }
 
     _renderDemoTabs() {
+        if (!this._component.demo) {
+            return null;
+        }
         return Object.values(this._component.demo).map((value, idx) =>
             html`<vaadin-tab @click="${() => this._showDemo(idx + 1)}">${value}</vaadin-tab>`
         );
@@ -174,7 +180,11 @@ export class PbComponentView extends LitElement {
         if (this._tab === 0) {
             return null;
         }
+
         const src = Object.keys(this._component.demo)[this._tab - 1];
+        if (this._target) {
+            return `${src}?_target=${this._target}`;
+        }
         return src;
     }
 
@@ -189,7 +199,10 @@ export class PbComponentView extends LitElement {
     }
 
     _pushState() {
-        const url = `?component=${this._component.name}&tab=${this._tab}`;
+        let url = `?component=${this._component.name}&tab=${this._tab}`;
+        if (this._target) {
+            url += `&_target=${this._target}`;
+        }
         history.pushState({ component: this._component, tab: this._tab }, "view component", url);
     }
 
