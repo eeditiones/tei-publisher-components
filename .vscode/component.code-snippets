@@ -9,6 +9,15 @@
 			"}"
 		]
 	},
+	"Demo Entry": {
+		"prefix": "demo",
+		"scope": "json",
+		"body": [
+			"\"pb-$1\": {",
+			"\t\"demo/pb-$1.html\": \"Demo\"",
+			"}$0"
+		]
+	},
 	"Create LitElement": {
 		"prefix": [
 			"litelem"

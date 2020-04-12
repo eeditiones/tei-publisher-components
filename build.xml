@@ -5,7 +5,9 @@
     <property name="project.app" value="${package(abbrev)}"/>
     <property name="project.version" value="${package(version)}"/>
     <property name="build" value="${demo.dir}/build"/>
-
+    <!--property name="scripts" value="https://unpkg.com/@teipublisher/pb-components@${project.version}"/-->
+    <property name="scripts" value="."/>
+    
     <target name="all" depends="xar"/>
 
     <target name="rebuild" depends="clean,all"/>
@@ -16,13 +18,34 @@
             <fileset dir="${demo.dir}">
                 <include name="*.html"/>
                 <include name="*.css"/>
+                <include name="*.json"/>
                 <include name="i18n/**"/>
             </fileset>            
         </copy>
-        <copy file="docs.html" tofile="${build}/index.html"/>
+        <copy todir="${build}/dist">
+            <fileset dir="dist">
+                <include name="*.js*"/>
+            </fileset>
+        </copy>
+        <copy todir="${build}/css">
+            <fileset dir="css">
+                <include name="**/*.css"/>
+            </fileset>
+        </copy>
+        <copy todir="${build}/images">
+            <fileset dir="images">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <copy todir="${build}/i18n">
+            <fileset dir="i18n">
+                <include name="**/*.json"/>
+            </fileset>
+        </copy>
+        <copy file="api.html" tofile="${build}/index.html"/>
         <copy todir="${build}">
             <fileset dir=".">
-                <include name="analysis.json"/>
+                <include name="pb-elements.json"/>
             </fileset>
             <fileset dir="${demo.dir}">
                 <include name="expath-pkg.xml"/>
@@ -31,18 +54,18 @@
             </fileset>
         </copy>
         
-        <replaceregexp match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>'>
+        <replaceregexp match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="../dist/pb-components-bundle.js">&lt;/script>'>
             <fileset dir="${build}/demo">
                 <include name="*.html"/>
                 <exclude name="pb-odd-editor.html"/>
                 <exclude name="pb-leaflet-map.html"/>
             </fileset>
         </replaceregexp>
-        <replaceregexp file="${build}/demo/pb-leaflet-map.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-leaflet-map.js">&lt;/script>'>
+        <replaceregexp file="${build}/demo/pb-leaflet-map.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="../dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="../dist/pb-leaflet-map.js">&lt;/script>'>
         </replaceregexp>
-        <replaceregexp file="${build}/demo/pb-odd-editor.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/pb-odd-editor.js">&lt;/script>'>
+        <replaceregexp file="${build}/demo/pb-odd-editor.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="../dist/pb-components-bundle.js">&lt;/script>&#10;        &lt;script type="module" src="../dist/pb-odd-editor.js">&lt;/script>'>
         </replaceregexp>
-        <replaceregexp file="${build}/index.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="https://unpkg.com/@teipublisher/pb-components@${project.version}/dist/iron-component-page.js">&lt;/script>'></replaceregexp>
+        <replaceregexp file="${build}/index.html" match="&lt;!--scripts-->.*/scripts-->" flags="sg" replace='&lt;script type="module" src="dist/pb-component-docs.js">&lt;/script>'></replaceregexp>
     </target>
     
     <target name="clean">

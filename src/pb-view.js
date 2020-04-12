@@ -322,6 +322,8 @@ export class PbView extends pbMixin(LitElement) {
 
     /**
      * Returns the ODD used to render content.
+     * 
+     * @returns the ODD being used
      */
     getOdd() {
         return this.odd || this.getDocument().odd || "teipublisher";

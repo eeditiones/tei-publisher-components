@@ -10,7 +10,7 @@
         "start": "npm run build && npm run docs && es-dev-server",
         "test": "karma start",
         "test:watch": "karma start --auto-watch=true --single-run=false",
-        "docs": "polymer analyze > analysis.json",
+        "docs": "wca src -f json --outFile pb-elements.json",
         "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
         "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
         "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
@@ -75,7 +75,6 @@
         "@open-wc/prettier-config": "^0.1.10",
         "@open-wc/testing": "^2.3.3",
         "@open-wc/testing-karma": "^3.3.2",
-        "@polymer/app-route": "^3.0.2",
         "@polymer/iron-component-page": "^4.0.1",
         "@rollup/plugin-commonjs": "^11.0.2",
         "@rollup/plugin-node-resolve": "^7.1.1",
@@ -84,13 +83,14 @@
         "eslint": "^6.8.0",
         "karma": "^4.4.1",
         "lint-staged": "^10.0.8",
-        "polymer-cli": "^1.9.11",
+        "marked": "^0.8.2",
         "rimraf": "^3.0.2",
         "rollup": "^1.21.0",
         "rollup-plugin-analyzer": "^3.2.2",
         "rollup-plugin-copy": "^3.3.0",
         "rollup-plugin-modify": "^3.0.0",
-        "rollup-plugin-terser": "^5.3.0"
+        "rollup-plugin-terser": "^5.3.0",
+        "web-component-analyzer": "^1.0.3"
     },
     "eslintConfig": {
         "extends": [

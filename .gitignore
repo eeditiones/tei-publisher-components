@@ -5,8 +5,10 @@ node_modules
 !.gitignore
 !.vscode
 analysis.json
+pb-elements.json
 assets
-images/
+images/leaflet
+images/openseadragon
 css/
 dist
 demo/build

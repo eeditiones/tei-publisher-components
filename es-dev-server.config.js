@@ -1,7 +1,7 @@
 module.exports = {
     watch: true,
     nodeResolve: true,
-    appIndex: 'docs.html',
+    appIndex: 'api.html',
     open: true,
     responseTransformers: [
         function rewriteBasePath({ url, status, contentType, body }) {

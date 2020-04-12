@@ -147,8 +147,6 @@ export class PbCollapse extends pbMixin(LitElement) {
                 flex-direction: row;
                 justify-content: flex-start;
                 align-items: center;
-
-                @apply --pb-collapse-trigger;
             }
 
             #trigger iron-icon {

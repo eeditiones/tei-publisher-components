@@ -24,7 +24,11 @@ export default [
                 'process.env.NODE_ENV': JSON.stringify('production')
             }),
             resolve(),
-            production && terser(),
+            production && terser({
+                compress: {
+                    reduce_vars: false
+                }
+            }),
             analyze({
                 summaryOnly: true
             }),
@@ -55,15 +59,19 @@ export default [
         ]
     },
     {
-        input: '@polymer/iron-component-page/iron-component-page.js',
+        input: 'src/docs/pb-component-docs.js',
         output: {
-            file: 'dist/iron-component-page.js',
+            file: 'dist/pb-component-docs.js',
             format: 'es',
             sourcemap: !production
         },
         plugins: [
             resolve(),
-            production && terser()
+            production && terser({
+                compress: {
+                    reduce_vars: false
+                }
+            })
         ]
     },
     {
