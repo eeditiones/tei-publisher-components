@@ -6,19 +6,43 @@ import Backend from 'i18next-chained-backend';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 
+/**
+ * Configuration element which should wrap around other `pb-` elements.
+ * Among other things, this element determines the TEI Publisher
+ * instance to which all elements will talk (property `endpoint`), and
+ * initializes the i18n language module.
+ * 
+ * @fires pb-page-ready - fired when the endpoint has been determined
+ * @fires pb-i18n-update - fired when the user selected a different display language
+ */
 class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
         const props = {
+            /**
+             * TEI Publisher internal: set to the root URL of the current app
+             */
             appRoot: {
                 type: String,
                 attribute: 'app-root'
             },
+            /**
+             * TEI Publisher internal: set to the current page template.
+             */
             template: {
                 type: String
             },
+            /**
+             * The base URL of the TEI Publisher instance. All nested elements will
+             * talk to this instance. By default it is set to the URL the
+             * page was loaded from.
+             * 
+             * The endpoint can be overwritten by providing an HTTP request parameter
+             * `_target` with an URL.
+             */
             endpoint: {
-                type: String
+                type: String,
+                reflect: true
             },
             /**
              * Optional URL pointing to a directory from which additional i18n 
@@ -66,6 +90,11 @@ class PbPage extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
+        const target = this.getParameter('_target');
+        if (target) {
+            this.endpoint = target;
+        }
 
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
