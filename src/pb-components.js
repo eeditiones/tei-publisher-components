@@ -35,6 +35,7 @@ import './pb-select-odd.js';
 import './pb-select-template.js';
 import './pb-geolocation.js';
 import './pb-code-highlight.js';
+import './pb-code-editor.js';
 import './pb-repeat.js';
 import './pb-svg.js';
 import './pb-facsimile.js';
