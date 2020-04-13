@@ -103,15 +103,11 @@ export default [
                         dest: 'dist/demo'
                     },
                     {
-                        src: 'demo/i18n/app/*.json',
-                        dest: 'dist/demo/i18n/app'
-                    },
-                    {
                         src: 'pb-elements.json',
                         dest: 'dist'
                     },
                     {
-                        src: 'images/*',
+                        src: ['images/*.png', 'images/*.ico', 'images/*.svg'],
                         dest: 'dist/images'
                     }
                 ]
