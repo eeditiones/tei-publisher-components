@@ -199,9 +199,9 @@ export class PbComponentView extends LitElement {
     }
 
     _pushState() {
-        let url = `?component=${this._component.name}&tab=${this._tab}`;
+        let url = `#${this._component.name}.${this._tab}`;
         if (this._target) {
-            url += `&_target=${this._target}`;
+            url = `?_target=${this._target}${url}`;
         }
         history.pushState({ component: this._component, tab: this._tab }, "view component", url);
     }

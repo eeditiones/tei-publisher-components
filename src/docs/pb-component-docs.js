@@ -67,9 +67,9 @@ export class PbComponentDocs extends LitElement {
 
         document.addEventListener('pb-api-component', (/** @type {CustomEvent} */ ev) => {
             const { component, tab } = ev.detail;
-            let url = `?component=${component.name}&tab=${tab}`;
+            let url = `#${component.name}.${tab}`;
             if (this._target) {
-                url += `&_target=${this._target}`;
+                url = `?_target=${this._target}${url}`;
             }
             history.pushState({ component, tab }, "view component", url);
             this.view.show(component, tab);
@@ -82,13 +82,16 @@ export class PbComponentDocs extends LitElement {
         this.view = /** @type {PbComponentView} */ (this.shadowRoot.getElementById('view'));
 
         this._load().then(() => {
-            const url = new URL(window.location.href);
-            const component = url.searchParams.get('component');
-            const tab = url.searchParams.get('tab');
-            if (component && tab) {
-                const comp = this._json.tags.find((tag) => tag.name === component);
-                if (comp) {
-                    this.view.show(comp, parseInt(tab));
+            const { hash } = window.location;
+            if (hash) {
+                const tokens = hash.substring(1).split('.');
+                const component = tokens[0];
+                const tab = tokens[1];
+                if (component && tab) {
+                    const comp = this._json.tags.find((tag) => tag.name === component);
+                    if (comp) {
+                        this.view.show(comp, parseInt(tab));
+                    }
                 }
             }
         });
