@@ -11,5 +11,5 @@ images/leaflet
 images/openseadragon
 css/
 dist
-demo/build
+build
 lib/

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="all" name="pb-components-api">
+    <property name="dist" value="./dist"/>
+    <property name="build" value="./build"/>
+    <xmlproperty file="demo/expath-pkg.xml"/>
+    <property name="project.app" value="${package(abbrev)}"/>
+    <property name="project.version" value="${package(version)}"/>
+    
+    <target name="all" depends="xar"/>
+    
+    <target name="rebuild" depends="clean,all"/>
+    
+    <target name="clean">
+        <delete dir="${build}"/>
+    </target>
+    
+    <target name="xar">
+        <zip destfile="${build}/${project.app}-${project.version}.xar">
+            <fileset dir=".">
+                <include name="dist/**"/>
+                <include name="i18n/**"/>
+                <include name="images/**"/>
+                <include name="lib/**"/>
+                <include name="css/**"/>
+            </fileset>
+            <zipfileset dir="demo" prefix="" includes="*.xml"/>
+            <zipfileset dir="demo" prefix="" includes="*.xql"/>
+        </zip>
+    </target>
+    
+</project>
+

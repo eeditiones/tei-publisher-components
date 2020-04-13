@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>TEI Publisher Webcomponents API</description>
+    <author>Wolfgang Meier</author>
+    <website>https://teipublisher.com</website>
+    <status>stable</status>
+    <license>GPLv3</license>
+    <copyright>true</copyright>
+    <type>application</type>
+    <target>pb-components-api</target>
+    <permissions password="simple" user="tei" group="tei" mode="rw-rw-r--" />
+</meta>
