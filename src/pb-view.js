@@ -168,6 +168,8 @@ export class PbView extends pbMixin(LitElement) {
             },
             /**
             * The reading direction, i.e. 'ltr' or 'rtl'.
+            * 
+            * @type {"ltr"|"rtl"}
             */
             direction: {
                 type: String
@@ -193,6 +195,28 @@ export class PbView extends pbMixin(LitElement) {
             */
             animation: {
                 type: Boolean
+            },
+            /**
+             * Experimental: if enabled, the view will incrementally load new document fragments if the user tries to scroll
+             * beyond the start or end of the visible text. The feature inserts a small blank section at the top
+             * and bottom. If this section becomes visible, a load operation will be triggered.
+             * 
+             * Note: only browsers implementing the `IntersectionObserver` API are supported. Also the feature
+             * does not work in two-column mode or with animations.
+             */
+            infiniteScroll: {
+                type: Boolean,
+                attribute: 'infinite-scroll'
+            },
+            /**
+             * Maximum number of fragments to keep in memory if `infinite-scroll`
+             * is enabled. If the user is scrolling beyond the maximum, fragements
+             * will be removed from the DOM before or after the current reading position.
+             * Default is 10. Set to zero to allow loading the entire document.
+             */
+            infiniteScrollMax: {
+                type: Number,
+                attribute: 'infinite-scroll-max'
             },
             /**
              * A selector pointing to other components this component depends on.
@@ -243,8 +267,10 @@ export class PbView extends pbMixin(LitElement) {
         this.animation = false;
         this.direction = 'ltr';
         this.highlight = false;
+        this.infiniteScrollMax = 10;
         this._features = {};
         this._selector = new Map();
+        this._chunks = [];
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -258,6 +284,13 @@ export class PbView extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
+        if (this.infiniteScroll) {
+            this.columnSeparator = null;
+            this.animation = false;
+            this._content = document.createElement('div');
+            this._content.className = 'infinite-content';
+        }
 
         const id = this.getParameter('id');
         if (id && !this.xmlId) {
@@ -304,6 +337,13 @@ export class PbView extends pbMixin(LitElement) {
         }
     }
 
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        if (this._scrollObserver) {
+            this._scrollObserver.disconnect();
+        }
+    }
+
     firstUpdated() {
         if (!this.onUpdate) {
             PbView.waitOnce('pb-page-ready', (data) => {
@@ -313,6 +353,29 @@ export class PbView extends pbMixin(LitElement) {
                 this.wait(() => this._refresh());
             });
         }
+        this._scrollObserver = new IntersectionObserver(entries => {
+            if (!this._content) {
+                return;
+            }
+            const firstEntry = entries[0];
+            if (firstEntry.isIntersecting) {
+                if (firstEntry.target.id === 'bottom-observer') {
+                    const lastChild = this._content.lastElementChild;
+                    if (lastChild) {
+                        this.next = lastChild.getAttribute('data-next');
+                        this.navigate('forward');
+                    }
+                } else {
+                    const firstChild = this._content.firstElementChild;
+                    if (firstChild) {
+                        this.previous = firstChild.getAttribute('data-previous');
+                        this.navigate('backward');
+                    }
+                }
+            }
+        });
+        this._scrollObserver.observe(this.shadowRoot.getElementById('bottom-observer'));
+        this._scrollObserver.observe(this.shadowRoot.getElementById('top-observer'));
     }
 
     /**
@@ -381,10 +444,13 @@ export class PbView extends pbMixin(LitElement) {
             }
         }
         this._updateStyles();
+        if (this.infiniteScroll) {
+            this._clear();
+        }
         this._load(this.nodeId);
     }
 
-    _load(pos) {
+    _load(pos, direction) {
         const doc = this.getDocument();
 
         if (!doc.path) {
@@ -393,7 +459,9 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         const params = this.getParameters(pos);
-
+        if (direction) {
+            params._dir = direction;
+        }
         // this.$.view.style.opacity=0;
 
         this._doLoad(params);
@@ -403,17 +471,25 @@ export class PbView extends pbMixin(LitElement) {
         this.emitTo('pb-start-update', params);
 
         console.log("<pb-view> Loading view with params %o", params);
-        this._clear();
+        if (!this.infiniteScroll) {
+            this._clear();
+        }
         const loadContent = this.shadowRoot.getElementById('loadContent');
         loadContent.params = params;
         loadContent.generateRequest();
     }
 
     _clear() {
-        this._content = null;
+        if (this.infiniteScroll) {
+            this._content = document.createElement('div');
+            this._content.className = 'infinite-content';
+        } else {
+            this._content = null;
+        }
         this._column1 = null;
         this._column2 = null;
         this._footnotes = null;
+        this._chunks = [];
     }
 
     _handleError() {
@@ -448,7 +524,7 @@ export class PbView extends pbMixin(LitElement) {
             return;
         }
 
-        const elem = this._replaceContent(resp);
+        const elem = this._replaceContent(resp, loader.params._dir);
 
         this.animate();
         this._scroll();
@@ -477,7 +553,7 @@ export class PbView extends pbMixin(LitElement) {
         this.emitTo('pb-end-update', null);
     }
 
-    _replaceContent(resp) {
+    _replaceContent(resp, direction) {
         const fragment = document.createDocumentFragment();
         const elem = document.createElement('div');
         // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
@@ -486,6 +562,31 @@ export class PbView extends pbMixin(LitElement) {
 
         if (this.columnSeparator) {
             this._replaceColumns(elem);
+        } else if (this.infiniteScroll) {
+            elem.className = 'scroll-fragment';
+            if (resp.next) {
+                elem.setAttribute('data-next', resp.next);
+            }
+            if (resp.previous) {
+                elem.setAttribute('data-previous', resp.previous);
+            }
+            let refNode;
+            switch (direction) {
+                case 'backward':
+                    refNode = this._content.firstElementChild;
+                    this._chunks.unshift(elem);
+                    this._content.insertBefore(elem, refNode);
+                    this.updateComplete.then(() => {
+                        refNode.scrollIntoView();
+                        this._checkVisibility();
+                    });
+                    break;
+                default:
+                    this._chunks.push(elem);
+                    this._content.appendChild(elem);
+                    this.updateComplete.then(() => this._checkVisibility());
+                    break;
+            }
         } else {
             this._content = elem;
         }
@@ -501,6 +602,24 @@ export class PbView extends pbMixin(LitElement) {
         this._initFootnotes(this._footnotes);
 
         return elem;
+    }
+
+    _checkVisibility() {
+        if (this._chunks[this._chunks.length - 1].hasAttribute('data-next')) {
+            const div = this.shadowRoot.getElementById('bottom-observer');
+            const position = div.getBoundingClientRect();
+            if (position.top >= 0 && position.bottom <= window.innerHeight) {
+                this.navigate('forward');
+                return;
+            }
+        }
+        if (this._chunks[0].hasAttribute('data-previous')) {
+            const div = this.shadowRoot.getElementById('top-observer');
+            const position = div.getBoundingClientRect();
+            if (position.top >= 0 && position.bottom <= window.innerHeight) {
+                this.navigate('backward');
+            }
+        }
     }
 
     _replaceColumns(elem) {
@@ -688,21 +807,45 @@ export class PbView extends pbMixin(LitElement) {
 
         if (direction === 'backward') {
             if (this.previous) {
+                this._checkChunks(direction);
                 if (!this.map) {
                     this.setParameter('root', this.previous);
                     this.setParameter('id');
                     this.pushHistory('Navigate backward');
                 }
-                this._load(this.previous);
+                this._load(this.previous, direction);
             }
-        } else {
-            if (this.next) {
-                if (!this.map) {
-                    this.setParameter('root', this.next);
-                    this.setParameter('id');
-                    this.pushHistory('Navigate forward');
-                }
-                this._load(this.next);
+        } else if (this.next) {
+            this._checkChunks(direction);
+            if (!this.map) {
+                this.setParameter('root', this.next);
+                this.setParameter('id');
+                this.pushHistory('Navigate forward');
+            }
+            this._load(this.next, direction);
+        }
+    }
+
+    /**
+     * Check the number of fragments which were already loaded in infinite
+     * scroll mode. If they exceed `infiniteScrollMax`, remove either the
+     * first or last fragment from the DOM, depending on the scroll direction.
+     * 
+     * @param {string} direction either 'forward' or 'backward'
+     */
+    _checkChunks(direction) {
+        if (!this.infiniteScroll || this.infiniteScrollMax === 0) {
+            return;
+        }
+
+        if (this._chunks.length === this.infiniteScrollMax) {
+            switch (direction) {
+                case 'forward':
+                    this._content.removeChild(this._chunks.shift());
+                    break;
+                default:
+                    this._content.removeChild(this._chunks.pop());
+                    break;
             }
         }
     }
@@ -867,6 +1010,22 @@ export class PbView extends pbMixin(LitElement) {
 
                 font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
             }
+
+            .observer {
+                display: block;
+                width: 100%;
+                font-size: .85em;
+                visibility: hidden;
+            }
+
+            .scroll-fragment {
+                animation: fadeIn ease 500ms;
+            }
+
+            @keyframes fadeIn {
+                0% {opacity:0;}
+                100% {opacity:1;}
+            }
         `;
     }
 
@@ -874,12 +1033,18 @@ export class PbView extends pbMixin(LitElement) {
         return html`
             <div id="view">
                 ${this._style}
+                ${this.infiniteScroll ? html`<div id="top-observer" class="observer">More ...</div>` : null}
                 <div class="columns">
                     <div id="column1">${this._column1}</div>
                     <div id="column2">${this._column2}</div>
                 </div>
                 <div id="content">${this._content}</div>
                 <div id="footnotes">${this._footnotes}</div>
+                ${
+            this.infiniteScroll ?
+                html`<div id="bottom-observer" class="observer">More ...</div>` :
+                null
+            }
             </div>
             <paper-dialog id="errorDialog">
                 <h2>${translate('dialogs.error')}</h2>

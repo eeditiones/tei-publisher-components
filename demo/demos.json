@@ -1,7 +1,7 @@
 {
     "pb-view": {
         "demo/pb-view.html": "View TEI document",
-        "demo/pb-view2.html": "View Docbook document"
+        "demo/pb-view2.html": "Docbook document (incremental loading)"
     },
     "pb-document": {
         "demo/pb-document.html": "Demo"
