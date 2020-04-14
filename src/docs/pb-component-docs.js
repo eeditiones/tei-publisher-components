@@ -67,10 +67,7 @@ export class PbComponentDocs extends LitElement {
 
         document.addEventListener('pb-api-component', (/** @type {CustomEvent} */ ev) => {
             const { component, tab } = ev.detail;
-            let url = `#${component.name}.${tab}`;
-            if (this._target) {
-                url = `?_target=${this._target}${url}`;
-            }
+            const url = `#${component.name}.${tab}`;
             history.pushState({ component, tab }, "view component", url);
             this.view.show(component, tab);
         });
