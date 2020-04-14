@@ -17,6 +17,7 @@
         <script type="module" src="../src/pb-navigation.js"></script>
         <script type="module" src="../src/pb-progress.js"></script>
         <script type="module" src="../src/pb-drawer.js"></script>
+        <script type="module" src="../src/pb-collapse.js"></script>
         <script type="module" src="../src/pb-link.js"></script>
         <script type="module" src="../src/pb-i18n.js"></script>
         <!--/scripts-->
@@ -72,6 +73,16 @@
 
                 pb-navigation[direction=forward] {
                     right: 20px;
+                }
+
+                pb-load ul {
+                    list-style: none;
+                    margin-left: 0;
+                }
+
+                pb-link a {
+                    text-decoration: none;
+                    color: #222222;
                 }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">

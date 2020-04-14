@@ -9,8 +9,18 @@ import '@polymer/paper-dialog-scrollable';
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
  * The document to be viewed is determined by the `pb-document` element the property
- * `src` points to. `pb-view` can display an entire document or just a fragment of it
- * as defined by the properties `xmlId`, `nodeId` or `xpath`.
+ * `src` points to. If not overwritten, `pb-view` will use the settings defined by
+ * the connected document, like view type, ODD etc.
+ * 
+ * `pb-view` can display an entire document or just a fragment of it
+ * as defined by the properties `xpath`, `xmlId` or `nodeId`. The most common use case
+ * is to set `xpath` to point to a specific part of a document.
+ * 
+ * Navigating to the next or previous fragment would usually be triggered by a separate
+ * `pb-navigation` element, which sends a `pb-navigate` event to the `pb-view`. However,
+ * `pb-view` also implements automatic loading of next/previous fragments if the user
+ * scrolls the page beyond the current viewport boudaries. To enable this, set property
+ * `infinite-scroll`.
  *
  * You may also define optional parameters to be passed to the ODD in nested `pb-param`
  * tags. These parameters can be accessed within the ODD via the `$parameters` map. For
@@ -363,13 +373,13 @@ export class PbView extends pbMixin(LitElement) {
                     const lastChild = this._content.lastElementChild;
                     if (lastChild) {
                         this.next = lastChild.getAttribute('data-next');
-                        this.navigate('forward');
+                        this.emitTo('pb-navigate', { direction: 'forward' });
                     }
                 } else {
                     const firstChild = this._content.firstElementChild;
                     if (firstChild) {
                         this.previous = firstChild.getAttribute('data-previous');
-                        this.navigate('backward');
+                        this.emitTo('pb-navigate', { direction: 'backward' });
                     }
                 }
             }
@@ -609,7 +619,7 @@ export class PbView extends pbMixin(LitElement) {
             const div = this.shadowRoot.getElementById('bottom-observer');
             const position = div.getBoundingClientRect();
             if (position.top >= 0 && position.bottom <= window.innerHeight) {
-                this.navigate('forward');
+                this.emitTo('pb-navigate', { direction: 'forward' });
                 return;
             }
         }
@@ -617,7 +627,7 @@ export class PbView extends pbMixin(LitElement) {
             const div = this.shadowRoot.getElementById('top-observer');
             const position = div.getBoundingClientRect();
             if (position.top >= 0 && position.bottom <= window.innerHeight) {
-                this.navigate('backward');
+                this.emitTo('pb-navigate', { direction: 'backward' });
             }
         }
     }
@@ -959,6 +969,13 @@ export class PbView extends pbMixin(LitElement) {
             :host {
                 display: block;
                 background: transparent;
+                overflow: -moz-scrollbars-none;
+                -ms-overflow-style: none;
+            }
+
+            :host::-webkit-scrollbar { 
+                width: 0 !important;
+                display: none; 
             }
 
             .columns {
@@ -1014,8 +1031,7 @@ export class PbView extends pbMixin(LitElement) {
             .observer {
                 display: block;
                 width: 100%;
-                font-size: .85em;
-                visibility: hidden;
+                height: 4px;
             }
 
             .scroll-fragment {
@@ -1033,7 +1049,7 @@ export class PbView extends pbMixin(LitElement) {
         return html`
             <div id="view">
                 ${this._style}
-                ${this.infiniteScroll ? html`<div id="top-observer" class="observer">More ...</div>` : null}
+                ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
                 <div class="columns">
                     <div id="column1">${this._column1}</div>
                     <div id="column2">${this._column2}</div>
@@ -1042,7 +1058,7 @@ export class PbView extends pbMixin(LitElement) {
                 <div id="footnotes">${this._footnotes}</div>
                 ${
             this.infiniteScroll ?
-                html`<div id="bottom-observer" class="observer">More ...</div>` :
+                html`<div id="bottom-observer" class="observer"></div>` :
                 null
             }
             </div>
