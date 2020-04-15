@@ -83,8 +83,8 @@ export class PbPopover extends pbMixin(LitElement) {
         super();
         this.persistent = false;
         this.for = null;
-        this.theme = 'none';
-        this.placement = 'auto';
+        this.theme = null;
+        this.placement = null;
         this.fallbackPlacement = null;
         this.popupClass = null;
     }
@@ -136,9 +136,7 @@ export class PbPopover extends pbMixin(LitElement) {
     _injectStylesheet(name, css) {
         const root = this.getRootNode();
         const style = root.querySelector(`#pb-popover-${name}`);
-        if (style) {
-            console.log('style %s exists', name);
-        } else {
+        if (!style) {
             const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
             const elem = document.createElement('style');
             elem.type = 'text/css';
