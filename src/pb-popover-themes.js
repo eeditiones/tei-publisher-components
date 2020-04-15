@@ -7,7 +7,7 @@ export function camelize(str) {
     }).replace('-', '');
 }
 
-export const base = css`
+export const base = `
     .tippy-box[data-animation=fade][data-state=hidden] {
         opacity: 0
     }
@@ -104,7 +104,7 @@ export const base = css`
         z-index: 1;
         overflow: auto;
         max-height: var(--pb-popover-max-height, calc(100vh - 60px));
-        max-width: var(--pb-popover-max-width);
+        max-width: var(--pb-popover-max-width, 640px);
         color: var(--pb-popover-color);
     }
 `;

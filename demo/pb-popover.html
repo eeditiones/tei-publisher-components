@@ -18,12 +18,7 @@
         <pb-demo-snippet>
             <template>
                 <style>
-                    pb-popover, .trigger {
-                        color: rgb(224, 140, 13);
-                        text-decoration: underline;
-                    }
-
-                    pb-popover {
+                    body {
                         /* Default theme to use unless specified via property */
                         --pb-popover-theme: 'light-border';
                         --pb-popover-font-size: 14px;
@@ -32,18 +27,25 @@
                         --pb-popover-fallback-placement: 'top right';
                     }
 
-                    pb-popover[for="aliquyam"] {
+                    pb-popover, .trigger {
+                        color: rgb(224, 140, 13);
+                        text-decoration: underline;
+                    }
+
+                    /* Address a specific popup (popup-class="info")*/
+                    .info {
                         --pb-popover-font-size: 18px;
                     }
 
-                    /* Use different color for class 'info' */
-                    .info {
-                        --pb-popover-color: rgb(150, 192, 202);
+                    .note {
+                        font-style: italic;
                     }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <main>
-                        <p>Lorem <pb-popover theme="material">ipsum dolor sit amet<span slot="alternate">At vero eos et accusam et justo duo dolores<br> 
+                        <p>Lorem <pb-popover theme="material">
+                            <span slot="default">ipsum dolor sit amet</span>
+                            <span slot="alternate">At vero eos et <strong>accusam</strong> et justo duo dolores<br> 
                                 et ea rebum.</span></pb-popover>, consetetur sadipscing elitr,<br>
                             sed diam nonumy eirmod tempor invidunt ut labore et dolore<br>
                             magna <span class="trigger" id="aliquyam">aliquyam erat</span>, sed diam voluptua. At vero eos et accusam<br> 
@@ -54,13 +56,15 @@
                             erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
                             et ea rebum. <pb-popover persistent theme="light-border">Stet clita kasd gubergren<span slot="alternate">A persistent tooltip</span></pb-popover>, no sea takimata sanctus est<br>
                             <span class="trigger" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
-                        <pb-popover for="aliquyam">
+                        <pb-popover for="aliquyam" popup-class="info">
+                            <blockquote class="note">Popover content using block level elements should be placed outside the text flow using attribute <code>for</code>
+                            to link to an inline trigger element.</blockquote>
                             <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
                             <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
                             <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
                             <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
                         </pb-popover>
-                        <pb-popover for="lorem" class="info">This popover is connected to its trigger element
+                        <pb-popover for="lorem">This popover is connected to its trigger element
                             using the 'for' attribute.</pb-popover>
                     </main>
                 </pb-page>

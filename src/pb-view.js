@@ -1055,12 +1055,12 @@ export class PbView extends pbMixin(LitElement) {
                     <div id="column2">${this._column2}</div>
                 </div>
                 <div id="content">${this._content}</div>
-                <div id="footnotes">${this._footnotes}</div>
                 ${
             this.infiniteScroll ?
                 html`<div id="bottom-observer" class="observer"></div>` :
                 null
             }
+                <div id="footnotes">${this._footnotes}</div>
             </div>
             <paper-dialog id="errorDialog">
                 <h2>${translate('dialogs.error')}</h2>

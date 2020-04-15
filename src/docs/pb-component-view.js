@@ -26,7 +26,7 @@ function _md(md) {
     return html`${unsafeHTML(window.marked(md))}`;
 }
 
-function _renderSection(title, data) {
+function _renderSection(title, data, hasDefaults = false) {
     if (data) {
         return html`
             <section>
@@ -36,11 +36,16 @@ function _renderSection(title, data) {
                         <tr>
                             <th>Name</th>
                             <th>Description</th>
+                            ${hasDefaults ? html`<th>Default</th>` : null}
                         </tr>
                     </thead>
                     <tbody>
                         ${data.map((item) =>
-            html`<tr><td>${item.name}</td><td>${_md(item.description)}</td></tr>`)
+            html`<tr>
+                                <td>${item.name}</td>
+                                <td>${_md(item.description)}</td>
+                                ${hasDefaults ? html`<td>${item.default}</td>` : null}</tr>`
+        )
             }
                     </tbody>
                 </table>
@@ -123,7 +128,7 @@ export class PbComponentView extends LitElement {
                                 ${_renderSection('Slots', this._component.slots)}
                                 ${this._renderPropertiesSection()}
                                 ${_renderSection('Events', this._component.events)}
-                                ${_renderSection('CSS Properties', this._component.cssProperties)}
+                                ${_renderSection('CSS Properties', this._component.cssProperties, true)}
                             ` : null
                     }
                         </div>` :
@@ -159,14 +164,16 @@ export class PbComponentView extends LitElement {
                             <tr>
                                 <th>Name</th>
                                 <th>Attribute</th>
-                                <th>Type | Default</th>
+                                <th>Type</th>
+                                <th>Default</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>${prop.name}</td>
                                 <td>${prop.attribute ? prop.attribute : prop.name}</td>
-                                <td>${prop.type} | ${prop.default}</td>
+                                <td>${prop.type}</td>
+                                <td>${prop.default}</td>
                             </tr>
                         </tbody>
                     </table>
