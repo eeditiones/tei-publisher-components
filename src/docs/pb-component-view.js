@@ -173,7 +173,7 @@ export class PbComponentView extends LitElement {
                                 <td>${prop.name}</td>
                                 <td>${prop.attribute ? prop.attribute : prop.name}</td>
                                 <td>${prop.type}</td>
-                                <td>${prop.default}</td>
+                                <td>${prop.default ? prop.default : 'undefined'}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -282,19 +282,13 @@ export class PbComponentView extends LitElement {
             
             td {
                 padding: 8px 4px;
+                width: 25%;
             }
             .property td {
                 padding: 0 4px 0 0;
             }
             td:nth-child(1) {
-                width: 25%;
                 color: #f6a523;
-            }
-            td:nth-child(2) {
-                width: 25%;
-            }
-            td:nth-child(3) {
-                width: 50%;
             }
             td p {
                 margin: 0;
