@@ -88,9 +88,6 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 type: Boolean,
                 reflect: true
             },
-            override: {
-                type: Boolean
-            },
             _endpoint: {
                 type: String
             }
