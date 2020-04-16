@@ -50,7 +50,7 @@ import '@polymer/paper-dialog-scrollable';
 export class PbView extends pbMixin(LitElement) {
 
     static get properties() {
-        const props = {
+        return {
             /**
             * The id of a `pb-document` element this view should display.
             * Settings like `odd` or `view` will be taken from the `pb-document`
@@ -263,13 +263,14 @@ export class PbView extends pbMixin(LitElement) {
             _style: {
                 type: Node,
                 attribute: false
-            }
+            },
+            ...super.properties
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
         super();
+        this.src = null;
         this.url = "modules/lib/components.xql";
         this.onUpdate = false;
         this.appendFootnotes = false;

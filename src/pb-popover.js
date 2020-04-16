@@ -54,7 +54,8 @@ import * as themes from './pb-popover-themes.js';
  */
 export class PbPopover extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             for: {
                 type: String
             },
@@ -76,7 +77,6 @@ export class PbPopover extends pbMixin(LitElement) {
                 attribute: 'popup-class'
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
