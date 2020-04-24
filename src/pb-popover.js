@@ -12,11 +12,18 @@ import * as themes from './pb-popover-themes.js';
  * 
  * 2. if no `for` property is specified, the `pb-popover` acts itself as the trigger. The trigger
  * text is either taken from a slot named `default` - or the default slot (i.e. the content of the element).
- * The content to show in the popup should be supplied in a
- * slot named `alternate`.
+ * The content to show in the popup should be supplied in a slot named `alternate`. It is recommended to use an
+ * HTML `template` to specify the alternate, so it is ignored by the browser:
  * 
- * It is recommended to choose 1. if the popover content may contain block-level elements - otherwise browsers
- * may try to 'correct' the invalid block content, thus producing unwanted results.
+ * ```html
+ * <pb-popover theme="material">
+ *      <span slot="default">ipsum dolor sit amet</span>
+ *      <template slot="alternate">
+ *          <p>At vero eos et <strong>accusam</strong> et justo duo dolores<br>
+ *          et ea rebum.</p>
+ *      </template>
+ * </pb-popover>
+ * ```
  * 
  * If property `persistent` is true, the popover will be shown
  * on click. Otherwise display a tooltip on mouseover.
@@ -115,7 +122,11 @@ export class PbPopover extends pbMixin(LitElement) {
     _getCSSProperty(name, defaultValue) {
         const property = getComputedStyle(this).getPropertyValue(name);
         if (property) {
-            return JSON.parse(property);
+            try {
+                return JSON.parse(property);
+            } catch (e) {
+                return defaultValue;
+            }
         }
         return defaultValue;
     }
@@ -167,7 +178,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (target && slot) {
             const content = document.createElement('div');
             slot.assignedNodes().forEach((node) => {
-                content.appendChild(document.importNode(node, true));
+                content.appendChild(document.importNode(node.content || node, true));
             });
             const options = {
                 content,
