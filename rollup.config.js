@@ -7,6 +7,9 @@ import babel from 'rollup-plugin-babel';
 
 const production = process.env.BUILD === 'production';
 
+const wcloader = '<script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>';
+const pbbundle = '<script type="module" src="../pb-components-bundle.js"></script>';
+
 export default [
     {
         input: [
@@ -80,25 +83,25 @@ export default [
                         src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map.html'],
                         dest: 'dist/demo',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script>')
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}`)
                     },
                     {
                         src: 'demo/pb-odd-editor.html',
                         dest: 'dist/demo',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-odd-editor.js"></script>')
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`)
                     },
                     {
                         src: 'demo/pb-leaflet-map.html',
                         dest: 'dist/demo',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-leaflet-map.js"></script>')
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
                     },
                     {
                         src: 'api.html',
                         dest: 'dist',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, '<script type="module" src="pb-component-docs.js"></script>')
+                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
                     },
                     {
                         src: ['demo/*.json', 'demo/*.css'],
