@@ -6,14 +6,13 @@ import { pbMixin } from './pb-mixin.js';
  * Generate a link to download a resource. Optionally shows a dialog during the download.
  * This component is mainly used for creating the links for downloading PDFs, epubs etc.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-download.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for link text
+ * @fires pb-document - When received, updates the odd to the one passed from the event
  */
 export class PbDownload extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * optional id reference to a pb-document. If present the pb-download will allow to download the
              * referenced pb-document.
@@ -84,7 +83,6 @@ export class PbDownload extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

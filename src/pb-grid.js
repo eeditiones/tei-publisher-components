@@ -6,14 +6,15 @@ import './pb-panel.js';
  * A component to create a column layout based upon CSS grid. It offers methods for dynamically changing
  * the layout by adding or removing panels at runtime.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-grid.html
- * @appliesMixin pbMixin
+ * @slot - default unnamed slot for the panel
+ * @fires pb-refresh - Fired after a new column has been added to allow connected components to refresh.
+ * @fires pb-panel - When received, updates the list of panels to show
+ * 
  */
 export class PbGrid extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * an array of panel items to display when the component is loaded. It should contain a
              * number for each panel to show, indicating the ordinal position of the template within the `<pb-panel>`
@@ -48,7 +49,6 @@ export class PbGrid extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -212,10 +212,5 @@ export class PbGrid extends pbMixin(LitElement) {
         `;
     }
 
-    /**
-     * Fired after a new column has been added to allow connected components to refresh.
-     *
-     * @event pb-refresh
-     */
 }
 customElements.define('pb-grid', PbGrid);

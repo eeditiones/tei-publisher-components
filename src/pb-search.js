@@ -16,14 +16,14 @@ import '@polymer/paper-checkbox';
  * @cssprop --pb-search-focus-color Color for label and underline if input has focus
  * @cssprop --pb-search-suggestions-color Color for the labels shown in the suggestions dropdown
  * @cssprop --pb-search-suggestions-background Background for the suggestions dropdown
- * @customElement
- * @polymer
- * @demo demo/pb-search.html
- * @appliesMixin pbMixin
+ * @slot - default unnamed slot
+ * @fires pb-load - Fired to perform the actual search with parameters passed to the request
+ * @fires pb-search-resubmit - When received, triggers the search again
  */
 export class PbSearch extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             action: {
                 type: String
             },
@@ -46,7 +46,6 @@ export class PbSearch extends pbMixin(LitElement) {
                 attribute: 'submit-on-load'
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -167,11 +166,5 @@ export class PbSearch extends pbMixin(LitElement) {
         }
     }
 
-    /**
-     * Fired to perform the actual search
-     *
-     * @event pb-load
-     * @param {object} Parameters to be passed to the request
-     */
 }
 customElements.define('pb-search', PbSearch);

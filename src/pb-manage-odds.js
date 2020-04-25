@@ -17,15 +17,14 @@ import './pb-edit-xml.js';
 /**
  * High-level component implementing the ODD management panel
  * on the start page.
- *
- * @customElement
- * @polymer
- * @demo demo/pb-manage-odds.html
- * @appliesMixin pbMixin
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-load - Sending the ODD to be used
  */
 export class PbManageOdds extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * array of ODD-files to be listed
              */
@@ -42,7 +41,6 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

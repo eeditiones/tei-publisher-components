@@ -19,14 +19,15 @@ import '@polymer/iron-collapse';
  * </pb-collapse>
  * ```
  *
- * @customElement
- * @polymer
- * @appliesMixin pbMixin
- * @demo ../demo/pb-collapse.html
+ * @slot collapse-trigger - trigger toggling collapsed content on/off
+ * @slot collapse-content - content to be collapsed
+ * 
+ * @fires pb-collapse-open - Fires opening the collapsed section
  */
 export class PbCollapse extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * @deprecated
              * Corresponds to the iron-collapse's horizontal property.
@@ -74,7 +75,6 @@ export class PbCollapse extends pbMixin(LitElement) {
                 type: Object
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -46,12 +46,14 @@ import '@polymer/paper-checkbox';
  *
  * It is important that `pb-toggle-feature` emits and subscribes to the same channel as the target `pb-view`.
  *
- * @fires pb-toggle - when the feature is toggled
+ * @fires pb-toggle - Fired when the feature is toggled, it's changing properties between values of its `on` and `off` state
+ * @fires pb-update - When received, sets the features passed from the event
  */
 export class PbToggleFeature extends pbMixin(LitElement) {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The name of the feature (required). This will correspond to the name of the custom parameter
              * passed to the ODD.
@@ -122,7 +124,6 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 attribute: 'init-from-view'
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

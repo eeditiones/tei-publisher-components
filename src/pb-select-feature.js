@@ -7,15 +7,12 @@ import '@polymer/paper-item';
 
 /**
  *
- *
- * @customElement  pb-select-feature
- * @polymer
- * @demo demo/pb-select-feature.html
- * @appliesMixin pbMixin
+ * @fires pb-toggle - Fired when a feature is selected from the dropdown and sends the selected properties
  */
 export class PbSelectFeature extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
             * The name of the feature (required). This will correspond to the name of the custom parameter
             * passed to the ODD.
@@ -36,7 +33,6 @@ export class PbSelectFeature extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

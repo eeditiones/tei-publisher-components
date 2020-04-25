@@ -7,14 +7,13 @@ import { pbMixin } from './pb-mixin';
  * to be member of a specific group. Listens for the `pb-login` event
  * triggered by `pb-login` to be notified of user changes.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-login.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot
+ * @fires pb-login - When received, changes the state of the component according to the user info received
  */
 export class PbRestricted extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** Id of the pb-login element to connect to */
             login: {
                 type: String
@@ -30,7 +29,6 @@ export class PbRestricted extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

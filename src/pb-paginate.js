@@ -9,14 +9,13 @@ import { translate } from "./pb-i18n.js";
  * If the user clicks on one of the page indicators, a `pb-load` event is emitted,
  * which should cause the connected `pb-load` element to refresh.
  * 
- * @customElement
- * @polymer
- * @demo demo/pb-search.html
- * @appliesMixin pbMixin
+ * @fires pb-load - Fires when user selects new page to show
+ * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
  */
 export class PbPaginate extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * total number of pages
              */
@@ -72,7 +71,6 @@ export class PbPaginate extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

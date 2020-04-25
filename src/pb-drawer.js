@@ -5,14 +5,14 @@ import { pbMixin } from './pb-mixin.js';
 /**
  * A drawer component used e.g. for table-of-contents.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-drawer.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for the content
+ * @fires pb-load - Fires a load request when opened
+ * @fires pb-refresh - When received, closes the drawer
  */
 export class PbDrawer extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * optional id reference to a component that allows opening/closing the drawer
              */
@@ -27,7 +27,6 @@ export class PbDrawer extends pbMixin(LitElement) {
                 reflect: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -13,15 +13,13 @@ import '@polymer/paper-item';
  * 
  * The JSON should contain an array of objects, each having an `url` and
  * `title` property.
- *
- * @customElement  dts-select-endpoint
- * @polymer
- * @demo demo/dts-client.html
- * @appliesMixin pbMixin
+ * 
+ * @fires dts-endpoint - Sets the endpoint
  */
 export class DtsSelectEndpoint extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The currently selected endpoint. Will be set from URL parameter if present.
              */
@@ -45,7 +43,6 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

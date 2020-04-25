@@ -4,13 +4,13 @@ import { LitElement, html, css } from 'lit-element';
  * Show or hide contents depending on a media query. This is used to toggle the menubar and drawer.
  * On small displays, the menu will move into the drawer.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-media-query.html
+ * @slot - default unnamed slot
+ * 
  */
 export class PbMediaQuery extends LitElement {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * Media query to be watched by the element.
              *
@@ -22,7 +22,6 @@ export class PbMediaQuery extends LitElement {
                 reflect: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

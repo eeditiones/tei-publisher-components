@@ -7,14 +7,12 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
  * update and load the corresponding document fragment defined by the
  * properties.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-link.html
- * @appliesMixin pbMixin
+ * @fires pb-refresh - Fires when user clicks the link
  */
 export class PbLink extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** Browse to an xml:id within the document */
             xmlId: {
                 type: String,
@@ -42,7 +40,6 @@ export class PbLink extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

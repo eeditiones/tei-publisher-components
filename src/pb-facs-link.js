@@ -3,16 +3,13 @@ import { pbMixin } from './pb-mixin';
 
 
 /**
- *
- *
- * @customElement pb-facs-link
- * @polymer
- * @demo demo/pb-facsimile.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for link text
+ * @fires pb-show-annotation - Fires when mouse hovers over a pb-facs-link, passing image reference and coordinates that pb-facsimile reacts to
  */
 export class PbFacsLink extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** URL pointing to the facsimile image to load */
             facs: {
                 type: String
@@ -25,7 +22,6 @@ export class PbFacsLink extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

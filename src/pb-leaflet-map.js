@@ -6,14 +6,16 @@ import { resolveURL } from './utils.js';
 /**
  * A wrapper component for [leaflet](https://leafletjs.com/) displaying a map.
  *
- * @customElement  pb-leaflet-map
- * @polymer
- * @demo demo/pb-leaflet-map.html
- * @appliesMixin pbMixin
+ * @fires pb-leaflet-marker-click - Fires event to be processed by the map upon click
+ * @fires pb-update-map - When received, redraws the map to fit markers passed in with the event
+ * @fires pb-update - When received, redraws the map to show markers for all pb-geolocation elements
+ * @fires pb-geolocation - When received, focuses the map on the geocoordinates passed in with the event
+ 
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             latitude: {
                 type: Number
             },
@@ -45,7 +47,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

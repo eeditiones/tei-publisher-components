@@ -7,15 +7,15 @@ import { pbHotkeys } from "./pb-hotkeys.js";
  * It just sends a `pb-navigate` event when clicked. You may also assign a shortcut key by setting property
  * `keyboard`.
  *
- * @customElement
- * @polymer
- * @appliesMixin pbMixin
- * @demo demo/pb-view.html
+ * @slot - default unnamed slot
+ * @fires pb-navigate - Fire event indicating that listening components should navigate in the given direction
+ * @fires pb-update - When received, updates the state of navigation buttons (disables when no forward/backward navigation possible)
  */
 export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The direction to navigate in, either `forward` or `backward`
              */
@@ -29,7 +29,6 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

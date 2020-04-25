@@ -11,13 +11,11 @@ import "@polymer/iron-ajax";
  * It loads the list of templates from `components-list-templates.xql`.
  * Emits a page reload on selection.
  *
- * @customElement  pb-select-template
- * @polymer
- * @appliesMixin pbMixin
  */
 export class PbSelectTemplate extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** The label to show on top of the dropdown menu */
             label: {
                 type: String
@@ -33,7 +31,6 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -4,15 +4,12 @@ import { LitElement, html, css } from 'lit-element';
 /**
  * Embed a codepen project to show live code. Used for some documentation examples.
  *
- * @customElement  pb-codepen
- * @polymer
- * @demo demo/pb-codepen.html
- * @appliesMixin pbMixin
  */
 export class PbCodepen extends LitElement {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The user which created the codepen
              */
@@ -45,7 +42,6 @@ export class PbCodepen extends LitElement {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

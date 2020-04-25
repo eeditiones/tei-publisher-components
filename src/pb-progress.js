@@ -6,19 +6,18 @@ import '@polymer/paper-progress';
  * A progress bar which becomes active when signal `pb-start-update` is
  * being sent and is deactivated on `pb-end-update`.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-progress.html
- * @appliesMixin pbMixin
+ * @fires pb-start-update - When received, activates the progress bar
+ * @fires pb-end-update - When received, disables the progress bar
+ 
  */
 export class PbProgress extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             _disabled: {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

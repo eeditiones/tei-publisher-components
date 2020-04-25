@@ -7,14 +7,14 @@ import { translate } from "./pb-i18n.js";
 /**
  * A dropdown for switching the interface language.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-i18n.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for dropdown menu options
+ * @fires pb-i18n-language - Sends selected language
+ * @fires pb-i18n-update - When received, sets the selected language to the one received from the event
  */
 export class PbLang extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The label for a language in the dropdown
              */
@@ -25,7 +25,6 @@ export class PbLang extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

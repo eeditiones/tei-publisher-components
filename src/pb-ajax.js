@@ -12,16 +12,20 @@ import { translate } from "./pb-i18n.js";
  * actions.
  *
  * The parameters sent to the server-side script will be copied
- * from the `pb-view` to which this component subscribes.
+ * from the `pb-view` to which this component subscribes, see pb-update event.
  *
- * @customElement
- * @polymer
- * @appliesMixin pbMixin
- * @demo demo/pb-download.html
+ * @slot - unnamed slot for link text
+ * @slot title - dialog title
+ * 
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-end-update - Fired after the element has finished updating its content 
+ * @fires pb-update - When received, copies request parameters from the event 
+
  */
 export class PbAjax extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * the URL to send a request to
              */
@@ -45,7 +49,6 @@ export class PbAjax extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

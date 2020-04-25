@@ -7,15 +7,13 @@ import { pbMixin } from './pb-mixin';
  * references a `pb-document`.
  * `pb-document` requires an id attribute to allow other components to access it.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-document.html
- * @appliesMixin pbMixin
+ * @fires pb-document - Fires update event
  */
 class PbDocument extends pbMixin(LitElement) {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The path to the document to be loaded. Should be relative to `root`.
              */
@@ -59,7 +57,6 @@ class PbDocument extends pbMixin(LitElement) {
                 attribute: 'source-view'
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

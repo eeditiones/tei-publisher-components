@@ -7,14 +7,15 @@ import '@polymer/paper-button';
 /**
  * Component for uploading resources to TEI Publisher or a generated app.
  *
- * @customElement pb-upload
- * @polymer
- * @demo demo/pb-browse-docs.html
- * @appliesMixin pbMixin
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-load - Fired after the upload has completed
+ * @fires pb-collection - when received, sets the upload collection to the one passed from the event
  */
 export class PbUpload extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * the server-side script to handle the upload
              */
@@ -29,7 +30,6 @@ export class PbUpload extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

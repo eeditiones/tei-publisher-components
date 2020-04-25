@@ -19,15 +19,15 @@ import '@polymer/app-layout';
  * | ----------------|-------------|--------|
  * |--pb-panel-max-height | The max height of the panel content. Set to enable scrolling. | undefined |
  *
- *
- * @customElement
- * @polymer
- * @demo demo/pb-grid.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for content
+ * @slot toolbar - toolbar area
+ * @fires pb-panel - Fired whenever the component switches to a different content panel. Used by `pb-grid` to update its state.
+ * @fires pb-refresh - Fired after a new content panel is shown to allow connected components to refresh.
  */
 export class PbPanel extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * the index of the active view
              */
@@ -50,7 +50,6 @@ export class PbPanel extends pbMixin(LitElement) {
                 reflect: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -147,17 +146,5 @@ export class PbPanel extends pbMixin(LitElement) {
         this.emitTo('pb-refresh', null);
     }
 
-    /**
-     * Fired whenever the component switches to a different content panel. Used by `pb-grid`
-     * to update its state.
-     *
-     * @event pb-panel
-     */
-
-    /**
-     * Fired after a new content panel is shown to allow connected components to refresh.
-     *
-     * @event pb-refresh
-     */
 }
 customElements.define('pb-panel', PbPanel);

@@ -8,15 +8,21 @@ import '@polymer/iron-icons';
 /**
  * A client for the Distributed Text Services (DTS) protocol. This defines an API
  * for working with collections of text.
- *
- * @customElement  dts-client
- * @polymer
- * @demo demo/dts-client.html
- * @appliesMixin pbMixin
+ * 
+ *   
+ * @slot toolbar - toolbar area
+ * @slot pagination - pagination area
+ * 
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-results-received - Fired when results are received from the server
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires dts-endpoint - When received sets the endpoint to the one passed in from the event
+ * @fires pb-load - When received triggers the refresh accorting to the selected page 
  */
 export class DtsClient extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             baseUri: {
                 type: String
             },
@@ -36,7 +42,6 @@ export class DtsClient extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

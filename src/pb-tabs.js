@@ -7,15 +7,13 @@ import { pbMixin } from './pb-mixin.js';
 /**
  * Combines a row of tabs with associated content.
  * 
- *
- * @customElement
- * @polymer
- * @demo demo/pb-tabs.html
- * @appliesMixin pbMixin
+ * @slot tab - tab area
+ * @slot page - page area
  */
 export class PbTabs extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             selected: {
                 type: Number,
                 reflect: true
@@ -24,7 +22,6 @@ export class PbTabs extends pbMixin(LitElement) {
                 type: Number
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

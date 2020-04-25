@@ -18,14 +18,16 @@ import { pbMixin } from './pb-mixin';
  * `--pb-highlight-color` | Background color to highlight an element | #F9E976
  * `--pb-highlight` | Mixin applied to the element's content | `{ display: inline; }`
  *
-* @customElement
-* @polymer
-* @demo demo/pb-highlight.html
-* @appliesMixin pbMixin
+ * @slot - default unnamed slot for highlight content
+ * @fires pb-highlight-off - Fires removal of all highlights that might have existed before
+ * @fires pb-highlight-on - Fires highlight event with a key passed to which other pb-highlight elements with the same key will react
+ * @fires pb-highlight-off - When received, triggers removal of a highlight that might have been on for this element before
+ * @fires pb-highlight-on - When received, switches the highlight on if the same key was received as the current element has
 */
 export class PbHighlight extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The key to which this element is connected.
              */
@@ -53,7 +55,6 @@ export class PbHighlight extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

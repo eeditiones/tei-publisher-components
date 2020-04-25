@@ -13,14 +13,11 @@ import '@polymer/paper-icon-button';
  * The element stamps the instances into light DOM, so a form wrapping around it will see
  * the form controls. One can therefore use a normal form submit.
  *
- * @customElement  pb-repeat
- * @polymer
- * @demo demo/pb-repeat.html
- * @appliesMixin pbMixin
  */
 export class PbRepeat extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The initial number of (empty) instances to be shown
              * (1 by default).
@@ -32,7 +29,6 @@ export class PbRepeat extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

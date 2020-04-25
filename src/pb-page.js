@@ -12,13 +12,16 @@ import { resolveURL } from './utils.js';
  * instance to which all elements will talk (property `endpoint`), and
  * initializes the i18n language module.
  * 
- * @fires pb-page-ready - fired when the endpoint has been determined
+ * @slot - default unnamed slot for content
+ * @fires pb-page-ready - fired when the endpoint and language settings have been determined
  * @fires pb-i18n-update - fired when the user selected a different display language
+ * @fires pb-i18n-language - when received, changes the language to the one passed in the event and proceeds to pb-i18-update
  */
 class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * TEI Publisher internal: set to the root URL of the current app
              */
@@ -79,7 +82,6 @@ class PbPage extends pbMixin(LitElement) {
                 reflect: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -6,13 +6,14 @@ import { PbHighlight } from "./pb-highlight.js";
  * Represents a geo location. Extends `pb-highlight`, but sends an additional `pb-geolocation` event
  * on mouseover.
  *
- * @customElement  pb-geolocation
- * @polymer
- * @demo demo/pb-leaflet-map.html
+ * @slot - default unnamed slot for content
+ * @fires pb-geolocation - Sends geocoordinates
+ * 
  */
 export class PbGeolocation extends PbHighlight {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             longitude: {
                 type: Number
             },
@@ -26,7 +27,6 @@ export class PbGeolocation extends PbHighlight {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     connectedCallback() {

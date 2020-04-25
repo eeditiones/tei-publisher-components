@@ -5,14 +5,13 @@ import { pbMixin } from './pb-mixin';
 /**
  * Open eXide to edit a given source document.
  *
- * @demo demo/pb-edit-xml.html
- * @customElement
- * @polymer
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot for the link text
+ * @slot - unnamed slot for the link text when eXide tab is already opened
  */
 export class PbEditXml extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * expects a context-absolute path to the document to edit e.g. '/db/apps/tei-publisher/mytext.xml'
              */
@@ -35,7 +34,6 @@ export class PbEditXml extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

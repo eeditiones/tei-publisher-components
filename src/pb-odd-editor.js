@@ -28,9 +28,8 @@ import { PbOddElementspecEditor } from "./pb-odd-elementspec-editor";
 /**
  * ODD editor component
  *
- * @customElement
- * @polymer
- * @demo demo/pb-odd-editor.html
+ * @slot - default unnamed slot
+ * @fires pb-login - When received, registers if user is logged in
  */
 export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
@@ -221,7 +220,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             ident: {
                 type: String
             },
@@ -302,7 +302,6 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 reflect: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

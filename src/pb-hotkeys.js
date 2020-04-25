@@ -5,18 +5,16 @@ import hotkeys from 'hotkeys-js';
  * containing a symbolic name for the action as key and a keyboard shortcut as value. Subclasses
  * can then map the symbolic name to a function by calling `registerHotkey`.
  *
- * @polymer
- * @mixinFunction
  */
 export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             hotkeys: {
                 type: Object
             }
         };
-        return Object.assign(props, super.properties);
     };
 
     constructor() {

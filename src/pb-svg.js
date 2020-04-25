@@ -8,19 +8,16 @@ import { pbMixin } from './pb-mixin.js';
  * either be specified via the `url` property or an `pb-show-annotation` event
  * sent to this component.
  *
- * @customElement  pb-svg
- * @polymer
- * @demo demo/pb-svg.html
- * @appliesMixin pbMixin
+ * @fires pb-show-annotation - When received, loads the image from the URL passed from the event
  */
 export class PbSvg extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             url: {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

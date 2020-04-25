@@ -7,14 +7,12 @@ import '@polymer/paper-icon-button';
  * Zoom button to enlarge/shrink the font for the views. This component does not
  * implement any functionality itself, but just emits a `pb-zoom` event.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-zoom.html
- * @appliesMixin pbMixin
+ * @fires pb-zoom - sends an event for e.g. pb-views to react to
  */
 export class PbZoom extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The icon to use
              */
@@ -28,7 +26,6 @@ export class PbZoom extends pbMixin(LitElement) {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

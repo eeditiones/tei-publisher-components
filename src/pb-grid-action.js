@@ -5,14 +5,13 @@ import { pbMixin } from './pb-mixin.js';
 /**
  * an action component to execute an 'add panel' or 'remove panel' action on a pb-grid.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-grid.html
- * @appliesMixin pbMixin
+ * @slot - default unnamed slot for content
+ * 
  */
 export class PbGridAction extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * the type of action. Can be either `add` or `remove`
              *
@@ -31,7 +30,6 @@ export class PbGridAction extends pbMixin(LitElement) {
                 type: Number
             },
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -13,14 +13,19 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-browse-docs.html
+ * @slot toolbar - toolbar area
+ * @slot - unnamed default slot
+ * @slot footer - footer area
+ * 
+ * @fires pb-collection - Sent to inform e.g. pb-upload about current collection
+ * @fires pb-search-resubmit - When received, set facet values as received from the event
+ * @fires pb-login - When received, check if user is allowed to modify the documents
  */
 export class PbBrowseDocs extends PbLoad {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             sortBy: {
                 type: String,
                 attribute: 'sort-by'
@@ -76,7 +81,6 @@ export class PbBrowseDocs extends PbLoad {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

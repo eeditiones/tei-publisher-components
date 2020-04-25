@@ -87,14 +87,12 @@ setInterval(() => whenIdle(() => removeDisconnectedParts()), 1000 * 60);
  * Insert translated text somewhere on an HTML page. If no translation is found,
  * display the contained content.
  *
- * @customElement  pb-i18n
- * @polymer
- * @demo demo/pb-i18n.html
- * @appliesMixin pbMixin
+ * @slot - unnamed default slot
  */
 export class PbI18n extends LitElement {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /**
              * The i18n key to use for looking up the translation.
              */
@@ -112,7 +110,6 @@ export class PbI18n extends LitElement {
                 type: String
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

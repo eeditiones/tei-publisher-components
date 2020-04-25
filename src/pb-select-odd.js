@@ -13,15 +13,14 @@ import "@polymer/neon-animation";
  * It loads the list of ODDs from `components-odd.xql`.
  * Emits a `pb-refresh` event to subscribed views.
  *
- *
- * @customElement pb-select-odd
- * @polymer
- * @appliesMixin PbMixin
- * @demo demo/pb-select-odd.html
+ * @fires pb-refresh - Fires a refresh event to subscribed views after a different ODD has been selected for display.
+ * @fires pb-update - When received, resets the ODD selected to the one passed in the event
+ * 
  */
 export class PbSelectOdd extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** The label to show on top of the dropdown menu */
             label: {
                 type: String
@@ -42,7 +41,6 @@ export class PbSelectOdd extends pbMixin(LitElement) {
                 notify: true
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
@@ -136,10 +134,5 @@ export class PbSelectOdd extends pbMixin(LitElement) {
         this.odd = newOdd;
     }
 
-    /**
-     * Fired after a different ODD has been selected for display.
-     *
-     * @event pb-refresh
-     */
 }
 customElements.define('pb-select-odd', PbSelectOdd);

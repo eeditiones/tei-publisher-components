@@ -14,14 +14,13 @@ import '@polymer/iron-form';
 /**
  * Editor component for the App Generator. Allows to edit all settings for an application.
  *
- * @customElement  pb-edit-app
- * @polymer
- * @demo demo/pb-edit-app.html
- * @appliesMixin pbMixin
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-end-update - Fired after the element has finished updating its content
  */
 export class PbEditApp extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             error: {
                 type: String
             },
@@ -32,7 +31,6 @@ export class PbEditApp extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

@@ -6,15 +6,14 @@ import { resolveURL } from './utils.js';
 /**
  * View zoomable images using a IIIF server.
  *
- * @customElement pb-facsimile
- * @polymer
- * @demo demo/pb-facsimile.html Simple demo
- * @demo demo/pb-facsimile-2.html Align text page with facsimile
- * @appliesMixin pbMixin
+ * @fires pb-start-update - When received, resets the facsimile viewer
+ * @fires pb-update - Checks the contents received for pb-facs-links
+ * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             // Image source
             src: {
                 type: String
@@ -97,7 +96,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 type: Array
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

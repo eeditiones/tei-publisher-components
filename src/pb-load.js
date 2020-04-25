@@ -10,15 +10,17 @@ import '@polymer/paper-dialog-scrollable';
  * This is used for e.g. the document list on the start page or the table
  * of contents.
  * 
- * @customElement
- * @polymer
- * @demo demo/pb-load.html
- * @appliesMixin pbMixin
+ * @slot - default unnamed slot for content
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-results-received - Fired when the component received content from the server
+ * @fires pb-toggle - When received, changes the state of the feature
  */
 export class PbLoad extends pbMixin(LitElement) {
 
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** The URL for the AJAX request. If a relative URL is passed, it will be resolved
              * either against the app root (if known) or the location of the webcomponent.
              */
@@ -73,7 +75,6 @@ export class PbLoad extends pbMixin(LitElement) {
                 type: Object
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {

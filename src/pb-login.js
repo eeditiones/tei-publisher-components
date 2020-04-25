@@ -12,14 +12,12 @@ import '@polymer/iron-icons';
  * Handles login/logout. Shows a link which opens a login dialog if clicked.
  * If a user is logged in, clicking the link will log him out instead.
  *
- * @customElement
- * @polymer
- * @demo demo/pb-login.html
- * @appliesMixin pbMixin
+ * @fires pb-login - Sends results of checking user credentials
  */
 export class PbLogin extends pbMixin(LitElement) {
     static get properties() {
-        const props = {
+        return {
+            ...super.properties,
             /** True if user is currently logged in */
             loggedIn: {
                 type: Boolean,
@@ -82,7 +80,6 @@ export class PbLogin extends pbMixin(LitElement) {
                 type: Boolean
             }
         };
-        return Object.assign(props, super.properties);
     }
 
     constructor() {
