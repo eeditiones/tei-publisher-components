@@ -392,7 +392,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     getParameter(name, fallback) {
-        const params = TeiPublisher.url.searchParams.getAll(name);
+        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
         if (params && params.length > 0) {
             return params[0];
         }

@@ -356,6 +356,39 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        if (this.infiniteScroll) {
+            this._topObserver = this.shadowRoot.getElementById('top-observer');
+            this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
+            this._scrollObserver = new IntersectionObserver((entries, observer) => {
+                if (!this._content) {
+                    return;
+                }
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.id === 'bottom-observer') {
+                            const lastChild = this._content.lastElementChild;
+                            if (lastChild) {
+                                const next = lastChild.getAttribute('data-next');
+                                if (next && !this._content.querySelector(`[data-root="${next}"]`)) {
+                                    console.log('<pb-view> Loading next page: %s', next);
+                                    this._checkChunks('forward');
+                                    this._load(next, 'forward');
+                                }
+                            }
+                        } else {
+                            const firstChild = this._content.firstElementChild;
+                            if (firstChild) {
+                                const previous = firstChild.getAttribute('data-previous');
+                                if (previous && !this._content.querySelector(`[data-root="${previous}"]`)) {
+                                    this._checkChunks('backward');
+                                    this._load(previous, 'backward');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
         if (!this.onUpdate) {
             PbView.waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
@@ -364,29 +397,6 @@ export class PbView extends pbMixin(LitElement) {
                 this.wait(() => this._refresh());
             });
         }
-        this._scrollObserver = new IntersectionObserver(entries => {
-            if (!this._content) {
-                return;
-            }
-            const firstEntry = entries[0];
-            if (firstEntry.isIntersecting) {
-                if (firstEntry.target.id === 'bottom-observer') {
-                    const lastChild = this._content.lastElementChild;
-                    if (lastChild) {
-                        this.next = lastChild.getAttribute('data-next');
-                        this.emitTo('pb-navigate', { direction: 'forward' });
-                    }
-                } else {
-                    const firstChild = this._content.firstElementChild;
-                    if (firstChild) {
-                        this.previous = firstChild.getAttribute('data-previous');
-                        this.emitTo('pb-navigate', { direction: 'backward' });
-                    }
-                }
-            }
-        });
-        this._scrollObserver.observe(this.shadowRoot.getElementById('bottom-observer'));
-        this._scrollObserver.observe(this.shadowRoot.getElementById('top-observer'));
     }
 
     /**
@@ -469,6 +479,10 @@ export class PbView extends pbMixin(LitElement) {
             return;
         }
 
+        if (this._loading) {
+            return;
+        }
+        this._loading = true;
         const params = this.getParameters(pos);
         if (direction) {
             params._dir = direction;
@@ -485,6 +499,16 @@ export class PbView extends pbMixin(LitElement) {
         if (!this.infiniteScroll) {
             this._clear();
         }
+
+        if (this._scrollObserver) {
+            if (this._bottomObserver) {
+                this._scrollObserver.unobserve(this._bottomObserver);
+            }
+            if (this._topObserver) {
+                this._scrollObserver.unobserve(this._topObserver);
+            }
+        }
+
         const loadContent = this.shadowRoot.getElementById('loadContent');
         loadContent.params = params;
         loadContent.generateRequest();
@@ -573,8 +597,10 @@ export class PbView extends pbMixin(LitElement) {
 
         if (this.columnSeparator) {
             this._replaceColumns(elem);
+            this._loading = false;
         } else if (this.infiniteScroll) {
             elem.className = 'scroll-fragment';
+            elem.setAttribute('data-root', resp.root);
             if (resp.next) {
                 elem.setAttribute('data-next', resp.next);
             }
@@ -586,20 +612,29 @@ export class PbView extends pbMixin(LitElement) {
                 case 'backward':
                     refNode = this._content.firstElementChild;
                     this._chunks.unshift(elem);
-                    this._content.insertBefore(elem, refNode);
                     this.updateComplete.then(() => {
-                        refNode.scrollIntoView();
+                        refNode.scrollIntoView(true);
+                        this._loading = false;
                         this._checkVisibility();
+                        this._scrollObserver.observe(this._bottomObserver);
+                        this._scrollObserver.observe(this._topObserver);
                     });
+                    this._content.insertBefore(elem, refNode);
                     break;
                 default:
+                    this.updateComplete.then(() => {
+                        this._loading = false;
+                        this._checkVisibility();
+                        this._scrollObserver.observe(this._bottomObserver);
+                        this._scrollObserver.observe(this._topObserver);
+                    });
                     this._chunks.push(elem);
                     this._content.appendChild(elem);
-                    this.updateComplete.then(() => this._checkVisibility());
                     break;
             }
         } else {
             this._content = elem;
+            this._loading = false;
         }
 
         if (this.appendFootnotes) {
@@ -616,21 +651,11 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _checkVisibility() {
-        if (this._chunks[this._chunks.length - 1].hasAttribute('data-next')) {
-            const div = this.shadowRoot.getElementById('bottom-observer');
-            const position = div.getBoundingClientRect();
-            if (position.top >= 0 && position.bottom <= window.innerHeight) {
-                this.emitTo('pb-navigate', { direction: 'forward' });
-                return;
-            }
-        }
-        if (this._chunks[0].hasAttribute('data-previous')) {
-            const div = this.shadowRoot.getElementById('top-observer');
-            const position = div.getBoundingClientRect();
-            if (position.top >= 0 && position.bottom <= window.innerHeight) {
-                this.emitTo('pb-navigate', { direction: 'backward' });
-            }
-        }
+        const bottomActive = this._chunks[this._chunks.length - 1].hasAttribute('data-next');
+        this._bottomObserver.style.display = bottomActive ? '' : 'none';
+
+        const topActive = this._chunks[0].hasAttribute('data-previous');
+        this._topObserver.style.display = topActive ? '' : 'none';
     }
 
     _replaceColumns(elem) {
@@ -818,7 +843,6 @@ export class PbView extends pbMixin(LitElement) {
 
         if (direction === 'backward') {
             if (this.previous) {
-                this._checkChunks(direction);
                 if (!this.map) {
                     this.setParameter('root', this.previous);
                     this.setParameter('id');
@@ -827,7 +851,6 @@ export class PbView extends pbMixin(LitElement) {
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
-            this._checkChunks(direction);
             if (!this.map) {
                 this.setParameter('root', this.next);
                 this.setParameter('id');
@@ -1032,7 +1055,10 @@ export class PbView extends pbMixin(LitElement) {
             .observer {
                 display: block;
                 width: 100%;
-                height: 4px;
+                font-family: var(--pb-view-loader-font, --pb-base-font);
+                color: var(--pb-view-loader-color, black);
+                padding: var(--pb-view-loader-background-padding, 10px 20px);
+                background-image: var(--pb-view-loader-background-image, linear-gradient(to bottom, #f6a62440, #f6a524));
             }
 
             .scroll-fragment {
@@ -1050,7 +1076,7 @@ export class PbView extends pbMixin(LitElement) {
         return html`
             <div id="view">
                 ${this._style}
-                ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
+                ${this.infiniteScroll ? html`<div id="top-observer" class="observer">Loading ...</div>` : null}
                 <div class="columns">
                     <div id="column1">${this._column1}</div>
                     <div id="column2">${this._column2}</div>
@@ -1058,7 +1084,7 @@ export class PbView extends pbMixin(LitElement) {
                 <div id="content">${this._content}</div>
                 ${
             this.infiniteScroll ?
-                html`<div id="bottom-observer" class="observer"></div>` :
+                html`<div id="bottom-observer" class="observer">Loading ...</div>` :
                 null
             }
                 <div id="footnotes">${this._footnotes}</div>
