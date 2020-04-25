@@ -23,7 +23,7 @@
 </head>
 
 <body>
-   <h1>Using pb-select-feature with pb-view</h1>
+    <h1>Using pb-select-feature without server reload</h1>
     <pb-demo-snippet>
         <template>
             <style>
@@ -51,18 +51,22 @@
 
                 <div class="toolbar">
                     <pb-select-feature id="select-view1" name="view1" label="View" items='[
-                    {"name": "Diplomatic View", "properties": {"mode": "diplomatic", "view": "page"}}, 
-                    {"name": "Normalized View", "properties": {"mode": "norm", "view": "single"}}
-                    ]'></pb-select-feature>
-                    <pb-navigation direction="backward" keyboard="left">
+                    {"name": "Diplomatic View", "selectors": [{"selector": ".choice,.choice-alternate,br", "state": false},{"selector": ".tei-foreign,pb-highlight,pb-popover", "command": "disable"}]},
+                    {"name": "Normalized View", "selectors": [{"selector": ".choice,.choice-alternate,br", "state": true},{"selector": ".tei-foreign,pb-highlight,pb-popover", "command": "disable"}]},
+                    {"name": "Plain Reading View", "selectors": [{"selector": ".choice,.choice-alternate,br", "state": true}, {"selector": ".tei-foreign,pb-highlight,pb-popover", "command": "disable", "state": true}]}
+                    ]' emit="ex2" subscribe="ex2"></pb-select-feature>
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
                         <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
                     </pb-navigation>
-                    <pb-navigation direction="forward" keyboard="right">
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right" emit="ex2" subscribe="ex2">
                         <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
                     </pb-navigation>
                 </div>
                 <main>
-                    <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']"></pb-view>
+                    <pb-view id="view1" src="document1" view="single" xpath="//text[@type='source']"
+                        emit="ex2" subscribe="ex2"></pb-view>
                 </main>
             </pb-page>
         </template>

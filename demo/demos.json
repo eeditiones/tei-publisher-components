@@ -86,7 +86,9 @@
         "demo/pb-search.html": "Demo"
     },
     "pb-select-feature": {
-        "demo/pb-select-feature.html": "Demo"
+        "demo/pb-select-feature.html": "Server-side",
+        "demo/pb-select-feature2.html": "Client-side",
+        "demo/pb-select-feature3.html": "Server-side with pb-load"
     },
     "pb-select-odd": {
         "demo/pb-select-odd.html": "Demo"

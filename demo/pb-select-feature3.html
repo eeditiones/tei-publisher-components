@@ -23,7 +23,7 @@
 </head>
 
 <body>
-   <h1>Using pb-select-feature with pb-view</h1>
+    <h1>Using pb-select-feature with pb-load</h1>
     <pb-demo-snippet>
         <template>
             <style>
@@ -50,19 +50,14 @@
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
-                    <pb-select-feature id="select-view1" name="view1" label="View" items='[
-                    {"name": "Diplomatic View", "properties": {"mode": "diplomatic", "view": "page"}}, 
-                    {"name": "Normalized View", "properties": {"mode": "norm", "view": "single"}}
-                    ]'></pb-select-feature>
-                    <pb-navigation direction="backward" keyboard="left">
-                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
-                    </pb-navigation>
-                    <pb-navigation direction="forward" keyboard="right">
-                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
-                    </pb-navigation>
+                    <pb-select-feature id="select-view2" name="view2" label="View" items='[
+                    {"name": "Diplomatic View", "properties": {"user.mode": "diplomatic"}}, 
+                    {"name": "Normalized View", "properties": {"user.mode": "norm"}}
+                    ]' subscribe="loader" emit="loader"></pb-select-feature>
                 </div>
                 <main>
-                    <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']"></pb-view>
+                    <pb-load id="load" url="modules/lib/components.xql?debug=yes&xpath=//text[@type='source']&view=single" 
+                        src="document1" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
             </pb-page>
         </template>
