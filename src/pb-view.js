@@ -36,7 +36,8 @@ import '@polymer/paper-dialog-scrollable';
  * ```
  *
  * @cssprop [--pb-view-column-gap=10px] - The gap between columns in two-column mode
- * @cssprop --pb-footnote-size - Font size for footnote marker
+ * @cssprop --pb-footnote-font-size - Font size for the footnote marker
+ * @cssprop --pb-footnote-font-family - Font family for the footnote marker
  * @cssprop --pb-footnote-color - Text color of footnote marker
  * @cssprop --pb-footnote-padding - Padding around a footnote marker
  * @fires pb-start-update - Fired before the element updates its content
@@ -183,6 +184,14 @@ export class PbView extends pbMixin(LitElement) {
             */
             direction: {
                 type: String
+            },
+            /**
+             * If set, points to an external stylesheet which should be applied to
+             * the text *after* the ODD-generated styles.
+             */
+            loadCss: {
+                type: String,
+                attribute: 'load-css'
             },
             /**
              * If set, relative links (img, a) will be made absolute.
@@ -703,12 +712,23 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _updateStyles() {
-        const link = document.createElement('link');
+        const links = [];
+
+        let link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
+        links.push(link);
 
-        this._style = link;
+        if (this.loadCss) {
+            link = document.createElement('link');
+            link.setAttribute('rel', 'stylesheet');
+            link.setAttribute('type', 'text/css');
+            link.setAttribute('href', `${this.getEndpoint()}/${this.loadCss}`);
+            links.push(link);
+        }
+
+        this._style = links;
     }
 
     _fixLinks(content) {
@@ -1034,10 +1054,11 @@ export class PbView extends pbMixin(LitElement) {
                 }
             }
 
-            a[rel=footnote], pb-popover.note {
-                font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
-                vertical-align: top;
-                color: var(--pb-footnote-color, var(--pb-text-color-primary, #333333));
+            a[rel=footnote] {
+                font-size: var(--pb-footnote-font-size, var(--pb-content-font-size, 75%));
+                font-family: var(--pb-footnote-font-family, --pb-content-font-family);
+                vertical-align: super;
+                color: var(--pb-footnote-color, var(--pb-color-primary, #333333));
                 text-decoration: none;
                 padding: var(--pb-footnote-padding, 0 0 0 .25em);
             }
@@ -1048,8 +1069,7 @@ export class PbView extends pbMixin(LitElement) {
 
             .footnote .fn-number {
                 float: left;
-
-                font-size: var(--pb-footnote-size, var(--pb-font-size-smaller, 75%));
+                font-size: var(--pb-footnote-font-size, var(--pb-content-font-size, 75%));
             }
 
             .observer {
@@ -1074,7 +1094,7 @@ export class PbView extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <div id="view">
+            <div id="view" part="content">
                 ${this._style}
                 ${this.infiniteScroll ? html`<div id="top-observer" class="observer">Loading ...</div>` : null}
                 <div class="columns">
