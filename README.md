@@ -1,3 +1,6 @@
+![npm (scoped)](https://img.shields.io/npm/v/@teipublisher/pb-components)
+![npm](https://img.shields.io/npm/dw/@teipublisher/pb-components)
+
 # Web Components for TEI Publisher
 
 **WORK IN PROGRESS**
@@ -24,13 +27,16 @@ Run `npm run build:production` to generate a set of bundle files in `dist`, cont
 | File                           | Description                                                                     |
 | ------------------------------ | ------------------------------------------------------------------------------- |
 | `dist/pb-components-bundle.js` | (required) the base components, including text views and all core functionality |
-| `dist/pb-facsimile.js`         | (optional) support for viewing facsimiles via IIIF                              |
 | `dist/pb-leaflet-map.js`       | (optional) support for displaying maps                                          |
+| `dist/pb-odd-editor.js`        | implements the visual ODD editor                                                |
+| `dist/pb-component-docs.js`    | components to view the API documentation of this package                        |
 
 Bundles build on each other, so you always need to at least include `pb-components-bundle.js` in your HTML page.
 
 ## Development
 
-For development, run `npm start` as described above. It will watch for file changes.
+For development, run `npm start` as described above. It will open a browser window and watch for file changes.
 
-Every component should have a demo to show its functionality.s
+To regenerate the API documentation, run `npm run docs`.
+
+Every component should have a demo to show its functionality.
