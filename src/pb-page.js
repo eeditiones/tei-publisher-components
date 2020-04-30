@@ -49,8 +49,9 @@ class PbPage extends pbMixin(LitElement) {
             },
             /**
              * Optional URL pointing to a directory from which additional i18n 
-             * language files will be loaded. Naming of the files should follow 
-             * the pattern `app-{{lng}}.json`,
+             * language files will be loaded. The actual translation files should
+             * be in a subdirectory called `app` beneath. Naming of the files should follow 
+             * the pattern `{{lng}}.json`,
              * where `{{lng}}` is the code for the language, e.g. 'de' or 'en'.
              */
             locales: {

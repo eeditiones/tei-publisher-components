@@ -333,6 +333,9 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         this.subscribeTo('pb-navigate', ev => {
+            if (ev.detail.source && ev.detail.source === this) {
+                return;
+            }
             this.navigate(ev.detail.direction);
         });
         this.subscribeTo('pb-refresh', this._refresh.bind(this));
@@ -368,7 +371,9 @@ export class PbView extends pbMixin(LitElement) {
         if (this.infiniteScroll) {
             this._topObserver = this.shadowRoot.getElementById('top-observer');
             this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
-            this._scrollObserver = new IntersectionObserver((entries, observer) => {
+            this._bottomObserver.style.display = 'none';
+            this._topObserver.style.display = 'none';
+            this._scrollObserver = new IntersectionObserver((entries) => {
                 if (!this._content) {
                     return;
                 }
@@ -902,6 +907,10 @@ export class PbView extends pbMixin(LitElement) {
                     break;
             }
         }
+        this.emitTo('pb-navigate', {
+            direction,
+            source: this
+        });
     }
 
     /**
@@ -1013,7 +1022,7 @@ export class PbView extends pbMixin(LitElement) {
             :host {
                 display: block;
                 background: transparent;
-                overflow: -moz-scrollbars-none;
+                scrollbar-width: none; /* Firefox 64 */
                 -ms-overflow-style: none;
             }
 
@@ -1075,10 +1084,26 @@ export class PbView extends pbMixin(LitElement) {
             .observer {
                 display: block;
                 width: 100%;
+                height: var(--pb-view-loader-height, 16px);
                 font-family: var(--pb-view-loader-font, --pb-base-font);
                 color: var(--pb-view-loader-color, black);
-                padding: var(--pb-view-loader-background-padding, 10px 20px);
-                background-image: var(--pb-view-loader-background-image, linear-gradient(to bottom, #f6a62440, #f6a524));
+                background: var(--pb-view-loader-background, #909090);
+                background-image: var(--pb-view-loader-background-image, repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px));
+                animation-name: loader;
+                animation-timing-function: linear;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+            }
+
+            @keyframes loader {
+                0% {
+                    background-position: 3rem 0;
+                }
+                
+                100% {
+                    background-position: 0 0;
+                }
             }
 
             .scroll-fragment {
@@ -1096,7 +1121,7 @@ export class PbView extends pbMixin(LitElement) {
         return html`
             <div id="view" part="content">
                 ${this._style}
-                ${this.infiniteScroll ? html`<div id="top-observer" class="observer">Loading ...</div>` : null}
+                ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
                 <div class="columns">
                     <div id="column1">${this._column1}</div>
                     <div id="column2">${this._column2}</div>
@@ -1104,7 +1129,7 @@ export class PbView extends pbMixin(LitElement) {
                 <div id="content">${this._content}</div>
                 ${
             this.infiniteScroll ?
-                html`<div id="bottom-observer" class="observer">Loading ...</div>` :
+                html`<div id="bottom-observer" class="observer"></div>` :
                 null
             }
                 <div id="footnotes">${this._footnotes}</div>
