@@ -109,5 +109,8 @@
     },
     "dts-client": {
         "demo/dts-client.html": "Demo"
+    },
+    "pb-edit-app": {
+        "demo/pb-edit-app.html": "Generate Application"
     }
 }

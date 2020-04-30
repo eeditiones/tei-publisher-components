@@ -49,17 +49,18 @@ export class PbEditApp extends pbMixin(LitElement) {
         const odd = this.shadowRoot.getElementById('odd');
         const template = this.shadowRoot.getElementById('template');
         const getTemplates = this.shadowRoot.getElementById('getTemplates');
-        PbEditApp.waitOnce('pb-i18n-update', (options) => {
-            console.log('language set to %s', options.language);
+        this.subscribeTo('pb-i18n-update', (options) => {
             // clear paper-listbox selection after language updates
-            let old = defaultView.selected;
-            defaultView.selected = undefined;
-            defaultView.selected = old;
+            const defaultViewListbox = this.shadowRoot.querySelector('#defaultView paper-listbox');
+            let old = defaultViewListbox.selected;
+            defaultViewListbox.selected = undefined;
+            defaultViewListbox.selected = old;
 
-            old = index.selected;
-            index.selected = undefined;
-            index.selected = old;
-        });
+            const indexListbox = this.shadowRoot.querySelector('#index paper-listbox');
+            old = indexListbox.selected;
+            indexListbox.selected = undefined;
+            indexListbox.selected = old;
+        }, []);
         PbEditApp.waitOnce('pb-page-ready', (detail) => {
             getTemplates.url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
             getTemplates.generateRequest();
