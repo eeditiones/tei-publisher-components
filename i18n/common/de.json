@@ -119,6 +119,8 @@
       "save": "Speichern",
       "saving": "Speichern ...",
       "saved": "Gespeichert",
+      "denied": "Speichern nicht möglich",
+      "denied-message": "Sie haben keine Berechtigung zum Speichern von {{odd}}",
       "reload": "Neu laden",
       "reload-confirm": "Nicht gespeicherte Änderungen gehen verloren. Fortsetzen?",
       "add-element": "Element hinzufügen",

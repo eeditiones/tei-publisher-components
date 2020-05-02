@@ -119,6 +119,8 @@
       "save": "Save",
       "saving": "Saving ...",
       "saved": "Saved",
+      "denied": "Permission Denied",
+      "denied-message": "You do not have permission to save {{odd}}",
       "reload": "Reload",
       "reload-confirm": "Any unsaved changes will be lost. Continue?",
       "add-element": "Add Element",

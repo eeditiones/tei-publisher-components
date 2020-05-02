@@ -520,6 +520,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     handleOdd(req) {
         const data = req.response;
+        this.loggedIn = data.canWrite;
         this.source = data.source;
         this.title = data.title;
         this.titleShort = data.titleShort;
@@ -958,6 +959,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     handleSaveComplete(req) {
         const data = req.response;
+        if (data.status === 'denied') {
+            this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.denied"), i18n("odd.editor.denied-message", { odd: this.odd }));
+            document.dispatchEvent(new CustomEvent('pb-end-update'));
+            return;
+        }
         const report = data.report.map(PbOddEditor._renderReport);
         const msg = `<div class="list-group">${report.join('')}</div>`;
         this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
