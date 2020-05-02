@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Bruk denne appen til å prøveforskjellige ODD-filer med forskjellig konfigurasjoner. Last opp dine egne filer og lag egne skreddersydde ODD-filer.",
-    "login": "for å laste opp filer eller se admistrativt grensesnitt (standard bruker 'tei', passord: 'simple').",
+    "login": "for å laste opp filer eller se admistrativt grensesnitt (standard bruker 'tei-demo', passord: 'demo').",
     "sort": "Sorter etter",
     "filter": "Filtrer etter",
     "items": "Fant {{count}} treff",

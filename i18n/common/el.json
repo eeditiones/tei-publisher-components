@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
-    "login": "to upload files or see administrative functions (default user: 'tei', password: 'simple').",
+    "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "Ταξινόμηση κατά",
     "filter": "Φιλτράρισμα κατά",
     "items": "Found {{count}} item",

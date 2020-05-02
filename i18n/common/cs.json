@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Pomocí této aplikace můžete experimentovat a vyzkoušet různé ODD s instrukcemi pro zpracování modelu. Nahrajte vlastní soubory a vytvořte vlastní ODD.",
-    "login": ", abyste mohli nahrát soubory a spravovat aplikaci (výchozí uživatel: 'tei', heslo: 'simple').",
+    "login": ", abyste mohli nahrát soubory a spravovat aplikaci (výchozí uživatel: 'tei-demo', heslo: 'demo').",
     "sort": "Řadit podle",
     "filter": "Filtrovat podle",
     "items": "Nalezeno položek: {{count}}",

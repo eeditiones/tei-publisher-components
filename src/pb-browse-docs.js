@@ -120,6 +120,7 @@ export class PbBrowseDocs extends PbLoad {
         this.collection = this.getParameter('collection');
 
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
+        this.subscribeTo('pb-login', this._facets.bind(this), []);
         document.addEventListener('pb-i18n-update', () => {
             // clear paper-listbox selection after language updates
             const lb = this.shadowRoot.getElementById('sort-list');

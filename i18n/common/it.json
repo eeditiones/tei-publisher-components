@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Usa questa applicazione per sperimentare e provare vari ODD contenenti istruzioni dei TEI Processing Model. Carica i tuoi file e crea un ODD personalizzato.",
-    "login": "per caricare documenti o vedere le funzioni amministrative (utente predefinito: 'tei', password: 'simple').",
+    "login": "per caricare documenti o vedere le funzioni amministrative (utente predefinito: 'tei-demo', password: 'demo').",
     "sort": "Ordina per",
     "filter": "Filtra per",
     "items": "Trovato {{count}} risultato",

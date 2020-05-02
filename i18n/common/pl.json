@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Eksperymentuj i wypróbuj rezultaty zastosowania rozmaitych plików ODD dołączonych do naszej aplikacji. Zaimportuj własne pliki źródłowe i utwórz własny plik ODD dostosowany do Twoich potrzeb.",
-    "login": "aby zaimportować pliki oraz uzyskać dostęp do funkcji administracyjnych (domyślny użytkownik: 'tei', hasło: 'simple').",
+    "login": "aby zaimportować pliki oraz uzyskać dostęp do funkcji administracyjnych (domyślny użytkownik: 'tei-demo', hasło: 'demo').",
     "sort": "Sortuj",
     "filter": "Filtruj według",
     "items": "Znaleziono {{count}} rezultat",

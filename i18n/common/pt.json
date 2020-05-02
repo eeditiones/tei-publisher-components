@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Use este aplicativo para experimentar vários ODDs contendo as instruções dos modelos de processamento. Envie seus próprios arquivos e crie um ODD personalizado.",
-    "login": "para enviar os arquivos ou ver funções administrativas (usuário padrão: 'tei', senha: 'simple').",
+    "login": "para enviar os arquivos ou ver funções administrativas (usuário padrão: 'tei-demo', senha: 'demo').",
     "sort": "Ordenar por",
     "filter": "Filtrar por",
     "items": "{{count}} ítem encontrado",

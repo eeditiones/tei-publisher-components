@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Gebruik deze applicatie om verschillende ODD's uit te proberen die telkens hun eigen verwerkingsinstructies bevatten. Laad je eigen bestanden in, en maak nieuwe ODD's aan.",
-    "login": "om bestanden te uploaden, of administratieve functies weer te geven (standaard gebruiker: 'tei', wachtwoord: 'simple').",
+    "login": "om bestanden te uploaden, of administratieve functies weer te geven (standaard gebruiker: 'tei-demo', wachtwoord: 'demo').",
     "sort": "Sorteer op",
     "filter": "Filteren op",
     "items": "{{count}} item gevonden",

@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Utilisez cette application web pour tester et expérimenter les spécifications de modèles de traitement TEI contenues dans le fichier ODD. Téléchargez vos propres fichiers et créez une personnalisation ODD contenant vos choix.",
-    "login": "Pour télécharger des fichiers ou accéder aux fonctions d'administration (utilisateur par défaut : 'tei' ; mot de passe : 'simple').",
+    "login": "Pour télécharger des fichiers ou accéder aux fonctions d'administration (utilisateur par défaut : 'tei-demo' ; mot de passe : 'demo').",
     "sort": "Trier par",
     "filter": "Filtrer selon",
     "items": "{{count}} objet trouvé",

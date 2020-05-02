@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Diese Anwendung dient vorrangig zum Experimentieren mit verschiedenen Dokumenten und deren Transformationen über das TEI Processing Model. Es können eigene Dateien hochgeladen und neue ODDs erstellt werden.",
-    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei', Passwort: 'simple').",
+    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei-demo', Passwort: 'demo').",
     "sort": "Sortiere nach",
     "filter": "Filtere nach",
     "items": "{{count}} Eintrag gefunden",
