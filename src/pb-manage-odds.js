@@ -48,6 +48,11 @@ export class PbManageOdds extends pbMixin(LitElement) {
         this.odds = [];
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+        this.subscribeTo('pb-login', this._refresh.bind(this), []);
+    }
+
     firstUpdated() {
         super.firstUpdated();
 
@@ -137,13 +142,18 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     <a href="odd-editor.html?odd=${odd.name}.odd" target="_blank">${odd.label}</a>
                     <!-- TODO this toolbar should only appear once per ODD files papercard -->
                     <app-toolbar>
-                        <pb-restricted login="login">
-                            <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd">
-                                <h2 slot="title">${translate('menu.admin.recompile')}</h2>
-                                <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
-                            </pb-ajax>
-                            <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>
-                        </pb-restricted>
+                        ${
+                odd.canWrite ?
+                    html`
+                                    <pb-restricted login="login">
+                                        <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd">
+                                            <h2 slot="title">${translate('menu.admin.recompile')}</h2>
+                                            <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
+                                        </pb-ajax>
+                                        <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>
+                                    </pb-restricted>
+                                ` : null
+                }
                         <pb-edit-xml path="${odd.path}">
                             <paper-icon-button title="Edit ODD" icon="code"></paper-icon-button>
                         </pb-edit-xml>
