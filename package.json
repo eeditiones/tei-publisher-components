@@ -1,6 +1,6 @@
 {
     "name": "@teipublisher/pb-components",
-    "version": "0.9.24",
+    "version": "0.9.25",
     "description": "Collection of webcomponents underlying TEI Publisher (Work in progress)",
     "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
     "main": "index.html",
