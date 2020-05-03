@@ -50,6 +50,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
         this.subscribeTo('pb-login', this._refresh.bind(this), []);
     }
 
@@ -58,10 +59,6 @@ export class PbManageOdds extends pbMixin(LitElement) {
 
         this._loader = this.shadowRoot.getElementById('load');
         this._form = this.shadowRoot.getElementById('ironform');
-        this._form.addEventListener('change', () => {
-            // Validate the entire form to see if we should enable the `Submit` button.
-            this._valid = this._form.validate();
-        });
 
         PbManageOdds.waitOnce('pb-page-ready', (options) => {
             this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
@@ -134,7 +131,17 @@ export class PbManageOdds extends pbMixin(LitElement) {
         }
     }
 
+    _validate() {
+        // Validate the entire form to see if we should enable the `Submit` button.
+        const valid = this.shadowRoot.getElementById('ironform').validate();
+        this.shadowRoot.getElementById('createBtn').disabled = !valid;
+        this.shadowRoot.getElementById('createByEx').disabled = !valid;
+    }
+
     render() {
+        if (!this.odds) {
+            return null;
+        }
         return html`
             ${this.odds.map((odd) =>
             html`
@@ -162,14 +169,15 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 <div class="odd-description">${odd.description}</div>
             `)}
             <pb-restricted login="login">
-                <iron-form id="ironform">
+                <iron-form id="ironform" @change="${this._validate}">
                     <form>
-                        <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"></paper-input>
-                        <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required></paper-input>
-                        <paper-button .disabled="${!this._valid}" id="createBtn" @click="${this._createODD}">
+                        <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"
+                            error-message="Required. Use letters, numbers, - and _"></paper-input>
+                        <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required minlength="1"></paper-input>
+                        <paper-button id="createBtn" @click="${this._createODD}" disabled>
                             <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
                         </paper-button>
-                        <paper-button .disabled="${!this._valid}" id="createByEx" @click="${this._createByExample}">
+                        <paper-button id="createByEx" @click="${this._createByExample}" disabled>
                             <iron-icon icon="build"></iron-icon>
                             ${translate('odd.manage.create-from-example')}
                         </paper-button>
