@@ -42,3 +42,4 @@ import './pb-facsimile.js';
 import './dts-select-endpoint.js';
 import './dts-client.js';
 import './pb-codepen.js';
+import './pb-markdown.js';

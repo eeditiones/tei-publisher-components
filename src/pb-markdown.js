@@ -48,8 +48,8 @@ export class PbMarkdown extends pbMixin(LitElement) {
         return {
             /**
              * The markdown content to be rendered. If undefined,
-             * content will be taken from slotted content or loaded from the
-             * specified URL.
+             * markdown will be taken from the content of the element 
+             * or loaded from the specified URL.
              */
             content: {
                 type: String
@@ -64,12 +64,13 @@ export class PbMarkdown extends pbMixin(LitElement) {
         };
     }
 
-    firstUpdated() {
-        super.firstUpdated();
-
+    connectedCallback() {
+        super.connectedCallback();
+        this.style.display = 'block';
         if (this.url) {
             PbMarkdown.waitOnce('pb-page-ready', () => {
-                const url = new URL(this.url, `${this.getEndpoint()}/`);
+                const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
+                const url = new URL(this.url, base);
                 fetch(url, { credentials: 'same-origin' })
                     .then((response) => response.text())
                     .catch(() => {
@@ -82,33 +83,21 @@ export class PbMarkdown extends pbMixin(LitElement) {
             });
         }
         if (!this.content) {
-            const slot = this.shadowRoot.querySelector('slot');
             const content = document.createElement('div');
-            slot.assignedNodes().forEach((node) => {
+            for (let i = 0; i < this.childNodes.length; i++) {
+                const node = this.childNodes[i];
                 content.appendChild(document.importNode(node.content || node, true));
-            });
+            }
             this.content = removeIndent(content.innerHTML);
         }
     }
 
-    render() {
-        if (!this.content) {
-            return html`<slot class="hidden"></slot>`;
-        }
-        return html`
-            ${unsafeHTML(window.marked(this.content))}<slot class="hidden"></slot>
-        `;
+    createRenderRoot() {
+        return this;
     }
 
-    static get styles() {
-        return css`
-            :host {
-                display: block;
-            }
-            .hidden {
-                display: none;
-            }
-        `;
+    render() {
+        return html`<div>${unsafeHTML(window.marked(this.content))}</div>`;
     }
 }
 customElements.define('pb-markdown', PbMarkdown);
