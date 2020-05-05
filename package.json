@@ -1,6 +1,6 @@
 {
     "name": "@teipublisher/pb-components",
-    "version": "0.9.27",
+    "version": "0.9.28",
     "description": "Collection of webcomponents underlying TEI Publisher (Work in progress)",
     "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
     "main": "index.html",
@@ -68,7 +68,8 @@
         "openseadragon": "^2.4.2",
         "prismjs": "^1.19.0",
         "tippy.js": "^6.1.0",
-        "web-animations-js": "^2.3.2"
+        "web-animations-js": "^2.3.2",
+        "marked": "^0.8.2"
     },
     "devDependencies": {
         "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
@@ -84,7 +85,6 @@
         "eslint": "^6.8.0",
         "karma": "^4.4.1",
         "lint-staged": "^10.0.8",
-        "marked": "^0.8.2",
         "rimraf": "^3.0.2",
         "rollup": "^1.21.0",
         "rollup-plugin-analyzer": "^3.2.2",
