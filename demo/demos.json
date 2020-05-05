@@ -112,5 +112,8 @@
     },
     "pb-edit-app": {
         "demo/pb-edit-app.html": "Generate Application"
+    },
+    "pb-markdown": {
+        "demo/pb-markdown.html": "Demo"
     }
 }

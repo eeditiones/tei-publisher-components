@@ -170,7 +170,9 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
         if (this.initFromView) {
             const initHandler = this.subscribeTo('pb-update', (ev) => {
-                if (this.name === 'view' || this.name === 'odd' || this.name === 'xpath') {
+                if (this.name === 'infiniteScroll') {
+                    this.checked = ev.detail.infiniteScroll === this.propertiesOn[this.name];
+                } else if (this.name === 'view' || this.name === 'odd' || this.name === 'xpath') {
                     this.checked = ev.detail.data[this.name] === this.propertiesOn[this.name];
                 }
                 initHandler.forEach((handler) => document.removeEventListener('pb-update', handler));

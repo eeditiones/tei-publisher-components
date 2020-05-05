@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-markdown Demo</title>
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-markdown.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <!--/scripts-->
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                    pb-markdown {
+                        margin: 10px 0;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #c0c0c0;
+                    }
+                </style>
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-markdown>
+                    # Embedding Markdown
+
+                    Markdown taken from the **content** of the `pb-markdown`.
+
+                    * A list item
+                        1. first subpoint
+                        1. second subpoint
+                    * Another list item
+
+                    ```xquery
+                    for $i in 1 to 10
+                    return
+                        $i * 2
+                    ```
+                    </pb-markdown>
+                    <pb-markdown>
+                        <template>
+                            # Embedded HTML
+
+                            To pass markdown with embedded HTML, enclose the content into
+                            a `template`.
+                    
+                            <p>This is <strong>embedded</strong> HTML</p>
+                        </template>
+                    </pb-markdown>
+                    <pb-markdown url="https://teipublisher.com/xxx.md">
+                        **Failed to load content**!
+                    </pb-markdown>
+                    <pb-markdown url="https://raw.githubusercontent.com/eXist-db/exist/develop/README.md">
+                        **Loading** content ...
+                    </pb-markdown>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
