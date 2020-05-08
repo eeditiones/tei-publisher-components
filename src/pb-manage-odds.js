@@ -51,7 +51,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.subscribeTo('pb-login', this._refresh.bind(this), []);
+        this.subscribeTo('pb-login', () => this._refresh(), []);
     }
 
     firstUpdated() {
@@ -169,15 +169,15 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 <div class="odd-description">${odd.description}</div>
             `)}
             <pb-restricted login="login">
-                <iron-form id="ironform" @change="${this._validate}">
+                <iron-form id="ironform">
                     <form>
                         <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"
                             error-message="Required. Use letters, numbers, - and _"></paper-input>
                         <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required minlength="1"></paper-input>
-                        <paper-button id="createBtn" @click="${this._createODD}" disabled>
+                        <paper-button id="createBtn" @click="${this._createODD}">
                             <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
                         </paper-button>
-                        <paper-button id="createByEx" @click="${this._createByExample}" disabled>
+                        <paper-button id="createByEx" @click="${this._createByExample}">
                             <iron-icon icon="build"></iron-icon>
                             ${translate('odd.manage.create-from-example')}
                         </paper-button>
