@@ -1,6 +1,6 @@
 {
     "name": "@teipublisher/pb-components",
-    "version": "0.9.30",
+    "version": "0.9.31",
     "description": "Collection of webcomponents underlying TEI Publisher (Work in progress)",
     "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
     "main": "index.html",
@@ -33,6 +33,7 @@
         "@polymer/iron-icon": "^3.0.1",
         "@polymer/iron-icons": "^3.0.1",
         "@polymer/iron-iconset": "^3.0.1",
+        "@polymer/iron-pages": "^3.0.1",
         "@polymer/neon-animation": "^3.0.1",
         "@polymer/paper-button": "^3.0.1",
         "@polymer/paper-card": "^3.0.1",
