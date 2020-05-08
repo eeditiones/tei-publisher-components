@@ -23,7 +23,7 @@
             <style>
                 pb-lang { --pb-lang-input-color: #303030; }
             </style>
-            <pb-page locales="./i18n">
+            <pb-page locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
                 <pb-lang label="language" selected="en">
                     <paper-item value="cs">český</paper-item>
                     <paper-item value="de">Deutsch</paper-item>
@@ -44,9 +44,10 @@
                     <li data-i18n="document.contents">Contents</li>
                     <li><pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n></li>
                     <li><pb-i18n key="browse.items" options='{"count": 1}'>Items</pb-i18n></li>
-                    <li><pb-i18n key="undefined">No translation provided</pb-i18n></li>
+                    <li><pb-i18n key="undefined">[No translation provided]</pb-i18n></li>
                     <li><pb-i18n key="dialogs.downloadMessage"></pb-i18n></li>
                     <li><pb-i18n key="demo.message"></pb-i18n></li>
+                    <li><pb-i18n key="mycomponent.info"></pb-i18n></li>
                 </ul>
                 <paper-card data-i18n="[heading]menu.download.title" heading="">
                     <div class="card-content">Attributes can be translated as well (card heading above)</div>

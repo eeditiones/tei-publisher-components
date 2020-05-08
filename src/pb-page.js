@@ -49,13 +49,24 @@ class PbPage extends pbMixin(LitElement) {
             },
             /**
              * Optional URL pointing to a directory from which additional i18n 
-             * language files will be loaded. The actual translation files should
-             * be in a subdirectory called `app` beneath. Naming of the files should follow 
-             * the pattern `{{lng}}.json`,
-             * where `{{lng}}` is the code for the language, e.g. 'de' or 'en'.
+             * language files will be loaded. The URL should contain placeholders
+             * for the language (`lng`) and the namespace (`ns`), e.g.
+             * 
+             * `resources/i18n/{{ns}}_{{lng}}.json`
              */
             locales: {
                 type: String
+            },
+            /**
+             * Optional list of whitespace separated namespaces which should be searched
+             * for translations. By default, only the namespace `common` is queried.
+             * If the locale property is specified, an additional namespace `app` is added.
+             * You can add more namespace here, e.g. `custom`, if you want to provide
+             * translations for custom apps or components.
+             */
+            localeFallbackNs: {
+                type: String,
+                attribute: 'locale-fallback-ns'
             },
             /**
              * If set, the element will wait for a language being set by i18n before
@@ -89,10 +100,19 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this._localeFallbacks = [];
+    }
+
+    set localeFallbackNs(value) {
+        value.split(/\s+/).forEach(v => this._localeFallbacks.push(v));
     }
 
     connectedCallback() {
         super.connectedCallback();
+        if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
+            this._localeFallbacks.push('app');
+        }
+        this._localeFallbacks.push('common');
 
         const target = this.getParameter('_target');
         if (target) {
@@ -111,15 +131,17 @@ class PbPage extends pbMixin(LitElement) {
         super.firstUpdated();
 
         const defaultLocales = resolveURL('../i18n/') + '{{ns}}/{{lng}}.json';
-        const userLocales = this.locales ? `${this.locales}/{{ns}}/{{lng}}.json` : null;
-        console.log('<pb-page> Loading locales. common: %s; app: %s', defaultLocales, userLocales);
-        const backends = userLocales ? [XHR, XHR] : [XHR];
+        console.log('<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
+            defaultLocales, this.locales, this._localeFallbacks);
+        const backends = this.locales ? [XHR, XHR] : [XHR];
         const backendOptions = [{
-            loadPath: defaultLocales
+            loadPath: defaultLocales,
+            crossDomain: true
         }];
-        if (userLocales) {
+        if (this.locales) {
             backendOptions.unshift({
-                loadPath: userLocales
+                loadPath: this.locales,
+                crossDomain: true
             });
         }
         const options = {
@@ -127,6 +149,7 @@ class PbPage extends pbMixin(LitElement) {
             defaultNS: 'common',
             ns: ['common'],
             debug: false,
+            load: 'languageOnly',
             detection: {
                 lookupQuerystring: 'lang'
             },
@@ -135,11 +158,14 @@ class PbPage extends pbMixin(LitElement) {
                 backendOptions
             }
         };
-        if (userLocales) {
-            options.defaultNS = 'app';
-            options.fallbackNS = 'common';
-            options.ns = ['app', 'common'];
+
+        if (this._localeFallbacks.length > 0) {
+            const fallbacks = this._localeFallbacks.slice().reverse();
+            options.defaultNS = fallbacks[0];
+            options.fallbackNS = fallbacks.slice(1);
+            options.ns = fallbacks;
         }
+        console.log('<pb-page> i18next options: %o', options);
         i18next
             .use(LanguageDetector)
             .use(Backend)

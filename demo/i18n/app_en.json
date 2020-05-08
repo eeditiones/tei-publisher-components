@@ -1,5 +1,8 @@
 {
     "demo": {
         "message": "User defined message"
+    },
+    "document": {
+        "contents": "Table of Contents"
     }
 }
