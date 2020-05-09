@@ -57,13 +57,9 @@ export class PbEditXml extends pbMixin(LitElement) {
         // if the target is within the same origin as the current page, we can communicate with an 
         // already opened eXide, if not, only option is to open a new window.
         if (new URL(this._href, window.location.href).origin === this.getUrl().origin) {
-            return html`
-                <a href="${this._href}" target="eXide" title="${this.title}" @click="${this.open}"><slot></slot></a>
-            `;
+            return html`<a href="${this._href}" target="eXide" title="${this.title}" @click="${this.open}"><slot></slot></a>`;
         }
-        return html`
-            <a href="${this._href}/index.html?open=${this.path}" title="${this.title}"><slot></slot></a>
-        `;
+        return html`<a href="${this._href}/index.html?open=${this.path}" title="${this.title}"><slot></slot></a>`;
     }
 
     static get styles() {
