@@ -70,9 +70,6 @@ export class PbCollapse extends pbMixin(LitElement) {
             noIcons: {
                 type: Boolean,
                 attribute: 'no-icons'
-            },
-            data: {
-                type: Object
             }
         };
     }
@@ -85,25 +82,46 @@ export class PbCollapse extends pbMixin(LitElement) {
         this.expandIcon = 'icons:expand-more';
         this.collapseIcon = 'icons:expand-less';
         this.noIcons = false;
+        this.expandOnClick = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
+        this.addEventListener('pb-collapse-open', () => {
+            this.open();
+        });
+        this.subscribeTo('pb-collapse-open', (ev) => {
+            if (!ev.detail || ev.detail._source == this) {
+                return;
+            }
+            for (const collapse of this.querySelectorAll('pb-collapse')) {
+                if (collapse == ev.detail._source) {
+                    return;
+                }
+            }
+            this.close();
+        });
     }
 
     /**
              * opens the collapsible section
              */
     open() {
+        if (this.opened) {
+            return;
+        }
         this.opened = true;
-        this.emitTo('pb-collapse-open', this.data);
+
+        this.emitTo('pb-collapse-open', this);
     }
 
     /**
      * closes the collapsible section
      */
     close() {
-        this.opened = false;
+        if (this.opened) {
+            this.opened = false;
+        }
     }
 
     /**
@@ -116,18 +134,14 @@ export class PbCollapse extends pbMixin(LitElement) {
         }
     }
 
-    _getLabel() {
-        const trigger = this.shadowRoot.getElementById('collapseTrigger');
-        const nodes = trigger.assignedNodes();
-        if (nodes && nodes.length > 0) {
-            return nodes[0].innerHTML;
-        }
-    }
-
     render() {
         return html`
             <div id="trigger" @click="${this.toggle}" class="collapse-trigger">
-                <iron-icon icon="${this.opened ? this.collapseIcon : this.expandIcon}"></iron-icon>
+                ${
+            !this.noIcons ?
+                html`<iron-icon icon="${this.opened ? this.collapseIcon : this.expandIcon}"></iron-icon>` :
+                null
+            }
                 <slot id="collapseTrigger" name="collapse-trigger"></slot>
             </div>
             <iron-collapse id="collapse" horizontal="${this.horizontal}" no-animation="${this.noAnimation}" .opened="${this.opened}">

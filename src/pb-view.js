@@ -291,6 +291,7 @@ export class PbView extends pbMixin(LitElement) {
         this._features = {};
         this._selector = new Map();
         this._chunks = [];
+        this._scrollTarget = null;
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -477,6 +478,7 @@ export class PbView extends pbMixin(LitElement) {
             } else {
                 this.nodeId = ev.detail.position || this.nodeId;
             }
+            this._scrollTarget = ev.detail.hash;
         }
         this._updateStyles();
         if (this.infiniteScroll) {
@@ -576,6 +578,16 @@ export class PbView extends pbMixin(LitElement) {
         const elem = this._replaceContent(resp, loader.params._dir);
 
         this.animate();
+
+        if (this._scrollTarget) {
+            this.updateComplete.then(() => {
+                const target = this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
+                if (target) {
+                    target.scrollIntoView();
+                }
+                this._scrollTarget = null;
+            });
+        }
         this._scroll();
 
         this.next = resp.next;

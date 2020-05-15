@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
-import { pbMixin } from './pb-mixin';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { pbMixin } from './pb-mixin.js';
 
 /**
  * Create an internal link: clicking it will cause connected views to
@@ -21,7 +21,12 @@ export class PbLink extends pbMixin(LitElement) {
             /** Browse to an eXist-internal node id, e.g. 3.5.6.1 */
             nodeId: {
                 type: String,
-                attribute: 'node-id'
+                attribute: 'node-id',
+                reflect: true
+            },
+            hash: {
+                type: String,
+                reflect: true
             },
             /** Browse to a different document */
             path: {
@@ -49,10 +54,27 @@ export class PbLink extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+        this._id = this.nodeId;
+        this.subscribeTo('pb-visible', (ev) => {
+            if (this.nodeId) {
+                const [root, nodeId] = ev.detail.data.split(/\s*,\s*/);
+                if (this.nodeId === root && (!this.hash || this.hash === nodeId)) {
+                    this.classList.add('active');
+                    this.scrollIntoView({ block: 'nearest' });
+                    this.dispatchEvent(new CustomEvent('pb-collapse-open', {
+                        composed: true,
+                        bubbles: true
+                    }));
+                } else {
+                    this.classList.remove('active');
+                }
+            }
+        });
+        this._content = this.innerHTML;
     }
 
     render() {
-        return html`<a href="#" @click="${this._onClick}">${unsafeHTML(this.innerHTML)}</a>`;
+        return html`<a href="#" @click="${this._onClick}">${unsafeHTML(this._content)}</a>`;
     }
 
     createRenderRoot() {
@@ -61,7 +83,6 @@ export class PbLink extends pbMixin(LitElement) {
 
     _onClick(ev) {
         ev.preventDefault();
-        ev.stopPropagation();
 
         const params = {
             position: null
@@ -81,6 +102,7 @@ export class PbLink extends pbMixin(LitElement) {
             params.odd = this.odd;
             this.history && this.setParameter('odd', this.odd);
         }
+        params.hash = this.hash;
         this.pushHistory('link click');
 
         this.emitTo('pb-refresh', params);

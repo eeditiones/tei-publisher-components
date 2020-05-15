@@ -14,7 +14,9 @@ export class PbDrawer extends pbMixin(LitElement) {
         return {
             ...super.properties,
             /**
-             * optional id reference to a component that allows opening/closing the drawer
+             * optional id reference to a component that allows opening/closing the drawer.
+             * If `maxWidth` is set and the viewport width is larger, the toggle's display
+             * style will be set to 'none'.
              */
             toggle: {
                 type: String
@@ -25,6 +27,15 @@ export class PbDrawer extends pbMixin(LitElement) {
             opened: {
                 type: Boolean,
                 reflect: true
+            },
+            /**
+             * Defines a breakpoint width: if the viewport width is below the width given in
+             * this property, the drawer is turned into an overlay, which only reveals if the
+             * toggle is activated.
+             */
+            maxWidth: {
+                type: String,
+                attribute: 'max-width'
             }
         };
     }
@@ -53,6 +64,42 @@ export class PbDrawer extends pbMixin(LitElement) {
         this.subscribeTo('pb-refresh', this._close.bind(this));
     }
 
+    firstUpdated() {
+        if (!this.maxWidth) {
+            this.classList.add('overlay');
+            return;
+        }
+        // Check if Visual Viewport API is supported
+        if (typeof window.visualViewport !== 'undefined') {
+            window.visualViewport.addEventListener('resize', () => {
+                this._handleResize();
+            });
+        } else {
+            window.addEventListener('resize', () => {
+                this._handleResize();
+            });
+        }
+        this._handleResize();
+    }
+
+    _handleResize() {
+        const toggle = document.getElementById(this.toggle);
+        const query = `(max-width: ${this.maxWidth})`;
+        if (window.matchMedia(query).matches) {
+            console.log('<pb-drawer> entering overlay mode');
+            this.classList.add('overlay');
+            if (toggle) {
+                toggle.style.display = '';
+            }
+        } else {
+            console.log('<pb-drawer> leaving overlay mode');
+            this.classList.remove('overlay');
+            if (toggle) {
+                toggle.style.display = 'none';
+            }
+        }
+    }
+
     _toggle(ev) {
         ev.preventDefault();
         if (this.opened) {
@@ -76,6 +123,10 @@ export class PbDrawer extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
+                display: block;
+            }
+
+            :host(.overlay) {
                 position: fixed;
                 width: 0;
                 left: -448px;
@@ -85,7 +136,6 @@ export class PbDrawer extends pbMixin(LitElement) {
                 overflow: auto;
                 display: block;
                 transition: .5s;
-                background: white;
             }
 
             :host([opened]) {
