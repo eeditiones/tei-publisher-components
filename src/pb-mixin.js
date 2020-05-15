@@ -239,11 +239,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         const chs = [];
         if (this.subscribeConfig) {
             Object.keys(this.subscribeConfig).forEach((key) => {
-                this.subscribeConfig[key].forEach(t => {
-                    if (t === type) {
-                        chs.push(key);
-                    }
-                })
+                chs.push(key);
             });
         } else if (this.subscribe) {
             chs.push(this.subscribe);
@@ -278,11 +274,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         const chs = [];
         if (this.emitConfig) {
             Object.keys(this.emitConfig).forEach(key => {
-                this.emitConfig[key].forEach(t => {
-                    if (t === type) {
-                        chs.push(key);
-                    }
-                })
+                chs.push(key);
             });
         } else if (this.emit) {
             chs.push(this.emit);
