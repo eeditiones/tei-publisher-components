@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit-element'
 import { pbMixin } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
-import "./pb-drawer.js";
 import { repeat } from 'lit-html/directives/repeat';
 import { ifDefined } from 'lit-html/directives/if-defined';
 
@@ -30,6 +29,9 @@ import { PbOddElementspecEditor } from "./pb-odd-elementspec-editor";
  *
  * @slot - default unnamed slot
  * @fires pb-login - When received, registers if user is logged in
+ * @cssprop --pb-heading-font-family - font family used for headings
+ * @cssprop --pb-heading-font-weight
+ * @cssprop --pb-heading-line-height
  */
 export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
@@ -41,76 +43,41 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 margin:0;
                 padding:0;
                 height:auto;
-
-                --paper-input-container: {
-                    padding: 0;
-                };
-
-                --paper-dialog-title: {
-                    margin-top: 0;
-                    padding: 12px;
-                    background-color: #607D8B;
-                    color: #F0F0F0;
-                };
-
-                --pb-view-height: calc(100vh - 94px);
-                --app-drawer-width:300px;
-
-
             }
             
             #layout {
-                display: flex;
                 width: 100%;
+                display: grid;
+                grid-template-columns: 420px 1fr;
+                grid-template-rows: auto 1fr;
             }
 
             #drawer {
-                flex: 1;
+                grid-column: 1 / 1;
+            }
+
+            #navlist {
+                grid-column: 1 / 1;
+                grid-row: 2 / 2;
+                overflow: auto;
+                height: 100%;
             }
 
             .specs {
-                flex: 2;
+                grid-column: 2 / 2;
+                grid-row: 1 / span 2;
                 overflow: auto;
-            }
-            
-            app-drawer .wrapper{
-                padding:10px;
-                height:100%;
-                overflow:auto;
-                background:var(--existdb-drawer-bg);
-                color:var(--existdb-drawer-color);
             }
 
             section{
                 padding:20px;
             }
 
-            paper-card{
-                display: flex;
-                flex-direction:column;
-                --paper-card-header: {
-                    background-color: #607D8B;
-                };
-
-                --paper-card-header-text: {
-                    font-family: "Oswald",Verdana,"Helvetica",sans-serif;
-                    font-size: 16px;
-                    font-weight: 400;
-                    color: #F0F0F0;
-                };
-
+            h3, h4 {
+                font-family: var(--pb-heading-font-family);
+                font-weight: var(--pb-heading-font-weight);
+                line-height: var(--pb-heading-line-height);
             }
-
-            paper-card#drawercard h3{
-                /*background-color: var(--paper-card-header_-_background-color);*/
-
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-
-            }
-
 
             /* ported over but not checked yet */
 
@@ -120,11 +87,6 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
             .metadata {
                 display: block;
-
-                --pb-collapse-trigger: {
-                    background-color: #d1dae0;
-                    padding-left: 10px;
-                }
             }
 
             .metadata div {
@@ -172,7 +134,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 /*height:56px;*/
             }
 
-            iron-collapse{
+            iron-collapse {
                 --iron-collapse-transition-duration:0.8s;
             }
             
@@ -184,17 +146,13 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 height:100%;
                 overflow:auto;
             }
-            .navlist{
-                overflow:auto;
-            }
             
             paper-tab{
                 width:100px;
             }
             
-            .editingView{
+            .editingView {
                 width:100%;
-                height:100%;
             }
             
             vaadin-tabs{
@@ -347,7 +305,6 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         <div id="layout">
             <div id="drawer">
-                <div class="wrapper">
                     <slot id="slot"></slot>
                     <h3>
                         <span>${this.odd}</span>
@@ -370,16 +327,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                     </div>
                     
                     <h3>${translate('odd.editor.specs')}</h3>
-                    <div class="navlist">
-                        ${repeat(this.elementSpecs, (i) => i.ident, (i, index) =>
+            </div>
+            <div id="navlist">
+                ${repeat(this.elementSpecs, (i) => i.ident, (i, index) =>
             html`
-                            <paper-item id="es_${i.ident}"
-                                index="${index}"
-                                @click="${(ev) => this._openElementSpec(ev, index)}">${i.ident}</paper-item>
-                        `)}
-                    </div>
-                </div>
-
+                    <paper-item id="es_${i.ident}"
+                        index="${index}"
+                        @click="${(ev) => this._openElementSpec(ev, index)}">${i.ident}</paper-item>
+                `)}
             </div>
             <section class="specs" id="specs">
     

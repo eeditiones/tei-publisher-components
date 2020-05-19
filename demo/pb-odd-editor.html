@@ -21,10 +21,8 @@
             pb-login {
                 --pb-login-link-color: #886666;
             }
-            body {
-                display: flex;
-                flex-direction: column;
-                margin: 10px 20px;
+            pb-odd-editor {
+                height: calc(100vh - 24px);
             }
             .CodeMirror-lint-tooltip {
                 background-color: #ffd;
@@ -57,7 +55,7 @@
                 output-root="/db/apps/tei-publisher/transform"
                 root-path="/db/apps/tei-publisher/odd"
                 output-prefix="transform"
-                odd="graves.odd"
+                odd="graves.odd"></pb-odd-editor>
         </pb-page>
     </body>
 </html>
