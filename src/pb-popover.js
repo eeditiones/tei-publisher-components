@@ -98,7 +98,7 @@ export class PbPopover extends pbMixin(LitElement) {
 
     render() {
         if (this.disabled) {
-            return html`<slot></slot>`;
+            return html`<slot name="default"></slot>`;
         }
 
         if (this.for) {
