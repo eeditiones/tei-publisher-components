@@ -30,6 +30,9 @@ export class PbLogin extends pbMixin(LitElement) {
             user: {
                 type: String
             },
+            password: {
+                type: String
+            },
             /**
              * If set, only users being members of the specified group are
              * allowed to log in.
@@ -111,7 +114,10 @@ export class PbLogin extends pbMixin(LitElement) {
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
             this._checkLogin.url = `${detail.endpoint}/login`;
-            this._checkLogin.body = null;
+            this._checkLogin.body = {
+                user: this.user,
+                password: this.password
+            };
             this._checkLogin.generateRequest();
         });
     }

@@ -25,9 +25,9 @@ describe('initialize and refresh view', () => {
         expect(view.getParameters().view).to.equal('div');
 
         const h1 = view.shadowRoot.querySelector('h1');
-        expect(h1).dom.to.equal('<h1 class="tei-title6 title">Quickstart</h1>');
+        expect(h1).dom.to.equal('<h1 class="tei-title6 title">Introduction</h1>');
 
-        setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', {detail: {id: 'installation'}})));
+        setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', { detail: { id: 'installation' } })));
         await oneEvent(document, 'pb-end-update');
 
         const h2 = view.shadowRoot.querySelector('h2');
