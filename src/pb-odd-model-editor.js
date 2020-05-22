@@ -697,7 +697,7 @@ export class PbOddModelEditor extends LitElement {
         const oldModel = this.model;
         const models = Array.from(this.model.models);
         models.unshift(newNestedModel);
-        this.model = Object.assign({}, oldModel, models);
+        this.model = Object.assign({}, oldModel, { models });
 
         // important to reset the listbox - otherwise next attempt to use it will fail if value has not changed
         // use querySelector here instead of 'this.$' as listbox is in it's own <template>
@@ -719,7 +719,7 @@ export class PbOddModelEditor extends LitElement {
                 const oldModel = this.model;
                 const models = Array.from(this.model.models);
                 models.splice(index, 1);
-                this.model = Object.assign({}, oldModel, models);
+                this.model = Object.assign({}, oldModel, { models });
                 this.models = models;
                 this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
             }, () => null);
@@ -737,7 +737,7 @@ export class PbOddModelEditor extends LitElement {
         const models = Array.from(this.model.models);
         models.splice(index, 1);
         models.splice(index + 1, 0, model);
-        this.model = Object.assign({}, oldModel, models);
+        this.model = Object.assign({}, oldModel, { models });
 
         const targetModel = this.shadowRoot.querySelectorAll('pb-odd-model-editor')[index + 1];
         this._setCurrentSelection(index + 1, targetModel);
@@ -759,7 +759,7 @@ export class PbOddModelEditor extends LitElement {
         models.splice(index, 1);
         // add element to new index
         models.splice(index - 1, 0, model);
-        this.model = Object.assign({}, oldModel, models);
+        this.model = Object.assign({}, oldModel, { models });
 
         const targetModel = this.shadowRoot.querySelectorAll('pb-odd-model-editor')[index - 1];
         this._setCurrentSelection(index - 1, targetModel);
@@ -775,7 +775,7 @@ export class PbOddModelEditor extends LitElement {
         const index = this.model.models.indexOf(ev.detail.oldModel);
         const models = Array.from(this.model.models);
         models.splice(index, 1, ev.detail.newModel);
-        this.model = Object.assign({}, oldModel, models);
+        this.model = Object.assign({}, oldModel, { models });
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
     }
 
