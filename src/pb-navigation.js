@@ -49,6 +49,8 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
         this.subscribeTo('pb-update', this._update.bind(this));
 
         this.registerHotkey('next', () => this.emitTo('pb-navigate', { direction: this.direction }));
+
+        this.signalReady();
     }
 
     _update(ev) {

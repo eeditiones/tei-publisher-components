@@ -254,12 +254,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {Element} other the other element to compare with
      */
     emitsOnSameChannel(other) {
-        if (!other.getEmittedChannels) {
-            return false;
-        }
         const myChannels = this.getSubscribedChannels();
-        const otherChannels = other.getEmittedChannels();
+        const otherChannels = PbMixin.getEmittedChannels(other);
         if (myChannels.length === 0 && otherChannels.length === 0) {
+            // both emit to the default channel
             return true;
         }
         return myChannels.some((channel) => otherChannels.includes(channel));
@@ -267,17 +265,22 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     /**
      * Get the list of channels this element emits to.
-     * 
+     *
      * @returns an array of channel names
      */
-    getEmittedChannels() {
+    static getEmittedChannels(elem) {
         const chs = [];
-        if (this.emitConfig) {
-            Object.keys(this.emitConfig).forEach(key => {
+        const emitConfig = elem.getAttribute('emit-config');
+        if (emitConfig) {
+            const json = JSON.parse(emitConfig);
+            Object.keys(json).forEach(key => {
                 chs.push(key);
             });
-        } else if (this.emit) {
-            chs.push(this.emit);
+        } else {
+            const emitAttr = elem.getAttribute('emit');
+            if (emitAttr) {
+                chs.push(emitAttr);
+            }
         }
         return chs;
     }
@@ -326,7 +329,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {
-        const chs = channels || this.getEmittedChannels();
+        const chs = channels || PbMixin.getEmittedChannels(this);
         if (chs.length == 0) {
             if (type === 'pb-ready') {
                 readyEventsFired.add('__default__');

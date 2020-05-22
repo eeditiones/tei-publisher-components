@@ -330,7 +330,7 @@ export class PbView extends pbMixin(LitElement) {
             this.nodeId = nodeId;
         }
         if (!this.waitFor) {
-            this.waitFor = 'pb-toggle-feature,pb-select-feature';
+            this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
         }
 
         this.subscribeTo('pb-navigate', ev => {

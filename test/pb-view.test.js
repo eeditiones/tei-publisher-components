@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
 
 import '../src/pb-document.js';
 import '../src/pb-page.js';
@@ -16,15 +16,16 @@ describe('initialize and refresh view', () => {
         `)
         );
 
+        const view = el.querySelector('pb-view');
         await oneEvent(document, 'pb-end-update');
 
-        const view = el.querySelector('pb-view');
         expect(view.getEndpoint()).to.equal('http://localhost:8080/exist/apps/tei-publisher');
         expect(view.getOdd()).to.equal('docbook');
         expect(view.getView()).to.equal('div');
         expect(view.getParameters().view).to.equal('div');
 
         const h1 = view.shadowRoot.querySelector('h1');
+        expect(h1).to.exist;
         expect(h1).dom.to.equal('<h1 class="tei-title6 title">Introduction</h1>');
 
         setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', { detail: { id: 'installation' } })));

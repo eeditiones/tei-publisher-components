@@ -17,7 +17,7 @@ describe('recompile ODD', () => {
                 </pb-page>
             `)
         );
-        oneEvent(document, 'pb-login');
+        await oneEvent(document, 'pb-login');
 
         const ajax = el.querySelector('pb-ajax');
         const btn = ajax.shadowRoot.querySelector('#button');
