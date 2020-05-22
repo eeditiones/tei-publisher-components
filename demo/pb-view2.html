@@ -4,11 +4,13 @@
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
         <title>pb-view Demo</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+        <link rel="Stylesheet" href="demo.css">
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
@@ -18,6 +20,7 @@
         <script type="module" src="../src/pb-load.js"></script>
         <script type="module" src="../src/pb-link.js"></script>
         <script type="module" src="../src/pb-collapse.js"></script>
+        <script type="module" src="../src/pb-observable.js"></script>
         <!--/scripts-->
     </head>
 
@@ -30,56 +33,116 @@
                 }
 
                 main {
-                    display: flex;
-                    justify-content: center;
+                    display: grid;
+                    height: calc(100vh - 128px);
+                    grid-template-columns: 360px 1fr;
+                    grid-template-rows: auto 1fr auto;
                 }
 
-                .toolbar {
-                    display: flex;
-                    align-items: center;
-                }
-
-                #breadcrumbs {
-                    margin-left: 20px;
-                }
-
-                #breadcrumbs::part(content) {
-                    font-family: "Oswald",Verdana,"Helvetica", sans-serif; 
-                    font-weight: 400 !important;
+                .breadcrumbs {
+                    font-family: var(--pb-base-font-family);
+                    --pb-view-max-width: auto;
+                    grid-column: 2 / 2;
+                    grid-row: 1 / 1;
                 }
 
                 #view1 {
-                    height: 70vh;
+                    grid-column: 2 / 2;
+                    grid-row: 2 / 2;
                     overflow: auto;
+                    font-family: var(--pb-base-font-family);
+                    font-size: 20px;
+                    padding: 0;
                 }
 
-                @media (min-width: 769px) {
-                    #view1, footer {
-                        max-width: 60vw;
-                    }
+                footer {
+                    grid-column: 2 / 2;
+                    grid-row: 3 / 3;
+                    background-color: var(--pb-toolbar-background-color);
+                }
+
+                footer pb-navigation[direction=forward] {
+                    float: right;
+                }
+
+                .toc {
+                    grid-column: 1 / 1;
+                    grid-row: 1 / span 3;
+                    overflow: auto;
+                    font-size: var(--pb-base-font-size);
+                    background-color: var(--pb-drawer-background-color);
+                }
+
+                .toc [slot="collapse-trigger"] pb-link {
+                    display: block;
+                }
+
+                .toc pb-link a {
+                    text-decoration: none;
+                    color: #101010;
+                }
+
+                .toc li pb-link {
+                    display: block;
+                    font-family: var(--pb-base-font-family);
+                    --pb-link-font-family: var(--pb-base-font-family);
+                    margin-left: 0;
+                }
+
+                .toc li pb-link.active a {
+                    color: #d07f00;
+                    text-decoration: underline;
+                }
+
+                .toc ul li {
+                    font-weight: bold;
+                }
+
+                .toc ul {
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .toc ul ul {
+                    margin-left: 0;
+                }
+
+                .toc ul ul li {
+                    font-weight: normal;
+                }
+
+                .toc ul ul {
+                    margin-left: 14px;
                 }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
-                    <div class="toolbar">
-                        <paper-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list"></paper-icon-button>
-                        <pb-view id="breadcrumbs" src="document1" load-css="odd/docbook.css">
+                    <pb-progress></pb-progress>
+                    <main>
+                        <aside class="toc">
+                            <pb-load url="templates/toc.html?target=transcription&amp;collapse=true" src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
+                        </aside>
+                        <pb-view class="breadcrumbs" src="document1" load-css="odd/docbook.css">
                             <pb-param name="mode" value="breadcrumbs"/>
                         </pb-view>
-                    </div>
-                    <pb-progress></pb-progress>
-                    <pb-drawer id="toc" toggle="tocToggle" class="tocDrawer" emit="toc">
-                        <div class="drawer-content">
-                            <h3>
-                                <pb-i18n key="document.contents">Contents</pb-i18n>
-                            </h3>
-                            <pb-load url="templates/toc.html" src="document1" subscribe="toc" load-once>Loading...</pb-load>
-                        </div>
-                    </pb-drawer>
-                    <main>
-                        <pb-view id="view1" src="document1" append-footnotes fix-links infinite-scroll
-                            infinite-scroll-max="8" load-css="odd/docbook.css"></pb-view>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription" subscribe="transcription"
+                            load-css="odd/docbook.css"></pb-view>
+                        <footer>
+                            <!-- Navigate to next page -->
+                            <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-right"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                            <!-- Navigate to previous page -->
+                            <pb-navigation direction="backward" keyboard="left" emit="transcription" subscribe="transcription">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-left"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                        </footer>
                     </main>
                 </pb-page>
             </template>
