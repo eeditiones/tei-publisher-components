@@ -20,6 +20,13 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
  * @fires pb-collection - Sent to inform e.g. pb-upload about current collection
  * @fires pb-search-resubmit - When received, set facet values as received from the event
  * @fires pb-login - When received, check if user is allowed to modify the documents
+ * 
+ * @cssprop --pb-search-suggestions-background - Background for the autocomplete suggestions for the filter field
+ * @cssprop --pb-search-suggestions-color - Text color for the autocomplete suggestion for the filter field
+ * @cssprop --pb-search-label-color - Determines the color of small label above the sort by/filter by/filter fields
+ * @cssprop --pb-search-input-color - Determines the color of the text in the sort by/filter by/filter fields
+ * @cssprop --pb-search-focus-color - Color of the field labels and underline when in focus
+ * @cssprop --pb-browse-toolbar-justify-content - How to justify the browse toolbar content, following flexbox justify-content property e.g. center, space-evenly, start...
  */
 export class PbBrowseDocs extends PbLoad {
 

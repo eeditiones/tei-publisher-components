@@ -13,16 +13,11 @@ import '@polymer/app-layout';
  * Each `<template>` may have a title attribute to specify the title to be shown
  * for it in the dropdown.
  *
- * ## CSS Variables
- *
- * | Custom property | Description | Default|
- * | ----------------|-------------|--------|
- * |--pb-panel-max-height | The max height of the panel content. Set to enable scrolling. | undefined |
- *
  * @slot - unnamed default slot for content
  * @slot toolbar - toolbar area
  * @fires pb-panel - Fired whenever the component switches to a different content panel. Used by `pb-grid` to update its state.
  * @fires pb-refresh - Fired after a new content panel is shown to allow connected components to refresh.
+ * @cssprop --pb-panel-max-height - The max height of the panel content. Set to enable scrolling.
  */
 export class PbPanel extends pbMixin(LitElement) {
     static get properties() {

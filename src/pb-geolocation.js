@@ -8,7 +8,7 @@ import { PbHighlight } from "./pb-highlight.js";
  *
  * @slot - default unnamed slot for content
  * @fires pb-geolocation - Sends geocoordinates
- * 
+ * @cssprop --pb-highlight-color - Background color to highlight an element
  */
 export class PbGeolocation extends PbHighlight {
     static get properties() {

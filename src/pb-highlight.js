@@ -11,18 +11,14 @@ import { pbMixin } from './pb-mixin';
  *
  * `pb-highlight` should be output for relevant elements via ODD processing model.
  *
- * ### Styling
- *
- * Custom property | Description | Default
- * ----------------|-------------|----------
- * `--pb-highlight-color` | Background color to highlight an element | #F9E976
- * `--pb-highlight` | Mixin applied to the element's content | `{ display: inline; }`
+ * 
  *
  * @slot - default unnamed slot for highlight content
  * @fires pb-highlight-off - Fires removal of all highlights that might have existed before
  * @fires pb-highlight-on - Fires highlight event with a key passed to which other pb-highlight elements with the same key will react
  * @fires pb-highlight-off - When received, triggers removal of a highlight that might have been on for this element before
  * @fires pb-highlight-on - When received, switches the highlight on if the same key was received as the current element has
+ * @cssprop --pb-highlight-color - Background color to highlight an element
 */
 export class PbHighlight extends pbMixin(LitElement) {
     static get properties() {

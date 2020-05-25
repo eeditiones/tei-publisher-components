@@ -9,6 +9,8 @@ import { pbMixin } from './pb-mixin.js';
  * sent to this component.
  *
  * @fires pb-show-annotation - When received, loads the image from the URL passed from the event
+ * @cssprop --pb-svg-height - Height of the SVG element
+ * @cssprop --pb-svg-width - Width of the SVG element
  */
 export class PbSvg extends pbMixin(LitElement) {
     static get properties() {

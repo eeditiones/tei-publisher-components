@@ -36,10 +36,15 @@ import '@polymer/paper-dialog-scrollable';
  * ```
  *
  * @cssprop [--pb-view-column-gap=10px] - The gap between columns in two-column mode
- * @cssprop --pb-footnote-font-size - Font size for the footnote marker
- * @cssprop --pb-footnote-font-family - Font family for the footnote marker
+ * @cssprop --pb-view-loader-font - Font used in the message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-color=black] - Text color in the message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-background-padding=10px 20px] - Background padding for the  message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-background-image=linear-gradient(to bottom, #f6a62440, #f6a524)] - Background image the message shown during loading in infinite scroll mode
  * @cssprop --pb-footnote-color - Text color of footnote marker
  * @cssprop --pb-footnote-padding - Padding around a footnote marker
+ * @cssprop --pb-footnote-font-size - Font size for the footnote marker
+ * @cssprop --pb-footnote-font-family - Font family for the footnote marker
+  
  * @fires pb-start-update - Fired before the element updates its content
  * @fires pb-update - Fired when the component received content from the server
  * @fires pb-end-update - Fired after the element has finished updating its content

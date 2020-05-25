@@ -11,11 +11,11 @@ import '@polymer/paper-checkbox';
 /**
  * Implements a basic search form, which can be extended with additional inputs.
  *
- * @cssprop --pb-search-label-color Color of the label and underline
- * @cssprop --pb-search-input-color Text color for input field
- * @cssprop --pb-search-focus-color Color for label and underline if input has focus
- * @cssprop --pb-search-suggestions-color Color for the labels shown in the suggestions dropdown
- * @cssprop --pb-search-suggestions-background Background for the suggestions dropdown
+ * @cssprop --pb-search-label-color - Color of the label and underline
+ * @cssprop --pb-search-input-color - Text color for input field
+ * @cssprop --pb-search-focus-color - Color for label and underline if input has focus
+ * @cssprop --pb-search-suggestions-color - Color for the labels shown in the suggestions dropdown
+ * @cssprop --pb-search-suggestions-background - Background for the suggestions dropdown
  * @slot - default unnamed slot
  * @fires pb-load - Fired to perform the actual search with parameters passed to the request
  * @fires pb-search-resubmit - When received, triggers the search again

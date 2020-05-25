@@ -9,6 +9,8 @@ import { resolveURL } from './utils.js';
  * @fires pb-start-update - When received, resets the facsimile viewer
  * @fires pb-update - Checks the contents received for pb-facs-links
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
+ * 
+ * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {

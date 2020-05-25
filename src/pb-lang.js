@@ -10,6 +10,8 @@ import { translate } from "./pb-i18n.js";
  * @slot - unnamed default slot for dropdown menu options
  * @fires pb-i18n-language - Sends selected language
  * @fires pb-i18n-update - When received, sets the selected language to the one received from the event
+ * @cssprop --pb-lang-input-color - Color of the text in the language field
+ * @cssprop --pb-lang-label-color - Color of the language field label
  */
 export class PbLang extends pbMixin(LitElement) {
     static get properties() {

@@ -9,7 +9,8 @@ import './pb-panel.js';
  * @slot - default unnamed slot for the panel
  * @fires pb-refresh - Fired after a new column has been added to allow connected components to refresh.
  * @fires pb-panel - When received, updates the list of panels to show
- * 
+ * @cssprop --pb-grid-column-widths - Columns width specified according to the grid-template-columns property of the CSS Grid Layout
+ * @cssprop --pb-grid-column-gap - Width of the gap between columns
  */
 export class PbGrid extends pbMixin(LitElement) {
     static get properties() {
@@ -194,7 +195,7 @@ export class PbGrid extends pbMixin(LitElement) {
                 widths.push('1fr');
             }
         });
-        this.style.setProperty('--pb-column-widths', widths.join(' '));
+        this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
     }
 
     render() {
@@ -205,8 +206,8 @@ export class PbGrid extends pbMixin(LitElement) {
         return css`
             :host {
                 display: grid;
-                grid-template-columns: var(--pb-column-widths, '1fr');
-                grid-column-gap: var(--pb-column-gap, 20px);
+                grid-template-columns: var(--pb-grid-column-widths, var(--pb-computed-column-widths));
+                grid-column-gap: var(--pb-grid-column-gap, 20px);
                 justify-content: space-between;
             }
         `;

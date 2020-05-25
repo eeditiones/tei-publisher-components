@@ -13,6 +13,7 @@ import '@polymer/iron-icons';
  * If a user is logged in, clicking the link will log him out instead.
  *
  * @fires pb-login - Sends results of checking user credentials
+ * @cssprop --pb-login-link-color - Color of the link text
  */
 export class PbLogin extends pbMixin(LitElement) {
     static get properties() {

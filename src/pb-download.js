@@ -8,6 +8,8 @@ import { pbMixin } from './pb-mixin.js';
  *
  * @slot - unnamed default slot for link text
  * @fires pb-document - When received, updates the odd to the one passed from the event
+ * @cssprop --pb-download-color - Color of the download title label
+ * @cssprop --pb-download-text-decoration - Extra effects for the download title label
  */
 export class PbDownload extends pbMixin(LitElement) {
     static get properties() {
