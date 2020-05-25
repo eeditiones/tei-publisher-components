@@ -21,7 +21,7 @@ import '@polymer/iron-collapse';
  *
  * @slot collapse-trigger - trigger toggling collapsed content on/off
  * @slot collapse-content - content to be collapsed
- * 
+ * @cssprop --pb-collapse-icon-padding - 0 10px 0 0
  * @fires pb-collapse-open - Fires opening the collapsed section
  */
 export class PbCollapse extends pbMixin(LitElement) {
@@ -157,15 +157,16 @@ export class PbCollapse extends pbMixin(LitElement) {
             }
 
             #trigger {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
+                display: table-row;
             }
 
             #trigger iron-icon {
-                display: block;
-                margin-right: 4px;
+                display: table-cell;
+                padding: var(--pb-collapse-icon-padding, 0 10px 0 0);
+            }
+
+            slot[name="collapse-trigger"] {
+                display: table-cell;
             }
         `;
     }
