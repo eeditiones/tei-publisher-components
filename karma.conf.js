@@ -17,6 +17,11 @@ module.exports = config => {
       esm: {
         // if you are using 'bare module imports' you will need this option
         nodeResolve: true
+      },
+      client: {
+        mocha: {
+          timeout: 10000
+        }
       }
     })
   );

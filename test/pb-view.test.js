@@ -26,13 +26,13 @@ describe('initialize and refresh view', () => {
 
         const h1 = view.shadowRoot.querySelector('h1');
         expect(h1).to.exist;
-        expect(h1).dom.to.equal('<h1 class="tei-title6 title">Introduction</h1>');
+        expect(h1).to.have.text('Introduction');
 
         setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', { detail: { id: 'installation' } })));
         await oneEvent(document, 'pb-end-update');
 
         const h2 = view.shadowRoot.querySelector('h2');
-        expect(h2).dom.to.equal('<h2 class="tei-title6 title">Installation</h2>');
+        expect(h2).to.have.text('Installation');
 
         // change to a different document
         setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', {
