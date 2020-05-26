@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Använd denna app för att testa olika ODD-filer som innehåller instruktioner för processmodeller. Ladda upp dina egna filer och skapa en anpassad ODD.",
-    "login": "för att kunna ladda upp filer eller utföra administrativa uppgifter (standardanvändare: 'tei', lösenord: 'simple').",
+    "login": "för att kunna ladda upp filer eller utföra administrativa uppgifter (standardanvändare: 'tei-demo', lösenord: 'demo').",
     "sort": "Sortera efter",
     "filter": "Filtrera efter",
     "items": "Hittade {{count}} objekt",

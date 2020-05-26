@@ -45,7 +45,7 @@
   },
   "browse": {
     "description": "Uporabite to aplikacijo, da preizkusite različne zasnove ODD, ki določajo modele za procesiranje besedila. Naložite svoje datoteke in ustvarite prilagojeno zasnovo ODD.",
-    "login": "je potrebna, da lahko naložite datoteke ali si ogledate administrativne funkcije (privzeti uporabnik: 'tei', geslo: 'simple').",
+    "login": "je potrebna, da lahko naložite datoteke ali si ogledate administrativne funkcije (privzeti uporabnik: 'tei-demo', geslo: 'demo').",
     "sort": "Razvrsti po",
     "filter": "Presej po",
     "items": "Najden {{count}} predmet",
