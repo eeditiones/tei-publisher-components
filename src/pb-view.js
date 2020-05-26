@@ -580,7 +580,7 @@ export class PbView extends pbMixin(LitElement) {
             return;
         }
 
-        const elem = this._replaceContent(resp, loader.params._dir);
+        this._replaceContent(resp, loader.params._dir);
 
         this.animate();
 
@@ -605,17 +605,21 @@ export class PbView extends pbMixin(LitElement) {
         }
         this.xmlId = null;
 
-        this._fixLinks(elem);
-        this._applyToggles(elem);
+        this.updateComplete.then(() => {
+            const view = this.shadowRoot.getElementById('view');
+            this._applyToggles(view);
+            this._fixLinks(view);
 
-        const eventOptions = {
-            data: resp,
-            root: elem,
-            params: loader.params,
-            id: this.xmlId,
-            position: this.nodeId
-        };
-        this.emitTo('pb-update', eventOptions);
+            const eventOptions = {
+                data: resp,
+                root: view,
+                params: loader.params,
+                id: this.xmlId,
+                position: this.nodeId
+            };
+            this.emitTo('pb-update', eventOptions);
+        });
+
         this.emitTo('pb-end-update', null);
     }
 
@@ -949,12 +953,8 @@ export class PbView extends pbMixin(LitElement) {
 
     toggleFeature(ev) {
         const applyToggles = () => {
-            if (this._column1) {
-                this._applyToggles(this._column1);
-                this._applyToggles(this._column2);
-            } else {
-                this._applyToggles(this._content);
-            }
+            const view = this.shadowRoot.getElementById('view');
+            this._applyToggles(view);
         }
 
         const properties = ev.detail.properties;
