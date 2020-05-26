@@ -3,7 +3,7 @@
   "menu": {
     "documentation": "Documentazione",
     "admin": {
-      "title": "Amministratore",
+      "title": "Amministrazione",
       "recompile": "Ricompila ODD",
       "appGenerator": "Generatore di App",
       "edit-odd": "Modifica ODD"
@@ -13,7 +13,7 @@
       "title": "Scarica",
       "pdf-latex": "PDF (Versione LaTeX)",
       "pdf-fo": "PDF (Versione FO)",
-      "pdf-title": "Scarica PDF",
+      "pdf-title": "Scarica in PDF",
       "fo-source": "Sorgente FO",
       "latex-source": "Sorgente TeX",
       "single-page": "Pagina singola",
@@ -27,8 +27,8 @@
     "yes": "Sì",
     "no": "No",
     "serverError": "La richiesta al server non ha funzionato.",
-    "generatingFile": "Sto preparando i documenti...",
-    "downloadMessage": "La preparazione dei documenti per essere scaricati può richiedere qualche minuto. Si prega di attendere. Questo messaggio si chiuderà automaticamente al completamento dell'operazione.",
+    "generatingFile": "Sto generando il documento...",
+    "downloadMessage": "La generazione dei documenti da scaricare può richiedere qualche minuto. Si prega di attendere. Questo messaggio si chiuderà automaticamente al completamento dell'operazione.",
     "loading": "Caricamento ..."
   },
   "document": {
@@ -36,16 +36,16 @@
     "selectODD": "Scegli ODD",
     "selectTemplate": "Scegli il template",
     "selectFeature": "Scegli la funzionalità",
-    "normalized": "Vista normalizzata",
-    "plain": "Vista di lettura semplice",
-    "view-type": "Vista di pagina",
+    "normalized": "Visualizzazione normalizzata",
+    "plain": "Visualizzazione di lettura semplice",
+    "view-type": "Visualizzazione pagina",
     "add-panel": "Aggiungi una visualizzazione",
     "caveat-heading": "Caveat",
     "caveat": "Prova diversi modelli di pagina e diverse ODD, semplicemente cambiando le impostazioni che trovi qui. Fai attenzione al fatto che non tutte le combinazioni di impostazioni funzionano su tutti i documenti. Per esempio, per visualizzare una mappa serviranno delle coordinate codificate e pre-processate a seconda dei risultati che si vogliono ottenere; la visualizzazione per pagine implica che i salti di pagina siano codificati nel testo. Se vedi il messaggio \"the server did not return any content / il server non dà risultati\" si tratta probabilmente di questo problema, cioé di una non corrispondenza tra dati codificati, ODD e modello di pagina."
   },
   "browse": {
     "description": "Usa questa applicazione per sperimentare e provare vari ODD contenenti istruzioni dei TEI Processing Model. Carica i tuoi file e crea un ODD personalizzato.",
-    "login": "per caricare documenti o vedere le funzioni amministrative (utente predefinito: 'tei-demo', password: 'demo').",
+    "login": "per caricare documenti o avere accesso alle funzionalità di amministrazione (utente predefinito: 'tei', password: 'simple').",
     "sort": "Ordina per",
     "filter": "Filtra per",
     "items": "Trovato {{count}} risultato",
@@ -55,8 +55,8 @@
     "modificationDate": "Data di modifica",
     "file": "Nome del file",
     "delete": "Cancella",
-    "confirmDeletion": "Sei sicuro di che voler cancellare questo file?",
-    "confirmDeletion_plural": "Sei sicuro di che voler cancellare questi {{count}} documenti?",
+    "confirmDeletion": "Sei sicuro di voler cancellare questo file?",
+    "confirmDeletion_plural": "Sei sicuro di voler cancellare questi {{count}} documenti?",
     "documents": "Documenti",
     "collections": "Collezione locale",
     "dts": "Distributed Text Services (Sperimentale)",
@@ -76,7 +76,7 @@
   },
   "upload": {
     "upload": "Carica",
-    "drop": "Trascina {{accept}} file qui per caricare."
+    "drop": "Trascina {{accept}} file qui per caricarli."
   },
   "demo": {
     "showCode": {
@@ -85,7 +85,7 @@
     },
     "editCode": {
       "show": "Modifica codice",
-      "hide": "Chiudere l'editor"
+      "hide": "Chiudere l'editore"
     }
   },
   "login": {
@@ -112,7 +112,7 @@
       "title": "Titolo da mostrare",
       "create": "Crea",
       "create-from-example": "Crea da esempi",
-      "delete": "Sei sicuro di che voler cancellare ODD file {{file}}?"
+      "delete": "Sei sicuro di che voler cancellare l'ODD file {{file}}?"
     },
     "editor": {
       "delete-spec": "Vuoi davvero eliminare la specificazione dell'elemento '{{ident}}'?",

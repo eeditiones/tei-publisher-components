@@ -6,13 +6,13 @@
       "title": "Διαχειριστής",
       "recompile": "Σύνταξη ODD",
       "appGenerator": "Δημιουργία εφαρμογής",
-      "edit-odd": "Επεξεργασία ODD"
+      "edit-odd": "Επεξεργασία του ODD"
     },
     "news": "Νέα",
     "download": {
       "title": "Μεταφόρτωση",
-      "pdf-latex": "PDF (LaTeX Version)",
-      "pdf-fo": "PDF (FO Version)",
+      "pdf-latex": "PDF (LaTeX εκδοχή)",
+      "pdf-fo": "PDF (FO εκδοχή)",
       "pdf-title": "Μεταφόρτωση ως PDF",
       "fo-source": "FO πηγή",
       "latex-source": "TeX κώδικας",
@@ -26,7 +26,7 @@
     "close": "Κλείσιμο",
     "yes": "Ναι",
     "no": "όχι",
-    "serverError": "The request to the server failed.",
+    "serverError": "Το αίτημα προς τον διακομιστή (server) απέτυχε.",
     "generatingFile": "Δημιουργία αρχείου...",
     "downloadMessage": "Η δημιουργία αρχείου για μεταφόρτωση ενδέχεται να κρατήσει μερικά λεπτά. Παρακαλώ περιμένετε. Αυτ΄ό το παράθυρο θα κλείσει αυτόματα μόλις ολοκληρωθεί η διαδικασία.",
     "loading": "Φόρτωση σε εξέλιξη..."
@@ -35,162 +35,162 @@
     "contents": "Περιεχόμενα",
     "selectODD": "Επιλέξτε ODD",
     "selectTemplate": "Επιλέξτε πρότυπο",
-    "selectFeature": "Select Feature",
-    "normalized": "Normalized View",
-    "plain": "Plain Reading View",
-    "view-type": "Page View",
-    "add-panel": "Add View",
+    "selectFeature": "Επιλέξτε χαρακτηριστικό",
+    "normalized": "Κανονικοποιημένη προβολή",
+    "plain": "Προβολή απλής ανάγνωσης",
+    "view-type": "Προβολή ανά σελίδα",
+    "add-panel": "Προσθήκη τρόπου προβολής",
     "caveat-heading": "Προσοχή!",
-    "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
+    "caveat": "Πειραματιστείτε με διαφορετικά πρότυπα σελίδας και ODD επιλέγοντας απλώς διαφορετικές ρυθμίσεις εδώ. Λάβετε υπόψη ότι κάποιος συνδυασμός ρυθμίσεων μπορεί να μην είναι κατάλληλος για κάποιο έγγραφο. Για παράδειγμα, ένας χάρτης δεν μπορεί να δημιουργηθεί χωρίς συντεταγμένες που έχουν κωδικοποιηθεί και επεξεργαστεί ως τέτοιες, ενώ  η προβολή ανά σελίδα προϋποθέτει ότι έχουν επισημειωθεί οι  αλλαγές σελίδας. Εάν δείτε το μήνυμα \"ο διακομιστής δεν επέστρεψε κανένα περιεχόμενο\", είναι συνήθως ένδειξη τέτοιας εσφαλμένης αντιστοίχισης μεταξύ κωδικοποιημένων δεδομένων, ODD και προτύπου σελίδας."
   },
   "browse": {
-    "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
-    "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
+    "description": "Χρησιμοποιήστε αυτήν την εφαρμογή για να πειραματιστείτε και να αξιοποιήσετε δοκιμαστικά διαφορετικά ODD που περιέχουν οδηγίες για το μοντέλο επεξεργασίας. Ανεβάστε τα δικά σας αρχεία και δημιουργήστε ένα ODD προσαρμοσμένο στις ανάγκες σας.",
+    "login": "για να ανεβάσετε αρχεία ή να δείτε τις λειτουργίες διαχείρισης (προεπιλεγμένος χρήστης: 'tei', κωδικός πρόσβασης: 'simple').",
     "sort": "Ταξινόμηση κατά",
     "filter": "Φιλτράρισμα κατά",
-    "items": "Found {{count}} item",
-    "items_plural": "Found {{count}} items",
+    "items": "Βρέθηκε {{count}} αποτέλεσμα",
+    "items_plural": "Βρέθηκαν {{count}} αποτελέσματα",
     "title": "Τίτλος",
     "author": "Δημιουργός",
-    "modificationDate": "Modification Date",
+    "modificationDate": "Ημερομηνία τροποποίησης",
     "file": "Όνομα αρχείου",
     "delete": "Διαγραφή",
     "confirmDeletion": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αρχείο;",
-    "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
+    "confirmDeletion_plural": "Θέλετε σίγουρα να διαγράψετε {{count}} αρχεία;",
     "documents": "Έγγραφα",
-    "collections": "Local Collection",
-    "dts": "Distributed Text Services (Experimental)",
+    "collections": "Τοπική συλλογή",
+    "dts": "Κατανεμημένες υπηρεσίες κειμένου (πειραματικό)",
     "demo": {
-      "title": "TEI Publisher Demo Collection",
-      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+      "title": "Συλλογή υποδειγμάτων του TEI Publisher",
+      "description": "Συλλογή αρχείων/εγγράφων με παραδείγματα εφαρμογής διάφορων χαρακτηριστικών. Η επιλογή είναι ενδεικτική και αντιπροσωπεύει ένα μέρος των ποικίλων δυνατοτήτων. Σας καλούμε να συνεισφέρετε συμπληρωματικά τις δικές σας περιπτώσεις χρήσης."
     },
     "playground": {
-      "title": "Χώρος δοκιμών",
-      "description": "A writable collection into which you can upload your own documents for testing."
+      "title": "Χώρος πειραματισμού",
+      "description": "Μια επεξεργάσιμη συλλογή στην οποία μπορείτε να μεταφορτώσετε τα δικά σας αρχεία για δοκιμές."
     },
     "documentation": {
       "title": "Τεκμηρίωση",
-      "description": "Documentation and News using Docbook XML."
+      "description": "Τεκμηρίωση (με χρήση Docbook XML)."
     },
-    "up": "Up"
+    "up": "Πάνω"
   },
   "upload": {
     "upload": "Ανεβάστε",
-    "drop": "Drop {{accept}} files here to upload."
+    "drop": "Σύρετε {{accept}} εδώ αρχεία για μεταφόρτωση."
   },
   "demo": {
     "showCode": {
-      "show": "Show Code",
-      "hide": "Hide Code"
+      "show": "Εμφάνιση κώδικα",
+      "hide": "Απόκρυψη κώδικα"
     },
     "editCode": {
-      "show": "Edit Code",
-      "hide": "Close Editor"
+      "show": "Επεξεργασία κώδικα",
+      "hide": "Κλείσιμο επεξεργαστή"
     }
   },
   "login": {
     "login": "Σύνδεση",
-    "as": "Έχετε συνδεθεί ως  {{χρήστης}}",
+    "as": "Έχετε συνδεθεί ως {{χρήστης}}",
     "user": "Χρήστης",
     "password": "Κωδικός πρόσβασης",
-    "invalid": "Wrong password or invalid user",
-    "requiredGroup": "must be member of group {{group}}"
+    "invalid": "Λάθος κωδικός ή μη πιστοποιημένος χρήστης",
+    "requiredGroup": "απαιτείται ιδιότητα μέλους σε ομάδα {{group}}"
   },
   "search": {
-    "placeholder": "Enter Query",
+    "placeholder": "Εισαγωγή ερωτήματος",
     "sections": "Αναζήτηση ενοτήτων",
     "headings": "Αναζήτηση κεφαλίδων"
   },
   "dts": {
-    "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "endpoint": "Επιλογή καταληκτικού σημείου",
+    "note": "Πειραματικό: πρόσβασε σε άλλες εκδόσεις που εκθέτουν το API των κατανεμημένων υπηρεσιών κειμένου (DTS)"
   },
   "odd": {
-    "files": "ODD Files",
+    "files": "Αρχεία ODD",
     "manage": {
-      "filename": "File name of the ODD (without suffix)",
-      "title": "Title for display",
+      "filename": "Όνομα αρχείου για το ODD (χωρίς την κατάληξη)",
+      "title": "Τίτλος προς εμφάνιση",
       "create": "Δημιουργία",
-      "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "create-from-example": "Δημιουργία με βάση παραδείγματα",
+      "delete": "Είστε βέβαιοι ότι θέλετε να διαγράψετε το αρχείο ODD;"
     },
     "editor": {
-      "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Save",
-      "saving": "Saving ...",
-      "saved": "Saved",
-      "reload": "Reload",
-      "reload-confirm": "Any unsaved changes will be lost. Continue?",
-      "add-element": "Add Element",
-      "odd-source": "ODD Source",
-      "specs": "Element Specs",
-      "jump-to": "Jump to element ...",
-      "title-short": "Short title",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
-      "description-placeholder": "Description of the ODD",
-      "source-label": "Base ODD",
-      "source-placeholder": "ODD to inherit from",
-      "use-namespace": "Check for using a different namespace than TEI",
-      "namespace-placeholder": "Default namespace URI (if not TEI)",
-      "title": "Title",
-      "title-placeholder": "Title of the ODD",
+      "delete-spec": "Θέλετε σίγουρα να διαγράψετε την προδιαγραφή στοιχείου για το {{ident}};",
+      "save": "Αποθήκευση",
+      "saving": "Γίνεται αποθήκευση ...",
+      "saved": "Αποθηκεύτηκε",
+      "reload": "Επαναφόρτωση",
+      "reload-confirm": "Οι μη αποθηκευμένες αλλαγές θα χαθούν. Θέλετε να συνεχίσετε;",
+      "add-element": "Προσθήκη στοιχείου",
+      "odd-source": "Πηγή ODD",
+      "specs": "Προδιαγραφές στοιχείων",
+      "jump-to": "Μεταφερθείτε άμεσα στο στοιχείο ...",
+      "title-short": "Σύντομος τίτλος",
+      "title-short-placeholder": "Σύντομος τίτλος κατά την προβολή",
+      "description-label": "Περιγραφή",
+      "description-placeholder": "Περιγραφή του ODD",
+      "source-label": "ODD βάσης",
+      "source-placeholder": "ODD που λειτουργεί ως δεξαμενή άντλησης",
+      "use-namespace": "Έλεγχος για χρήση συλλογής ονομάτων (namespace) εκτός του TEI",
+      "namespace-placeholder": "Προεπιλεγμένη αναφορά URI συλλογής ονομάτων (namespace) (στην περίπτωση που δεν χρησιμοποιείται namespace του TEI)",
+      "title": "Τίτλος",
+      "title-placeholder": "Τίτλος του ODD",
       "model": {
-        "delete-model-label": "Delete Model?",
-        "delete-model-message": "Do you really want to delete the selected model?",
-        "description-placeholder": "[Document the model]",
-        "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "or",
-        "css-class-placeholder": "[Define CSS class name (for external CSS)]",
-        "custom-behaviour-placeholder": "[Custom Behaviour]",
-        "template-placeholder": "[Define code template to apply to content]",
-        "param-name-placeholder": "[Param name]",
-        "empty": "[Empty]"
+        "delete-model-label": "Διαγραφή μοντέλου;",
+        "delete-model-message": "Θέλετε σίγουρα να διαγράψετε το επιλεγμένο μοντέλο;",
+        "description-placeholder": "Τεκμηρίωση του μοντέλου",
+        "predicate-placeholder": "[Προσδιορίστε επιπρόσθετες προϋποθέσεις που πρέπει να πληρούνται (για xquey)]",
+        "link-with-or": "ή",
+        "css-class-placeholder": "[Ορίστε το όνομα κλάσης CSS (για εξωτερικά CSS)]",
+        "custom-behaviour-placeholder": "Προσαρμοσμένη συμπεριφορά",
+        "template-placeholder": "[Προσδιορίστε το πρότυπο κώδικα που θα εφαρμοστεί στο περιεχόμενο]",
+        "param-name-placeholder": "[όνομα παραμέτρου]",
+        "empty": "[Κενό]"
       }
     }
   },
   "facets": {
-    "show": "Show top 50",
-    "genre": "Genre",
-    "language": "Language"
+    "show": "Εμφάνιση των 50 πρώτων",
+    "genre": "Κειμενικό είδος",
+    "language": "Γλώσσα"
   },
   "appgen": {
     "account": {
-      "user": "User account for administrative tasks. The user will be created if it does not yet exist.",
-      "owner": "The user account who will own the app.",
-      "password": "Password for the user owning this app."
+      "user": "Λογαριασμός χρήστη για διαχειριστικές εργασίες. Ο λογαριασμός χρήστη θα δημιουργηθεί αν δεν υπάρχει ήδη.",
+      "owner": "Ο λογαριασμός του χρήστη-ιδιοκτήτη της εφαρμογής.",
+      "password": "Κωδικός πρόσβασης για τον χρήστη-ιδιοκτήτη της εφαρμογής."
     },
-    "submit": "Save/Generate",
+    "submit": "Αποθήκευση/Δημιουργία",
     "index": {
-      "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
-      "label": "Default Full Text Index",
-      "index-div": "Create on division",
-      "index-text": "Create on text"
+      "help": "Προσδιορίστε το μικρότερο κειμενικό σύνολο στο οποίο δημιουργείται δεικτης πλήρους κειμένου. Για κείμενα οργανωμένα σε στοιχεία div, η επιλογή «Δημιουργία στο επίπεδο του στοιχείου div» είναι συνήθως καλύτερη. Εάν δεν υπάρχουν στοιχεία div, επιλέξτε \"Δημιουργία στο επίπεδο του στοιχείου text\".",
+      "label": "Προεπιλεγμένος δείκτης πλήρους κειμένου",
+      "index-div": "Δημιουργία στο επίπεδο στοιχείου div",
+      "index-text": "Δημιουργία στο επίπεδο στοιχείου text"
     },
     "view": {
-      "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
-      "div": "By division (chapter/section...)",
-      "page": "By page"
+      "help": "Επιλέξτε την προεπιλεγμένη προβολή ανάγνωσης κειμένου για τον χρήστη: κείμενο που περικλείεται σε ένα στοιχείο div συνεχόμενα σε μια σελίδα. Η προβολή ανά σελίδα απαιτεί ότι η κωδικοποίηση του κειμένου με στοιχεία TEI περιλαμβάνει τις ετικέτες &lt;tei:pb&gt;",
+      "div": "Ανά στοιχείο div (διαίρεση σε κεφάλαια/ενότητες κλπ.)",
+      "page": "Ανά σελίδα"
     },
-    "label": "Default View",
+    "label": "Προεπιλεγμένη προβολή",
     "template": {
-      "help": "Choose the HTML template to be used as default",
-      "label": "HTML Template"
+      "help": "Επιλέξτε το πρότυπο HTML που θα χρησιμοποιείται ως προεπιλογή",
+      "label": "Πρότυπο HTML"
     },
     "title": {
-      "help": "Title of the app which will be shown e.g. in the dashboard",
-      "label": "Title of the app"
+      "help": "Τίτλος της εμφαρμογής όπως θα εμφανίζεται π.χ. στον πίνακα διαχείρισης",
+      "label": "Τίτλος της εφαρμογής"
     },
-    "collection": "Name of subcollection to hold TEI documents",
+    "collection": "Όνομα της υποσυλλογής όπου περιλαμβάνονται τα αρχεία TEI",
     "abbrev": {
-      "label": "Short name to be used in URLs and file names",
-      "placeholder": "Short name"
+      "label": "Σύντομο όνομα για χρήση σε URLs και ονόματα αρχείων",
+      "placeholder": "Σύντομο όνομα"
     },
-    "uri": "URL to uniquely identify the app",
+    "uri": "μοναδικό URL ως ταυτότητα της εφαρμογής",
     "dialog": {
-      "title": "App generated"
+      "title": "Δημιουργία εφαρμογής"
     },
-    "open": "Open",
-    "success": "Your app has been successfully generated!"
+    "open": "Άνοιγμα",
+    "success": "Η εφαρμογή σας έχει δημιουργηθεί επιτυχώς!"
   }
 }
