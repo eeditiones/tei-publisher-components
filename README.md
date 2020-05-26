@@ -14,13 +14,18 @@ Distributing the components in a separate package has several benefits:
 
 Clone the repository, call `npm install` once and run `npm start`. This creates a simple webserver which you can access in a browser to see the documentation and demos.
 
-All components talk to an endpoint, which will either be a TEI Publisher instance or an application generated from TEI Publisher. Docs and demos in this repo currently expect the endpoint to be available on `http://localhost:8080/exist`.
+All components talk to an endpoint, which will either be a TEI Publisher instance or an application generated from TEI Publisher. Docs and demos in this repo currently expect the endpoint to be available on `http://localhost:8080/exist`. TEI Publisher version 6 is required for all features to work correctly.
 
-For the full functionality, please install the `litelement` branch of TEI Publisher. Using the master branch some demos will not work correctly.
+## Loading Components from CDN
 
-## Building
+To include components into your own application, you can load them from a CDN:
 
-Run `npm run build:production` to generate a set of bundle files in `dist`, containing all components and their dependencies:
+```html
+<script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>
+<script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
+```
+
+For most use case, including `pb-components-bundle.js` is enough. However, we ship additional bundles as described below:
 
 | File                           | Description                                                                     |
 | ------------------------------ | ------------------------------------------------------------------------------- |
@@ -30,6 +35,24 @@ Run `npm run build:production` to generate a set of bundle files in `dist`, cont
 | `dist/pb-component-docs.js`    | components to view the API documentation of this package                        |
 
 Bundles build on each other, so you always need to at least include `pb-components-bundle.js` in your HTML page.
+
+For some examples of how to embed components into plain HTML, see the [sample collection on codepen](https://codepen.io/collection/nqVkee).
+
+## Loading from npm
+
+Install  `@teipublisher/pb-components` into your project:
+
+```sh
+npm install --save @teipublisher/pb-components
+```
+
+## Extending
+
+If you wish to extend the library with your own components, there's a [template project](https://github.com/eeditiones/pb-extension-template) available, which you may fork.
+
+## Building
+
+Run `npm run build:production` to generate the set of bundle files in `dist`, containing all components and their dependencies.
 
 ## Development
 
