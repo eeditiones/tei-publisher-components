@@ -1,8 +1,8 @@
 {
     "name": "@teipublisher/pb-components",
-    "version": "0.9.32",
+    "version": "0.9.33",
     "description": "Collection of webcomponents underlying TEI Publisher (Work in progress)",
-    "repository": "https://gitlab.existsolutions.com/tei-publisher/pb-components.git",
+    "repository": "https://github.com/eeditiones/tei-publisher-components.git",
     "main": "index.html",
     "scripts": {
         "build": "npm run clean && npm run codemirror && rollup -c rollup.config.js",
