@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { translate } from "../pb-i18n.js";
 import '../pb-code-highlight.js';
 
-const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher6";
+const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher";
 
 /**
  * Viewer for demo code.
