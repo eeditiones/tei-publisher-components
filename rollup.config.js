@@ -10,6 +10,11 @@ const production = process.env.BUILD === 'production';
 const wcloader = '<script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>';
 const pbbundle = '<script type="module" src="../pb-components-bundle.js"></script>';
 
+function replaceDemo(input, scripts) {
+    const output = input.toString().replace(/<!--scripts-->.*\/scripts-->/sg, scripts);
+    return output.replace(/endpoint=".*"/g, 'endpoint="https://teipublisher.com/exist/apps/tei-publisher"');
+}
+
 export default [
     {
         input: [
@@ -82,26 +87,25 @@ export default [
                     {
                         src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map.html'],
                         dest: 'dist/demo',
-                        transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}`)
+                        transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
                     },
                     {
                         src: 'demo/pb-odd-editor.html',
                         dest: 'dist/demo',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`)
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`)
                     },
                     {
                         src: 'demo/pb-leaflet-map.html',
                         dest: 'dist/demo',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
                     },
                     {
                         src: 'api.html',
                         dest: 'dist',
                         transform: (contents) =>
-                            contents.toString().replace(/<!--scripts-->.*\/scripts-->/sg, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
+                            replaceDemo(contents, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
                     },
                     {
                         src: ['demo/*.json', 'demo/*.css'],
