@@ -1,9 +1,9 @@
 {
-  "language": "Langage",
+  "language": "Langue",
   "menu": {
     "documentation": "Documentation",
     "admin": {
-      "title": "Administration",
+      "title": "Accès réservé",
       "recompile": "Recompiler l’ODD",
       "appGenerator": "Générateur d’applications",
       "edit-odd": "Éditer l’ODD"
@@ -17,8 +17,8 @@
       "fo-source": "Source XSL-FO",
       "latex-source": "Source TeX",
       "single-page": "Page unique",
-      "epub-download": "Télécharger un ebook (format ePub)",
-      "view-tei": "Voir la source XML TEI"
+      "epub-download": "Télécharger un ebook au format ePub",
+      "view-tei": "Voir le fichier source XML TEI"
     }
   },
   "dialogs": {
@@ -26,7 +26,7 @@
     "close": "Fermer",
     "yes": "Oui",
     "no": "Non",
-    "serverError": "La requête au serveur a échoué.",
+    "serverError": "Erreur d’exécution de la requête.",
     "generatingFile": "Génération du fichier...",
     "downloadMessage": "La génération d’un fichier à télécharger peut prendre quelques minutes. Merci de patienter. Cette boîte de dialogue se fermera automatiquement à la fin du téléchargement.",
     "loading": "Chargement ..."
@@ -35,10 +35,10 @@
     "contents": "Contenus",
     "selectODD": "Sélectionner un ODD",
     "selectTemplate": "Sélectionner un template",
-    "selectFeature": "Sélectionner une caractéristique",
+    "selectFeature": "Sélectionner une fonctionnalité",
     "normalized": "Vue normalisée",
     "plain": "Vue de lecture plein texte",
-    "view-type": "Vues page",
+    "view-type": "Vue page",
     "add-panel": "Ajouter une vue",
     "caveat-heading": "Avertissement",
     "caveat": "Ces options permettent de tester différents modèles de pages et configurations ODD pour un même document. Veuillez noter que certains choix de paramètres ne seront pertinents que pour un type de document donné. Par exemple, une carte ne pourra être produite sans coordonnées géographiques explicites, encodées et pré-traitées en fonction des résultats attendus. "
@@ -48,8 +48,8 @@
     "login": "Pour télécharger des fichiers ou accéder aux fonctions d'administration (utilisateur par défaut : 'tei-demo' ; mot de passe : 'demo').",
     "sort": "Trier par",
     "filter": "Filtrer selon",
-    "items": "{{count}} objet trouvé",
-    "items_plural": "{{count}} objets trouvés",
+    "items": "{{count}} objet(s) trouvé(s)",
+    "items_plural": "({{count}} objet(s) trouvé(s)",
     "title": "Titre",
     "author": "Auteur",
     "modificationDate": "Date de modification",
@@ -70,7 +70,7 @@
     },
     "documentation": {
       "title": "Documentation",
-      "description": "Documentation and News using Docbook XML."
+      "description": "Documentation (en Docbook XML)."
     },
     "up": "Monter"
   },
@@ -119,6 +119,8 @@
       "save": "Sauvegarder",
       "saving": "Enregistrement en cours...",
       "saved": "Sauvegardé",
+      "denied": "Autorisation Refusée",
+      "denied-message": "Vous n'avez pas l'autorisation de sauvegarder {{odd}}",
       "reload": "Recharger",
       "reload-confirm": "Toute modification non enregistrée sera perdue. Voulez-vous continuer ?",
       "add-element": "Ajouter un élément",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Définir le gabarit de code à appliquer au contenu]",
         "param-name-placeholder": "[Paramètre]",
         "empty": "[Vide]"
-      }
+      },
+      "css-source": "Ouvrir le fichier CSS"
     }
   },
   "facets": {
@@ -156,9 +159,9 @@
   },
   "appgen": {
     "account": {
-      "user": "Compte utilisateur pour les tâches d’administration. L’utilisateur sera créé s’il n’existe pas encore.",
-      "owner": "Le compte utilisateur qui sera propriétaire de l’application.",
-      "password": "Mot de passe de l’utilisateur propriétaire de l’application."
+      "user": "Compte utilisateur pour les tâches d'administration. L'utilisateur sera créé s'il n'existe pas encore.",
+      "owner": "Le compte utilisateur qui sera propriétaire de l'application.",
+      "password": "Mot de passe de l'utilisateur propriétaire de l'application."
     },
     "submit": "Sauvegarder et générer",
     "index": {
@@ -168,7 +171,7 @@
       "index-text": "Créer sur le texte"
     },
     "view": {
-      "help": "Choisissez comment le texte sera affiché par défaut : par page ou par division. L’affichage par page nécessite que le TEI soit correctement encodé avec des balises &lt;tei:pb&gt;.",
+      "help": "Choisissez comment le texte sera affiché par défaut : par page ou par division. L'affichage par page nécessite que le TEI soit correctement encodé avec des balises &lt;tei:pb&gt;.",
       "div": "Par division (chapitre/section...)",
       "page": "Par page"
     },
@@ -178,8 +181,8 @@
       "label": "Gabarit HTML"
     },
     "title": {
-      "help": "Titre de l’application qui sera affiché dans le tableau de bord",
-      "label": "Nom de l’application"
+      "help": "Titre de l'application qui sera affiché dans le tableau de bord",
+      "label": "Nom de l'application"
     },
     "collection": "Nom de la sous-collection pour conserver les documents TEI",
     "abbrev": {

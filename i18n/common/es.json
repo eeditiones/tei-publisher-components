@@ -119,6 +119,8 @@
       "save": "Guardar",
       "saving": "Guardando...",
       "saved": "Guardado",
+      "denied": "Permiso denegado",
+      "denied-message": "No tienes permiso para guardar {{odd}}",
       "reload": "Volver a cargar",
       "reload-confirm": "Se perderán los cambios no guardados. ¿Continuar?",
       "add-element": "Añadir elemento",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Definir plantilla de código para aplicar al contenido]",
         "param-name-placeholder": "[Nombre del parámetro]",
         "empty": "[Vacío]"
-      }
+      },
+      "css-source": "Abrir fichero CSS"
     }
   },
   "facets": {

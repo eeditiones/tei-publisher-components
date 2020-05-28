@@ -119,6 +119,8 @@
       "save": "Guardar",
       "saving": "Salvando ...",
       "saved": "Guardado",
+      "denied": "Permissão negada",
+      "denied-message": "Não tem permissão para salvar {{odd}}",
       "reload": "Recarregar",
       "reload-confirm": "Todas as alterações não salvas serão perdidas. Deseja continuar?",
       "add-element": "Adicionar o elemento",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Defina um modelo de código para aplicar ao conteúdo]",
         "param-name-placeholder": "[Nome do parametro]",
         "empty": "[Vazio]"
-      }
+      },
+      "css-source": "Abrir arquivo CSS"
     }
   },
   "facets": {

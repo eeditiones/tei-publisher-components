@@ -119,6 +119,8 @@
       "save": "Lagre",
       "saving": "Lagrer ...",
       "saved": "Lagret",
+      "denied": "Tilgang nektet",
+      "denied-message": "Du har ikke tillatelse til å redigere {{odd}}",
       "reload": "Last på nytt",
       "reload-confirm": "Ulagrede endringer vil gå tapt. Vil du fortsette?",
       "add-element": "Legg til element",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Definer kode-mal for å kjøre på innholdet]",
         "param-name-placeholder": "[Param navn]",
         "empty": "[Tom]"
-      }
+      },
+      "css-source": "Åpne CSS-filen"
     }
   },
   "facets": {

@@ -119,6 +119,8 @@
       "save": "Zapisz",
       "saving": "Zapisywanie ...",
       "saved": "Zapisano",
+      "denied": "Brak uprawnień",
+      "denied-message": "Nie masz uprawnień aby zapisać plik {{odd}}",
       "reload": "Odśwież",
       "reload-confirm": "Zmiany, które nie zostały zapisane będą utracone. Czy kontynuować?",
       "add-element": "Dodaj element",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Szablon (zostanie zastosowany do parametru content)]",
         "param-name-placeholder": "[Nazwa parametru]",
         "empty": "[Brak]"
-      }
+      },
+      "css-source": "Otwórz plik CSS"
     }
   },
   "facets": {

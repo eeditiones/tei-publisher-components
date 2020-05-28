@@ -119,6 +119,8 @@
       "save": "Uložit",
       "saving": "Ukládá se...",
       "saved": "Uloženo",
+      "denied": "Nemáte dostatečná oprávnění",
+      "denied-message": "Nemáte oprávnění uložit {{odd}}",
       "reload": "Načíst znovu",
       "reload-confirm": "Neuložené změny se ztratí. Pokračovat?",
       "add-element": "Přidat prvek",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Definujte šablonu kódu, která se použije na obsah]",
         "param-name-placeholder": "[Název parametru]",
         "empty": "[Prázdný]"
-      }
+      },
+      "css-source": "Otevřít soubor CSS"
     }
   },
   "facets": {

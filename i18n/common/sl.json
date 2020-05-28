@@ -119,6 +119,8 @@
       "save": "Shrani",
       "saving": "Shranjevanje ...",
       "saved": "Shranjeno",
+      "denied": "Dostop zavrnjen",
+      "denied-message": "Nimate dovoljenja za shranjevanje {{odd}}",
       "reload": "Osveži",
       "reload-confirm": "Vse neshranjene spremembe bodo izgubljene. Želite nadaljevati?",
       "add-element": "Dodaj element",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Določi kodno predlogo, ki bo aplicirana na vsebino]",
         "param-name-placeholder": "[Ime parametra]",
         "empty": "[Prazno]"
-      }
+      },
+      "css-source": "Odpri datoteko CSS"
     }
   },
   "facets": {
