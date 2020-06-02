@@ -40,6 +40,12 @@ export class PbCodepen extends LitElement {
              */
             preview: {
                 type: Boolean
+            },
+            /**
+             * Make the codepen editable (requires paid account)
+             */
+            editable: {
+                type: Boolean
             }
         };
     }
@@ -51,7 +57,10 @@ export class PbCodepen extends LitElement {
     }
 
     render() {
-        const params = `height=${this.height}&theme-id=${this.theme}&default-tab=html,result`;
+        let params = `height=${this.height}&theme-id=${this.theme}&default-tab=html,result`;
+        if (this.editable) {
+            params = `${params}&editable=true`;
+        }
         const url = `https://codepen.io/${this.user}/embed/${this.preview ? 'preview/' : ''}${this.hash}?${params}`;
         return html`
             <iframe height="${this.height}" scrolling="no" title="${this.labe}l" 
