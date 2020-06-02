@@ -1,75 +1,75 @@
 {
-  "language": "שפה",
+  "language": "Iaith",
   "menu": {
     "documentation": "Documentation",
     "admin": {
       "title": "Admin",
-      "recompile": "בניה (קימפול) מחדש של ODD",
+      "recompile": "Recompile ODD",
       "appGenerator": "App Generator",
       "edit-odd": "Edit ODD"
     },
-    "news": "חדשות",
+    "news": "News",
     "download": {
-      "title": "הורדה",
+      "title": "Download",
       "pdf-latex": "PDF (LaTeX Version)",
       "pdf-fo": "PDF (FO Version)",
-      "pdf-title": "הורדת קובץ PDF",
+      "pdf-title": "Download as PDF",
       "fo-source": "FO Source",
-      "latex-source": "מקור TeX",
-      "single-page": "דף אחד",
-      "epub-download": "הורדה כספר אלקטרוני - epub",
-      "view-tei": "תציג TEI-XML"
+      "latex-source": "TeX Source",
+      "single-page": "Single Page",
+      "epub-download": "Download as epub ebook",
+      "view-tei": "View TEI XML"
     }
   },
   "dialogs": {
     "error": "Ooops",
-    "close": "סגור",
-    "yes": "כן",
-    "no": "לא",
-    "serverError": "הפניה לשרת נכשלה.",
-    "generatingFile": "יוצר קובץ...",
-    "downloadMessage": "יצירת קובץ יכולה לקחת כמה דקות. אנא להמתין. חלון זה אמור להיסגר באופן אוטומטי כשההורדה הסתיימה.",
-    "loading": "טוען..."
+    "close": "Cau",
+    "yes": "Yes",
+    "no": "no",
+    "serverError": "The request to the server failed.",
+    "generatingFile": "Generating File...",
+    "downloadMessage": "Generating a file for download may take up to a few minutes. Please wait. This dialog should close automatically when the download has completed.",
+    "loading": "Loading ..."
   },
   "document": {
-    "contents": "תכנים",
-    "selectODD": "בחר ב-ODD",
-    "selectTemplate": "בחר בתבנית",
+    "contents": "Contents",
+    "selectODD": "Select ODD",
+    "selectTemplate": "Select Template",
     "selectFeature": "Select Feature",
-    "normalized": "תגוגה מנורמלת",
-    "plain": "תצוגה לפי יחידות טקסטואליות",
-    "view-type": "תצוגה לפי עמוד",
-    "add-panel": "הוסף פאנל",
+    "normalized": "Normalized View",
+    "plain": "Plain Reading View",
+    "view-type": "Page View",
+    "add-panel": "Add View",
     "caveat-heading": "Caveat",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
     "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
-    "sort": "סדר לפי",
-    "filter": "מיין לפי",
+    "sort": "Sort by",
+    "filter": "Filter by",
     "items": "Found {{count}} item",
-    "items_plural": "נמצאו {{count}} תוצאות",
-    "title": "כותרת",
-    "author": "מחבר",
-    "modificationDate": "תאריך שינוי",
-    "file": "שם הקובץ",
-    "delete": "מחק",
-    "confirmDeletion": "האם אתה בטוח למחוק את הקובץ?",
-    "confirmDeletion_plural": "האם אתה בטוח למחוק את {{count}} הקבצים?",
-    "documents": "מסמכים",
-    "collections": "אוסף מקומי",
-    "dts": "שירותי DTS",
+    "items_plural": "Found {{count}} items",
+    "title": "Teitl",
+    "author": "Author",
+    "modificationDate": "Modification Date",
+    "file": "Filename",
+    "delete": "Dileu",
+    "confirmDeletion": "Are you sure you want to delete the file?",
+    "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
+    "documents": "Documents",
+    "collections": "Local Collection",
+    "dts": "Distributed Text Services (Experimental)",
     "demo": {
       "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
-      "title": "ארגז חול",
+      "title": "Playground",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "documentation": {
-      "title": "תיעוד",
+      "title": "Documentation",
       "description": "Documentation (using Docbook XML)."
     },
     "up": "Up"
@@ -84,22 +84,22 @@
       "hide": "Hide Code"
     },
     "editCode": {
-      "show": "עריכת הקוד",
+      "show": "Edit Code",
       "hide": "Close Editor"
     }
   },
   "login": {
-    "login": "Login",
+    "login": "Mewngofnodi",
     "as": "Logged in as {{user}}",
-    "user": "שם משתמש.ת",
-    "password": "Password",
+    "user": "User",
+    "password": "Cyfrinair",
     "invalid": "Wrong password or invalid user",
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
     "placeholder": "Enter Query",
-    "sections": "Search sections",
-    "headings": "Search headings"
+    "sections": "Chwilio adrannau",
+    "headings": "Chwilio benawdau"
   },
   "dts": {
     "endpoint": "Select Endpoint",
@@ -116,38 +116,38 @@
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "שמירה",
-      "saving": "שומר...",
-      "saved": "נשמר",
+      "save": "Save",
+      "saving": "Saving ...",
+      "saved": "Saved",
       "denied": "Permission Denied",
       "denied-message": "You do not have permission to save {{odd}}",
-      "reload": "טען מחדש",
-      "reload-confirm": "כל השינויים שלא נשמרו יימחקו. המשך?",
-      "add-element": "הוספת פריט",
-      "odd-source": "מקור ODD",
+      "reload": "Reload",
+      "reload-confirm": "Any unsaved changes will be lost. Continue?",
+      "add-element": "Add Element",
+      "odd-source": "ODD Source",
       "specs": "Element Specs",
       "jump-to": "Jump to element ...",
-      "title-short": "כותרת מקוצרת",
-      "title-short-placeholder": "כותרת מקוצרת לתצוגה",
-      "description-label": "תיאור",
-      "description-placeholder": "Description of the ODD",
+      "title-short": "Short title",
+      "title-short-placeholder": "Short title for display",
+      "description-label": "Disgrifiad",
+      "description-placeholder": "Disgrifiad o'r ODD",
       "source-label": "Base ODD",
       "source-placeholder": "ODD to inherit from",
       "use-namespace": "Check for using a different namespace than TEI",
       "namespace-placeholder": "Default namespace URI (if not TEI)",
-      "title": "Title",
+      "title": "Teitl",
       "title-placeholder": "Title of the ODD",
       "model": {
-        "delete-model-label": "למחוק את המודל?",
-        "delete-model-message": "האם באמת התכוונת למחוק את המודל הנבחר?",
+        "delete-model-label": "Delete Model?",
+        "delete-model-message": "Do you really want to delete the selected model?",
         "description-placeholder": "[Document the model]",
         "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "או",
+        "link-with-or": "or",
         "css-class-placeholder": "[Define CSS class name (for external CSS)]",
         "custom-behaviour-placeholder": "[Custom Behaviour]",
         "template-placeholder": "[Define code template to apply to content]",
         "param-name-placeholder": "[Param name]",
-        "empty": "[Empty]"
+        "empty": "[Gwag]"
       },
       "css-source": "Open CSS file"
     }
@@ -155,7 +155,7 @@
   "facets": {
     "show": "Show top 50",
     "genre": "Genre",
-    "language": "שפה"
+    "language": "Iaith"
   },
   "appgen": {
     "account": {
@@ -163,7 +163,7 @@
       "owner": "The user account who will own the app.",
       "password": "Password for the user owning this app."
     },
-    "submit": "שמירה/יצירה",
+    "submit": "Save/Generate",
     "index": {
       "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
       "label": "Default Full Text Index",
@@ -172,13 +172,13 @@
     },
     "view": {
       "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
-      "div": "לפי חלוקת הטקסט (פרק, פרשה...)",
-      "page": "לפי עמוד"
+      "div": "By division (chapter/section...)",
+      "page": "By page"
     },
     "label": "Default View",
     "template": {
-      "help": "בחירת תבנית HTML שתשמש כברירת מחדל",
-      "label": "תבנית HTML"
+      "help": "Choose the HTML template to be used as default",
+      "label": "HTML Template"
     },
     "title": {
       "help": "Title of the app which will be shown e.g. in the dashboard",
@@ -187,13 +187,13 @@
     "collection": "Name of subcollection to hold TEI documents",
     "abbrev": {
       "label": "Short name to be used in URLs and file names",
-      "placeholder": "שם קצר"
+      "placeholder": "Enw byr"
     },
     "uri": "URL to uniquely identify the app",
     "dialog": {
       "title": "App generated"
     },
-    "open": "פתיחה",
+    "open": "Agor",
     "success": "Your app has been successfully generated!"
   }
 }

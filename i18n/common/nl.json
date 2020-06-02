@@ -119,6 +119,8 @@
       "save": "Opslaan",
       "saving": "Bezig met opslaan...",
       "saved": "Opgeslagen",
+      "denied": "Toestemming geweigerd",
+      "denied-message": "U heeft geen toestemming om {{odd}} op te slaan",
       "reload": "Opnieuw laden",
       "reload-confirm": "Wijzigingen die niet werden opgeslagen, gaan verloren. Doorgaan?",
       "add-element": "Element Toevoegen",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Definieer de code template die op de inhoud wordt toegepast]",
         "param-name-placeholder": "[naam parameter]",
         "empty": "[Leeg]"
-      }
+      },
+      "css-source": "Open CSS-bestand"
     }
   },
   "facets": {

@@ -61,80 +61,80 @@
     "collections": "Colecție locală",
     "dts": "Servicii de Text Distribuite (Experimental)",
     "demo": {
-      "title": "TEI Publisher Demo Collection",
-      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+      "title": "Colecție Demo TEI Publisher",
+      "description": "Documente demonstrând diferite caracteristici. Selecția nu este desigur exhaustivă dar prezintă o parte din posibilități. Vă rugăm să contribuiți cu use-casei personale pentru a completa selecția."
     },
     "playground": {
-      "title": "Playground",
-      "description": "A writable collection into which you can upload your own documents for testing."
+      "title": "Spațiu de încercare",
+      "description": "O colecție editabilăîn care puteți încărca propriile documente pentru testare."
     },
     "documentation": {
-      "title": "Documentation",
-      "description": "Documentation (using Docbook XML)."
+      "title": "Documentație",
+      "description": "Documentație (folosind Docbook XML)."
     },
-    "up": "Up"
+    "up": "Sus"
   },
   "upload": {
-    "upload": "Upload",
-    "drop": "Drop {{accept}} files here to upload."
+    "upload": "Încărcaţi",
+    "drop": "Plasați {{accept}} fișiere aici pentru a le încărca."
   },
   "demo": {
     "showCode": {
-      "show": "Show Code",
-      "hide": "Hide Code"
+      "show": "Afișare cod",
+      "hide": "Ascunde cod"
     },
     "editCode": {
-      "show": "Edit Code",
-      "hide": "Close Editor"
+      "show": "Editare cod",
+      "hide": "Închideți Editorul"
     }
   },
   "login": {
-    "login": "Login",
-    "as": "Logged in as {{user}}",
-    "user": "User",
-    "password": "Password",
-    "invalid": "Wrong password or invalid user",
-    "requiredGroup": "must be member of group {{group}}"
+    "login": "Autentificare",
+    "as": "Autentificat ca {{user}}",
+    "user": "Utilizator",
+    "password": "Parolă",
+    "invalid": "Parolă greşită sau utilizator nevalid",
+    "requiredGroup": "trebuie să fie membru al grupului {{group}}"
   },
   "search": {
-    "placeholder": "Enter Query",
-    "sections": "Search sections",
-    "headings": "Search headings"
+    "placeholder": "Introduceți interogarea",
+    "sections": "Caută secțiuni",
+    "headings": "Căutați titluri"
   },
   "dts": {
-    "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "endpoint": "Selectați punctul final",
+    "note": "Experimental: acces la alte ediții care expun DTS API"
   },
   "odd": {
-    "files": "ODD Files",
+    "files": "Fișiere ODD",
     "manage": {
-      "filename": "File name of the ODD (without suffix)",
-      "title": "Title for display",
-      "create": "Create",
-      "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "filename": "Numele fişierului ODD (fără sufix)",
+      "title": "Titlu pentru afişare",
+      "create": "Creează",
+      "create-from-example": "Creați din exemple",
+      "delete": "Sunteţi sigur că doriţi să ştergeţi fişierul ODD {{file}}?"
     },
     "editor": {
-      "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Save",
-      "saving": "Saving ...",
-      "saved": "Saved",
-      "denied": "Permission Denied",
-      "denied-message": "You do not have permission to save {{odd}}",
-      "reload": "Reload",
-      "reload-confirm": "Any unsaved changes will be lost. Continue?",
-      "add-element": "Add Element",
-      "odd-source": "ODD Source",
-      "specs": "Element Specs",
-      "jump-to": "Jump to element ...",
-      "title-short": "Short title",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
-      "description-placeholder": "Description of the ODD",
-      "source-label": "Base ODD",
-      "source-placeholder": "ODD to inherit from",
-      "use-namespace": "Check for using a different namespace than TEI",
-      "namespace-placeholder": "Default namespace URI (if not TEI)",
+      "delete-spec": "Chiar doriți să ștergeți specificația elementului pentru '{{ident}}'?",
+      "save": "Salvaţi",
+      "saving": "Se salvează ...",
+      "saved": "Salvat",
+      "denied": "Permisiune refuzată",
+      "denied-message": "Nu aveţi permisiunea de a salva {{odd}}",
+      "reload": "Reîncărcare",
+      "reload-confirm": "Orice modificări nesalvate vor fi pierdute. Continuați?",
+      "add-element": "Adăugare element",
+      "odd-source": "Sursă ODD",
+      "specs": "Specificații elemente",
+      "jump-to": "Salt la elementul ...",
+      "title-short": "Titlu scurt",
+      "title-short-placeholder": "Titlu scurt pentru afişare",
+      "description-label": "Descriere",
+      "description-placeholder": "Descrierea ODD",
+      "source-label": "Bază ODD",
+      "source-placeholder": "ODD pentru a moșteni de la",
+      "use-namespace": "Verificați pentru că utilizați un spațiu de nume diferit de TEI",
+      "namespace-placeholder": "URI de nume implicit (dacă nu TEI)",
       "title": "Titlu",
       "title-placeholder": "Titlul ODD",
       "model": {

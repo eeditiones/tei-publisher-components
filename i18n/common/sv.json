@@ -119,6 +119,8 @@
       "save": "Spara",
       "saving": "Sparar ...",
       "saved": "Sparad",
+      "denied": "Åtkomst nekad",
+      "denied-message": "Du har inte behörighet att spara {{odd}}",
       "reload": "Ladda om",
       "reload-confirm": "Alla osparade ändringar kommer att försvinna. Fortsätt ändå?",
       "add-element": "Lägg till element",
@@ -146,7 +148,8 @@
         "template-placeholder": "[Definiera kodmall som ska tillämpas på innehållet]",
         "param-name-placeholder": "[Parameternamn]",
         "empty": "[Tomt]"
-      }
+      },
+      "css-source": "Öppna CSS-fil"
     }
   },
   "facets": {

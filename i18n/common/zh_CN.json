@@ -1,63 +1,63 @@
 {
-  "language": "Kieli",
+  "language": "语言",
   "menu": {
-    "documentation": "Käyttöohjeet",
+    "documentation": "文档",
     "admin": {
-      "title": "Ylläpito",
-      "recompile": "Recompile ODD",
-      "appGenerator": "App Generator",
-      "edit-odd": "Edit ODD"
+      "title": "管理",
+      "recompile": "重新编译ODD",
+      "appGenerator": "应用程序生成器",
+      "edit-odd": "编辑ODD"
     },
-    "news": "Uutiset",
+    "news": "最新消息",
     "download": {
-      "title": "Lataa",
-      "pdf-latex": "PDF (LaTeX versio)",
-      "pdf-fo": "PDF (FO versio)",
-      "pdf-title": "Lataa PDF",
-      "fo-source": "FO Source",
-      "latex-source": "TeX Source",
-      "single-page": "Single Page",
-      "epub-download": "Lataa epub kirja",
-      "view-tei": "View TEI XML"
+      "title": "下载",
+      "pdf-latex": "PDF (LaTeX版本)",
+      "pdf-fo": "PDF (FO版本)",
+      "pdf-title": "下载PDF",
+      "fo-source": "FO源码",
+      "latex-source": "TeX源码",
+      "single-page": "单页",
+      "epub-download": "下载为epub电子书",
+      "view-tei": "查看源TEI XML"
     }
   },
   "dialogs": {
-    "error": "Hups",
-    "close": "Sulje",
-    "yes": "Kyllä",
-    "no": "ei",
-    "serverError": "The request to the server failed.",
-    "generatingFile": "Generating File...",
-    "downloadMessage": "Generating a file for download may take up to a few minutes. Please wait. This dialog should close automatically when the download has completed.",
-    "loading": "Lataa..."
+    "error": "糟糕",
+    "close": "关闭",
+    "yes": "确定",
+    "no": "取消",
+    "serverError": "向服务器请求失败。",
+    "generatingFile": "产生文件中...",
+    "downloadMessage": "生成文件进行下载可能需要花费几分钟。请稍候。下载完成后，该对话框应自动关闭。",
+    "loading": "正在载入..."
   },
   "document": {
-    "contents": "Sisältö",
-    "selectODD": "Valitse ODD",
-    "selectTemplate": "Valitse malli",
-    "selectFeature": "Valitse ominaisuus",
+    "contents": "目录",
+    "selectODD": "选择ODD",
+    "selectTemplate": "選擇範本",
+    "selectFeature": "选择功能",
     "normalized": "Normalized View",
     "plain": "Plain Reading View",
-    "view-type": "Page View",
-    "add-panel": "Add View",
-    "caveat-heading": "Caveat",
+    "view-type": "页面视图",
+    "add-panel": "添加视图",
+    "caveat-heading": "注意事项",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
     "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
-    "sort": "Lajittelujärjestys",
-    "filter": "Suodata",
-    "items": "Found {{count}} item",
-    "items_plural": "Found {{count}} items",
-    "title": "Otsikko",
-    "author": "Tekijä",
-    "modificationDate": "Muokkauspäivä",
-    "file": "Tiedoston nimi",
-    "delete": "Poista",
-    "confirmDeletion": "Haluatko varmasti poistaa tämän tiedoston?",
-    "confirmDeletion_plural": "Haluatko varmasti poistaa {{count}} tiedostoa?",
-    "documents": "Dokumentit",
+    "sort": "排序方式",
+    "filter": "筛选依据",
+    "items": "找到 {{count}} 项",
+    "items_plural": "找到 {{count}} 项",
+    "title": "标题",
+    "author": "作者",
+    "modificationDate": "修改日期",
+    "file": "档名",
+    "delete": "删除",
+    "confirmDeletion": "确定要删除该文件吗？",
+    "confirmDeletion_plural": "确定要删除该{{count}}份文件吗？",
+    "documents": "文件",
     "collections": "Local Collection",
     "dts": "Distributed Text Services (Experimental)",
     "demo": {
@@ -65,97 +65,97 @@
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
-      "title": "Leikkikenttä",
+      "title": "操场",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "documentation": {
-      "title": "Documentation",
-      "description": "Documentation (using Docbook XML)."
+      "title": "文档",
+      "description": "文檔(Docbook XML格式)"
     },
-    "up": "Ylös"
+    "up": "向上"
   },
   "upload": {
-    "upload": "Upload",
-    "drop": "Drop {{accept}} files here to upload."
+    "upload": "上传",
+    "drop": "将{{accept}}文件拖至此处上传"
   },
   "demo": {
     "showCode": {
-      "show": "Näytä koodi",
-      "hide": "Pilota koodi"
+      "show": "显示代码",
+      "hide": "隐藏代码"
     },
     "editCode": {
-      "show": "Muokkaa koodi",
-      "hide": "Sulje editori"
+      "show": "编辑代码",
+      "hide": "关闭编辑器"
     }
   },
   "login": {
-    "login": "Kirjaudu sisään",
-    "as": "Logged in as {{user}}",
-    "user": "User",
-    "password": "Password",
-    "invalid": "Wrong password or invalid user",
+    "login": "登入",
+    "as": "已以 {{user}} 身份登录",
+    "user": "用户",
+    "password": "密码",
+    "invalid": "密码错误或用户无效",
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
-    "placeholder": "Enter Query",
+    "placeholder": "输入查询",
     "sections": "Search sections",
     "headings": "Search headings"
   },
   "dts": {
-    "endpoint": "Select Endpoint",
+    "endpoint": "选择端点",
     "note": "Experimental: access other editions which expose the DTS API"
   },
   "odd": {
-    "files": "ODD Files",
+    "files": "ODD 文件",
     "manage": {
-      "filename": "File name of the ODD (without suffix)",
-      "title": "Title for display",
+      "filename": "ODD 文件名(无后缀)",
+      "title": "显示的标题",
       "create": "Create",
       "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "delete": "确实要删除ODD文件 {{file}}?"
     },
     "editor": {
-      "delete-spec": "Really delete the element spec for '{{ident}}'?",
-      "save": "Tallenna",
-      "saving": "Tallennetaan...",
-      "saved": "Tallennettu",
+      "delete-spec": "是否确定要删除元素规格 '{{ident}}'?",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "已保存",
       "denied": "Permission Denied",
       "denied-message": "You do not have permission to save {{odd}}",
-      "reload": "Päivitä",
-      "reload-confirm": "Kaikki tallentamattomat muutokset menetetään. Haluatko edetä?",
-      "add-element": "Lisää elementti",
-      "odd-source": "ODD Source",
-      "specs": "Element Specs",
+      "reload": "重新加载",
+      "reload-confirm": "未保存文件会数据遗失，确定要退出？",
+      "add-element": "添加元素",
+      "odd-source": "ODD源码",
+      "specs": "元素規格",
       "jump-to": "Jump to element ...",
-      "title-short": "Lyhyt otsikko",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
-      "description-placeholder": "Description of the ODD",
+      "title-short": "短标题",
+      "title-short-placeholder": "显示的短标题",
+      "description-label": "描述",
+      "description-placeholder": "ODD的描述",
       "source-label": "Base ODD",
       "source-placeholder": "ODD to inherit from",
       "use-namespace": "Check for using a different namespace than TEI",
-      "namespace-placeholder": "Default namespace URI (if not TEI)",
-      "title": "Otsikko",
-      "title-placeholder": "ODD:n otsikko",
+      "namespace-placeholder": "默认的名称空间(如果不是TEI)",
+      "title": "标题",
+      "title-placeholder": "ODD 的标题",
       "model": {
         "delete-model-label": "Delete Model?",
-        "delete-model-message": "Haluatko todella poistaa valitut mallit (modellit)?",
+        "delete-model-message": "Do you really want to delete the selected model?",
         "description-placeholder": "[Document the model]",
         "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
-        "link-with-or": "tai",
+        "link-with-or": "或",
         "css-class-placeholder": "[Define CSS class name (for external CSS)]",
         "custom-behaviour-placeholder": "[Custom Behaviour]",
         "template-placeholder": "[Define code template to apply to content]",
-        "param-name-placeholder": "[Param name]",
+        "param-name-placeholder": "[参数名]",
         "empty": "[Empty]"
       },
       "css-source": "Open CSS file"
     }
   },
   "facets": {
-    "show": "Näytä ensimmäiset 50",
-    "genre": "Laji",
-    "language": "Kieli"
+    "show": "Show top 50",
+    "genre": "流派",
+    "language": "语言"
   },
   "appgen": {
     "account": {
@@ -163,7 +163,7 @@
       "owner": "The user account who will own the app.",
       "password": "Password for the user owning this app."
     },
-    "submit": "Tallenna/Luo",
+    "submit": "保存并生成",
     "index": {
       "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
       "label": "Default Full Text Index",
@@ -173,27 +173,27 @@
     "view": {
       "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
       "div": "By division (chapter/section...)",
-      "page": "Sivu sivulta"
+      "page": "By page"
     },
-    "label": "Oletusnäkymä",
+    "label": "默认视图",
     "template": {
-      "help": "Valitse HTML-malli mikä käytetään oletuksena",
-      "label": "HTML-malli"
+      "help": "Choose the HTML template to be used as default",
+      "label": "HTML 模板"
     },
     "title": {
-      "help": "Title of the app which will be shown e.g. in the dashboard",
-      "label": "Äppin otsikko"
+      "help": "应用程序的标题(显示在Dashboard中)",
+      "label": "应用程序的标题"
     },
     "collection": "Name of subcollection to hold TEI documents",
     "abbrev": {
-      "label": "Short name to be used in URLs and file names",
-      "placeholder": "Lyhyt nimi"
+      "label": "在 URL 和文件名中使用的短名",
+      "placeholder": "短名称"
     },
-    "uri": "URL to uniquely identify the app",
+    "uri": "唯一识别应用程序的 URL",
     "dialog": {
-      "title": "App generated"
+      "title": "应用程序已生成"
     },
-    "open": "Avaa",
-    "success": "Your app has been successfully generated!"
+    "open": "打开",
+    "success": "您的应用程式已成功产生"
   }
 }
