@@ -189,10 +189,12 @@ export class PbPopover extends pbMixin(LitElement) {
                 ignoreAttributes: true,
                 boundary: 'viewport',
                 maxWidth: 'none',
-                touch: 'hold'
+                touch: 'hold',
+                hideOnClick: false
             };
             if (this.persistent) {
                 options.trigger = 'click';
+                options.hideOnClick = true;
             }
             if (this.theme && this.theme !== 'none') {
                 options.theme = this.theme;
