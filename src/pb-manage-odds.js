@@ -2,7 +2,6 @@ import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
-import '@polymer/iron-form';
 import '@polymer/paper-checkbox';
 import '@polymer/paper-button';
 import '@polymer/paper-icon-button';
@@ -58,7 +57,6 @@ export class PbManageOdds extends pbMixin(LitElement) {
         super.firstUpdated();
 
         this._loader = this.shadowRoot.getElementById('load');
-        this._form = this.shadowRoot.getElementById('ironform');
 
         PbManageOdds.waitOnce('pb-page-ready', (options) => {
             this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
@@ -96,13 +94,17 @@ export class PbManageOdds extends pbMixin(LitElement) {
     }
 
     _createODD() {
-        const params = this._form.serializeForm();
-        console.log('<pb-manage-odds> create ODD: %o', params);
+        const name = this.shadowRoot.querySelector('paper-input[name="new_odd"]').value;
+        const title = this.shadowRoot.querySelector('paper-input[name="title"]').value;
+        const params = { new_odd: name, title };
+        console.log('<pb-manage-odds> create ODD: %s, %s', name, title);
         this._refresh(params);
     }
 
     _createByExample() {
-        const params = this._form.serializeForm();
+        const name = this.shadowRoot.querySelector('paper-input[name="new_odd"]').value;
+        const title = this.shadowRoot.querySelector('paper-input[name="title"]').value;
+        const params = { new_odd: name, title };
         const fileBrowser = document.getElementById(this.target);
         if (!(fileBrowser || fileBrowser.getSelected)) {
             console.error('<pb-manage-odds> target %s not found', this.target);
@@ -169,20 +171,19 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 <div class="odd-description">${odd.description}</div>
             `)}
             <pb-restricted login="login">
-                <iron-form id="ironform">
-                    <form>
-                        <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"
-                            error-message="Required. Use letters, numbers, - and _"></paper-input>
-                        <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required minlength="1"></paper-input>
-                        <paper-button id="createBtn" @click="${this._createODD}">
-                            <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
-                        </paper-button>
-                        <paper-button id="createByEx" @click="${this._createByExample}">
-                            <iron-icon icon="build"></iron-icon>
-                            ${translate('odd.manage.create-from-example')}
-                        </paper-button>
-                    </form>
-                </iron-form>
+                <form action="" method="GET">
+                    <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"
+                        error-message="Required. Use letters, numbers, - and _"></paper-input>
+                    <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required minlength="1"
+                        error-message="A title is required"></paper-input>
+                    <paper-button id="createBtn" @click="${this._createODD}">
+                        <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
+                    </paper-button>
+                    <paper-button id="createByEx" @click="${this._createByExample}">
+                        <iron-icon icon="build"></iron-icon>
+                        ${translate('odd.manage.create-from-example')}
+                    </paper-button>
+                </form>
             </pb-restricted>
 
             <iron-ajax
