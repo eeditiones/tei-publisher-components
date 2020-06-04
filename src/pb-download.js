@@ -103,6 +103,12 @@ export class PbDownload extends pbMixin(LitElement) {
                 }
             });
         }
+        this.subscribeTo('pb-refresh', (ev) => {
+            if (ev.detail.odd) {
+                this.odd = ev.detail.odd;
+                this._href = this._computeURL();
+            }
+        });
         this._target = this._computeTarget();
         this._href = this._computeURL();
     }
@@ -166,7 +172,7 @@ export class PbDownload extends pbMixin(LitElement) {
             } else {
                 path = doc.getFileName();
             }
-            url = `${path}${this.type ? `.${this.type}` : ''}?odd=${doc.odd}.odd&cache=no&token=${this._token}`;
+            url = `${path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
         } else {
             url = /^(?:[a-z]+:)?\/\//i.test(this.url) ? this.url : `${this.getEndpoint()}/${this.url}`;
             url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
