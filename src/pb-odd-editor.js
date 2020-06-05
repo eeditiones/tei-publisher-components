@@ -48,12 +48,13 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             #layout {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 420px 1fr;
+                grid-template-columns: auto 1fr;
                 grid-template-rows: auto 1fr;
             }
 
             #drawer {
                 grid-column: 1 / 1;
+                min-width: 320px;
             }
 
             #navlist {
