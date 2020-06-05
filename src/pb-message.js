@@ -122,6 +122,7 @@ export class PbMessage extends LitElement {
     set(title, message) {
         this.title = title;
         this.message = message;
+        this.modal.notifyResize();
     }
 
     isMessage() {
