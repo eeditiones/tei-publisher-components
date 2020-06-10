@@ -1,5 +1,8 @@
 {
     "demo": {
         "message": "Benutzerdefinierte Nachricht"
+    },
+    "document": {
+        "contents": "Inhaltsverzeichnis angepasst"
     }
 }

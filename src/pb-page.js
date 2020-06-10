@@ -68,6 +68,9 @@ class PbPage extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'locale-fallback-ns'
             },
+            language: {
+                type: String
+            },
             /**
              * If set, the element will wait for a language being set by i18n before
              * it sends a `pb-page-ready` event. Elements like `pb-view` will wait
@@ -158,9 +161,12 @@ class PbPage extends pbMixin(LitElement) {
                 backendOptions
             }
         };
+        if (this.language) {
+            options.lng = this.language;
+        }
 
         if (this._localeFallbacks.length > 0) {
-            const fallbacks = this._localeFallbacks.slice().reverse();
+            const fallbacks = this._localeFallbacks.slice();
             options.defaultNS = fallbacks[0];
             options.fallbackNS = fallbacks.slice(1);
             options.ns = fallbacks;
