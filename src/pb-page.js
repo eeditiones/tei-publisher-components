@@ -68,6 +68,10 @@ class PbPage extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'locale-fallback-ns'
             },
+            /**
+             * Set a language for i18n (e.g. 'en' or 'de'). If not set, browser language
+             * detection will be used.
+             */
             language: {
                 type: String
             },
