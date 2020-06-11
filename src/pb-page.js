@@ -7,6 +7,11 @@ import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 
 /**
+ * Make sure there's only one instance of pb-page active at any time.
+ */
+let _instance;
+
+/**
  * Configuration element which should wrap around other `pb-` elements.
  * Among other things, this element determines the TEI Publisher
  * instance to which all elements will talk (property `endpoint`), and
@@ -108,14 +113,33 @@ class PbPage extends pbMixin(LitElement) {
         this.unresolved = true;
         this.endpoint = ".";
         this._localeFallbacks = [];
+
+        if (_instance) {
+            this.disabled = true;
+        } else {
+            _instance = this;
+        }
     }
 
     set localeFallbackNs(value) {
         value.split(/\s+/).forEach(v => this._localeFallbacks.push(v));
     }
 
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        if (_instance === this) {
+            // clear to allow future instances
+            _instance = null;
+        }
+    }
+
     connectedCallback() {
         super.connectedCallback();
+        
+        if (this.disabled) {
+            return;
+        }
+
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');
         }
@@ -136,6 +160,10 @@ class PbPage extends pbMixin(LitElement) {
 
     firstUpdated() {
         super.firstUpdated();
+
+        if (this.disabled) {
+            return;
+        }
 
         const defaultLocales = resolveURL('../i18n/') + '{{ns}}/{{lng}}.json';
         console.log('<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',

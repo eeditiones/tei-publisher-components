@@ -30,6 +30,23 @@ describe('translate labels', () => {
         expect(node.title).to.equal('Download');
     });
 
+    it('reacts to language change', async () => {
+        const el = (
+            await fixture(`
+                <pb-page require-language>
+                    <span data-i18n="document.contents">unset</span>
+                </pb-page>
+            `)
+        );
+        await oneEvent(document, 'pb-i18n-update');
+
+        document.dispatchEvent(new CustomEvent('pb-i18n-language', { detail: { "language": "de" }}));
+        await oneEvent(document, 'pb-i18n-update');
+
+        const node = el.querySelector('span');
+        expect(node).to.have.text('Inhalt');
+    });
+
     it('loads custom translations', async () => {
         const el = (
             await fixture(`
