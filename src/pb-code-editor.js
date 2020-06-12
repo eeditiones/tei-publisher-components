@@ -37,17 +37,12 @@ export class PbCodeEditor extends LitElement {
 
             #editorDiv, .CodeMirror {
               width: 100%;
-              height: auto;
-              position: relative;
-              top:0;
-              left:0;
             }
 
             .label {
-                color:var(--paper-grey-500);
+                color: var(--paper-grey-500);
                 margin-bottom:5px;
             }
-
 
             /* BASICS */
 
@@ -64,7 +59,8 @@ export class PbCodeEditor extends LitElement {
             .CodeMirror-lines {
                 padding: 4px 0; /* Vertical padding around content */
             }
-            .CodeMirror pre {
+            .CodeMirror pre.CodeMirror-line,
+            .CodeMirror pre.CodeMirror-line-like {
                 padding: 0 4px; /* Horizontal padding of content */
             }
 
@@ -147,7 +143,7 @@ export class PbCodeEditor extends LitElement {
 
             .CodeMirror-rulers {
                 position: absolute;
-                left: 0; right: 0; top: -50px; bottom: -20px;
+                left: 0; right: 0; top: -50px; bottom: 0;
                 overflow: hidden;
             }
             .CodeMirror-ruler {
@@ -196,15 +192,15 @@ export class PbCodeEditor extends LitElement {
 
             /* Default styles for common addons */
 
-            div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
-            div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+            div.CodeMirror span.CodeMirror-matchingbracket {color: #0b0;}
+            div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
             .CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
             .CodeMirror-activeline-background {background: #e8f2ff;}
 
             /* STOP */
 
             /* The rest of this file contains styles related to the mechanics of
-               the editor. You probably shouldn't touch them. */
+            the editor. You probably shouldn't touch them. */
 
             .CodeMirror {
                 position: relative;
@@ -213,23 +209,22 @@ export class PbCodeEditor extends LitElement {
             }
 
             .CodeMirror-scroll {
-                overflow: scroll !important; /* Things will break if this is overridden */
-                /* 30px is the magic margin used to hide the element's real scrollbars */
+                /* 50px is the magic margin used to hide the element's real scrollbars */
                 /* See overflow: hidden in .CodeMirror */
-                margin-bottom: -30px; margin-right: -30px;
-                padding-bottom: 30px;
+                margin-bottom: -50px; margin-right: -50px;
+                padding-bottom: 50px;
+                max-height: 100%;
                 outline: none; /* Prevent dragging from highlighting the element */
                 position: relative;
             }
             .CodeMirror-sizer {
                 position: relative;
-                border-right: 30px solid transparent;
+                border-right: 50px solid transparent;
             }
 
-
             /* The fake, visible scrollbars. Used to force redraw during scrolling
-               before actual scrolling happens, thus preventing shaking and
-               flickering artifacts. */
+            before actual scrolling happens, thus preventing shaking and
+            flickering artifacts. */
             .CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
                 position: absolute;
                 z-index: 6;
@@ -254,13 +249,15 @@ export class PbCodeEditor extends LitElement {
 
             .CodeMirror-gutters {
                 position: absolute; left: 0; top: 0;
+                min-height: 100%;
                 z-index: 3;
             }
             .CodeMirror-gutter {
                 white-space: normal;
+                height: 100%;
                 display: inline-block;
                 vertical-align: top;
-                margin-bottom: -30px;
+                margin-bottom: -50px;
             }
             .CodeMirror-gutter-wrapper {
                 position: absolute;
@@ -285,7 +282,8 @@ export class PbCodeEditor extends LitElement {
                 cursor: text;
                 min-height: 1px; /* prevents collapsing before first draw */
             }
-            .CodeMirror pre {
+            .CodeMirror pre.CodeMirror-line,
+            .CodeMirror pre.CodeMirror-line-like {
                 /* Reset some styles that the rest of the page might have set */
                 -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
                 border-width: 0;
@@ -304,7 +302,8 @@ export class PbCodeEditor extends LitElement {
                 -webkit-font-variant-ligatures: contextual;
                 font-variant-ligatures: contextual;
             }
-            .CodeMirror-wrap pre {
+            .CodeMirror-wrap pre.CodeMirror-line,
+            .CodeMirror-wrap pre.CodeMirror-line-like {
                 word-wrap: break-word;
                 white-space: pre-wrap;
                 word-break: normal;
@@ -319,7 +318,7 @@ export class PbCodeEditor extends LitElement {
             .CodeMirror-linewidget {
                 position: relative;
                 z-index: 2;
-                overflow: auto;
+                padding: 0.1px; /* Force widget margins to stay inside of the container */
             }
 
             .CodeMirror-widget {}
@@ -394,150 +393,6 @@ export class PbCodeEditor extends LitElement {
             /* Help users use markselection to safely style text background */
             span.CodeMirror-selectedtext { background: none; }
 
-
-            /* ttcn */
-
-            .cm-s-ttcn .cm-quote { color: #090; }
-            .cm-s-ttcn .cm-negative { color: #d44; }
-            .cm-s-ttcn .cm-positive { color: #292; }
-            .cm-s-ttcn .cm-header, .cm-strong { font-weight: bold; }
-            .cm-s-ttcn .cm-em { font-style: italic; }
-            .cm-s-ttcn .cm-link { text-decoration: underline; }
-            .cm-s-ttcn .cm-strikethrough { text-decoration: line-through; }
-            .cm-s-ttcn .cm-header { color: #00f; font-weight: bold; }
-
-            .cm-s-ttcn .cm-atom { color: #219; }
-            .cm-s-ttcn .cm-attribute { color: #00c; }
-            .cm-s-ttcn .cm-bracket { color: #997; }
-            .cm-s-ttcn .cm-comment { color: #333333; }
-            .cm-s-ttcn .cm-def { color: #00f; }
-            .cm-s-ttcn .cm-em { font-style: italic; }
-            .cm-s-ttcn .cm-error { color: #f00; }
-            .cm-s-ttcn .cm-hr { color: #999; }
-            .cm-s-ttcn .cm-invalidchar { color: #f00; }
-            .cm-s-ttcn .cm-keyword { font-weight:bold; }
-            .cm-s-ttcn .cm-link { color: #00c; text-decoration: underline; }
-            .cm-s-ttcn .cm-meta { color: #555; }
-            .cm-s-ttcn .cm-negative { color: #d44; }
-            .cm-s-ttcn .cm-positive { color: #292; }
-            .cm-s-ttcn .cm-qualifier { color: #555; }
-            .cm-s-ttcn .cm-strikethrough { text-decoration: line-through; }
-            .cm-s-ttcn .cm-string { color: #006400; }
-            .cm-s-ttcn .cm-string-2 { color: #f50; }
-            .cm-s-ttcn .cm-strong { font-weight: bold; }
-            .cm-s-ttcn .cm-tag { color: #170; }
-            .cm-s-ttcn .cm-variable { color: #8B2252; }
-            .cm-s-ttcn .cm-variable-2 { color: #05a; }
-            .cm-s-ttcn .cm-variable-3, .cm-s-ttcn .cm-type { color: #085; }
-
-            .cm-s-ttcn .cm-invalidchar { color: #f00; }
-
-            /* ASN */
-            .cm-s-ttcn .cm-accessTypes,
-            .cm-s-ttcn .cm-compareTypes { color: #27408B; }
-            .cm-s-ttcn .cm-cmipVerbs { color: #8B2252; }
-            .cm-s-ttcn .cm-modifier { color:#D2691E; }
-            .cm-s-ttcn .cm-status { color:#8B4545; }
-            .cm-s-ttcn .cm-storage { color:#A020F0; }
-            .cm-s-ttcn .cm-tags { color:#006400; }
-
-            /* CFG */
-            .cm-s-ttcn .cm-externalCommands { color: #8B4545; font-weight:bold; }
-            .cm-s-ttcn .cm-fileNCtrlMaskOptions,
-            .cm-s-ttcn .cm-sectionTitle { color: #2E8B57; font-weight:bold; }
-
-            /* TTCN */
-            .cm-s-ttcn .cm-booleanConsts,
-            .cm-s-ttcn .cm-otherConsts,
-            .cm-s-ttcn .cm-verdictConsts { color: #006400; }
-            .cm-s-ttcn .cm-configOps,
-            .cm-s-ttcn .cm-functionOps,
-            .cm-s-ttcn .cm-portOps,
-            .cm-s-ttcn .cm-sutOps,
-            .cm-s-ttcn .cm-timerOps,
-            .cm-s-ttcn .cm-verdictOps { color: #0000FF; }
-            .cm-s-ttcn .cm-preprocessor,
-            .cm-s-ttcn .cm-templateMatch,
-            .cm-s-ttcn .cm-ttcn3Macros { color: #27408B; }
-            .cm-s-ttcn .cm-types { color: #A52A2A; font-weight:bold; }
-            .cm-s-ttcn .cm-visibilityModifiers { font-weight:bold; }
-
-            /* lint */
-
-            /* The lint marker gutter */
-            .CodeMirror-lint-markers {
-                width: 16px;
-            }
-
-            .CodeMirror-lint-tooltip {
-                background-color: #ffd;
-                border: 1px solid black;
-                border-radius: 4px 4px 4px 4px;
-                color: black;
-                font-family: monospace;
-                font-size: 10pt;
-                overflow: hidden;
-                padding: 2px 5px;
-                position: fixed;
-                white-space: pre;
-                white-space: pre-wrap;
-                z-index: 100;
-                max-width: 600px;
-                opacity: 0;
-                transition: opacity .4s;
-                -moz-transition: opacity .4s;
-                -webkit-transition: opacity .4s;
-                -o-transition: opacity .4s;
-                -ms-transition: opacity .4s;
-            }
-
-            .CodeMirror-lint-mark-error, .CodeMirror-lint-mark-warning {
-                background-position: left bottom;
-                background-repeat: repeat-x;
-            }
-
-            .CodeMirror-lint-mark-error {
-                background-image:
-                        url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==")
-            ;
-            }
-
-            .CodeMirror-lint-mark-warning {
-                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhTg7YAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAMklEQVQI12NkgIIvJ3QXMjAwdDN+OaEbysDA4MPAwNDNwMCwiOHLCd1zX07o6kBVGQEAKBANtobskNMAAAAASUVORK5CYII=");
-            }
-
-            .CodeMirror-lint-marker-error, .CodeMirror-lint-marker-warning {
-                background-position: center center;
-                background-repeat: no-repeat;
-                cursor: pointer;
-                display: inline-block;
-                height: 16px;
-                width: 16px;
-                vertical-align: middle;
-                position: relative;
-            }
-
-            .CodeMirror-lint-message-error, .CodeMirror-lint-message-warning {
-                padding-left: 18px;
-                background-position: top left;
-                background-repeat: no-repeat;
-            }
-
-            .CodeMirror-lint-marker-error, .CodeMirror-lint-message-error {
-                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
-            }
-
-            .CodeMirror-lint-marker-warning, .CodeMirror-lint-message-warning {
-                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAANlBMVEX/uwDvrwD/uwD/uwD/uwD/uwD/uwD/uwD/uwD6twD/uwAAAADurwD2tQD7uAD+ugAAAAD/uwDhmeTRAAAADHRSTlMJ8mN1EYcbmiixgACm7WbuAAAAVklEQVR42n3PUQqAIBBFUU1LLc3u/jdbOJoW1P08DA9Gba8+YWJ6gNJoNYIBzAA2chBth5kLmG9YUoG0NHAUwFXwO9LuBQL1giCQb8gC9Oro2vp5rncCIY8L8uEx5ZkAAAAASUVORK5CYII=");
-            }
-
-            .CodeMirror-lint-marker-multiple {
-                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAMAAADzjKfhAAAACVBMVEUAAAAAAAC/v7914kyHAAAAAXRSTlMAQObYZgAAACNJREFUeNo1ioEJAAAIwmz/H90iFFSGJgFMe3gaLZ0od+9/AQZ0ADosbYraAAAAAElFTkSuQmCC");
-                background-repeat: no-repeat;
-                background-position: right bottom;
-                width: 100%; height: 100%;
-            }
-
         `;
     }
 
@@ -604,7 +459,7 @@ export class PbCodeEditor extends LitElement {
                @error="${this._handleLintError}"></iron-ajax>
 
             <div class="label">${this.label}</div>
-            <div id="editorDiv" code="$(this.code)"></div>
+            <div id="editorDiv"></div>
         `;
     }
 
@@ -644,7 +499,7 @@ export class PbCodeEditor extends LitElement {
             lineNumbers: true,
             lineWrapping: true,
             autofocus: false,
-            theme: "ttcn",
+            // theme: "ttcn",
             matchBrackets: true,
             placeholder: this.placeholder,
             gutters: ["CodeMirror-lint-markers"],

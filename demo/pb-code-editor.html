@@ -16,14 +16,9 @@
     <body>
         <pb-page>
             <pb-demo-snippet>
-                <style>
-                    pb-code-editor {
-                        height: auto;
-                    }
-                </style>
                 <template>
                     <pb-page>
-                        <pb-code-editor label="some xq" id="editor" code="(1,2)" mode="xquery"
+                        <pb-code-editor label="some xq" id="editor" code="for $i in (1, 2) return $i * 6" mode="xquery"
                             linter="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor>
                         <pb-code-editor label="some style" id="editor2" code="color: black;" mode="css"></pb-code-editor>
                         <pb-code-editor label="some text" id="editor3" code="default mode"></pb-code-editor>
