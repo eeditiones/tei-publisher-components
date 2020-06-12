@@ -590,7 +590,7 @@ export class PbCodeEditor extends LitElement {
         super();
         this.code = '';
         this.mode = 'javascript';
-        this.placeholder = i18n('odd.editor.model.empty');
+        this.placeholder = 'odd.editor.model.empty';
         this.tabSize = 2;
         this.label = '';
         this.linter = '';
@@ -615,6 +615,16 @@ export class PbCodeEditor extends LitElement {
             this.code = value;
             this.requestUpdate();
         }
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        document.addEventListener('pb-i18n-update', (ev) => {
+            this.placeholder = ev.detail.t(this.placeholder);
+            if (this._editor) {
+                this._editor.setOption('placeholder', this.placeholder);
+            }
+        });
     }
 
     async firstUpdated() {
