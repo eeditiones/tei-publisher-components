@@ -1,5 +1,7 @@
-![npm (scoped)](https://img.shields.io/npm/v/@teipublisher/pb-components)
-![npm](https://img.shields.io/npm/dw/@teipublisher/pb-components)
+<a href="https://www.npmjs.com/package/@teipublisher/pb-components">
+<img title="npm (scoped)" src="https://img.shields.io/npm/v/@teipublisher/pb-components">
+<img title="npm" src="https://img.shields.io/npm/dw/@teipublisher/pb-components">
+</a>
 
 # Web Components for TEI Publisher
 
