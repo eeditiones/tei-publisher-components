@@ -17,6 +17,16 @@ export default [
         plugins: [codeMirrorPluginToEsm]
     },
     {
+        input: 'node_modules/codemirror/mode/xml/xml.js',
+        output: { file: 'lib/codemirror/mode/xml/xml.js' },
+        plugins: [codeMirrorPluginToEsm]
+    },
+    {
+        input: 'node_modules/codemirror/mode/stex/stex.js',
+        output: { file: 'lib/codemirror/mode/stex/stex.js' },
+        plugins: [codeMirrorPluginToEsm]
+    },
+    {
         input: 'node_modules/codemirror/addon/display/placeholder.js',
         output: { file: 'lib/codemirror/addon/display/placeholder.js' },
         plugins: [codeMirrorPluginToEsm]

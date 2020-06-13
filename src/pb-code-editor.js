@@ -4,17 +4,29 @@ import CodeMirror from 'codemirror/src/codemirror.js';
 
 import modeXquery from "../lib/codemirror/mode/xquery/xquery.js";
 import modeCss from "../lib/codemirror/mode/css/css.js";
+import modeXml from "../lib/codemirror/mode/xml/xml.js";
+import modeStex from "../lib/codemirror/mode/stex/stex.js";
 import addonDisplayPlaceholder from "../lib/codemirror/addon/display/placeholder.js";
 import addonEditMatchBracket from "../lib/codemirror/addon/edit/matchbrackets.js";
 import addonLint from "../lib/codemirror/addon/lint/lint.js";
-
-import { get as i18n, translate } from "./pb-i18n.js";
+import { resolveURL } from './utils.js';
 
 modeXquery(CodeMirror);
 modeCss(CodeMirror);
+modeXml(CodeMirror);
+modeStex(CodeMirror);
 addonDisplayPlaceholder(CodeMirror);
 addonEditMatchBracket(CodeMirror);
 addonLint(CodeMirror);
+
+async function loadTheme(theme) {
+    const resource = resolveURL('../css/codemirror/') + `${theme}.css`;
+    console.log('<pb-code-editor> loading theme %s from %s', theme, resource);
+
+    const fetchedStyles = await fetch(resource).then(async response => response.text()).catch(e => '');
+
+    return html`<style>${fetchedStyles}</style>`;
+}
 
 /**
  * A wrapper for the popular codemirror code editor.
@@ -435,6 +447,12 @@ export class PbCodeEditor extends LitElement {
             label: {
                 type: String
             },
+            theme: {
+                type: String
+            },
+            _themeStyles: {
+                type: String
+            },
             linter: {
                 attribute: true
             }
@@ -449,10 +467,23 @@ export class PbCodeEditor extends LitElement {
         this.tabSize = 2;
         this.label = '';
         this.linter = '';
+        this.theme = null;
+        this._themeStyles = null;
+    }
+
+    set theme(value) {
+        if (value) {
+            loadTheme(value).then((styles) => {
+                this._themeStyles = styles;
+                this._editor.setOption('theme', value);
+            });
+        }
+        this.requestUpdate('_themeStyles', value);
     }
 
     render() {
         return html`
+            ${this._themeStyles}
             <iron-ajax id="lint" url="${this.linter}"
                handle-as="json" content-type="application/x-www-form-urlencoded"
                method="POST"
@@ -484,28 +515,28 @@ export class PbCodeEditor extends LitElement {
 
     async firstUpdated() {
         await this.updateComplete;
-        // if (this.code) {
-        //     const {code} = this;
-        //     this.code = code.trim();
-        // }
         this._initEditor();
     }
 
     _initEditor() {
-        const editorDiv = this.shadowRoot.getElementById('editorDiv')
-        const cm = CodeMirror(editorDiv, {
+        const options = {
             value: this.code || '',
             mode: this.mode,
             lineNumbers: true,
             lineWrapping: true,
             autofocus: false,
-            // theme: "ttcn",
             matchBrackets: true,
             placeholder: this.placeholder,
             gutters: ["CodeMirror-lint-markers"],
             lint: true,
             viewportMargin: Infinity
-        });
+        };
+        if (this.theme) {
+            options.theme = this.theme;
+        }
+
+        const editorDiv = this.shadowRoot.getElementById('editorDiv')
+        const cm = CodeMirror(editorDiv, options);
 
         cm.on('change', () => this.setCode(cm.getValue()));
 

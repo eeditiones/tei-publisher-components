@@ -63,6 +63,10 @@ export default [
                     {
                         src: './node_modules/prismjs/themes/*',
                         dest: './css/prismjs'
+                    },
+                    {
+                        src: './node_modules/codemirror/theme/*',
+                        dest: './css/codemirror'
                     }
                 ]
             })

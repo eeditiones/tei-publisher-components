@@ -476,7 +476,7 @@ export class PbOddModelEditor extends LitElement {
                                 
                             <pb-code-editor id="template"
                                              code="${this.template}"
-                                             mode="${this.output}"
+                                             mode="${this.output === 'latex' ? 'stex' : 'xml'}"
                                              label="Template"
                                              placeholder="${translate('odd.editor.model.template-placeholder')}"
                                              @code-changed="${this._updateTemplate}"></pb-code-editor>
