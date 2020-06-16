@@ -24,6 +24,8 @@ module.exports = config => {
         nodeResolve: true
       },
       client: {
+        endpoint: config.endpoint ? config.endpoint : 'http://localhost:8080/exist/apps/tei-publisher/',
+        passwd: config.passwd ? config.passwd : 'simple',
         mocha: {
           timeout: 10000
         }

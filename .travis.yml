@@ -1,0 +1,6 @@
+language: node_js
+env:
+  global:
+    - ENDPOINT=https://teipublisher.com/exist/apps/tei-publisher/
+script:
+    - karma start -- --endpoint=$ENDPOINT --passwd=$PASSWD

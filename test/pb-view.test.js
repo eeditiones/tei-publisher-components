@@ -9,7 +9,7 @@ describe('initialize and refresh view', () => {
     it('emits and receives events', async () => {
         const el = (
             await fixture(`
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="${ __karma__.config.endpoint }">
                 <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
                 <pb-view src="document1"></pb-view>
             </pb-page>
@@ -19,7 +19,7 @@ describe('initialize and refresh view', () => {
         const view = el.querySelector('pb-view');
         await oneEvent(document, 'pb-end-update');
 
-        expect(view.getEndpoint()).to.equal('http://localhost:8080/exist/apps/tei-publisher');
+        expect(view.getEndpoint()).to.equal(__karma__.config.endpoint);
         expect(view.getOdd()).to.equal('docbook');
         expect(view.getView()).to.equal('div');
         expect(view.getParameters().view).to.equal('div');
@@ -50,7 +50,7 @@ describe('initialize and refresh view', () => {
     it('shows placeholder for non existing document', async () => {
         const el = (
             await fixture(`
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-document id="document1" path="xxx/yyy.xml" odd="docbook" view="div"></pb-document>
                     <pb-view src="document1" not-found="Not found"></pb-view>
                 </pb-page>
@@ -67,7 +67,7 @@ describe('initialize and refresh view', () => {
     it('shows footnotes', async () => {
         const el = (
             await fixture(`s
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-document id="document1" path="test/orlik_to_serafin.xml" odd="serafin"></pb-document>
                     <pb-view src="document1" xpath="//text[@xml:lang = 'la']/body" view="single"
                         append-footnotes></pb-view>

@@ -9,11 +9,11 @@ describe('recompile ODD', () => {
     it('recompiles and shows message', async () => {
         const el = (
             await fixture(`
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-ajax url="modules/lib/regenerate.xql?odd=graves.odd" dialog="messageDialog">
                     Recompile<span slot="title">Recompile ODD</span>
                     </pb-ajax>
-                    <pb-login user="tei" password="simple"></pb-login>
+                    <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>
                 </pb-page>
             `)
         );

@@ -7,7 +7,7 @@ describe('emits and subscribes', () => {
     it('emits to channel', async () => {
         const el = (
             await fixture(`
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-navigation subscribe="channel1" emit="channel1"></pb-navigation>
                     <pb-navigation subscribe-config='{"channel2": ["pb-ready"], "channel1": ["pb-update"]}' emit="channel1">
                     </pb-navigation>

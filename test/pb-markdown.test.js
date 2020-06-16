@@ -33,7 +33,7 @@ describe('render markdown', () => {
     it('renders embedded HTML', async () => {
         const el = (
             await fixture(`
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-markdown>
                         <template>
                             # Embedding Markdown

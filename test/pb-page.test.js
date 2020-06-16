@@ -10,11 +10,11 @@ describe('initializes', () => {
     it('reports endpoint and language', (done) => {
         oneEvent(document, 'pb-page-ready').then((ev) => {
             expect(ev.detail.language).to.equal('de');
-            expect(ev.detail.endpoint).to.equal('https://teipublisher.com/exist/apps/tei-publisher');
+            expect(ev.detail.endpoint).to.equal(__karma__.config.endpoint);
             done();
         })
         fixture(`
-            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" 
+            <pb-page endpoint="${ __karma__.config.endpoint }" 
                 require-language language="de"></pb-page>
         `);
     });
@@ -27,7 +27,7 @@ describe('initializes', () => {
         const el = (
             await fixture(`
                 <div>
-                    <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" 
+                    <pb-page endpoint="${ __karma__.config.endpoint }" 
                         language="de"></pb-page>
                     <pb-page endpoint="https://teipublisher.com/exist/apps/van-gogh" 
                         language="en"></pb-page>
