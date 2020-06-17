@@ -128,17 +128,5 @@ export default [
                 ]
             })
         ]
-    },
-    {
-        input: 'src/pb-components-all.js',
-        output: {
-            file: 'dist/pb-components-all.js',
-            format: 'iife',
-            sourcemap: !production
-        },
-        plugins: [
-            resolve(),
-            production && terser()
-        ]
     }
 ]
