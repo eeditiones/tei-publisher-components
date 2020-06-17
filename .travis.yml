@@ -1,8 +1,10 @@
+dist: xenial
 language: node_js
 node_js:
-  - 14
+    - 14
 env:
   global:
     - ENDPOINT=https://teipublisher.com/exist/apps/tei-publisher/
+    - secure: Tut5gEjYqUtovIHVygH2WkaP/PJlXg2H3SapIxK0NESWcenyvHn2qj6TAmYFx7FI1o5PjECXlHRLR3Xvw0SUROqCJUeTTPW/ESY9zrELh86ApICMM1m7nbaTfmrYLY98ffovx29EeMaX+5QyBwHiU0iFZgkAIBu2Oi9itU5l0U7EkDunC5SwE3BwybeaU3uAE2sfjZAxZSJEQPlIl9YapYT+qIhSuCXPskriPmSfMPU1VD7l3W9qFKsuUh0XgrtaKwyqy6PQVMLxtzm7OJ7Z19/6OtdzjlkMEOtJyolmBZwy9GOkAb7VG6rGJurAFsuSHMyVCMG3czKeHliUtHMAZIrBDdIBSBvQ3UiJPtyqP8AjmifVqm0RphQb+uvQljvX3LbaAJBkmrhvtsKzCMDSdsPKbKydGvDFyQIGrqQWiaXHtDngniF6HR5ZZ/W4ZMofuytz2PO0eQJKw7DuLoRPmlT3B66j0GxTVJaNH8VzLT2QSkdE/R+FFcitFy4YaLj/tFbGHgu7AqPqLQ2rao2wMeOMEcymKn5fhYK3Me1A0rACxa22W2dMwGqC9Uuov90zAGYoHQpmePOp+F0fRkEGNiILs66I6KGNxNoory9bt5NSkJU1slLNcSxC+SH8nWcogLLFi3hgnFrWWaX4YO+LEzzI7JojTxwBYTE+YVw7c6Q=
 script:
-    - karma start -- --endpoint=$ENDPOINT --passwd=$PASSWD
+    - npm run test -- --endpoint $ENDPOINT --passwd $PASSWD
