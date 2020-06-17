@@ -4,6 +4,7 @@ import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
 import replace from '@rollup/plugin-replace';
 import babel from 'rollup-plugin-babel';
+import pkg from "./package.json";
 
 const production = process.env.BUILD === 'production';
 
@@ -30,7 +31,8 @@ export default [
         },
         plugins: [
             replace({
-                'process.env.NODE_ENV': JSON.stringify('production')
+                'process.env.NODE_ENV': JSON.stringify('production'),
+                'const PB_COMPONENTS_VERSION = null': `const PB_COMPONENTS_VERSION = '${pkg.version}'`
             }),
             babel(),
             resolve(),
