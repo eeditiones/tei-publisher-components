@@ -255,6 +255,16 @@ export class PbView extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'wait-for'
             },
+            /**
+             * By default, navigating to next/previous page will update browser parameters,
+             * so reloading the page will load the correct position within the document.
+             * 
+             * Set this property to disable location tracking for the component altogether.
+             */
+            disableHistory: {
+                type: Boolean,
+                attribute: 'disable-history'
+            },
             _features: {
                 type: Object
             },
@@ -293,6 +303,7 @@ export class PbView extends pbMixin(LitElement) {
         this.direction = 'ltr';
         this.highlight = false;
         this.infiniteScrollMax = 10;
+        this.disableHistory = false;
         this._features = {};
         this._selector = new Map();
         this._chunks = [];
@@ -318,21 +329,23 @@ export class PbView extends pbMixin(LitElement) {
             this._content.className = 'infinite-content';
         }
 
-        const id = this.getParameter('id');
-        if (id && !this.xmlId) {
-            this.xmlId = id;
-        }
+        if (!this.disableHistory) {
+            const id = this.getParameter('id');
+            if (id && !this.xmlId) {
+                this.xmlId = id;
+            }
 
-        const action = this.getParameter('action');
-        if (action && action === 'search') {
-            this.highlight = true;
-        }
+            const action = this.getParameter('action');
+            if (action && action === 'search') {
+                this.highlight = true;
+            }
 
-        const nodeId = this.getParameter('root');
-        if (this.view === 'single') {
-            this.nodeId = null;
-        } else if (nodeId && !this.nodeId) {
-            this.nodeId = nodeId;
+            const nodeId = this.getParameter('root');
+            if (this.view === 'single') {
+                this.nodeId = null;
+            } else if (nodeId && !this.nodeId) {
+                this.nodeId = nodeId;
+            }
         }
         if (!this.waitFor) {
             this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
@@ -599,7 +612,7 @@ export class PbView extends pbMixin(LitElement) {
         this.previous = resp.previous;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        if (this.xmlId && !this.map) {
+        if (!this.disableHistory && this.xmlId && !this.map) {
             this.setParameter('root', this.nodeId);
             this.pushHistory('Navigate to xml:id');
         }
@@ -889,7 +902,7 @@ export class PbView extends pbMixin(LitElement) {
 
         if (direction === 'backward') {
             if (this.previous) {
-                if (!this.map) {
+                if (!this.disableHistory && !this.map) {
                     this.setParameter('root', this.previous);
                     this.setParameter('id');
                     this.pushHistory('Navigate backward');
@@ -897,7 +910,7 @@ export class PbView extends pbMixin(LitElement) {
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
-            if (!this.map) {
+            if (!this.disableHistory && !this.map) {
                 this.setParameter('root', this.next);
                 this.setParameter('id');
                 this.pushHistory('Navigate forward');
