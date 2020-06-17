@@ -1,6 +1,7 @@
 <a href="https://www.npmjs.com/package/@teipublisher/pb-components">
 <img title="npm (scoped)" src="https://img.shields.io/npm/v/@teipublisher/pb-components">
 <img title="npm" src="https://img.shields.io/npm/dw/@teipublisher/pb-components">
+<img title="travis" src="https://travis-ci.org/eeditiones/tei-publisher-components.svg?branch=master">
 </a>
 
 # Web Components for TEI Publisher
