@@ -1,14 +1,13 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import './pb-select-odd.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
+import '@polymer/paper-checkbox';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
-import '@polymer/iron-ajax';
 import '@polymer/iron-form';
 
 /**
@@ -29,6 +28,9 @@ export class PbEditApp extends pbMixin(LitElement) {
             },
             templates: {
                 type: Array
+            },
+            odds: {
+                type: Array
             }
         };
     }
@@ -36,6 +38,7 @@ export class PbEditApp extends pbMixin(LitElement) {
     constructor() {
         super();
         this.templates = [];
+        this.odds = [];
     }
 
     connectedCallback() {
@@ -46,9 +49,7 @@ export class PbEditApp extends pbMixin(LitElement) {
         const form = this.shadowRoot.getElementById('form');
         const defaultView = this.shadowRoot.getElementById('defaultView');
         const index = this.shadowRoot.getElementById('index');
-        const odd = this.shadowRoot.getElementById('odd');
         const template = this.shadowRoot.getElementById('template');
-        const getTemplates = this.shadowRoot.getElementById('getTemplates');
         this.subscribeTo('pb-i18n-update', (options) => {
             // clear paper-listbox selection after language updates
             const defaultViewListbox = this.shadowRoot.querySelector('#defaultView paper-listbox');
@@ -62,8 +63,21 @@ export class PbEditApp extends pbMixin(LitElement) {
             indexListbox.selected = old;
         }, []);
         PbEditApp.waitOnce('pb-page-ready', (detail) => {
-            getTemplates.url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
-            getTemplates.generateRequest();
+            fetch(`${detail.endpoint}/modules/lib/components-list-templates.xql`, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'same-origin'
+            })
+            .then((response) => response.json())
+            .then(json => { this.templates = json });
+
+            fetch(`${detail.endpoint}/modules/lib/components-list-odds.xql`, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'same-origin'
+            })
+            .then((response) => response.json())
+            .then(json => { this.odds = json });
 
             const htmlForm = this.shadowRoot.querySelector('form');
             htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
@@ -72,7 +86,6 @@ export class PbEditApp extends pbMixin(LitElement) {
             const view = defaultView.selectedItem.getAttribute('value');
             this.request.body['default-view'] = view;
             this.request.body.index = index.selectedItem.getAttribute('value');
-            this.request.body.odd = odd.odd;
             this.request.body.template = template.selectedItem.getAttribute('value');
         });
         form.addEventListener('iron-form-response', (event) =>
@@ -101,15 +114,14 @@ export class PbEditApp extends pbMixin(LitElement) {
         form.submit();
     }
 
-    _handleTemplatesResponse() {
-        this.templates = this.shadowRoot.getElementById('getTemplates').lastResponse;
-    }
-
     render() {
         return html`
             <iron-form id="form">
                 <form action="modules/components-generate.xql" method="POST" accept="application/json" enctype="application/json">
-                    <pb-select-odd id="odd" name="odd" label="ODD" odd="teipublisher"></pb-select-odd>
+                    <fieldset>
+                        <legend>${translate('document.selectODD')}</legend>
+                        ${ this.odds.map(odd => html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`)}
+                    </fieldset>
                     <paper-input name="uri" type="url" required placeholder="http://exist-db.org/apps/my-simple-app"
                         label="${translate('appgen.uri')}" auto-validate></paper-input>
                     <paper-input id="abbrev" name="abbrev" pattern="[a-zA-Z0-9-_]+" required placeholder="${translate('appgen.abbrev.placeholder')}"
@@ -170,10 +182,6 @@ export class PbEditApp extends pbMixin(LitElement) {
                     <paper-button dialog-dismiss autofocus>${translate('dialogs.close')}</paper-button>
                 </div>
             </paper-dialog>
-
-            <iron-ajax id="getTemplates"
-                handle-as="json" @response="${this._handleTemplatesResponse}"
-                method="GET"></iron-ajax>
         `;
     }
 
@@ -188,13 +196,18 @@ export class PbEditApp extends pbMixin(LitElement) {
             }
             fieldset {
                 margin-top: 16px;
+                margin-bottom: 16px;
                 padding: 0;
                 border: 0;
             }
             legend {
                 color: #909090;
             }
-
+            paper-checkbox {
+                display: block;
+                margin-left: 20px;
+                margin-top: 10px;
+            }
             paper-dialog {
                 min-width: 420px;
                 max-width: 640px;
