@@ -29,7 +29,7 @@
             }
             </style>
             <main>
-                <ul>
+                <ul id="locations">
                     <li>
                         <pb-geolocation longitude="20.99761963" latitude="52.23621035" label="Warsaw">Warszawa
                         </pb-geolocation>
@@ -43,9 +43,23 @@
                         </pb-geolocation>
                     </li>
                 </ul>
-                <pb-leaflet-map zoom="11"
+                <pb-leaflet-map id="map" zoom="11"
                     access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" />
             </main>
+            <script type="text/javascript">
+                /** 
+                 * Manually initialize map markers once components are ready. 
+                 * Not necessary if the pb-geolocation appear inside a component
+                 * which does itself send the `pb-update` event, e.g. `pb-view`.
+                 */
+                document.addEventListener('WebComponentsReady', () => { 
+                    document.dispatchEvent(new CustomEvent('pb-update', { 
+                        detail: { 
+                            root: document.getElementById('locations')
+                        }
+                    }));
+                });
+            </script>
         </template>
     </pb-demo-snippet>
 </body>
