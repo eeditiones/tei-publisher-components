@@ -10,6 +10,7 @@ import addonDisplayPlaceholder from "../lib/codemirror/addon/display/placeholder
 import addonEditMatchBracket from "../lib/codemirror/addon/edit/matchbrackets.js";
 import addonLint from "../lib/codemirror/addon/lint/lint.js";
 import { resolveURL } from './utils.js';
+import { get as i18n } from './pb-i18n.js';
 
 modeXquery(CodeMirror);
 modeCss(CodeMirror);
@@ -578,6 +579,9 @@ export class PbCodeEditor extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
+        
+        this.placeholder = i18n(this.placeholder);
+        
         document.addEventListener('pb-i18n-update', (ev) => {
             this.placeholder = ev.detail.t(this.placeholder);
             if (this._editor) {
