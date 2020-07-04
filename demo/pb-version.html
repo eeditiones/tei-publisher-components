@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-markdown Demo</title>
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-version.js"></script>
+        <!--/scripts-->
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <p>
+                    You are using version <pb-version></pb-version> of the TEI Publisher Webcomponents.
+                </p>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

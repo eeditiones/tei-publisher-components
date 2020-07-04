@@ -1,5 +1,7 @@
 import { LitElement, html } from 'lit-element';
+import { resolveURL } from './utils.js';
 
+// will be set by rollup when bundling
 const PB_COMPONENTS_VERSION = null;
 
 /**
@@ -21,6 +23,18 @@ export class PbVersion extends LitElement {
         super();
 
         this.version = PB_COMPONENTS_VERSION;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        if (!this.version) {
+            const pkg = resolveURL('../package.json');
+            fetch(pkg)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.version = data.version;
+                });
+        }
     }
 
     render() {
