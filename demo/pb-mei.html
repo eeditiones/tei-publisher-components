@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-mei Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-mei.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                pb-mei {
+                    max-width: 1024px;
+                    width: 100%;
+                    max-height: 480px;
+                    margin: 40px 0;
+                    padding: 20px 0;
+                    border-bottom: 1px solid #919191;
+                    border-top: 1px solid #919191;
+                }
+                pb-mei:first-child {
+                    margin-top: 0;
+                }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <main>
+                    <pb-mei player footer="auto" url="https://raw.githubusercontent.com/music-encoding/sample-encodings/master/MEI_4.0/Music/Complete_examples/Liszt_Four_little_pieces.mei">
+                    </pb-mei>
+                    <pb-mei player footer="auto" url="https://raw.githubusercontent.com/music-encoding/sample-encodings/master/MEI_4.0/Music/Complete_examples/Joplin_Elite_Syncopations.mei">
+                    </pb-mei>
+                    <pb-mei player footer="auto" url="https://raw.githubusercontent.com/music-encoding/sample-encodings/master/MEI_4.0/Music/Complete_examples/Grieg_op.43_butterfly.mei">
+                    </pb-mei>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

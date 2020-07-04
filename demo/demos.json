@@ -115,5 +115,11 @@
     },
     "pb-markdown": {
         "demo/pb-markdown.html": "Demo"
+    },
+    "pb-version": {
+        "demo/pb-version.html": "Demo"
+    },
+    "pb-mei": {
+        "demo/pb-mei.html": "Demo"
     }
 }
