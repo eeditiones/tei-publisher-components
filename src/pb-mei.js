@@ -44,6 +44,9 @@ export class PbMei extends pbMixin(LitElement) {
             footer: {
                 type: String
             },
+            _pages: {
+                type: Number
+            },
             ...super.properties
         };
     }
@@ -69,26 +72,31 @@ export class PbMei extends pbMixin(LitElement) {
                 });
         }
 
-        _import("verovio", 'http://www.verovio.org/javascript/latest/verovio-toolkit.js')
+        _import("verovio", 'https://www.verovio.org/javascript/latest/verovio-toolkit.js')
             .then(() => {
                 this._verovio = new window.verovio.toolkit();
 
-                fetch(this.url)
-                    .then(response => response.text())
-                    .then(async data => {
-                        this._data = data;
-                        this._verovio.loadData(this._data);
-                        this._pages = this._verovio.getPageCount();
-                        this._page = 1;
-                        console.log('<pb-mei> Loaded %d pages', this._pages);
-                        this.showPage(this._page);
-                    });
+                PbMei.waitOnce('pb-page-ready', () => {
+                    const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
+                    this.url = new URL(this.url, base);
+
+                    fetch(this.url)
+                        .then(response => response.text())
+                        .then(async data => {
+                            this._data = data;
+                            this._verovio.loadData(this._data);
+                            this._pages = this._verovio.getPageCount();
+                            this._page = 1;
+                            console.log('<pb-mei> Loaded %d pages', this._pages);
+                            this.showPage();
+                        });
+                });
             });
     }
 
-    showPage(page) {
+    showPage() {
         this._verovio.setOptions(this._getOptions());
-        const svg = this._verovio.renderToSVG(page, {});
+        const svg = this._verovio.renderToSVG(this._page, {});
         this.shadowRoot.getElementById('output').innerHTML = svg;
 
         this.shadowRoot.getElementById('pageRight').disabled = this._page === this._pages;
@@ -134,8 +142,10 @@ export class PbMei extends pbMixin(LitElement) {
     render() {
         return html`
             <div id="toolbar">
-                <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"></paper-icon-button>
-                <paper-icon-button id="pageRight" icon="icons:chevron-right" @click="${this._nextPage}"></paper-icon-button>
+                <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"
+                    class="${this._pages === 1 ? 'hidden' : ''}"></paper-icon-button>
+                <paper-icon-button id="pageRight" icon="icons:chevron-right" @click="${this._nextPage}"
+                    class="${this._pages === 1 ? 'hidden' : ''}"></paper-icon-button>
                 ${ this._renderPlayer() }
             </div>
             <div id="output">Loading ...</div>
@@ -158,7 +168,7 @@ export class PbMei extends pbMixin(LitElement) {
         ev.preventDefault();
         if (this._page < this._pages) {
             this._page += 1;
-            this.showPage(this._page);
+            this.showPage();
         }
     }
 
@@ -166,7 +176,7 @@ export class PbMei extends pbMixin(LitElement) {
         ev.preventDefault();
         if (this._page > 1) {
             this._page -= 1;
-            this.showPage(this._page);
+            this.showPage();
         }
     }
 
@@ -199,6 +209,14 @@ export class PbMei extends pbMixin(LitElement) {
 
             #player {
                 margin-left: 30px;
+            }
+
+            .hidden ~ #player {
+                margin-left: 0;
+            }
+            
+            .hidden {
+                display: none;
             }
         `;
     }
