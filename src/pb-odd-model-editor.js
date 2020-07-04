@@ -874,6 +874,7 @@ export class PbOddModelEditor extends LitElement {
 
     _updateRendition(e, index) {
         this.renditions[index].css = e.detail.css;
+        this.renditions[index].scope = e.detail.scope;
         this._fireModelChanged('renditions', this.renditions);
     }
 

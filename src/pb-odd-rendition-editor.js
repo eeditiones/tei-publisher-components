@@ -123,7 +123,7 @@ export class PbOddRenditionEditor extends LitElement {
 
     _handleCodeChange() {
         this.css = this.shadowRoot.getElementById('editor').getSource();
-        this.dispatchEvent(new CustomEvent('rendition-changed', { composed: true, bubbles: true, detail: { name: this.name, css: this.css } }));
+        this.dispatchEvent(new CustomEvent('rendition-changed', { composed: true, bubbles: true, detail: { name: this.name, css: this.css, scope: this.scope } }));
     }
 
     _listchanged(e) {
