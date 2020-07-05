@@ -2,9 +2,7 @@
 <img title="npm (scoped)" src="https://img.shields.io/npm/v/@teipublisher/pb-components">
 <img title="npm" src="https://img.shields.io/npm/dw/@teipublisher/pb-components">
 </a>
-<a href="https://travis-ci.org/github/eeditiones/tei-publisher-components">
-<img title="travis" src="https://travis-ci.org/eeditiones/tei-publisher-components.svg?branch=master">
-</a>
+<img title="build" src="https://github.com/eeditiones/tei-publisher-components/workflows/tei-publisher-components%20CI/badge.svg">
 
 # Web Components for TEI Publisher
 
