@@ -1,0 +1,33 @@
+name: tei-publisher-components CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  start-eXist:
+     runs-on: ubuntu-latest
+     services:
+       eXist:
+         image: existdb/teipublisher:6.0.0-RC1
+         ports: 
+          - 8080:8080
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        npm install -q
+        npm test
