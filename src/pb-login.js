@@ -137,7 +137,7 @@ export class PbLogin extends pbMixin(LitElement) {
                 <h2>${translate('login.login')}</h2>
                 <paper-dialog-scrollable>
                     <form action="login">
-                        <paper-input id="user" name="user" label="${translate('login.user')}" value="${this.user}"></paper-input>
+                        <paper-input id="user" name="user" label="${translate('login.user')}" value="${this.user}" autofocus></paper-input>
                         <paper-input id="password" name="password" label="${translate('login.password')}" type="password"></paper-input>
                         <input id="logout" type="hidden" name="logout"></input>
                     </form>
