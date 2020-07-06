@@ -3,7 +3,7 @@
   "menu": {
     "documentation": "Documentation",
     "admin": {
-      "title": "Accès réservé",
+      "title": "Fonctions avancées",
       "recompile": "Recompiler l’ODD",
       "appGenerator": "Générateur d’applications",
       "edit-odd": "Éditer l’ODD"
@@ -22,34 +22,34 @@
     }
   },
   "dialogs": {
-    "error": "Oups !",
+    "error": "Oups ... ",
     "close": "Fermer",
     "yes": "Oui",
     "no": "Non",
     "serverError": "Erreur d’exécution de la requête.",
     "generatingFile": "Génération du fichier...",
-    "downloadMessage": "La génération d’un fichier à télécharger peut prendre quelques minutes. Merci de patienter. Cette boîte de dialogue se fermera automatiquement à la fin du téléchargement.",
+    "downloadMessage": "La génération du fichier à télécharger peut prendre quelques minutes, merci de patienter. Cette boîte de dialogue se fermera automatiquement à la fin du téléchargement.",
     "loading": "Chargement ..."
   },
   "document": {
     "contents": "Contenus",
     "selectODD": "Sélectionner un ODD",
-    "selectTemplate": "Sélectionner un template",
+    "selectTemplate": "Sélectionner un template de page",
     "selectFeature": "Sélectionner une fonctionnalité",
     "normalized": "Vue normalisée",
-    "plain": "Vue de lecture plein texte",
+    "plain": "Vue texte non formaté",
     "view-type": "Vue page",
     "add-panel": "Ajouter une vue",
     "caveat-heading": "Avertissement",
-    "caveat": "Ces options permettent de tester différents modèles de pages et configurations ODD pour un même document. Veuillez noter que certains choix de paramètres ne seront pertinents que pour un type de document donné. Par exemple, une carte ne pourra être produite sans coordonnées géographiques explicites, encodées et pré-traitées en fonction des résultats attendus. "
+    "caveat": "Ces options permettent de tester l'application de différents templates de pages et différents fichiers ODD au document courant. Veuillez noter que les préférences paramétrées dans ces fichiers peuvent être spécifiques à certains types de documents et ne pas être pertinentes pour d'autres. Par exemple, une carte ne pourra pas être produite si l'encodage ne contient pas de coordonnées géographiques explicites et modélisées en fonction des traitements souhaités. Si le message \"Erreur d'exécution de la requête\" s'affiche, c'est souvent l'indication d'une défaut d'alignement entre les données encodée, l'ODD et le template de page."
   },
   "browse": {
-    "description": "Utilisez cette application web pour tester et expérimenter les spécifications de modèles de traitement TEI contenues dans le fichier ODD. Téléchargez vos propres fichiers et créez une personnalisation ODD contenant vos choix.",
-    "login": "Pour télécharger des fichiers ou accéder aux fonctions d'administration (utilisateur par défaut : 'tei-demo' ; mot de passe : 'demo').",
+    "description": "Utilisez cette application pour expérimenter la publication de fichiers TEI et XML à partir de modèles de traitements configurables via un fichier ODD. Chargez vos fichiers XML dans l'application, créez un nouveau fichier de spécification ODD puis commencez à définir vos choix via une interface graphique ou directement en XML TEI.",
+    "login": "est nécessaire pour pouvoir télécharger des fichiers ou accéder aux fonctions avancées (utilisateur par défaut : 'tei-demo' ; mot de passe : 'demo').",
     "sort": "Trier par",
     "filter": "Filtrer selon",
-    "items": "{{count}} objet(s) trouvé(s)",
-    "items_plural": "({{count}} objet(s) trouvé(s)",
+    "items": "{{count}} résultat",
+    "items_plural": "{{count}} résultats",
     "title": "Titre",
     "author": "Auteur",
     "modificationDate": "Date de modification",
@@ -59,10 +59,10 @@
     "confirmDeletion_plural": "Êtes-vous sûr de vouloir supprimer {{count}} fichiers?",
     "documents": "Documents",
     "collections": "Collection locale",
-    "dts": "Distributed Text Services (expérimental)",
+    "dts": "Protocole de partage de textes DTS",
     "demo": {
       "title": "Collection de démonstration de TEI Publisher",
-      "description": "Documents présentant diverses caractéristiques. Cette sélection n’est en aucun cas exhaustive mais représente un sous-ensemble de ce qu’il est possible de faire. Veuillez fournir vos propres cas d’utilisation pour compléter cette tâche."
+      "description": "Documents présentant diverses caractéristiques. Cette sélection n’est en aucun cas exhaustive mais représente un sous-ensemble de ce qu’il est possible de faire. Vous êtes invités à proposer vos propres cas d'utilisation pour compléter cette liste."
     },
     "playground": {
       "title": "Aire de jeux",
@@ -70,9 +70,9 @@
     },
     "documentation": {
       "title": "Documentation",
-      "description": "Documentation (en Docbook XML)."
+      "description": "Guide de démarrage et d'utilisation (au format XML Docbook)."
     },
-    "up": "Monter"
+    "up": "Retour"
   },
   "upload": {
     "upload": "Télécharger",
@@ -97,13 +97,13 @@
     "requiredGroup": "doit être membre du groupe {{group}}"
   },
   "search": {
-    "placeholder": "Entrez la requête",
+    "placeholder": "rechercher...",
     "sections": "dans le texte",
     "headings": "dans les titres de sections"
   },
   "dts": {
-    "endpoint": "Sélectionner un point de terminaison",
-    "note": "Expérimental : accéder à d'autres éditions qui exposent l’API DTS"
+    "endpoint": "Sélectionner une URL racine",
+    "note": "Fonction expérimentale permettant d'accéder aux données d'autres éditions exposées via une API DTS (Distributed Text Services)\""
   },
   "odd": {
     "files": "Fichiers ODD",
@@ -111,7 +111,7 @@
       "filename": "Nom du fichier ODD (sans suffixe)",
       "title": "Titre à afficher",
       "create": "Créer",
-      "create-from-example": "Créer à partir des exemples",
+      "create-from-example": "Créer à partir d'exemples",
       "delete": "Êtes-vous sûr de vouloir supprimer le fichier {{file}} ?"
     },
     "editor": {
@@ -124,7 +124,7 @@
       "reload": "Recharger",
       "reload-confirm": "Toute modification non enregistrée sera perdue. Voulez-vous continuer ?",
       "add-element": "Ajouter un élément",
-      "odd-source": "ODD Source",
+      "odd-source": "Source ODD ",
       "specs": "Spécifications de l’élément",
       "jump-to": "Aller à l’élément ...",
       "title-short": "Titre court",
