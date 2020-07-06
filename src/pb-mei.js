@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
 import '@polymer/paper-icon-button';
 import '@polymer/iron-icons';
 import '@polymer/iron-icons/av-icons';
@@ -23,14 +24,17 @@ function _import(name, location) {
  * Supports optional MIDI playback using [web-midi-player](https://midi.yvesgurcan.com/).
  * Both libraries are loaded dynamically when the component is used the first time.
  * 
- * @prop {"auto" | "encoded" | "none"} footer - Should a footer be shown?
+ * @prop {"auto" | "encoded" | "none"} footer - Control footer layout
+ * @prop {"auto" | "encoded" | "none"} header - Control footer layout
+ * @prop {"auto" | "none" | "line" | "encoded"} Define page and system breaks layout (default: "auto")
  */
 export class PbMei extends pbMixin(LitElement) {
 
     static get properties() {
         return {
             /**
-             * URL of the MEI file to load
+             * URL of the MEI file to load. A relative URL would be resolved
+             * relative to the TEI Publisher endpoint.
              */
             url: {
                 type: String
@@ -41,7 +45,13 @@ export class PbMei extends pbMixin(LitElement) {
             player: {
                 type: Boolean
             },
+            header: {
+                type: String
+            },
             footer: {
+                type: String
+            },
+            breaks: {
                 type: String
             },
             _pages: {
@@ -59,6 +69,8 @@ export class PbMei extends pbMixin(LitElement) {
         this._midiPlayer = null;
         this._verovio = null;
         this.footer = 'auto';
+        this.header = 'auto';
+        this.breaks = 'auto';
     }
 
     firstUpdated() {
@@ -148,7 +160,7 @@ export class PbMei extends pbMixin(LitElement) {
                     class="${this._pages === 1 ? 'hidden' : ''}"></paper-icon-button>
                 ${ this._renderPlayer() }
             </div>
-            <div id="output">Loading ...</div>
+            <div id="output">${translate('dialogs.loading')}</div>
         `;
     }
 
@@ -186,7 +198,9 @@ export class PbMei extends pbMixin(LitElement) {
             svgViewBox: true,
             adjustPageHeight: true,
             adjustPageWidth: true,
-            footer: this.footer || 'none'
+            footer: this.footer,
+            header: this.header,
+            breaks: this.breaks
         };
         return options;
     }
@@ -214,7 +228,7 @@ export class PbMei extends pbMixin(LitElement) {
             .hidden ~ #player {
                 margin-left: 0;
             }
-            
+
             .hidden {
                 display: none;
             }
