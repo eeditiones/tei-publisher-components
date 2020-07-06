@@ -98,6 +98,10 @@ export class PbAjax extends pbMixin(LitElement) {
 
     _handleClick(ev) {
         ev.preventDefault();
+        this.trigger();
+    }
+    
+    trigger() {
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.url = `${this.getEndpoint()}/${this.url}`;
         this.emitTo('pb-start-update');

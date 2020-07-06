@@ -14,6 +14,7 @@
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-login.js"></script>
     <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-upload.js"></script>
     <!--/scripts-->
 </head>
 
@@ -26,8 +27,11 @@
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-progress></pb-progress>
-                <pb-login id="login"></pb-login>
-                <pb-manage-odds login="login" target="document-list"></pb-manage-odds>
+                <pb-login id="login" group="tei"></pb-login>
+                <pb-restricted login="login" can-write>
+                    <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
+                </pb-restricted>
+                <pb-manage-odds target="document-list" subscribe="docs"></pb-manage-odds>
             </pb-page>
         </template>
     </pb-demo-snippet>

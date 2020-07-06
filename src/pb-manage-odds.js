@@ -19,6 +19,7 @@ import './pb-edit-xml.js';
  * @fires pb-start-update - Fired before the element updates its content
  * @fires pb-end-update - Fired after the element has finished updating its content
  * @fires pb-load - Sending the ODD to be used
+ * @fires pb-refresh-odds When received, refresh the list of ODDs
  */
 export class PbManageOdds extends pbMixin(LitElement) {
     static get properties() {
@@ -51,6 +52,15 @@ export class PbManageOdds extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-login', () => this._refresh(), []);
+        this.subscribeTo('pb-refresh-odds', (ev) => {
+            this._refresh();
+
+            // regenerate newly uploaded ODDs
+            const regenAjax = this.shadowRoot.getElementById('regenerate');
+            const params = ev.detail.odds.map(odd => `odd=${odd}`).join('&');
+            regenAjax.url = `modules/lib/regenerate.xql?${params}`;
+            regenAjax.trigger();
+        });
     }
 
     firstUpdated() {
@@ -185,7 +195,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     </paper-button>
                 </form>
             </pb-restricted>
-
+            <pb-ajax id="regenerate" url="modules/lib/regenerate.xql"></pb-ajax>
             <iron-ajax
                 id="load"
                 verbose

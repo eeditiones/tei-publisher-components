@@ -11,6 +11,7 @@ import '@polymer/paper-button';
  * @fires pb-end-update - Fired after the element has finished updating its content
  * @fires pb-load - Fired after the upload has completed
  * @fires pb-collection - when received, sets the upload collection to the one passed from the event
+ * @fires pb-refresh-odds - Fired if an ODD file was uploaded
  */
 export class PbUpload extends pbMixin(LitElement) {
     static get properties() {
@@ -59,14 +60,20 @@ export class PbUpload extends pbMixin(LitElement) {
         });
         uploader.addEventListener('upload-success', () => {
             let done = true;
+            const oddsUploaded = [];
             uploader.files.forEach((file) => {
                 if (!(file.complete || file.error || file.aborted)) {
                     done = false;
+                } else if (/^.*\.odd$/.test(file.name)) {
+                    oddsUploaded.push(file.name);
                 }
             });
             if (done) {
                 this.emitTo('pb-end-update');
                 this.emitTo('pb-load');
+                if (oddsUploaded.length > 0) {
+                    this.emitTo('pb-refresh-odds', { 'odds': oddsUploaded });
+                }
             }
         });
         uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
