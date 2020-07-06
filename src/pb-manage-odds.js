@@ -155,6 +155,12 @@ export class PbManageOdds extends pbMixin(LitElement) {
             return null;
         }
         return html`
+            <pb-restricted login="login">
+                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('menu.admin.recompile')}">
+                    <h3 slot="title">${translate('menu.admin.recompile')}</h3>
+                    <a href="#">Regenerate All (Slow)</a>
+                </pb-ajax>
+            </pb-restricted>
             ${this.odds.map((odd) =>
             html`
                 <div class="odd">
@@ -259,6 +265,13 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 color: #888888;
                 font-size: 0.8em;
                 margin-top: -1em;
+            }
+
+            #regenerateAll {
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+                text-align: right;
             }
         `;
     }
