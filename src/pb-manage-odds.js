@@ -156,9 +156,9 @@ export class PbManageOdds extends pbMixin(LitElement) {
         }
         return html`
             <pb-restricted login="login">
-                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('menu.admin.recompile')}">
-                    <h3 slot="title">${translate('menu.admin.recompile')}</h3>
-                    <a href="#">Regenerate All (Slow)</a>
+                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('odd.manage.regenerate-all')}">
+                    <h3 slot="title">${translate('odd.manage.regenerate-all')}</h3>
+                    <a href="#">${translate('odd.manage.regenerate-all')}</a>
                 </pb-ajax>
             </pb-restricted>
             ${this.odds.map((odd) =>
