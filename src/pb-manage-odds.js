@@ -156,7 +156,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
         }
         return html`
             <pb-restricted login="login">
-                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('odd.manage.regenerate-all')}">
+                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('odd.manage.regenerate-all')}"
+                    emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                     <h3 slot="title">${translate('odd.manage.regenerate-all')}</h3>
                     <a href="#">${translate('odd.manage.regenerate-all')}</a>
                 </pb-ajax>
@@ -171,7 +172,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 odd.canWrite ?
                     html`
                                     <pb-restricted login="login">
-                                        <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd">
+                                        <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd"
+                                            emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                                             <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                             <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
                                         </pb-ajax>
