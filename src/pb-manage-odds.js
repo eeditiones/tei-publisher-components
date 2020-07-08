@@ -197,10 +197,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     <paper-button id="createBtn" @click="${this._createODD}">
                         <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
                     </paper-button>
-                    <paper-button id="createByEx" @click="${this._createByExample}">
+                    <!--paper-button id="createByEx" @click="${this._createByExample}">
                         <iron-icon icon="build"></iron-icon>
                         ${translate('odd.manage.create-from-example')}
-                    </paper-button>
+                    </paper-button-->
                 </form>
             </pb-restricted>
             <pb-ajax id="regenerate" url="modules/lib/regenerate.xql"></pb-ajax>
