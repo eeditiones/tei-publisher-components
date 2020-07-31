@@ -94,6 +94,8 @@ export class PbPopover extends pbMixin(LitElement) {
         this.placement = null;
         this.fallbackPlacement = null;
         this.popupClass = null;
+        this._tippy = null;
+        this._content = null;
     }
 
     render() {
@@ -105,6 +107,13 @@ export class PbPopover extends pbMixin(LitElement) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
         return html`<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        if (this._tippy) {
+            this._tippy.destroy();
+        }
     }
 
     _checkCSSProperties() {
@@ -157,6 +166,45 @@ export class PbPopover extends pbMixin(LitElement) {
         }
     }
 
+    _getContent() {
+        const slot = this._getSlot();
+        if (slot) {
+            const content = document.createElement('div');
+            slot.assignedNodes().forEach((node) => {
+                content.appendChild(document.importNode(node.content || node, true));
+            });
+            return content;
+        }
+        return null;
+    }
+
+    _getSlot() {
+        if (this.for) {
+            return this.shadowRoot.querySelector('slot');
+        }
+        return this.shadowRoot.querySelector('[name=alternate]');
+    }
+
+    /**
+     * Returns the root element of the alternate content currently shown in the popover.
+     * This will be initialized from either the default slot or the slot with name 'alternate' (if present).
+     * The returned element is always a `div` and can be modified.
+     */
+    get alternate() {
+        return this._content;
+    }
+
+    /**
+     * Set the element to be shown in the popover. Use this to set popover
+     * content dynamically.
+     */
+    set alternate(content) {
+        this._content = content;
+        if (this._tippy) {
+            this._tippy.setContent(this._content);
+        }
+    }
+
     firstUpdated() {
         super.firstUpdated();
 
@@ -164,24 +212,20 @@ export class PbPopover extends pbMixin(LitElement) {
 
         const root = this.getRootNode();
         let target;
-        let slot;
         if (this.for) {
             target = root.getElementById(this.for);
             if (!target) {
                 console.error('<pb-popover> target element %s not found', this.for);
             }
-            slot = this.shadowRoot.querySelector('slot');
         } else {
             target = this.shadowRoot.getElementById('link');
-            slot = this.shadowRoot.querySelector('[name=alternate]');
         }
-        if (target && slot) {
-            const content = document.createElement('div');
-            slot.assignedNodes().forEach((node) => {
-                content.appendChild(document.importNode(node.content || node, true));
-            });
+        if (target) {
+            if (!this._content) {
+                this._content = this._getContent();
+            }
             const options = {
-                content,
+                content: this._content,
                 allowHTML: true,
                 appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
                 placement: this.placement,
@@ -215,7 +259,7 @@ export class PbPopover extends pbMixin(LitElement) {
             if (this.popupClass) {
                 options.onCreate = (instance) => instance.popper.classList.add(this.popupClass);
             }
-            tippy(target, options);
+            this._tippy = tippy(target, options);
         }
     }
 
