@@ -370,7 +370,7 @@ export class PbView extends pbMixin(LitElement) {
             if (this.useLanguage && needsRefresh) {
                 this._refresh();
             }
-        });
+        }, []);
 
         this.signalReady();
 

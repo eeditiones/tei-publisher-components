@@ -58,6 +58,16 @@ class PbPage extends pbMixin(LitElement) {
              * for the language (`lng`) and the namespace (`ns`), e.g.
              * 
              * `resources/i18n/{{ns}}_{{lng}}.json`
+             * 
+             * or
+             * 
+             * `resources/i18n/{{ns}}/{{lng}}.json`
+             * 
+             * The latter assumes custom language files in a subdirectory, the first
+             * expects the namespace to be specified at the start of the file name.
+             * 
+             * The default namespace for custom language files is assumed to be `app`,
+             * but you can define additional namespaces via `localeFallbackNS`.
              */
             locales: {
                 type: String
@@ -65,7 +75,7 @@ class PbPage extends pbMixin(LitElement) {
             /**
              * Optional list of whitespace separated namespaces which should be searched
              * for translations. By default, only the namespace `common` is queried.
-             * If the locale property is specified, an additional namespace `app` is added.
+             * If the `locales` property is specified, an additional namespace `app` is added.
              * You can add more namespace here, e.g. `custom`, if you want to provide
              * translations for custom apps or components.
              */
