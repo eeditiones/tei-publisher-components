@@ -208,6 +208,9 @@ export class PbView extends pbMixin(LitElement) {
             /**
              * If set, a refresh will be triggered if a `pb-i18n-update` event is received,
              * e.g. due to the user selecting a different interface language.
+             * 
+             * Also requires `requireLanguage` to be set on the surrounding `pb-page`.
+             * See there for more information.
              */
             useLanguage: {
                 type: Boolean,

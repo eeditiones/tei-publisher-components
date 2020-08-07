@@ -94,6 +94,14 @@ class PbPage extends pbMixin(LitElement) {
              * If set, the element will wait for a language being set by i18n before
              * it sends a `pb-page-ready` event. Elements like `pb-view` will wait
              * for this event before displaying content.
+             * 
+             * Also, `pb-view` will pass the configured language to the server endpoint
+             * where it will be available to ODD processing models in variable 
+             * `$parameters?language` and can thus be used to change output depending on
+             * the user interface language.
+             * 
+             * If you would like `pb-view` to refresh automatically whenever the language
+             * setting changes, specify property `useLanguage` on the corresponding `pb-view`.
              */
             requireLanguage: {
                 type: Boolean,
