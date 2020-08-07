@@ -7,7 +7,7 @@ languageIds:
 # An Array of regex to find the keys usage. **The key should captured in the first match group**.
 # You should unescape regex string in order to fit in YAML file
 # for that, you can use https://www.freeformatter.com/json-escape.html
-keyMatchReg:
+usageMatchRegex:
   # The following examples show how to detect `t("your.i18n.keys")`
   - "[^\\w\\d]translate\\(['\"`]([[\\w\\d\\. \\-\\[\\]]*?)['\"`]"
   - "[^\\w\\d]key=['\"`]([[\\w\\d\\. \\-\\[\\]]*?)['\"`]"
