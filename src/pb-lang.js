@@ -25,6 +25,12 @@ export class PbLang extends pbMixin(LitElement) {
             },
             selected: {
                 type: String
+            },
+            /**
+             * suppresses the label
+             */
+            nolabel:{
+                type:Boolean
             }
         };
     }
@@ -47,12 +53,22 @@ export class PbLang extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-dropdown-menu label="${translate(this.label)}">
-                <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
-                    attr-for-selected="value" @selected-item-changed="${this._changed}">
-                    <slot></slot>
-                </paper-listbox>
-            </paper-dropdown-menu>
+            ${this.nolabel?
+                html`
+                    <paper-dropdown-menu>
+                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
+                            attr-for-selected="value" @selected-item-changed="${this._changed}">
+                            <slot></slot>
+                        </paper-listbox>
+                    </paper-dropdown-menu>`:
+                html`
+                    <paper-dropdown-menu label="${translate(this.label)}">
+                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
+                            attr-for-selected="value" @selected-item-changed="${this._changed}">
+                            <slot></slot>
+                        </paper-listbox>
+                    </paper-dropdown-menu>`
+            }
         `;
     }
 
