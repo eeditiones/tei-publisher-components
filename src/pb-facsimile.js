@@ -96,13 +96,21 @@ export class PbFacsimile extends pbMixin(LitElement) {
              */
             facsimiles: {
                 type: Array
+            },
+            /**
+             * Will be true if images were loaded for display, false if there are no images
+             * to show.
+             */
+            loaded: {
+                type: Boolean,
+                reflect: true
             }
         };
     }
 
     constructor() {
         super();
-        this.facsimiles = [];
+        this._facsimiles = [];
         this.baseUri = '';
         this.type = 'iiif';
         this.visibilityRatio = 1;
@@ -111,6 +119,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.showNavigationControl = true;
         this.src = '';
         this.prefixUrl = '../images/openseadragon/';
+        this.loaded = false;
+    }
+
+    set facsimiles(facs) {
+        this._facsimiles = facs || [];
+        this.loaded = this._facsimiles.length > 0;
     }
 
     connectedCallback() {
@@ -186,8 +200,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (!this.viewer) {
             return;
         }
-        if (this.facsimiles.length === 0) { return this.viewer.close() }
-        const uris = this.facsimiles.map(fac => {
+        if (this._facsimiles.length === 0) { return this.viewer.close() }
+        const uris = this._facsimiles.map(fac => {
             if (this.type === 'iiif') {
                 return `${this.baseUri}${fac}/info.json`;
             } else {
@@ -292,7 +306,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     _pageIndexByUrl(file) {
-        return this.facsimiles.indexOf(file);
+        return this._facsimiles.indexOf(file);
     }
 
     // returns the border styling for facsimile viewer
