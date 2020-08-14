@@ -222,12 +222,14 @@ export class PbLogin extends pbMixin(LitElement) {
     _handleResponse() {
         const resp = this._checkLogin.lastResponse;
         if (resp.user && this._checkGroup(resp)) {
+            resp.userChanged = !this.loggedIn || this.user !== resp.user;
             this.loggedIn = true;
             this.user = resp.user;
             this.groups = resp.groups;
             this._invalid = false;
             this._loginDialog.close();
         } else {
+            resp.userChanged = this.loggedIn;
             this.loggedIn = false;
             this.password = null;
             if (this._loginDialog.opened) {

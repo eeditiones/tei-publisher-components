@@ -19,7 +19,7 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
  * 
  * @fires pb-collection - Sent to inform e.g. pb-upload about current collection
  * @fires pb-search-resubmit - When received, set facet values as received from the event
- * @fires pb-login - When received, check if user is allowed to modify the documents
+ * @fires pb-login - When received, refresh the view if the user changed
  * 
  * @cssprop --pb-search-suggestions-background - Background for the autocomplete suggestions for the filter field
  * @cssprop --pb-search-suggestions-color - Text color for the autocomplete suggestion for the filter field
@@ -127,7 +127,11 @@ export class PbBrowseDocs extends PbLoad {
         this.collection = this.getParameter('collection');
 
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
-        this.subscribeTo('pb-login', this._facets.bind(this), []);
+        this.subscribeTo('pb-login', (ev) => {
+            if (ev.detail.userChanged) {
+                this._facets(ev);
+            }
+        }, []);
         document.addEventListener('pb-i18n-update', () => {
             // clear paper-listbox selection after language updates
             const lb = this.shadowRoot.getElementById('sort-list');
