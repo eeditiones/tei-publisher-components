@@ -9,6 +9,11 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    services:
+       eXist:
+         image: existdb/teipublisher:6.0.0-RC1
+         ports: 
+          - 8080:8080
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
