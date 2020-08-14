@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Using pb-autocomplete</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+        </style>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-autocomplete.js"></script>
+    </head>
+    <body>
+        <h1>Using pb-autocomplete</h1>
+
+        <pb-demo-snippet>
+            <template>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-autocomplete placeholder="type" suggestions='["alpha", "beta", "gamma"]'></pb-autocomplete>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+        <pb-demo-snippet>
+            <template>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-autocomplete placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+        <pb-demo-snippet>
+            <template>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <pb-autocomplete placeholder="query" source="modules/autocomplete.xql">
+                        <select name="field">
+                            <option value="title">Title</option>
+                            <option value="author">Author</option>
+                        </select>
+                    </pb-autocomplete>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

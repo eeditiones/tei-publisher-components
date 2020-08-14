@@ -121,5 +121,9 @@
     },
     "pb-mei": {
         "demo/pb-mei.html": "Demo"
+    },
+    "pb-autocomplete": {
+        "demo/pb-autocomplete.html": "Demo",
+        "demo/pb-autocomplete2.html": "Search with autocomplete"
     }
 }
