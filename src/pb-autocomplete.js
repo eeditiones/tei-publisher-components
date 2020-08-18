@@ -7,6 +7,9 @@ import '@polymer/iron-icon';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 
 /**
+ * Provides an input with attached autocomplete. The autocomplete suggestions can be read
+ * either from a static list or a remote endpoint to which the current user input is sent.
+ * 
  * @cssprop --pb-search-label-color - Color of the label and underline
  * @cssprop --pb-search-input-color - Text color for input field
  * @cssprop --pb-search-focus-color - Color for label and underline if input has focus
@@ -14,35 +17,63 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
  * @cssprop --pb-search-suggestions-background - Background for the suggestions dropdown
  * @slot - default unnamed slot
  */
-
 export class PbAutocomplete extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
+            /**
+             * Name of the form field which will be submitted
+             */
             name: {
                 type: String
             },
+            /**
+             * Value of the form field which will be submitted
+             */
             value: {
                 type: String
             },
+            /**
+             * Placeholder to display if field is empty
+             */
             placeholder: {
                 type: String,
                 attribute: 'placeholder'
             },
+            /**
+             * Optional URL to query for suggestions. If relative, it is interpreted
+             * relative to the endpoint defined on a surrounding `pb-page`.
+             * 
+             * Upon autocomplete, the current input by the user will be sent with a query parameter
+             * `query`. The name/values of form controls nested within `pb-autocomplete` will also be
+             * appended to the request as parameters. This allows the server side code to distinguish
+             * different states.
+             */
             source: {
                 type: String
             },
+            /**
+             * A static list of suggestions. Use instead of `source`. May either be a flat array of strings,
+             * or an array containing objects of the form `{"text": "", "value": ""}, in which case "value" denotes
+             * the value to be used when the enclosing form is submitted, and "text" is the label to be displayed.
+             */
             suggestions: {
                 type: Array
+            },
+            /**
+             * An icon to display next to the input.
+             */
+            icon: {
+                type: String
             }
         };
     }
 
     constructor() {
         super();
-        this.value = '';
         this.placeholder = 'search.placeholder';
         this.suggestions = [];
+        this.lastSelected = null;
     }
 
     connectedCallback() {
@@ -57,6 +88,27 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this._hiddenInput.type = 'hidden';
         this._hiddenInput.name = this.name;
         this.appendChild(this._hiddenInput);
+
+        if (this.value) {
+            if (this.source) {
+                PbAutocomplete.waitOnce('pb-page-ready', () => {
+                    this._sendRequest(this.value);
+                });
+            } else {
+                const input = this.shadowRoot.getElementById('search');
+                const value = this.suggestions.find((suggestion) => {
+                    if (suggestion.text) {
+                        return suggestion.value === this.value;
+                    }
+                    return suggestion === this.value;
+                });
+                if (value) {
+                    input.value = value.text || value;
+                    this._hiddenInput.value = value.value || value;
+                }
+                this._hiddenInput.value = this.value;
+            }
+        }
     }
 
     render() {
@@ -69,16 +121,17 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                         };
                         --suggestions-wrapper: {
                             background: var(--pb-search-suggestions-background, white);
-                        }
+                        };
                     }
                 </style>
             </custom-style>
             <slot></slot>
             <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeholder)}"
-                value="${this.value}" always-float-label @change="${this._changed}">
-                <iron-icon icon="search" @click="${this._doSearch}" slot="prefix"></iron-icon>
+                always-float-label @change="${this._changed}">
+                ${ this.icon ? html`<iron-icon icon="${this.icon}" @click="${this._doSearch}" slot="prefix"></iron-icon>` : null}
             </paper-input>
-            <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"></paper-autocomplete-suggestions>
+            <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"
+                @autocomplete-selected="${this._autocompleteSelected}"></paper-autocomplete-suggestions>
           
         <iron-ajax
             id="autocompleteLoader"
@@ -111,12 +164,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _autocomplete(ev) {
         const search = this.shadowRoot.getElementById('search');
+        this._sendRequest(search.value);
+    }
+
+    _sendRequest(query) {
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
         const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
         loader.url = new URL(this.source, base).toString();
 
         const params = this._getParameters();
-        params['query'] = search.value;
+        params['query'] = query;
         loader.params = params;
         loader.generateRequest();
     }
@@ -139,9 +196,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         return params;
     }
 
+    _autocompleteSelected(ev) {
+        this.lastSelected = ev.detail.text;
+        this._hiddenInput.value = ev.detail.value;
+    }
+
     _changed() {
         const search = this.shadowRoot.getElementById('search');
-        this._hiddenInput.value = search.value;
+        if (search.value !== this.lastSelected) {
+            this._hiddenInput.value = search.value;
+        }
     }
 }
 customElements.define('pb-autocomplete', PbAutocomplete);
