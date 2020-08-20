@@ -4,7 +4,7 @@ import { oneEvent, fixture, expect } from '@open-wc/testing';
 import '../src/pb-search.js';
 
 describe('serialize URL parameters', () => {
-    it('serializes URL parameters', async () => {
+    it('pb-search setParameters and getParameters', async () => {
         const el = (
             await fixture(`
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
@@ -30,6 +30,18 @@ describe('serialize URL parameters', () => {
              "tei-head"
           ]
        };
+
+
+
+       const resultJSON = {        
+        "query":"test",
+        "start":"1",
+        "tei-target":[
+           "tei-text",
+           "tei-head"
+        ]
+     };
+
        // console.log("json ", inputJSON);
         const searchForm = el.querySelector('#search-form');
         searchForm.setParameters(inputJSON);
@@ -39,6 +51,10 @@ describe('serialize URL parameters', () => {
                 
         expect(queryString).to.equal("?query=test&start=1&tei-target=tei-text&tei-target=tei-head");
         expect(queryString).to.not.equal("?query=test&start=1&tei-target=tei-text%2Ctei-head");
-        
+        const parameters = searchForm.getParameters(); 
+        expect(JSON.stringify(parameters)).to.equal(JSON.stringify(resultJSON));
+
+        const teiTargetParam = searchForm.getParameter("tei-target");        
+        expect(JSON.stringify(teiTargetParam)).to.equal('["tei-text","tei-head"]');        
     });
 });
