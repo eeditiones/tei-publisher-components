@@ -415,7 +415,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         TeiPublisher.url.search = '';
         for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
-                TeiPublisher.url.searchParams.set(key, obj[key]);
+                this.setParameter(key, obj[key]);
             }
         }
     }
