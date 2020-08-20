@@ -387,10 +387,12 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     getParameter(name, fallback) {
-        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
-        if (params && params.length > 0) {
+        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);        
+        if (params && params.length == 1) {
             return params[0];
-        }
+        }else if (params && params.length > 1) {
+            return params
+        }        
         return fallback;
     }
 
@@ -415,15 +417,15 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         TeiPublisher.url.search = '';
         for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
-                TeiPublisher.url.searchParams.set(key, obj[key]);
+                this.setParameter(key, obj[key]);
             }
         }
     }
 
     getParameters() {
         const params = {};
-        for (let entry of TeiPublisher.url.searchParams) {
-            params[entry[0]] = entry[1];
+        for (let key of TeiPublisher.url.searchParams.keys()) {            
+            params[key] = this.getParameter(key);
         }
         return params;
     }
