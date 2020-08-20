@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import { oneEvent, fixture, expect } from '@open-wc/testing';
-
 import '../src/pb-search.js';
 
 describe('serialize URL parameters', () => {
