@@ -39,6 +39,36 @@ describe('simple select', () => {
         await select.updateComplete;
         expect(serializeForm(form)).to.equal('key=2');
     });
+    it('supports multiple selection', async () => {
+        let initDone;
+        document.addEventListener('pb-page-ready', () => {
+            initDone = true;
+        });
+        const el = (
+            await fixture(`
+                <pb-page endpoint=".">
+                    <form action="">
+                        <pb-select label="Items" name="key" values='["1"]' multi>
+                            <paper-item></paper-item>
+                            <paper-item value="0">Item 0</paper-item>
+                            <paper-item value="1">Item 1</paper-item>
+                            <paper-item value="2">Item 2</paper-item>
+                            <paper-item value="3">Item 3</paper-item>
+                        </pb-select>
+                    </form>
+                </pb-page>
+            `)
+        );
+        await waitUntil(() => initDone);
+
+        const form = el.querySelector('form');
+        expect(serializeForm(form)).to.equal('key=1');
+
+        const select = el.querySelector('pb-select');
+        select.values = ["2", "3"];
+        await select.updateComplete;
+        expect(serializeForm(form)).to.equal('key=2&key=3');
+    });
 });
 
 describe('select initialized from remote data source', () => {

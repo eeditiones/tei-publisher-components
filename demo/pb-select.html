@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Using pb-select</title>
+        <link rel="stylesheet" href="demo.css">
         <style>
             pb-autocomplete {
                 margin-bottom: 20px;
@@ -22,7 +23,28 @@
             <template>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <form id="form" action="">
-                        <pb-select label="browse.title" name="lang" value="fr">
+                        <pb-select label="language" name="lang1" value="es">
+                            <paper-item value="bg">Български</paper-item>
+                            <paper-item value="cs">český</paper-item>
+                            <paper-item value="de">Deutsch</paper-item>
+                            <paper-item value="en">English</paper-item>
+                            <paper-item value="es">Español</paper-item>
+                            <paper-item value="el">ελληνικά</paper-item>
+                            <paper-item value="fr">Français</paper-item>
+                            <paper-item value="it">Italiano</paper-item>
+                            <paper-item value="ka">ქართული</paper-item>
+                            <paper-item value="nl">Nederlands</paper-item>
+                            <paper-item value="no">Norsk</paper-item>
+                            <paper-item value="pl">Polski</paper-item>
+                            <paper-item value="pt">Português</paper-item>
+                            <paper-item value="ro">Română</paper-item>
+                            <paper-item value="ru">русский</paper-item>
+                            <paper-item value="sl">Slovenščina</paper-item>
+                            <paper-item value="sv">Svenska</paper-item>
+                            <paper-item value="tr">Türkçe</paper-item>
+                            <paper-item value="uk">Українська</paper-item>
+                        </pb-select>
+                        <pb-select label="language" name="lang2" values='["fr", "de"]' multi>
                             <paper-item value="bg">Български</paper-item>
                             <paper-item value="cs">český</paper-item>
                             <paper-item value="de">Deutsch</paper-item>

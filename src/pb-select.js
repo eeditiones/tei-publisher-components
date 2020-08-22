@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
+import "@polymer/iron-label";
 import { translate } from "./pb-i18n.js";
 import { pbMixin } from './pb-mixin.js';
 
@@ -32,6 +33,10 @@ export class PbSelect extends pbMixin(LitElement) {
                 type: String,
                 reflect: true
             },
+            values: {
+                type: Array,
+                reflect: true
+            },
             /**
              * name used when submitted inside a form
              */
@@ -45,7 +50,13 @@ export class PbSelect extends pbMixin(LitElement) {
             source: {
                 type: String
             },
+            multi: {
+                type: Boolean
+            },
             _items: {
+                type: Array
+            },
+            _selected: {
                 type: Array
             },
             ...super.properties
@@ -54,32 +65,10 @@ export class PbSelect extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        this._value = null;
+        this.value = null;
+        this.values = [];
         this._items = [];
-    }
-
-    set value(newVal) {
-        const oldVal = this._value;
-        this._value = newVal;
-        if (this._hidden) {
-            this._hidden.value = this._value;
-        }
-        this.requestUpdate('value', oldVal);
-    }
-
-    get value() {
-        return this._value;
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-
-        this._hidden = document.createElement('input');
-        this._hidden.type = 'hidden';
-        this._hidden.name = this.name;
-        this._hidden.value = this.value;
-        this._hidden.slot = 'output';
-        this.appendChild(this._hidden);
+        this._selected = [];
     }
 
     firstUpdated() {
@@ -100,8 +89,8 @@ export class PbSelect extends pbMixin(LitElement) {
         this._loadRemote();
     }
 
-    _clear() {
-        const slot = this.shadowRoot.querySelector('slot:not([name])');
+    _clear(selector) {
+        const slot = this.shadowRoot.querySelector(selector);
         if (slot) {
             slot.assignedNodes().forEach((node) => {
                 node.parentNode.removeChild(node);
@@ -126,7 +115,7 @@ export class PbSelect extends pbMixin(LitElement) {
             })
                 .then((response) => response.json())
                 .then((json) => {
-                    this._clear();
+                    this._clear('slot:not([name])');
                     const items = [];
                     json.forEach((item) => {
                         items.push({label: item.text, value: item.value});
@@ -155,6 +144,18 @@ export class PbSelect extends pbMixin(LitElement) {
     }
 
     render() {
+        if (this.multi) {
+            return html`
+                <slot name="subform"></slot>
+                <iron-label for="list">${translate(this.label)}</iron-label>
+                <paper-listbox id="list" slot="dropdown-content" class="dropdown-content" .selectedValues="${this.values}" ?multi="${this.multi}"
+                    attr-for-selected="value" @iron-select="${this._changed}" @iron-deselect="${this._changed}">
+                    <slot></slot>
+                    ${this._items.map((item) => html`<paper-item value="${item.value}">${item.label}</paper-item>`)}
+                </paper-listbox>
+                <slot name="output"></slot>
+            `;
+        }
         return html`
             <slot name="subform"></slot>
             <paper-dropdown-menu label="${translate(this.label)}">
@@ -168,20 +169,49 @@ export class PbSelect extends pbMixin(LitElement) {
         `;
     }
 
-    _changed(ev) {
-        ev.preventDefault();
+    _changed() {
         const list = this.shadowRoot.getElementById('list');
-        if (this._hidden.value === list.selected) {
+        const oldSelected = Array.of(this._selected);
+        if (this.multi) {
+            this._selected = list.selectedValues;
+            this.values = this._selected;
+            this.value = null;
+        } else {
+            this._selected = [list.selected];
+            this.value = list.selected;
+            this.values = [];
+        }
+
+        // check if selected items really changed
+        if (this._selected.length === oldSelected.length &&
+            this._selected.every((val, index) => val === oldSelected[index])) {
             return;
         }
-        this._hidden.value = list.selected;
+        this._writeHidden();
+
         this.dispatchEvent(new CustomEvent('change'));
+    }
+
+    _writeHidden() {
+        this._clear('slot[name="output"]');
+        this._selected.forEach((item) => {
+            const input = document.createElement('input');
+            input.slot = 'output';
+            input.type = 'hidden';
+            input.name = this.name;
+            input.value = item;
+            this.appendChild(input);
+        });
     }
 
     static get styles() {
         return css`
             :host {
                 display: block;
+            }
+
+            iron-label {
+                font: var(--pb-base-font);
             }
         `;
     }
