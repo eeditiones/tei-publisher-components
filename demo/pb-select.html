@@ -8,6 +8,7 @@
         </style>
         <!--scripts-->
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-select.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>
@@ -21,7 +22,7 @@
             <template>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <form id="form" action="">
-                        <pb-select label="browse.title" name="index" value="div">
+                        <pb-select label="browse.title" name="lang-multi" value="fr" multi>
                             <paper-item value="bg">Български</paper-item>
                             <paper-item value="cs">český</paper-item>
                             <paper-item value="de">Deutsch</paper-item>
@@ -42,7 +43,7 @@
                             <paper-item value="tr">Türkçe</paper-item>
                             <paper-item value="uk">Українська</paper-item>
                         </pb-select>
-                        <button type="submit">Submit</button>
+                        <button type="submit"><paper-button>Submit</paper-button></button>
                     </form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>

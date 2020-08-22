@@ -8,6 +8,7 @@
         </style>
         <!--scripts-->
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-select.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>
@@ -22,9 +23,9 @@
                 <p>Reads the items to be shown from a JSON file:</p>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint=".">
                     <form id="form" action="">
-                        <pb-select label="language" name="index" value="de" source="./select.json">
+                        <pb-select label="language" name="lang" value="pl" source="./select.json">
                         </pb-select>
-                        <button type="submit">Submit</button>
+                        <button type="submit"><paper-button>Submit</paper-button></button>
                     </form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>
