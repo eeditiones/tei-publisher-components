@@ -11,9 +11,11 @@ module.exports = config => {
         // npm run test -- --grep test/foo/bar.test.js
         // npm run test -- --grep test/bar/*
         { pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module' },
-        { pattern: 'i18n/**/*', watched: false, included: false, served: true }
+        { pattern: 'i18n/**/*', watched: false, included: false, served: true },
+        { pattern: 'demo/*.json', watched: false, included: false, served: true }
       ],
       proxies: {
+        '/demo': '/base/demo',
         '/demo/i18n': '/base/demo/i18n',
         '/i18n': '/base/i18n'
       },

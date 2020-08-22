@@ -16,7 +16,7 @@ describe('simple select', () => {
         });
         const el = (
             await fixture(`
-                <pb-page>
+                <pb-page endpoint=".">
                     <form action="">
                         <pb-select label="Dinosaurs" name="key" value="1">
                             <paper-item></paper-item>
@@ -25,7 +25,6 @@ describe('simple select', () => {
                             <paper-item value="2">Item 2</paper-item>
                             <paper-item value="3">Item 3</paper-item>
                         </pb-select>
-                        <button type="submit">Submit</button>
                     </form>
                 </pb-page>
             `)
@@ -40,32 +39,33 @@ describe('simple select', () => {
         await select.updateComplete;
         expect(serializeForm(form)).to.equal('key=2');
     });
+});
 
-    it('supports i18n', async () => {
+describe('select initialized from remote data source', () => {
+    it('submits in form', async () => {
         let initDone;
         document.addEventListener('pb-page-ready', () => {
             initDone = true;
         });
         const el = (
             await fixture(`
-                <pb-page>
+                <pb-page endpoint=".">
                     <form action="">
-                        <pb-select label="browse.title" name="index" value="div">
-                            <paper-item value="div"><pb-i18n key="appgen.view.div"></pb-i18n></paper-item>
-                            <paper-item value="page"><pb-i18n key="appgen.view.page"></pb-i18n></paper-item>
-                        </pb-select>
-                        <button type="submit">Submit</button>
+                        <pb-select label="Language" name="lang" value="de" source="demo/select.json"></pb-select>
                     </form>
                 </pb-page>
             `)
         );
         await waitUntil(() => initDone);
 
-        const form = el.querySelector('form');
-        expect(serializeForm(form)).to.equal('index=div');
-
         const select = el.querySelector('pb-select');
-        const list = select.shadowRoot.getElementById('list');
-        console.log(list);
+        await waitUntil(() => select._items.length > 0);
+        
+        const form = el.querySelector('form');
+        expect(serializeForm(form)).to.equal('lang=de');
+
+        select.value = "en";
+        await select.updateComplete;
+        expect(serializeForm(form)).to.equal('lang=en');
     });
 });
