@@ -1,10 +1,14 @@
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
 
 import '../src/pb-page.js';
 import '../src/pb-i18n.js';
 
 describe('translate labels', () => {
     it('uses default translations', async () => {
+        let initDone;
+        document.addEventListener('pb-i18n-update', () => {
+            initDone = true;
+        });
         const el = (
             await fixture(`
                 <pb-page require-language language="en">
@@ -15,7 +19,7 @@ describe('translate labels', () => {
                 </pb-page>
             `)
         );
-        await oneEvent(document, 'pb-i18n-update');
+        await waitUntil(() => initDone);
 
         let node = el.querySelector('span');
         expect(node).to.have.text('Contents');
@@ -31,6 +35,10 @@ describe('translate labels', () => {
     });
 
     it('reacts to language change', async () => {
+        let initDone;
+        document.addEventListener('pb-i18n-update', () => {
+            initDone = true;
+        });
         const el = (
             await fixture(`
                 <pb-page require-language>
@@ -38,7 +46,7 @@ describe('translate labels', () => {
                 </pb-page>
             `)
         );
-        await oneEvent(document, 'pb-i18n-update');
+        await waitUntil(() => initDone);
 
         document.dispatchEvent(new CustomEvent('pb-i18n-language', { detail: { "language": "de" }}));
         await oneEvent(document, 'pb-i18n-update');
@@ -48,6 +56,10 @@ describe('translate labels', () => {
     });
 
     it('loads custom translations', async () => {
+        let initDone;
+        document.addEventListener('pb-i18n-update', () => {
+            initDone = true;
+        });
         const el = (
             await fixture(`
                 <pb-page require-language language="en" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
@@ -58,7 +70,7 @@ describe('translate labels', () => {
                 </pb-page>
             `)
         );
-        await oneEvent(document, 'pb-i18n-update');
+        await waitUntil(() => initDone);
 
         const span = el.querySelector('span');
         expect(span).to.have.text('Custom Table of Contents');
@@ -75,6 +87,10 @@ describe('translate labels', () => {
     });
 
     it('translates to German', async () => {
+        let initDone;
+        document.addEventListener('pb-i18n-update', () => {
+            initDone = true;
+        });
         const el = (
             await fixture(`
                 <pb-page require-language language="de" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
@@ -85,7 +101,7 @@ describe('translate labels', () => {
                 </pb-page>
             `)
         );
-        await oneEvent(document, 'pb-i18n-update');
+        await waitUntil(() => initDone);
 
         const span = el.querySelector('span');
         expect(span).to.have.text('Inhaltsverzeichnis angepasst');
