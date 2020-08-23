@@ -17,6 +17,7 @@ import '@polymer/paper-checkbox';
  * @cssprop --pb-search-suggestions-color - Color for the labels shown in the suggestions dropdown
  * @cssprop --pb-search-suggestions-background - Background for the suggestions dropdown
  * @slot - default unnamed slot
+ * @slot - beforeInput renders content before the actual search input field
  * @fires pb-load - Fired to perform the actual search with parameters passed to the request
  * @fires pb-search-resubmit - When received, triggers the search again
  */
@@ -95,6 +96,7 @@ export class PbSearch extends pbMixin(LitElement) {
             </custom-style>
             <iron-form id="ironform" allow-redirect="${this.redirect}">
                 <form id="searchPageForm" method="get" action="${this.action}" accept="text/html">
+                    <slot name="beforeInput"></slot>
                     <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeHolder)}"
                         value="${this.value}" always-float-label>
                         <iron-icon icon="search" @click="${this._doSearch}" slot="prefix"></iron-icon>
