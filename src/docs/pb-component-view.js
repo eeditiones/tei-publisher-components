@@ -129,6 +129,7 @@ export class PbComponentView extends LitElement {
                                 ${this._renderPropertiesSection()}
                                 ${_renderSection('Events', this._component.events)}
                                 ${_renderSection('CSS Properties', this._component.cssProperties, true)}
+                                ${_renderSection('CSS Parts', this._component.cssParts)}
                             ` : null
                     }
                         </div>` :

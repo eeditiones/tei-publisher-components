@@ -125,5 +125,10 @@
     "pb-autocomplete": {
         "demo/pb-autocomplete.html": "Demo",
         "demo/pb-autocomplete2.html": "Search with autocomplete"
+    },
+    "pb-select": {
+        "demo/pb-select.html": "Demo",
+        "demo/pb-select2.html": "Read options from remote datasource",
+        "demo/pb-select3.html": "Combined filter options"
     }
 }

@@ -1,46 +1,34 @@
 <html>
     <head>
-        <title>Using pb-autocomplete</title>
+        <title>Using pb-select</title>
         <style>
             pb-autocomplete {
                 margin-bottom: 20px;
             }
-            pb-repeat .instance {
-                display: flex;
-                align-items: center;
-            }
-            button {
-                border: 0;
-                background-color: inherit;
-            }
         </style>
         <!--scripts-->
+        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-select.js"></script>
+        <script type="module" src="../src/pb-lang.js"></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../src/pb-autocomplete.js"></script>
-        <script type="module" src="../src/pb-repeat.js"></script>
         <!--/scripts-->
     </head>
     <body>
-        <h1>Using pb-autocomplete with remote suggestions</h1>
+        <h1>Using pb-select with a remote data source</h1>
         
         <pb-demo-snippet>
             <template>
+                <p>Reads the items to be shown from a JSON file:</p>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <form id="form" action="">
-                        <p>pb-autocomplete used with a pb-repeat:</p>
-                        <pb-repeat>
-                            <template>
-                                <pb-autocomplete placeholder="Title" name="title" source="modules/autocomplete.xql"></pb-autocomplete>
-                            </template>
-                        </pb-repeat>
-                        <p>If suggestions are an array of objects with properties "text" and "value", the "value" will be used
-                            in the form submit instead of the label displayed:
-                        </p>
-                        <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
-                            suggestions='[{"text": "English", "value": "en"}, {"text": "Polish", "value": "pl"}, {"text": "German", "value": "de"}]'>
-                        </pb-autocomplete>
+                        <pb-select label="Title" name="title" source="modules/autocomplete.xql?query=s">
+                            <pb-select label="Field" name="field" slot="subform" value="title">
+                                <paper-item value="title">Title</paper-item>
+                                <paper-item value="author">Author</paper-item>
+                            </pb-select>
+                        </pb-select>
                         <button type="submit"><paper-button>Submit</paper-button></button>
                     </form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
@@ -55,5 +43,6 @@
                 </script>
             </template>
         </pb-demo-snippet>
+       
     </body>
 </html>
