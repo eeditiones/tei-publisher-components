@@ -17,12 +17,13 @@
         <!--/scripts-->
     </head>
     <body>
-        <h1>Using pb-autocomplete</h1>
+        <h1>Using pb-select</h1>
         
         <pb-demo-snippet>
             <template>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <form id="form" action="">
+                        <p>Single item selection:</p>
                         <pb-select label="language" name="lang1" value="es">
                             <paper-item value="bg">Български</paper-item>
                             <paper-item value="cs">český</paper-item>
@@ -44,6 +45,7 @@
                             <paper-item value="tr">Türkçe</paper-item>
                             <paper-item value="uk">Українська</paper-item>
                         </pb-select>
+                        <p>with option "multi":</p>
                         <pb-select label="language" name="lang2" values='["fr", "de"]' multi>
                             <paper-item value="bg">Български</paper-item>
                             <paper-item value="cs">český</paper-item>

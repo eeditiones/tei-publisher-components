@@ -16,6 +16,7 @@ import { pbMixin } from './pb-mixin.js';
  *
  * @slot - a static list of paper-item to be shown as options. each paper-item should have a value attribute
  * @slot subform - additional form controls
+ * @csspart label - the label shown above a multi-selection box (does not apply to single-selection)
  */
 export class PbSelect extends pbMixin(LitElement) {
     static get properties() {
@@ -33,6 +34,10 @@ export class PbSelect extends pbMixin(LitElement) {
                 type: String,
                 reflect: true
             },
+            /**
+             * If `multi` is set, specify initial values via this property
+             * instead of using `value`
+             */
             values: {
                 type: Array,
                 reflect: true
@@ -147,7 +152,7 @@ export class PbSelect extends pbMixin(LitElement) {
         if (this.multi) {
             return html`
                 <slot name="subform"></slot>
-                <iron-label for="list">${translate(this.label)}</iron-label>
+                <iron-label for="list" part="label">${translate(this.label)}</iron-label>
                 <paper-listbox id="list" slot="dropdown-content" class="dropdown-content" .selectedValues="${this.values}" ?multi="${this.multi}"
                     attr-for-selected="value" @iron-select="${this._changed}" @iron-deselect="${this._changed}">
                     <slot></slot>
@@ -212,6 +217,9 @@ export class PbSelect extends pbMixin(LitElement) {
 
             iron-label {
                 font: var(--pb-base-font);
+                font-size: 12px;
+                font-weight: 400;
+                color: var(--pb-color-lighter);
             }
         `;
     }

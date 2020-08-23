@@ -1,4 +1,4 @@
-import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
+import { fixture, expect, waitUntil } from '@open-wc/testing';
 import '../src/pb-select.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -32,9 +32,11 @@ describe('simple select', () => {
         await waitUntil(() => initDone);
         
         const form = el.querySelector('form');
-        expect(serializeForm(form)).to.equal('key=1');
-
         const select = el.querySelector('pb-select');
+
+        expect(serializeForm(form)).to.equal('key=1');
+        expect(select.value).to.equal('1');
+
         select.value = "2";
         await select.updateComplete;
         expect(serializeForm(form)).to.equal('key=2');
@@ -62,11 +64,13 @@ describe('simple select', () => {
         await waitUntil(() => initDone);
 
         const form = el.querySelector('form');
-        expect(serializeForm(form)).to.equal('key=1');
-
         const select = el.querySelector('pb-select');
+        expect(serializeForm(form)).to.equal('key=1');
+        expect(select.values).to.deep.equal(['1']);
+
         select.values = ["2", "3"];
         await select.updateComplete;
+        expect(select.values).to.deep.equal(['2', '3']);
         expect(serializeForm(form)).to.equal('key=2&key=3');
     });
 });
