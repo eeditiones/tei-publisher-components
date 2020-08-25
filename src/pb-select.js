@@ -76,6 +76,12 @@ export class PbSelect extends pbMixin(LitElement) {
         this._selected = [];
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.subscribeTo('pb-i18n-update', this._refresh.bind(this));
+    }
+
     firstUpdated() {
         super.firstUpdated();
 
@@ -92,6 +98,17 @@ export class PbSelect extends pbMixin(LitElement) {
             });
         }
         this._loadRemote();
+    }
+
+    _refresh() {
+        const listbox = this.shadowRoot.getElementById('list');
+        if (listbox) {
+            setTimeout(() => {
+                const old = listbox.selected;
+                listbox.selected = undefined;
+                listbox.selected = old;
+            });
+        }
     }
 
     _clear(selector) {
@@ -163,13 +180,13 @@ export class PbSelect extends pbMixin(LitElement) {
         }
         return html`
             <slot name="subform"></slot>
-            <paper-dropdown-menu label="${translate(this.label)}">
+            <paper-dropdown-menu-light label="${translate(this.label)}">
                 <paper-listbox id="list" slot="dropdown-content" class="dropdown-content" .selected="${this.value}"
                     attr-for-selected="value" @iron-select="${this._changed}">
                     <slot></slot>
                     ${this._items.map((item) => html`<paper-item value="${item.value}">${item.label}</paper-item>`)}
                 </paper-listbox>
-            </paper-dropdown-menu>
+            </paper-dropdown-menu-light>
             <slot name="output"></slot>
         `;
     }

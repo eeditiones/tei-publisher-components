@@ -129,6 +129,7 @@
     "pb-select": {
         "demo/pb-select.html": "Demo",
         "demo/pb-select2.html": "Read options from remote datasource",
-        "demo/pb-select3.html": "Combined filter options"
+        "demo/pb-select3.html": "Combined filter options",
+        "demo/pb-select-i18n.html": "Use with i18n"
     }
 }
