@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/iron-label";
@@ -9,7 +9,7 @@ import { pbMixin } from './pb-mixin.js';
 
 /**
  * Replacement for an HTML select element with additional features:
- * 
+ *
  * 1. item list can be loaded from remote endpoint via AJAX
  * 2. may contain additional nested form in the slot
  *    named `subform`, whose values will be sent with the AJAX request
@@ -76,6 +76,12 @@ export class PbSelect extends pbMixin(LitElement) {
         this._selected = [];
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.subscribeTo('pb-i18n-update', this._refresh.bind(this));
+    }
+
     firstUpdated() {
         super.firstUpdated();
 
@@ -92,6 +98,17 @@ export class PbSelect extends pbMixin(LitElement) {
             });
         }
         this._loadRemote();
+    }
+
+    _refresh() {
+        const listbox = this.shadowRoot.getElementById('list');
+        if (listbox) {
+            setTimeout(() => {
+                const old = listbox.selected;
+                listbox.selected = undefined;
+                listbox.selected = old;
+            });
+        }
     }
 
     _clear(selector) {
@@ -214,12 +231,14 @@ export class PbSelect extends pbMixin(LitElement) {
             :host {
                 display: block;
             }
-
             iron-label {
                 font: var(--pb-base-font);
                 font-size: 12px;
                 font-weight: 400;
                 color: var(--pb-color-lighter);
+            }
+            paper-dropdown-menu{
+                width:100%;            
             }
         `;
     }
