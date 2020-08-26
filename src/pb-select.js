@@ -221,6 +221,9 @@ export class PbSelect extends pbMixin(LitElement) {
                 font-weight: 400;
                 color: var(--pb-color-lighter);
             }
+            paper-dropdown-menu-light{
+                width:100%;            
+            }
         `;
     }
 }
