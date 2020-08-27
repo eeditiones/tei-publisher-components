@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/iron-label";
@@ -220,6 +220,9 @@ export class PbSelect extends pbMixin(LitElement) {
                 font-size: 12px;
                 font-weight: 400;
                 color: var(--pb-color-lighter);
+            }
+            paper-dropdown-menu{
+                width:100%;
             }
         `;
     }
