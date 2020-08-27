@@ -209,7 +209,9 @@ export class PbSelect extends pbMixin(LitElement) {
             this._selected.every((val, index) => val === oldSelected[index])) {
             return;
         }
-        this._writeHidden();
+        if(this.multi){
+            this._writeHidden();
+        }
 
         this.dispatchEvent(new CustomEvent('change'));
     }
