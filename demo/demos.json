@@ -7,7 +7,8 @@
         "demo/pb-document.html": "Demo"
     },
     "pb-browse-docs": {
-        "demo/pb-browse-docs.html": "Demo"
+        "demo/pb-browse-docs.html": "Demo",
+        "demo/pb-browse-docs2.html": "Passing parameters from a custom form"
     },
     "pb-code-editor": {
         "demo/pb-code-editor.html": "Demo"
