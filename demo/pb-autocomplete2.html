@@ -20,6 +20,8 @@
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-autocomplete.js"></script>
         <script type="module" src="../src/pb-repeat.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
+        
         <!--/scripts-->
     </head>
     <body>
@@ -28,28 +30,30 @@
         <pb-demo-snippet>
             <template>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                    <form id="form" action="">
-                        <p>pb-autocomplete used with a pb-repeat:</p>
-                        <pb-repeat>
-                            <template>
-                                <pb-autocomplete placeholder="Title" name="title" source="modules/autocomplete.xql"></pb-autocomplete>
-                            </template>
-                        </pb-repeat>
-                        <p>If suggestions are an array of objects with properties "text" and "value", the "value" will be used
-                            in the form submit instead of the label displayed:
-                        </p>
-                        <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
-                            suggestions='[{"text": "English", "value": "en"}, {"text": "Polish", "value": "pl"}, {"text": "German", "value": "de"}]'>
-                        </pb-autocomplete>
-                        <button type="submit"><paper-button>Submit</paper-button></button>
-                    </form>
+                    <iron-form id="form" >
+                        <form action="">
+                            <p>pb-autocomplete used with a pb-repeat:</p>
+                            <pb-repeat>
+                                <template>
+                                    <pb-autocomplete placeholder="Title" name="title" source="modules/autocomplete.xql"></pb-autocomplete>
+                                </template>
+                            </pb-repeat>
+                            <p>If suggestions are an array of objects with properties "text" and "value", the "value" will be used
+                                in the form submit instead of the label displayed:
+                            </p>
+                            <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
+                                suggestions='[{"text": "English", "value": "en"}, {"text": "Polish", "value": "pl"}, {"text": "German", "value": "de"}]'>
+                            </pb-autocomplete>
+                            <button type="submit"><paper-button>Submit</paper-button></button>
+                        </form>
+                    </iron-form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>
                 <script>
                     const form = document.getElementById('form');
-                    form.addEventListener('submit', (ev) => {
+                    form.addEventListener('iron-form-submit', (ev) => {
                         ev.preventDefault();
-                        const data = new URLSearchParams(new FormData(form)).toString();
+                        const data = JSON.stringify(form.serializeForm());
                         document.getElementById('output').innerHTML = data;
                     });
                 </script>
