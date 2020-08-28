@@ -197,7 +197,7 @@ export class PbSelect extends pbMixin(LitElement) {
         if (this.multi) {
             this._selected = list.selectedValues;
             this.values = this._selected;
-            this.value = null;
+            this.value = undefined;
         } else {
             this._selected = [list.selected];
             this.value = list.selected;
