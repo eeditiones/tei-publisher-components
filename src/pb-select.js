@@ -9,7 +9,7 @@ import { pbMixin } from './pb-mixin.js';
 
 /**
  * Replacement for an HTML select element with additional features:
- * 
+ *
  * 1. item list can be loaded from remote endpoint via AJAX
  * 2. may contain additional nested form in the slot
  *    named `subform`, whose values will be sent with the AJAX request
@@ -197,7 +197,7 @@ export class PbSelect extends pbMixin(LitElement) {
         if (this.multi) {
             this._selected = list.selectedValues;
             this.values = this._selected;
-            this.value = null;
+            this.value = undefined;
         } else {
             this._selected = [list.selected];
             this.value = list.selected;
