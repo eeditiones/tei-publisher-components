@@ -84,7 +84,8 @@
         "demo/pb-repeat.html": "Demo"
     },
     "pb-search": {
-        "demo/pb-search.html": "Demo"
+        "demo/pb-search.html": "Demo",
+        "demo/pb-search2.html": "With nested pb-select"
     },
     "pb-select-feature": {
         "demo/pb-select-feature.html": "Server-side",
