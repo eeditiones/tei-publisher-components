@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
-import "@polymer/iron-label";
+import "@polymer/iron-label/iron-label.js";
 import { translate } from "./pb-i18n.js";
 import { pbMixin } from './pb-mixin.js';
 
@@ -180,7 +180,14 @@ export class PbSelect extends pbMixin(LitElement) {
         if (this.multi) {
             this._selected = list.selectedValues;
             this.values = this._selected;
-            this.value = null;
+            
+            // set value anyway for the purpose of testing serialization
+            var svalue = '';
+            this._selected.forEach((val) => {
+                if (svalue) {svalue +=', ';}
+                svalue += val;
+            });
+            this.value = '[' + svalue + ']';
         } else {
             this._selected = [list.selected];
             this.value = list.selected;
@@ -192,21 +199,8 @@ export class PbSelect extends pbMixin(LitElement) {
             this._selected.every((val, index) => val === oldSelected[index])) {
             return;
         }
-        this._writeHidden();
 
         this.dispatchEvent(new CustomEvent('change'));
-    }
-
-    _writeHidden() {
-        this._clear('slot[name="output"]');
-        this._selected.forEach((item) => {
-            const input = document.createElement('input');
-            input.slot = 'output';
-            input.type = 'hidden';
-            input.name = this.name;
-            input.value = item;
-            this.appendChild(input);
-        });
     }
 
     static get styles() {
