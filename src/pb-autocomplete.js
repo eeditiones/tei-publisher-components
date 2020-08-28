@@ -84,11 +84,6 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         const autocomplete = this.shadowRoot.getElementById('autocomplete'); 
         autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
-        this._hiddenInput = document.createElement('input');
-        this._hiddenInput.type = 'hidden';
-        this._hiddenInput.name = this.name;
-        this.appendChild(this._hiddenInput);
-
         if (this.value) {
             if (this.source) {
                 PbAutocomplete.waitOnce('pb-page-ready', () => {
@@ -104,9 +99,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 });
                 if (value) {
                     input.value = value.text || value;
-                    this._hiddenInput.value = value.value || value;
                 }
-                this._hiddenInput.value = this.value;
             }
         }
     }
@@ -127,7 +120,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             </custom-style>
             <slot></slot>
             <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeholder)}"
-                always-float-label @change="${this._changed}">
+                always-float-label>
                 ${ this.icon ? html`<iron-icon icon="${this.icon}" @click="${this._doSearch}" slot="prefix"></iron-icon>` : null}
             </paper-input>
             <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"
@@ -198,14 +191,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _autocompleteSelected(ev) {
         this.lastSelected = ev.detail.text;
-        this._hiddenInput.value = ev.detail.value;
+        const input = this.shadowRoot.getElementById('search');
+        console.log('autocomplete selected %s', ev.detail.text);
+        input.value = ev.detail.text;
+        this.value = input.value;
     }
 
-    _changed() {
-        const search = this.shadowRoot.getElementById('search');
-        if (search.value !== this.lastSelected) {
-            this._hiddenInput.value = search.value;
-        }
-    }
+   
 }
 customElements.define('pb-autocomplete', PbAutocomplete);
