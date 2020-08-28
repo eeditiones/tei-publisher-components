@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/iron-label";
@@ -180,13 +180,13 @@ export class PbSelect extends pbMixin(LitElement) {
         }
         return html`
             <slot name="subform"></slot>
-            <paper-dropdown-menu-light label="${translate(this.label)}">
+            <paper-dropdown-menu label="${translate(this.label)}">
                 <paper-listbox id="list" slot="dropdown-content" class="dropdown-content" .selected="${this.value}"
                     attr-for-selected="value" @iron-select="${this._changed}">
                     <slot></slot>
                     ${this._items.map((item) => html`<paper-item value="${item.value}">${item.label}</paper-item>`)}
                 </paper-listbox>
-            </paper-dropdown-menu-light>
+            </paper-dropdown-menu>
             <slot name="output"></slot>
         `;
     }
@@ -237,6 +237,10 @@ export class PbSelect extends pbMixin(LitElement) {
                 font-size: 12px;
                 font-weight: 400;
                 color: var(--pb-color-lighter);
+            }
+
+            paper-dropdown-menu{
+                width:100%;
             }
         `;
     }
