@@ -90,6 +90,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             },
             _endpoint: {
                 type: String
+            },
+            _apiVersion: {
+                type: Number
             }
         }
     }
@@ -104,6 +107,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         super.connectedCallback();
         PbMixin.waitOnce('pb-page-ready', (options) => {
             this._endpoint = options.endpoint;
+            this._apiVersion = options.apiVersion;
         });
     }
 
@@ -472,5 +476,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     getEndpoint() {
         return this._endpoint;
+    }
+
+    getApiVersion() {
+        return this._apiVersion;
     }
 }

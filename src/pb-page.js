@@ -53,6 +53,10 @@ class PbPage extends pbMixin(LitElement) {
                 type: String,
                 reflect: true
             },
+            apiVersion: {
+                type: String,
+                attribute: 'api-version'
+            },
             /**
              * Optional URL pointing to a directory from which additional i18n 
              * language files will be loaded. The URL should contain placeholders
@@ -131,6 +135,7 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.apiVersion = 1.0;
         this._localeFallbacks = [];
 
         if (_instance) {
@@ -172,7 +177,8 @@ class PbPage extends pbMixin(LitElement) {
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
                 endpoint: this.endpoint,
-                template: this.template
+                template: this.template,
+                apiVersion: this.apiVersion
             });
         }
     }
@@ -235,6 +241,7 @@ class PbPage extends pbMixin(LitElement) {
                 if (this.requireLanguage) {
                     this.signalReady('pb-page-ready', {
                         endpoint: this.endpoint,
+                        apiVersion: this.apiVersion,
                         template: this.template,
                         language: i18next.language
                     });

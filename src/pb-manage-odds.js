@@ -69,7 +69,11 @@ export class PbManageOdds extends pbMixin(LitElement) {
         this._loader = this.shadowRoot.getElementById('load');
 
         PbManageOdds.waitOnce('pb-page-ready', (options) => {
-            this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
+            if (options.apiVersion < 1.0) {
+                this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
+            } else {
+                this._loader.url = `${options.endpoint}/api/odds`;
+            }
             this._refresh();
         });
     }

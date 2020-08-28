@@ -298,7 +298,7 @@ export class PbView extends pbMixin(LitElement) {
     constructor() {
         super();
         this.src = null;
-        this.url = "modules/lib/components.xql";
+        this.url = null;
         this.onUpdate = false;
         this.appendFootnotes = false;
         this.notFound = "the server did not return any content";
@@ -547,6 +547,19 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         const loadContent = this.shadowRoot.getElementById('loadContent');
+        
+        if (!this.url) {
+            if (this.getApiVersion() < 1.0) {
+                this.url = "modules/lib/components.xql";
+            } else {
+                this.url = "api/parts";
+            }
+        }
+        if (this.getApiVersion() < 1.0) {
+            loadContent.url = `${this.getEndpoint()}/${this.url}`;
+        } else {
+            loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
+        }
         loadContent.params = params;
         loadContent.generateRequest();
     }
@@ -839,7 +852,9 @@ export class PbView extends pbMixin(LitElement) {
         pos = pos || this.nodeId;
         const doc = this.getDocument();
         const params = this._getParameters();
-        params.doc = doc.path;
+        if (this.getApiVersion() < 1.0) {
+            params.doc = doc.path;
+        }
         params.odd = this.getOdd() + '.odd';
         params.view = this.getView();
         if (pos) {
@@ -1189,7 +1204,6 @@ export class PbView extends pbMixin(LitElement) {
             </paper-dialog>
             <iron-ajax
                 id="loadContent"
-                url="${this.getEndpoint()}/${this.url}"
                 verbose
                 handle-as="json"
                 method="get"

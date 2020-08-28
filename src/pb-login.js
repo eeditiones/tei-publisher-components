@@ -109,12 +109,25 @@ export class PbLogin extends pbMixin(LitElement) {
         window.addEventListener('focus', () => {
             if (!this._hasFocus) {
                 this._hasFocus = true;
+                if (this.getApiVersion() < 1.0) {
+                    this._checkLogin.url = `${this.getEndpoint()}/login/`;
+                } else {
+                    this._checkLogin.url = `${this.getEndpoint()}/api/login/`;
+                }
+                this._checkLogin.method = 'post';
+                this._checkLogin.params = null;
                 this._checkLogin.body = null;
                 this._checkLogin.generateRequest();
             }
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
-            this._checkLogin.url = `${detail.endpoint}/login`;
+            if (detail.apiVersion < 1.0) {
+                this._checkLogin.url = `${detail.endpoint}/login/`;
+            } else {
+                this._checkLogin.url = `${detail.endpoint}/api/login/`;
+            }
+            this._checkLogin.method = 'get';
+            this._checkLogin.params = null;
             this._checkLogin.body = {
                 user: this.user,
                 password: this.password
@@ -155,9 +168,9 @@ export class PbLogin extends pbMixin(LitElement) {
             </paper-dialog>
 
             <iron-ajax id="checkLogin" with-credentials
-                handle-as="json" @response="${this._handleResponse}"
-                content-type="application/x-www-form-urlencoded"
-                method="POST"></iron-ajax>
+                handle-as="json" @response="${this._handleResponse}" @error="${this._handleError}"
+                method="post"
+                content-type="application/x-www-form-urlencoded"></iron-ajax>
         `;
     }
 
@@ -200,7 +213,8 @@ export class PbLogin extends pbMixin(LitElement) {
     _show(ev) {
         ev.preventDefault();
         if (this.loggedIn) {
-            this._checkLogin.body = {
+            this._checkLogin.method = 'get';
+            this._checkLogin.params = {
                 logout: this.user
             };
             this._checkLogin.generateRequest();
@@ -212,6 +226,8 @@ export class PbLogin extends pbMixin(LitElement) {
     _confirmLogin() {
         this.user = this.shadowRoot.getElementById('user').value;
         this.password = this.shadowRoot.getElementById('password').value;
+        this._checkLogin.method = 'post';
+        this._checkLogin.params = null;
         this._checkLogin.body = {
             user: this.user,
             password: this.password
@@ -238,6 +254,22 @@ export class PbLogin extends pbMixin(LitElement) {
                 this._loginDialog.open();
             }
         }
+        this.emitTo('pb-login', resp);
+    }
+
+    _handleError() {
+        const resp = {
+            userChanged: this.loggedIn,
+            user: null
+        };
+        this.loggedIn = false;
+        this.password = null;
+        if (this._loginDialog.opened) {
+            this._invalid = true;
+        } else if (this.auto) {
+            this._loginDialog.open();
+        }
+
         this.emitTo('pb-login', resp);
     }
 
