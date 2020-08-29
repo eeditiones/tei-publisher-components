@@ -58,7 +58,11 @@ export class PbManageOdds extends pbMixin(LitElement) {
             // regenerate newly uploaded ODDs
             const regenAjax = this.shadowRoot.getElementById('regenerate');
             const params = ev.detail.odds.map(odd => `odd=${odd}`).join('&');
-            regenAjax.url = `modules/lib/regenerate.xql?${params}`;
+            if (this.getApiVersion() < 1.0) {
+                regenAjax.url = `modules/lib/regenerate.xql?${params}`;
+            } else {
+                regenAjax.url = `api/odd?${params}`;
+            }
             regenAjax.trigger();
         });
     }
@@ -190,9 +194,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
         if (!this.odds) {
             return null;
         }
+        const regenUrl = this.getApiVersion() < 1.0 ? 'modules/lib/regenerate.xql' : "api/odd";
         return html`
             <pb-restricted login="login">
-                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('odd.manage.regenerate-all')}"
+                <pb-ajax id="regenerateAll" url="${regenUrl}" method="post" title="${translate('odd.manage.regenerate-all')}"
                     emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                     <h3 slot="title">${translate('odd.manage.regenerate-all')}</h3>
                     <a href="#">${translate('odd.manage.regenerate-all')}</a>
@@ -208,7 +213,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 odd.canWrite ?
                     html`
                                     <pb-restricted login="login">
-                                        <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd"
+                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post" 
                                             emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                                             <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                             <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
@@ -239,7 +244,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     </paper-button-->
                 </form>
             </pb-restricted>
-            <pb-ajax id="regenerate" url="modules/lib/regenerate.xql"></pb-ajax>
+            <pb-ajax id="regenerate" url="${regenUrl}" method="post"></pb-ajax>
             <iron-ajax
                 id="load"
                 verbose
@@ -249,7 +254,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 @response="${this._update}">
             </iron-ajax>
             <iron-ajax id="delete" method="delete" with-credentials @error="${this._deleted}"></iron-ajax>
-            <iron-ajax id="create" method="put" with-credentials @response="${this._created}" @error="${this._created}"></iron-ajax>
+            <iron-ajax id="create" method="post" with-credentials @response="${this._created}" @error="${this._created}"></iron-ajax>
             <paper-dialog id="deleteDialog">
                 <h2>${translate('browse.delete')}</h2>
                 <paper-dialog-scrollable>

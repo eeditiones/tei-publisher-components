@@ -39,6 +39,12 @@ export class PbAjax extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * HTTP method to use, e.g. 'get', 'post', 'delete' ...
+             */
+            method: {
+                type: String
+            },
+            /**
              * If set, emits an event with the given name to the channel
              * this component is subscribed to.
              */
@@ -49,6 +55,11 @@ export class PbAjax extends pbMixin(LitElement) {
                 type: String
             }
         };
+    }
+
+    constructor() {
+        super();
+        this.method = 'get';
     }
 
     connectedCallback() {
@@ -63,7 +74,7 @@ export class PbAjax extends pbMixin(LitElement) {
                 id="loadContent"
                 verbose
                 handle-as="text"
-                method="get"
+                method="${this.method}"
                 with-credentials
                 @error="${this._handleError}"
                 @response="${this._handleResponse}"></iron-ajax>
