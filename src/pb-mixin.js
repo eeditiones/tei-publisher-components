@@ -401,14 +401,25 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     setParameter(name, value) {
-        if (typeof value === 'undefined') {
+        // console.log("pb-mixin: setParameter - name: ", name, " - value: ", value);
+        if (typeof value === 'undefined' || value === null) {
             TeiPublisher.url.searchParams.delete(name);
         } else if (Array.isArray(value)) {
+            // console.log("setParameter: isArray - name: ", name, " is array");
             TeiPublisher.url.searchParams.delete(name);
             value.forEach(function (val) {
                 TeiPublisher.url.searchParams.append(name, val);
             });
+        } else if((typeof value === 'string' || value instanceof String)  &&  value.startsWith("[")) {
+            // console.log("setParameter - name: ", name, " is a string, starting with [");
+            TeiPublisher.url.searchParams.delete(name);
+            const valueArray = value.substring(1,value.length-1).split(",")
+            valueArray.forEach(function (val) {
+                // console.log("setParameter - name: ", name, " - value: ", val.trim());
+                TeiPublisher.url.searchParams.append(name, val.trim());
+            });
         } else {
+            // console.log("setParameter - name: ", name, " - value: ", value);
             TeiPublisher.url.searchParams.set(name, value);
         }
     }
