@@ -4,11 +4,11 @@ import { translate } from "./pb-i18n.js";
 
 /**
  * Display a pagination control from which the user can select a page to view
- * from a multi-page collection of resources. To determine the number of pages, 
+ * from a multi-page collection of resources. To determine the number of pages,
  * `pb-paginate` listens for the `pb-results-received` event emitted by `pb-load`.
  * If the user clicks on one of the page indicators, a `pb-load` event is emitted,
  * which should cause the connected `pb-load` element to refresh.
- * 
+ *
  * @fires pb-load - Fires when user selects new page to show
  * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
  */
@@ -119,10 +119,13 @@ export class PbPaginate extends pbMixin(LitElement) {
             }
 
             .active {
-                background-color: var(--paper-grey-800);
-                color: white;
+                background-color: var(--pb-color-primary);
+                color: var(--pb-color-inverse);
                 border-radius: 50%;
                 min-width: 1em;
+                width: 1em;
+                line-height: 1em;
+                padding: .4em;
                 text-align: center;
 
                 box-shadow:  0 3px 4px 0 rgba(0, 0, 0, 0.14),
