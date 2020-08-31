@@ -147,6 +147,12 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     firstUpdated() {
+        PbBrowseDocs.waitOnce('pb-page-ready', (options) => {
+            if (options.apiVersion >= 1.0) {
+                const loader = this.shadowRoot.getElementById('autocompleteLoader');
+                loader.url = `${options.endpoint}/api/search/autocomplete`;
+            }
+        });
         this.shadowRoot.getElementById('autocomplete').addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
         const login = document.getElementById(this.login);
