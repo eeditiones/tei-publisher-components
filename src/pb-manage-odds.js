@@ -114,14 +114,18 @@ export class PbManageOdds extends pbMixin(LitElement) {
     _createODD() {
         const name = this.shadowRoot.querySelector('paper-input[name="new_odd"]').value;
         const title = this.shadowRoot.querySelector('paper-input[name="title"]').value;
-        const createRequest = this.shadowRoot.getElementById('create');
-        createRequest.url = `${this.getEndpoint()}/api/odd/${name}`;
-        createRequest.params = {
-            title
-        };
-        this.emitTo('pb-start-update');
-        createRequest.generateRequest();
         console.log('<pb-manage-odds> create ODD: %s, %s', name, title);
+        if (this.getApiVersion() < 1.0) {
+            this._refresh({ new_odd: name, title });
+        } else {
+            const createRequest = this.shadowRoot.getElementById('create');
+            createRequest.url = `${this.getEndpoint()}/api/odd/${name}`;
+            createRequest.params = {
+                title
+            };
+            this.emitTo('pb-start-update');
+            createRequest.generateRequest();
+        }
     }
 
     _created(ev) {
