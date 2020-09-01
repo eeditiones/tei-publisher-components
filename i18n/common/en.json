@@ -97,6 +97,8 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
+    "search":"Search",
+    "reset": "Reset",
     "placeholder": "Enter Query",
     "sections": "Search sections",
     "headings": "Search headings"
