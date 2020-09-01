@@ -103,6 +103,12 @@ export class PbSearch extends pbMixin(LitElement) {
                     <paper-autocomplete-suggestions id="autocomplete" for="search" source="${this._suggestions}" remote-source></paper-autocomplete-suggestions>
                     <slot></slot>
                     <input type="hidden" name="doc">
+                    
+                    <div>
+                        <paper-button id="submit" raised="raised" @click="${this._doSearch}">${translate('search.search')}</paper-button>
+                        <a href="#" id="reset" @click="${this._reset}">${translate('search.reset')}</a>
+                    </div>
+
                 </form>
             </iron-form>
             <iron-ajax
@@ -122,6 +128,9 @@ export class PbSearch extends pbMixin(LitElement) {
                 --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
                 --paper-input-container-input-color: var(--pb-search-input-color, var(--pb-color-primary, #000000));
                 --paper-input-container-focus-color: var(--pb-search-focus-color, var(--paper-grey-500, #303030));
+            }
+            a{
+                padding:1rem;
             }
         `;
     }
@@ -150,6 +159,10 @@ export class PbSearch extends pbMixin(LitElement) {
 
     _doSubmit() {
         this.shadowRoot.getElementById('ironform').submit();
+    }
+
+    _reset(){
+        this.shadowRoot.getElementById('ironform').reset();
     }
 
     _autocomplete(ev) {
