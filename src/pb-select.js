@@ -1,8 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
-import "@polymer/iron-label";
+import "@polymer/iron-label/iron-label.js";
 import { translate } from "./pb-i18n.js";
 import { pbMixin } from './pb-mixin.js';
 
@@ -71,13 +71,30 @@ export class PbSelect extends pbMixin(LitElement) {
     constructor() {
         super();
         this.value = null;
-        this.values = [];
+        this.values = null;
         this._items = [];
         this._selected = [];
+        this._inIronForm = false;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.subscribeTo('pb-i18n-update', this._refresh.bind(this));
+        // in multi-select mode, copy any value set via 'value' to 'values'
+        if (this.multi) {
+            if (!this.values && this.value) {
+                this.values = [this.value];
+            }
+            // delete this.value so it is not picked up by iron-form
+            this.value = undefined;
+        }
     }
 
     firstUpdated() {
         super.firstUpdated();
+
+        this._inIronForm = this.closest('iron-form, pb-search,pb-custom-form');
 
         const slot = this.shadowRoot.querySelector('[name="subform"]');
         if (slot) {
@@ -92,6 +109,17 @@ export class PbSelect extends pbMixin(LitElement) {
             });
         }
         this._loadRemote();
+    }
+
+    _refresh() {
+        const listbox = this.shadowRoot.getElementById('list');
+        if (listbox) {
+            setTimeout(() => {
+                const old = listbox.selected;
+                listbox.selected = undefined;
+                listbox.selected = old;
+            });
+        }
     }
 
     _clear(selector) {
@@ -153,11 +181,21 @@ export class PbSelect extends pbMixin(LitElement) {
             return html`
                 <slot name="subform"></slot>
                 <iron-label for="list" part="label">${translate(this.label)}</iron-label>
-                <paper-listbox id="list" slot="dropdown-content" class="dropdown-content" .selectedValues="${this.values}" ?multi="${this.multi}"
+                ${
+                    this.multi ? 
+                html`<paper-listbox id="list" slot="dropdown-content" class="dropdown-content" 
+                    .selectedValues="${this.values}" multi
                     attr-for-selected="value" @iron-select="${this._changed}" @iron-deselect="${this._changed}">
                     <slot></slot>
                     ${this._items.map((item) => html`<paper-item value="${item.value}">${item.label}</paper-item>`)}
-                </paper-listbox>
+                </paper-listbox>` :
+                html`<paper-listbox id="list" slot="dropdown-content" class="dropdown-content" 
+                    .selected="${this.value}"
+                    attr-for-selected="value" @iron-select="${this._changed}" @iron-deselect="${this._changed}">
+                    <slot></slot>
+                    ${this._items.map((item) => html`<paper-item value="${item.value}">${item.label}</paper-item>`)}
+                </paper-listbox>`
+                }
                 <slot name="output"></slot>
             `;
         }
@@ -180,11 +218,9 @@ export class PbSelect extends pbMixin(LitElement) {
         if (this.multi) {
             this._selected = list.selectedValues;
             this.values = this._selected;
-            this.value = null;
         } else {
             this._selected = [list.selected];
             this.value = list.selected;
-            this.values = [];
         }
 
         // check if selected items really changed
@@ -192,21 +228,21 @@ export class PbSelect extends pbMixin(LitElement) {
             this._selected.every((val, index) => val === oldSelected[index])) {
             return;
         }
-        this._writeHidden();
 
+        if (!this._inIronForm || this.multi) {
+            this._clear('[name="output"]');
+                
+            const vals = this.multi ? this.values : [this.value];
+            vals.forEach((val) => {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = this.name;
+                hidden.value = val;
+                hidden.slot = 'output';
+                this.appendChild(hidden);
+            });
+        }
         this.dispatchEvent(new CustomEvent('change'));
-    }
-
-    _writeHidden() {
-        this._clear('slot[name="output"]');
-        this._selected.forEach((item) => {
-            const input = document.createElement('input');
-            input.slot = 'output';
-            input.type = 'hidden';
-            input.name = this.name;
-            input.value = item;
-            this.appendChild(input);
-        });
     }
 
     static get styles() {
@@ -220,6 +256,10 @@ export class PbSelect extends pbMixin(LitElement) {
                 font-size: 12px;
                 font-weight: 400;
                 color: var(--pb-color-lighter);
+            }
+
+            paper-dropdown-menu{
+                width:100%;
             }
         `;
     }

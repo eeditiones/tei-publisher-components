@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-search Demo</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-load.js"></script>
+    <script type="module" src="../src/pb-search.js"></script>
+    <script type="module" src="../src/pb-paginate.js"></script>
+    <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-i18n.js"></script>
+    <script type="module" src="../src/pb-select.js"></script>
+
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            pb-search {
+                display: block;
+                --pb-search-label-color: var(--paper-grey-500, #e0e0e0);
+                --pb-search-input-color: var(--paper-grey-900, #202020);
+                --pb-search-focus-color: var(--paper-orange-500);
+            }
+            pb-progress {
+                margin-bottom: 20px;
+            }
+            pb-paginate {
+                margin-top: 40px;
+                margin-bottom: 10px;
+            }
+            pb-load {
+                height: 60vh;
+                overflow: auto;
+            }
+            #results header {
+                display: flex;
+                background-color: #F0F0F0;
+            }
+
+            #results header .count {
+                margin-right: 10px;
+            }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-progress></pb-progress>
+                <main>
+                    <pb-search id="search-form">
+                        <pb-select label="search in" name="tei-target" value="tei-text">
+                            <paper-item value="tei-text">In text</paper-item>
+                            <paper-item value="tei-head">In headings</paper-item>
+                        </pb-select>
+                    </pb-search>
+                    <pb-paginate per-page="10" range="5"></pb-paginate>
+                    <pb-load url="templates/search-results.html"></pb-load>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

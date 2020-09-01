@@ -5,6 +5,7 @@ import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { initTranslation } from "./pb-i18n.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -227,8 +228,8 @@ class PbPage extends pbMixin(LitElement) {
             .use(Backend)
             .init(options)
             .then((t) => {
+                initTranslation(t);
                 // initialized and ready to go!
-                this._translate = t;
                 this._updateI18n(t);
                 this.signalReady('pb-i18n-update', { t, language: i18next.language });
                 if (this.requireLanguage) {
@@ -243,7 +244,6 @@ class PbPage extends pbMixin(LitElement) {
         this.subscribeTo('pb-i18n-language', (ev) => {
             const { language } = ev.detail;
             i18next.changeLanguage(language).then((t) => {
-                this._translate = t;
                 this._updateI18n(t);
                 this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
             }, []);

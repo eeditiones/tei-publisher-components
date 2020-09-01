@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Using pb-select</title>
+        <link rel="stylesheet" href="demo.css">
         <style>
             pb-autocomplete {
                 margin-bottom: 20px;
@@ -9,33 +10,46 @@
         <!--scripts-->
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-form.js"></script>
         <script type="module" src="../src/pb-select.js"></script>
-        <script type="module" src="../src/pb-lang.js"></script>
+        <script type="module" src="../src/pb-lang.js"></script>        
+        <script type="module" src="../src/pb-i18n.js"></script>        
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <!--/scripts-->
     </head>
     <body>
-        <h1>Using pb-select with a remote data source</h1>
+        <h1>Use pb-select with i18n and iron-form</h1>
         
+        <p>This demo checks if option and selection labels are properly translated.</p>
+
         <pb-demo-snippet>
             <template>
-                <p>Reads the items to be shown from a JSON file:</p>
-                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page language="fr">
+                    <pb-lang label="language" selected="en">
+                        <paper-item value="tr">Türkçe</paper-item>
+                        <paper-item value="en">English</paper-item>
+                        <paper-item value="fr">Français</paper-item>
+                        <paper-item value="sl">Slovenščina</paper-item>
+                    </pb-lang>
+        
                     <iron-form id="form">
                         <form action="">
-                            <pb-select label="Title" name="title" source="modules/autocomplete.xql?query=s">
-                                <pb-select label="Field" name="field" slot="subform" value="title">
-                                    <paper-item value="title">Title</paper-item>
-                                    <paper-item value="author">Author</paper-item>
-                                </pb-select>
+                            <pb-select name="format" value="latex" multi>
+                                <paper-item value="latex"><pb-i18n key="menu.download.pdf-latex">untranslated</pb-i18n></paper-item>
+                                <paper-item value="fo"><pb-i18n key="menu.download.pdf-fo">untranslated</pb-i18n></paper-item>
+                                <paper-item value="epub"><pb-i18n key="menu.download.epub-download">untranslated</pb-i18n></paper-item>
                             </pb-select>
+
                             <button type="submit"><paper-button>Submit</paper-button></button>
                         </form>
                     </iron-form>
+
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>
+            
+
                 <script>
                     const form = document.getElementById('form');
                     form.addEventListener('iron-form-submit', (ev) => {

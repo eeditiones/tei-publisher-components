@@ -28,7 +28,7 @@ describe('translate labels', () => {
         expect(node._translated).to.equal('Found 10 items');
 
         node = el.querySelector('pb-i18n[key="undefined"]');
-        expect(node._translated).to.be.undefined;
+        expect(node._translated).to.be.null;
 
         node = el.querySelector('a');
         expect(node.title).to.equal('Download');
@@ -72,18 +72,18 @@ describe('translate labels', () => {
         );
         await waitUntil(() => initDone);
 
-        const span = el.querySelector('span');
+        const span = el.querySelector('span[data-i18n]');
         expect(span).to.have.text('Custom Table of Contents');
 
         let i18n = el.querySelector('pb-i18n[key="demo.message"]');
-        expect(i18n.shadowRoot).to.have.text('User defined message');
+        expect(i18n).to.have.text('User defined message');
 
         // app_en does not overwrite document.normalized - should fall back to default
         i18n = el.querySelector('pb-i18n[key="document.normalized"]');
-        expect(i18n.shadowRoot).to.have.text('Normalized View');
+        expect(i18n).to.have.text('Normalized View');
 
         i18n = el.querySelector('pb-i18n[key="mycomponent.info"]');
-        expect(i18n.shadowRoot).to.have.text('An information coming from a custom component');
+        expect(i18n).to.have.text('An information coming from a custom component');
     });
 
     it('translates to German', async () => {
@@ -103,17 +103,17 @@ describe('translate labels', () => {
         );
         await waitUntil(() => initDone);
 
-        const span = el.querySelector('span');
+        const span = el.querySelector('span[data-i18n]');
         expect(span).to.have.text('Inhaltsverzeichnis angepasst');
 
         let i18n = el.querySelector('pb-i18n[key="demo.message"]');
-        expect(i18n.shadowRoot).to.have.text('Benutzerdefinierte Nachricht');
+        expect(i18n).to.have.text('Benutzerdefinierte Nachricht');
 
         // app_en does not overwrite document.normalized - should fall back to default
         i18n = el.querySelector('pb-i18n[key="document.normalized"]');
-        expect(i18n.shadowRoot).to.have.text('Normalisierte Ansicht');
+        expect(i18n).to.have.text('Normalisierte Ansicht');
 
         i18n = el.querySelector('pb-i18n[key="mycomponent.info"]');
-        expect(i18n.shadowRoot).to.have.text('Informationen einer Erweiterungskomponente');
+        expect(i18n).to.have.text('Informationen einer Erweiterungskomponente');
     });
 });

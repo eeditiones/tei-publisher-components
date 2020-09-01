@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { directive, NodePart, AttributePart } from "lit-html";
 
 // Cache created lit-html parts, so we can update translations
@@ -6,6 +6,14 @@ const partCache = new Map();
 
 // The currently used i18next translation function
 let _translate;
+
+/** 
+ * Called by pb-page before the first pb-i18n-update
+ * to make sure the translation function is set.
+ */
+export function initTranslation(translate) {
+    _translate = translate;
+}
 
 function isConnected(part) {
     if (part instanceof NodePart) {
@@ -86,8 +94,6 @@ setInterval(() => whenIdle(() => removeDisconnectedParts()), 1000 * 60);
 /**
  * Insert translated text somewhere on an HTML page. If no translation is found,
  * display the contained content.
- *
- * @slot - unnamed default slot
  */
 export class PbI18n extends LitElement {
     static get properties() {
@@ -116,12 +122,16 @@ export class PbI18n extends LitElement {
         super();
         this.key = 'missing-key';
         this.options = null;
+        this._translated = null;
     }
 
     connectedCallback() {
         super.connectedCallback();
+        
+        this._fallback = this.innerHTML;
 
         document.addEventListener('pb-i18n-update', this._translate.bind(this));
+
         this._translate();
     }
 
@@ -129,22 +139,17 @@ export class PbI18n extends LitElement {
         const transl = get(this.key, this.options);
         if (transl && transl !== this.key) {
             this._translated = transl;
+        } else {
+            this._translated = null;
         }
     }
 
     render() {
-        if (this._translated) {
-            return html`<span class="i18n">${this._translated}</span>`;
-        }
-        return html`<slot></slot>`;
+        return this._translated ? this._translated : this._fallback;
     }
 
-    static get styles() {
-        return css`
-            :host {
-                display: inline;
-            }
-        `;
+    createRenderRoot() {
+        return this;
     }
 }
 customElements.define('pb-i18n', PbI18n);

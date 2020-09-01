@@ -10,6 +10,7 @@
         <!--scripts-->
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-select.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>
@@ -17,11 +18,10 @@
         <!--/scripts-->
     </head>
     <body>
-        <h1>Using pb-select</h1>
-        
         <pb-demo-snippet>
             <template>
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                    <h2>Using pb-select with a standard HTML form</h2>
                     <form id="form" action="">
                         <p>Single item selection:</p>
                         <pb-select label="language" name="lang1" value="es">

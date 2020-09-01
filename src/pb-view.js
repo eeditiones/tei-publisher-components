@@ -609,7 +609,6 @@ export class PbView extends pbMixin(LitElement) {
                 this._scrollTarget = null;
             });
         }
-        this._scroll();
 
         this.next = resp.next;
         this.previous = resp.previous;
@@ -634,6 +633,8 @@ export class PbView extends pbMixin(LitElement) {
                 position: this.nodeId
             };
             this.emitTo('pb-update', eventOptions);
+
+            this._scroll();
         });
 
         this.emitTo('pb-end-update', null);
@@ -738,6 +739,7 @@ export class PbView extends pbMixin(LitElement) {
         const { hash } = this.getUrl();
         if (hash) {
             const target = this.shadowRoot.getElementById(hash.substring(1));
+            console.log('hash target: %o', target);
             if (target) {
                 target.scrollIntoView({ block: "center", inline: "nearest" });
             }

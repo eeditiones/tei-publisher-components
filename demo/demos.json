@@ -7,7 +7,8 @@
         "demo/pb-document.html": "Demo"
     },
     "pb-browse-docs": {
-        "demo/pb-browse-docs.html": "Demo"
+        "demo/pb-browse-docs.html": "Demo",
+        "demo/pb-browse-docs2.html": "Passing parameters from a custom form"
     },
     "pb-code-editor": {
         "demo/pb-code-editor.html": "Demo"
@@ -83,7 +84,8 @@
         "demo/pb-repeat.html": "Demo"
     },
     "pb-search": {
-        "demo/pb-search.html": "Demo"
+        "demo/pb-search.html": "Demo",
+        "demo/pb-search2.html": "With nested pb-select"
     },
     "pb-select-feature": {
         "demo/pb-select-feature.html": "Server-side",
@@ -129,6 +131,7 @@
     "pb-select": {
         "demo/pb-select.html": "Demo",
         "demo/pb-select2.html": "Read options from remote datasource",
-        "demo/pb-select3.html": "Combined filter options"
+        "demo/pb-select3.html": "Combined filter options",
+        "demo/pb-select-i18n.html": "Use with i18n"
     }
 }
