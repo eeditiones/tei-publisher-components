@@ -11,8 +11,8 @@
         <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-form.js"></script>
         <script type="module" src="../src/pb-select.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>        
         <script type="module" src="../src/pb-i18n.js"></script>        
@@ -20,7 +20,7 @@
         <!--/scripts-->
     </head>
     <body>
-        <h1>Use pb-select with i18n</h1>
+        <h1>Use pb-select with i18n and iron-form</h1>
         
         <p>This demo checks if option and selection labels are properly translated.</p>
 
@@ -45,6 +45,7 @@
                             <button type="submit"><paper-button>Submit</paper-button></button>
                         </form>
                     </iron-form>
+
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>
             

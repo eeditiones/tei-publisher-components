@@ -74,6 +74,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this.placeholder = 'search.placeholder';
         this.suggestions = [];
         this.lastSelected = null;
+        this._hiddenInput = null;
     }
 
     connectedCallback() {
@@ -81,6 +82,14 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        const inIronForm = this.closest('iron-form,pb-search,pb-custom-form');
+        if (!inIronForm) {
+            this._hiddenInput = document.createElement('input');
+            this._hiddenInput.type = 'hidden';
+            this._hiddenInput.name = this.name;
+            this.appendChild(this._hiddenInput);
+        }
+
         const autocomplete = this.shadowRoot.getElementById('autocomplete'); 
         autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
@@ -99,6 +108,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 });
                 if (value) {
                     input.value = value.text || value;
+                    if (this._hiddenInput) {
+                        this._hiddenInput.value = value.value || value;
+                    }
+                }
+                if (this._hiddenInput) {
+                    this._hiddenInput.value = this.value;
                 }
             }
         }
@@ -195,6 +210,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         console.log('autocomplete selected %s', ev.detail.text);
         input.value = ev.detail.text;
         this.value = input.value;
+        if (this._hiddenInput) {
+            this._hiddenInput.value = this.value;
+        }
     }
 
    

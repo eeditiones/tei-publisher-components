@@ -1,4 +1,4 @@
-import { fixture, expect, waitUntil } from '@open-wc/testing';
+import { fixture, expect, waitUntil, oneEvent } from '@open-wc/testing';
 import '../src/pb-select.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -68,14 +68,40 @@ describe('simple select', () => {
 
         const form = el.querySelector('iron-form');
         const select = el.querySelector('pb-select');
-        expect(form.serializeForm()).to.deep.equal({'key': '[1]'});
+        expect(form.serializeForm()).to.deep.equal({'key': "1"});
         expect(select.values).to.deep.equal(['1']);
 
         select.values = ["2", "3"];
         await select.updateComplete;
         expect(select.values).to.deep.equal(['2', '3']);
         
-        expect(form.serializeForm()).to.deep.equal({'key': '[2, 3]'});
+        expect(form.serializeForm()).to.deep.equal({'key': ["2", "3"]});
+    });
+    it('works in standard HTML form', async () => {
+        let initDone;
+        document.addEventListener('pb-page-ready', () => {
+            initDone = true;
+        });
+        const el = (
+            await fixture(`
+                <pb-page endpoint=".">
+                    <form action="" id="form">
+                        <pb-select label="Items" name="key" values='["1", "2"]' multi>
+                            <paper-item></paper-item>
+                            <paper-item value="0">Item 0</paper-item>
+                            <paper-item value="1">Item 1</paper-item>
+                            <paper-item value="2">Item 2</paper-item>
+                            <paper-item value="3">Item 3</paper-item>
+                        </pb-select>
+                    </form>
+                </pb-page>
+            `)
+        );
+        await waitUntil(() => initDone);
+
+        const form = el.querySelector('form');
+        const data = new URLSearchParams(new FormData(form)).toString();
+        expect(data).to.equal('key=1&key=2');
     });
 });
 
