@@ -64,7 +64,7 @@
                 </div>
                 <main>
                     <!-- call components.xql to retrieve the full source text -->
-                    <pb-load url="modules/lib/components.xql?debug=yes&xpath=//text[@type='source']&view=single"
+                    <pb-load url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
                         src="document3" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
             </pb-page>

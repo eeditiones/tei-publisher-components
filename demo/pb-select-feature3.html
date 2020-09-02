@@ -62,7 +62,7 @@
                     ]' subscribe="loader" emit="loader"></pb-select-feature>
                 </div>
                 <main>
-                    <pb-load id="load" url="modules/lib/components.xql?debug=yes&xpath=//text[@type='source']&view=single" 
+                    <pb-load id="load" url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
                         src="document1" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
             </pb-page>
