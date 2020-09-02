@@ -290,8 +290,9 @@ export class PbBrowseDocs extends PbLoad {
         `;
     }
 
-    getURL() {
-        return this.collection ? `${super.getURL()}/${this.collection}` : super.getURL();
+    getURL(params) {
+        const url = super.getURL(params);
+        return this.collection ? `${url}/${this.collection}` : url;
     }
 
     prepareParameters(params) {
