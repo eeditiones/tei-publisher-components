@@ -6,7 +6,6 @@ import '@polymer/iron-ajax';
 import '@polymer/iron-form';
 import '@polymer/iron-icon';
 import '@cwmr/paper-autocomplete';
-import '@polymer/paper-checkbox';
 
 /**
  * Implements a basic search form, which can be extended with additional inputs.
