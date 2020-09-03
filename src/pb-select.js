@@ -71,7 +71,7 @@ export class PbSelect extends pbMixin(LitElement) {
     constructor() {
         super();
         this.value = null;
-        this.values = null;
+        this.values = [];
         this._items = [];
         this._selected = [];
         this._inIronForm = false;
@@ -83,7 +83,7 @@ export class PbSelect extends pbMixin(LitElement) {
         this.subscribeTo('pb-i18n-update', this._refresh.bind(this));
         // in multi-select mode, copy any value set via 'value' to 'values'
         if (this.multi) {
-            if (!this.values && this.value) {
+            if (this.values.length === 0 && this.value) {
                 this.values = [this.value];
             }
             // delete this.value so it is not picked up by iron-form
