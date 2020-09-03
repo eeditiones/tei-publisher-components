@@ -9,7 +9,7 @@ import { pbMixin } from './pb-mixin.js';
 
 /**
  * Replacement for an HTML select element with additional features:
- * 
+ *
  * 1. item list can be loaded from remote endpoint via AJAX
  * 2. may contain additional nested form in the slot
  *    named `subform`, whose values will be sent with the AJAX request
@@ -231,7 +231,7 @@ export class PbSelect extends pbMixin(LitElement) {
 
         if (!this._inIronForm || this.multi) {
             this._clear('[name="output"]');
-                
+
             const vals = this.multi ? this.values : [this.value];
             vals.forEach((val) => {
                 const hidden = document.createElement('input');
@@ -249,17 +249,24 @@ export class PbSelect extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
+                position:relative;
+                overflow:auto;
             }
 
             iron-label {
                 font: var(--pb-base-font);
-                font-size: 12px;
+                font-size:var(--pb-font-caption);
                 font-weight: 400;
                 color: var(--pb-color-lighter);
             }
 
             paper-dropdown-menu{
                 width:100%;
+            }
+            
+            paper-listbox{
+                overflow:auto;
+                height:100%;
             }
         `;
     }
