@@ -14,3 +14,4 @@ css/
 dist
 build
 lib/
+*.iml
