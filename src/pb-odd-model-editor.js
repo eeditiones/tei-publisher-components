@@ -866,7 +866,7 @@ export class PbOddModelEditor extends LitElement {
      */
     _addRendition(ev) {
         this.renditions.push({
-            scope: null,
+            scope: '',
             css: ''
         });
         this._fireModelChanged('renditions', this.renditions);
@@ -875,6 +875,7 @@ export class PbOddModelEditor extends LitElement {
     _updateRendition(e, index) {
         this.renditions[index].css = e.detail.css;
         this.renditions[index].scope = e.detail.scope;
+        console.log('scope: %s', typeof e.detail.scope);
         this._fireModelChanged('renditions', this.renditions);
     }
 
@@ -886,6 +887,7 @@ export class PbOddModelEditor extends LitElement {
     _fireModelChanged(prop, value) {
         const oldModel = this.model;
         this.model = Object.assign({}, this.model, { [prop]: value });
+        console.log('model changed for %s: %o - %o', prop, value, this.model);
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
         this.requestUpdate();
     }
