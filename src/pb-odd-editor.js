@@ -845,7 +845,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     serializeRendition(indent, rendition) {
-        const scope = this.serializeAttribute('scope', rendition.scope);
+        const scope = rendition.scope && rendition.scope !== 'null' ? this.serializeAttribute('scope', rendition.scope) : '';
         const css = PbOddEditor.escape(rendition.css);
         return `${indent}<outputRendition xml:space="preserve" ${scope}>\n${indent}${css}\n${indent}</outputRendition>\n`;
     }
