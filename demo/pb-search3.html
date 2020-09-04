@@ -4,17 +4,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
-    <title>pb-search Demo</title>
+    <title>pb-search with multiple select Demo</title>
     <!--scripts-->
+    <link rel="Stylesheet" href="demo.css">
+
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-search.js"></script>
     <script type="module" src="../src/pb-paginate.js"></script>
     <script type="module" src="../src/pb-progress.js"></script>
     <script type="module" src="../src/pb-i18n.js"></script>
+    <script type="module" src="../src/pb-select.js"></script>
+
     <!--/scripts-->
 </head>
 
@@ -47,15 +52,37 @@
             #results header .count {
                 margin-right: 10px;
             }
+            [multi]{
+                height:200px;
+            }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-progress></pb-progress>
                 <main>
                     <pb-search id="search-form">
-                        <div class="targets">
-                            <paper-checkbox name="tei-target" value="tei-text"><pb-i18n key="search.sections">Search sections</pb-i18n></paper-checkbox>
-                            <paper-checkbox name="tei-target" value="tei-head"><pb-i18n key="search.headings">Search headings</pb-i18n></paper-checkbox>
-                        </div>
+                        <h2>Use label element for multi selects</h2>
+                        <label for="lang">Search language</label>
+                        <pb-select id="lang" name="lang" value="en" multi="multi">
+                            <paper-item value="bg">Български</paper-item>
+                            <paper-item value="cs">český</paper-item>
+                            <paper-item value="de">Deutsch</paper-item>
+                            <paper-item value="en">English</paper-item>
+                            <paper-item value="es">Español</paper-item>
+                            <paper-item value="el">ελληνικά</paper-item>
+                            <paper-item value="fr">Français</paper-item>
+                            <paper-item value="it">Italiano</paper-item>
+                            <paper-item value="ka">ქართული</paper-item>
+                            <paper-item value="nl">Nederlands</paper-item>
+                            <paper-item value="no">Norsk</paper-item>
+                            <paper-item value="pl">Polski</paper-item>
+                            <paper-item value="pt">Português</paper-item>
+                            <paper-item value="ro">Română</paper-item>
+                            <paper-item value="ru">русский</paper-item>
+                            <paper-item value="sl">Slovenščina</paper-item>
+                            <paper-item value="sv">Svenska</paper-item>
+                            <paper-item value="tr">Türkçe</paper-item>
+                            <paper-item value="uk">Українська</paper-item>
+                        </pb-select>
                     </pb-search>
                     <pb-paginate per-page="10" range="5"></pb-paginate>
                     <pb-load url="templates/search-results.html"></pb-load>
