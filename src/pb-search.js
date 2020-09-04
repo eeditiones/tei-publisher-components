@@ -139,14 +139,14 @@ export class PbSearch extends pbMixin(LitElement) {
         const json = this.shadowRoot.getElementById('ironform').serializeForm();
         // always start on first result after submitting new search
         json.start = 1;
+        this.setParameters(json);
         if (this.redirect) {
-            this._doSubmit();
-        } else {
-            this.setParameters(json);
+            window.location.href = this.action + TeiPublisher.url.search;
+        } else {                        
             this.pushHistory('search');
             this.emitTo('pb-load', {
                 "url": this.action,
-                "params": json
+                "params": this.getParameters()
             });
         }
     }
