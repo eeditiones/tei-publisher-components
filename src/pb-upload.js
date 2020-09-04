@@ -45,11 +45,14 @@ export class PbUpload extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
         const uploader = this.shadowRoot.getElementById('uploader');
-        uploader.addEventListener('upload-before', () => {
+        uploader.addEventListener('upload-before', (event) => {
             this.emitTo('pb-start-update');
+            if (this.getApiVersion() >= 1.0) {
+                event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
+            }
         });
         uploader.addEventListener('upload-request', (event) => {
-            if (this.target) {
+            if (this.target && this.getApiVersion() < 1.0) {
                 event.detail.formData.append('root', this.target);
             }
         });
@@ -76,7 +79,11 @@ export class PbUpload extends pbMixin(LitElement) {
                 }
             }
         });
-        uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
+        if (this.getApiVersion() < 1.0) {
+            uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
+        } else {
+            uploader.target = `${this.getEndpoint()}/api/upload/`;
+        }
     }
 
     render() {
