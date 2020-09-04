@@ -3,6 +3,7 @@ module.exports = {
     nodeResolve: true,
     appIndex: 'api.html',
     open: true,
+    cors: true,
     responseTransformers: [
         function rewriteBasePath({ url, status, contentType, body }) {
             if (body) {
