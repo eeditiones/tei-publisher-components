@@ -104,7 +104,7 @@ export class PbSearch extends pbMixin(LitElement) {
                     <slot></slot>
                     <input type="hidden" name="doc">
                     
-                    <div>
+                    <div class="buttons">
                         <paper-button id="submit" raised="raised" @click="${this._doSearch}">${translate('search.search')}</paper-button>
                         <a href="#" id="reset" @click="${this._reset}">${translate('search.reset')}</a>
                     </div>
@@ -131,6 +131,9 @@ export class PbSearch extends pbMixin(LitElement) {
             }
             a{
                 padding:1rem;
+            }
+            .buttons{
+                margin-top:1rem;
             }
         `;
     }
