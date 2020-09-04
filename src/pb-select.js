@@ -251,8 +251,10 @@ export class PbSelect extends pbMixin(LitElement) {
                 display: block;
                 position:relative;
                 overflow:auto;
-                height:16rem;
                 margin-top:1rem;
+            }
+            :host([multi]) paper-listbox{
+                height:16rem;
             }
 
             iron-label {
