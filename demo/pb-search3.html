@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
     <title>pb-search multi Demo</title>
+    <link rel="Stylesheet" href="demo.css">
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
@@ -50,6 +51,11 @@
             #results header .count {
                 margin-right: 10px;
             }
+
+            [multi]{
+                height:200px;
+            }
+
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <pb-progress></pb-progress>

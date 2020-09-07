@@ -257,8 +257,14 @@ export class PbPopover extends pbMixin(LitElement) {
                 }
             }
             if (this.popupClass) {
-                options.onCreate = (instance) => instance.popper.classList.add(this.popupClass);
+                options.onCreate = (instance) => {
+                    instance.popper.classList.add(this.popupClass);
+                };
             }
+            options.onShow = () => {
+                this.emitTo('pb-popover-show', { source: this });
+            };
+
             this._tippy = tippy(target, options);
         }
     }

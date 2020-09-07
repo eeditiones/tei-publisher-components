@@ -2,6 +2,8 @@ import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button';
+import '@polymer/paper-checkbox';
 import '@polymer/iron-ajax';
 import '@polymer/iron-form';
 import '@polymer/paper-button';
@@ -145,6 +147,7 @@ export class PbSearch extends pbMixin(LitElement) {
             }
             a{
                 padding:1rem;
+                color:var(--pb-reset-color);
             }
             .buttons{
                 margin-top:1rem;
