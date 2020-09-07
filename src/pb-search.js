@@ -6,6 +6,7 @@ import '@polymer/paper-button';
 import '@polymer/paper-checkbox';
 import '@polymer/iron-ajax';
 import '@polymer/iron-form';
+import '@polymer/paper-button';
 import '@polymer/iron-icon';
 import '@cwmr/paper-autocomplete';
 
@@ -79,6 +80,21 @@ export class PbSearch extends pbMixin(LitElement) {
                 "params": params
             });
         }
+
+        this._attachButton('searchButton',(e) => this._doSearch(e));
+        this._attachButton('resetButton',() => this._reset());
+
+    }
+
+    _attachButton(slotName,func){
+        const slot = this.shadowRoot.querySelector('slot[name="' + slotName + '"]');
+        const childNodes = slot.assignedNodes({flatten: true});
+        childNodes.forEach(c => {
+            if(c.slot === slotName){
+                c.addEventListener('click', func);
+            }
+        });
+
     }
 
     render() {
@@ -106,11 +122,9 @@ export class PbSearch extends pbMixin(LitElement) {
                     <slot></slot>
                     <input type="hidden" name="doc">
                     
-                    <div class="buttons">
-                        <paper-button id="submit" raised="raised" @click="${this._doSearch}">${translate('search.search')}</paper-button>
-                        <a href="#" id="reset" @click="${this._reset}">${translate('search.reset')}</a>
-                    </div>
-
+                    <slot name="searchButton"></slot>
+                    <slot name="resetButton"></slot>
+                    
                 </form>
             </iron-form>
             <iron-ajax
@@ -141,7 +155,7 @@ export class PbSearch extends pbMixin(LitElement) {
         `;
     }
 
-    _doSearch(ev) {
+    _doSearch() {
         const json = this.shadowRoot.getElementById('ironform').serializeForm();
         // always start on first result after submitting new search
         json.start = 1;

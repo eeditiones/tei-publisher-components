@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-search Demo</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-load.js"></script>
+    <script type="module" src="../src/pb-search.js"></script>
+    <script type="module" src="../src/pb-paginate.js"></script>
+    <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-i18n.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-progress></pb-progress>
+                <main>
+                    <h2>without buttons</h2>
+
+                    <pb-search id="search-form">
+                    </pb-search>
+
+                    <h2>paper buttons for search + reset</h2>
+
+                    <pb-search id="search-form">
+                        <paper-button slot="searchButton">submit</paper-button>
+                        <paper-button slot="resetButton">reset</paper-button>
+                    </pb-search>
+
+                    <h2>native buttons for search + reset</h2>
+                    <pb-search id="search-form2">
+                        <button slot="searchButton">submit</button>
+                        <button slot="resetButton">reset</button>
+                    </pb-search>
+
+
+                    <pb-paginate per-page="10" range="5"></pb-paginate>
+                    <pb-load url="templates/search-results.html"></pb-load>
+
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
