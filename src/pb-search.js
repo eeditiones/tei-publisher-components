@@ -89,8 +89,6 @@ export class PbSearch extends pbMixin(LitElement) {
         const childNodes = slot.assignedNodes({flatten: true});
         childNodes.forEach(c => {
             if(c.slot === slotName){
-                console.log('register', c);
-                console.log('this ', this);
                 c.addEventListener('click', func);
             }
         });
