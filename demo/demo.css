@@ -16,6 +16,7 @@ body {
     --pb-footnote-color: #303030;
     --pb-footnote-padding: 0 0 0 .25em;
     --pb-font-caption:12px;
+    --pb-reset-color:inherit;
     font: var(--pb-base-font);
     color: var(--pb-color-primary);
 }
