@@ -55,7 +55,8 @@ class PbPage extends pbMixin(LitElement) {
             },
             apiVersion: {
                 type: String,
-                attribute: 'api-version'
+                attribute: 'api-version',
+                reflect: true
             },
             /**
              * Optional URL pointing to a directory from which additional i18n 

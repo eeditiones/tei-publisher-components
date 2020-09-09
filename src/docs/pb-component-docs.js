@@ -63,7 +63,7 @@ export class PbComponentDocs extends LitElement {
 
         const apiVersion = new URL(window.location).searchParams.get('_api');
         if (apiVersion) {
-            this._api = parseInt(apiVersion, 10);
+            this._api = parseFloat(apiVersion);
         }
 
         window.addEventListener('popstate', (ev) => {
