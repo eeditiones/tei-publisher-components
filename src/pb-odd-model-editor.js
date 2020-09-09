@@ -315,6 +315,9 @@ export class PbOddModelEditor extends LitElement {
             },
             endpoint: {
                 type: String
+            },
+            apiVersion: {
+                type: String
             }
         };
     }
@@ -444,7 +447,7 @@ export class PbOddModelEditor extends LitElement {
                 <pb-code-editor id="predicate"
                      code="${this.predicate}"   
                      mode="xquery"
-                     linter="${this.endpoint}/modules/editor.xql"
+                     linter="${this.endpoint}/${this.apiVersion < 1.0 ? 'modules/editor.xql' : 'api/lint'}"
                      label="Predicate"
                      placeholder="${translate('odd.editor.model.predicate-placeholder')}"
                      @code-changed="${this._updatePredicate}"></pb-code-editor>
@@ -495,6 +498,7 @@ export class PbOddModelEditor extends LitElement {
                                        name="${parameter.name}"
                                        value="${parameter.value}"
                                        endpoint="${this.endpoint}"
+                                       apiVersion="${this.apiVersion}"
                                        @parameter-remove="${(e) => this._removeParam(e, index)}"
                                        @parameter-changed="${(e) => this._updateParam(e, index)}"
                                        ></pb-odd-parameter-editor>
@@ -543,6 +547,7 @@ export class PbOddModelEditor extends LitElement {
                     .template="${model.template}"
                     .show="${model.show}"
                     endpoint="${this.endpoint}"
+                    apiVersion="${this.apiVersion}"
                     @model-remove="${this._removeModel}"
                     @model-move-down="${this._moveModelDown}"
                     @model-move-up="${this._moveModelUp}"

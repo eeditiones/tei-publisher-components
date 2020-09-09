@@ -559,7 +559,7 @@ export class PbCodeEditor extends LitElement {
         return html`
             ${this._themeStyles}
             <iron-ajax id="lint" url="${this.linter}"
-               handle-as="json" content-type="application/x-www-form-urlencoded"
+               handle-as="json" content-type="${this.apiVersion < 1.0 ? 'application/x-www-form-urlencoded' : 'text'}"
                method="POST"
                @error="${this._handleLintError}"></iron-ajax>
 
@@ -640,13 +640,17 @@ export class PbCodeEditor extends LitElement {
         const ajax = this.shadowRoot.getElementById('lint');
 
         return new Promise((resolve) => {
-            const params = {
-                action: "lint",
-                code: text
-            };
-
-            ajax.params = null;
-            ajax.body = params;
+            if (this.apiVersion < 1.0) {
+                ajax.params = null;
+                ajax.body = {
+                    action: "lint",
+                    code: text
+                };
+            } else {
+                ajax.params = {
+                    code: text
+                };
+            }
 
             const request = ajax.generateRequest();
             request.completes.then((req) => {

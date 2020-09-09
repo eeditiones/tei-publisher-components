@@ -53,7 +53,7 @@ export class PbOddParameterEditor extends LitElement {
                         label="Parameter"
                         mode="xquery"
                         code="${this.value}"
-                        linter="${this.endpoint}/modules/editor.xql"></pb-code-editor>
+                        linter="${this.endpoint}/${this.apiVersion < 1.0 ? 'modules/editor.xql' : 'api/lint'}"></pb-code-editor>
 
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
@@ -89,6 +89,9 @@ export class PbOddParameterEditor extends LitElement {
                 type: Array
             },
             endpoint: {
+                type: String
+            },
+            apiVersion: {
                 type: String
             }
 

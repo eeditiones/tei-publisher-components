@@ -125,6 +125,9 @@ export class PbOddElementspecEditor extends LitElement {
             },
             endpoint: {
                 type: String
+            },
+            apiVersion: {
+                type: String
             }
         };
     }
@@ -176,6 +179,7 @@ export class PbOddElementspecEditor extends LitElement {
                 .template="${model.template}"
                 .show="${model.show}"
                 .endpoint="${this.endpoint}"
+                .apiVersion="${this.apiVersion}"
                 @model-remove="${this._removeModel}"
                 @model-move-down="${this._moveModelDown}"
                 @model-move-up="${this._moveModelUp}"
