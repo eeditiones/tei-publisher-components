@@ -20,6 +20,8 @@ import '@cwmr/paper-autocomplete';
  * @cssprop --pb-search-suggestions-background - Background for the suggestions dropdown
  * @slot - default unnamed slot
  * @slot - beforeInput renders content before the actual search input field
+ * @slot - searchButton allows to plug a component that acts as submit button. Must support the 'click' event
+ * @slot - resetButton allows to plug a component that acts as reset button. Must support the 'click' event
  * @fires pb-load - Fired to perform the actual search with parameters passed to the request
  * @fires pb-search-resubmit - When received, triggers the search again
  */
@@ -81,21 +83,17 @@ export class PbSearch extends pbMixin(LitElement) {
             });
         }
 
-        this._attachButton('searchButton',(e) => this._doSearch(e));
-        this._attachButton('resetButton',() => this._reset());
-
-    }
-
-    _attachButton(slotName,func){
-        const slot = this.shadowRoot.querySelector('slot[name="' + slotName + '"]');
-        const childNodes = slot.assignedNodes({flatten: true});
-        childNodes.forEach(c => {
-            if(c.slot === slotName){
-                c.addEventListener('click', func);
+        this.addEventListener('click', e => {
+            if(e.target.slot === 'searchButton'){
+                this._doSearch();
             }
-        });
+            if(e.target.slot === 'resetButton'){
+                this._reset();
+            }
+        })
 
     }
+
 
     render() {
         return html`
