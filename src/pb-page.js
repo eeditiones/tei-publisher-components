@@ -174,6 +174,11 @@ class PbPage extends pbMixin(LitElement) {
             this.endpoint = target;
         }
 
+        const apiVersion = this.getParameter('_api');
+        if (apiVersion) {
+            this.apiVersion = apiVersion;
+        }
+
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
                 endpoint: this.endpoint,

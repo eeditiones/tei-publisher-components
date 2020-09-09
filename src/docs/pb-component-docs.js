@@ -31,6 +31,10 @@ export class PbComponentDocs extends LitElement {
                 type: String,
                 reflect: true
             },
+            _api: {
+                type: Number,
+                reflect: true
+            },
             _json: {
                 type: Object
             },
@@ -55,6 +59,11 @@ export class PbComponentDocs extends LitElement {
         const target = new URL(window.location).searchParams.get('_target');
         if (target) {
             this._target = target;
+        }
+
+        const apiVersion = new URL(window.location).searchParams.get('_api');
+        if (apiVersion) {
+            this._api = parseInt(apiVersion, 10);
         }
 
         window.addEventListener('popstate', (ev) => {
@@ -141,7 +150,7 @@ export class PbComponentDocs extends LitElement {
                     <paper-checkbox id="filter" @change="${this._filter}">only elements with demos</paper-checkbox>
                     <pb-components-list ?with-demo="${this._demosOnly}" .json="${this._json}"></pb-components-list>
                 </app-drawer>
-                <pb-component-view id="view" ._target="${this._target}"></pb-component-view>
+                <pb-component-view id="view" ._target="${this._target}" ._api="${this._api}"></pb-component-view>
             </app-drawer-layout>
         `;
     }
