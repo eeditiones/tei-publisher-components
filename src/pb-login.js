@@ -109,11 +109,6 @@ export class PbLogin extends pbMixin(LitElement) {
         window.addEventListener('focus', () => {
             if (!this._hasFocus) {
                 this._hasFocus = true;
-                if (this.getApiVersion() < 1.0) {
-                    this._checkLogin.url = `${this.getEndpoint()}/login/`;
-                } else {
-                    this._checkLogin.url = `${this.getEndpoint()}/api/login/`;
-                }
                 this._checkLogin.method = 'post';
                 this._checkLogin.params = null;
                 this._checkLogin.body = null;
@@ -122,7 +117,7 @@ export class PbLogin extends pbMixin(LitElement) {
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
             if (detail.apiVersion < 1.0) {
-                this._checkLogin.url = `${detail.endpoint}/login/`;
+                this._checkLogin.url = `${detail.endpoint}/login`;
             } else {
                 this._checkLogin.url = `${detail.endpoint}/api/login/`;
             }
