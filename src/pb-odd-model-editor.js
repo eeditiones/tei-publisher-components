@@ -450,7 +450,8 @@ export class PbOddModelEditor extends LitElement {
                      linter="${this.endpoint}/${this.apiVersion < 1.0 ? 'modules/editor.xql' : 'api/lint'}"
                      label="Predicate"
                      placeholder="${translate('odd.editor.model.predicate-placeholder')}"
-                     @code-changed="${this._updatePredicate}"></pb-code-editor>
+                     @code-changed="${this._updatePredicate}"
+                     apiVersion="${this.apiVersion}"></pb-code-editor>
                
                 ${this._isModel()
                 ? html`
@@ -482,7 +483,8 @@ export class PbOddModelEditor extends LitElement {
                                              mode="${this.output === 'latex' ? 'stex' : 'xml'}"
                                              label="Template"
                                              placeholder="${translate('odd.editor.model.template-placeholder')}"
-                                             @code-changed="${this._updateTemplate}"></pb-code-editor>
+                                             @code-changed="${this._updateTemplate}"
+                                             apiVersion="${this.apiVersion}"></pb-code-editor>
                         </div>
         
                         <div class="parameters">

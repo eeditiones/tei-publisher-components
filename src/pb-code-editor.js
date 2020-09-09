@@ -529,6 +529,9 @@ export class PbCodeEditor extends LitElement {
             },
             linter: {
                 attribute: true
+            },
+            apiVersion: {
+                type: String
             }
         };
     }
@@ -559,7 +562,7 @@ export class PbCodeEditor extends LitElement {
         return html`
             ${this._themeStyles}
             <iron-ajax id="lint" url="${this.linter}"
-               handle-as="json" content-type="${this.apiVersion < 1.0 ? 'application/x-www-form-urlencoded' : 'text'}"
+               handle-as="json"
                method="POST"
                @error="${this._handleLintError}"></iron-ajax>
 
@@ -641,12 +644,15 @@ export class PbCodeEditor extends LitElement {
 
         return new Promise((resolve) => {
             if (this.apiVersion < 1.0) {
+                ajax.contentType="application/x-www-form-urlencoded";
                 ajax.params = null;
-                ajax.body = {
+                const params = {
                     action: "lint",
                     code: text
                 };
+                ajax.body = params;
             } else {
+                ajax.contentType="text";
                 ajax.params = {
                     code: text
                 };
