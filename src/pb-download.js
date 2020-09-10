@@ -164,18 +164,28 @@ export class PbDownload extends pbMixin(LitElement) {
         let url;
         const doc = this.getDocument();
         if (doc) {
+            let serverPart = '';
             let path;
             if (this.url) {
                 path = this.url;
             } else if (this.full) {
-                path = `${this.getEndpoint()}/${doc.path}`;
+                serverPart = `${this.getEndpoint()}/`;
+                path = doc.path;
             } else {
                 path = doc.getFileName();
             }
-            url = `${path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
+            if (this.getApiVersion() < 1.0) {
+                url = `${serverPart}${path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
+            } else {
+                url = `${serverPart}api/document/${encodeURIComponent(path)}/${this.type || 'html'}?odd=${this.odd ? this.odd : doc.odd}.odd&token=${this._token}`;
+            }
         } else {
             url = /^(?:[a-z]+:)?\/\//i.test(this.url) ? this.url : `${this.getEndpoint()}/${this.url}`;
-            url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
+            if (this.getApiVersion() < 1.0) {
+                url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
+            } else {
+                url = `${url}?odd=${this.odd}&token='${this._token}`;
+            }
         }
 
         if (this.params) {

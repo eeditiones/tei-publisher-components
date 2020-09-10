@@ -85,7 +85,7 @@ export class PbAjax extends pbMixin(LitElement) {
     get dialogTemplate() {
         return html`
             <paper-dialog id="messageDialog">
-                <slot name="title"><h2>Action</h2></slot>
+                <h2><slot name="title">Action</slot></h2>
                 <paper-dialog-scrollable>${unsafeHTML(this._message)}</paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
