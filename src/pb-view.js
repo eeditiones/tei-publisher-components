@@ -578,25 +578,31 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _handleError() {
-        this.emitTo('pb-end-update');
         this._clear();
         const loader = this.shadowRoot.getElementById('loadContent');
         let message;
         const { response } = loader.lastError;
+
         if (response) {
-            message = response.message;
+            message = response.description;
         } else {
             message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
         }
+        
         const content = `
-            <p><pb-i18n key="dialogs.error"></pb-i18n>: ${message}</p>
+            <p>${this.notFound}</p>
+            <p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>
         `;
+
         this._replaceContent({ content });
+        this.emitTo('pb-end-update');
+
     }
 
     _handleContent() {
         const loader = this.shadowRoot.getElementById('loadContent');
         const resp = loader.lastResponse;
+
         if (!resp) {
             console.error('<pb-view> No response received');
             return;
