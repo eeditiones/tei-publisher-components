@@ -74,6 +74,13 @@ export class PbSearch extends pbMixin(LitElement) {
         ironform.addEventListener('iron-form-response', (event) =>
             event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
         );
+        PbSearch.waitOnce('pb-page-ready', (options) => {
+            const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            if (options.apiVersion >= 1.0) {
+                loader.url = `${options.endpoint}/api/search/autocomplete`;
+            } else {
+                loader.url = `${options.endpoint}/modules/autocomplete.xql`;
+            }
 
         if (this.submitOnLoad) {
             const params = this.getParameters();
@@ -90,11 +97,9 @@ export class PbSearch extends pbMixin(LitElement) {
             if(e.target.slot === 'resetButton'){
                 this._reset();
             }
-        })
-
+        });
     }
-
-
+    
     render() {
         return html`
             <custom-style>
@@ -127,7 +132,6 @@ export class PbSearch extends pbMixin(LitElement) {
             </iron-form>
             <iron-ajax
                 id="autocompleteLoader"
-                url="${this.getEndpoint()}/modules/autocomplete.xql"
                 verbose
                 handle-as="json"
                 method="get"

@@ -138,7 +138,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             <slot></slot>
             <paper-input id="search" type="search" name="query" @keyup="${this._setInput}" label="${translate(this.placeholder)}"
                 always-float-label>
-                ${ this.icon ? html`<iron-icon icon="${this.icon}" @click="${this._doSearch}" slot="prefix"></iron-icon>` : null}
+                ${this.icon ? html`<iron-icon icon="${this.icon}" slot="prefix"></iron-icon>` : null}
             </paper-input>
             <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"
                 @autocomplete-selected="${this._autocompleteSelected}"></paper-autocomplete-suggestions>
