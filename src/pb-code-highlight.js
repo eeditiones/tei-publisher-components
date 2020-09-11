@@ -11,10 +11,7 @@ import { resolveURL } from './utils.js';
  * component will take any text content contained in it and highlight it. One can also
  * pass the code to be highlighted in the `code` property.
  *
- * @customElement  pb-code-highlight
- * @polymer
- * @demo demo/pb-code-highlight.html
- * @appliesMixin pbMixin
+ * @cssprop [--pb-code-highlight-white-space=pre] - configures line wrapping
  */
 export class PbCodeHighlight extends LitElement {
     static get properties() {
@@ -127,9 +124,11 @@ export class PbCodeHighlight extends LitElement {
             :host {
                 display: block;
             }
-            pre {
+            pre[class*='language-'] {
                 margin: 0;
-                white-space:pre-wrap;
+            }
+            code[class*='language-'] {
+                white-space: var(--pb-code-highlight-white-space, pre);
             }
             pre.line-numbers {
                 position: relative;
