@@ -109,18 +109,17 @@ export class PbLogin extends pbMixin(LitElement) {
         window.addEventListener('focus', () => {
             if (!this._hasFocus) {
                 this._hasFocus = true;
-                this._checkLogin.params = null;
                 this._checkLogin.body = null;
                 this._checkLogin.generateRequest();
             }
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
+            console.log('<pb-login> Using API version %s', detail.apiVersion);
             if (detail.apiVersion < 1.0) {
                 this._checkLogin.url = `${detail.endpoint}/login`;
             } else {
                 this._checkLogin.url = `${detail.endpoint}/api/login/`;
             }
-            this._checkLogin.params = null;
             this._checkLogin.body = {
                 user: this.user,
                 password: this.password
@@ -206,7 +205,7 @@ export class PbLogin extends pbMixin(LitElement) {
     _show(ev) {
         ev.preventDefault();
         if (this.loggedIn) {
-            this._checkLogin.params = {
+            this._checkLogin.body = {
                 logout: this.user
             };
             this._checkLogin.generateRequest();
@@ -218,7 +217,6 @@ export class PbLogin extends pbMixin(LitElement) {
     _confirmLogin() {
         this.user = this.shadowRoot.getElementById('user').value;
         this.password = this.shadowRoot.getElementById('password').value;
-        this._checkLogin.params = null;
         this._checkLogin.body = {
             user: this.user,
             password: this.password
