@@ -23,9 +23,14 @@
                 <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <form action="" id="form">
                         <h2>Suggestion list passed in a property</h2>
-                        <pb-autocomplete name="autocomplete1" placeholder="type" suggestions='["alpha", "beta", "gamma"]'></pb-autocomplete>
+                        <pb-autocomplete name="autocomplete1" placeholder="Greek letter name" suggestions='["alpha", "beta", "gamma"]' value="alpha"></pb-autocomplete>
                         <h2>Suggestion list supplied by remote XQuery</h2>
-                        <pb-autocomplete name="autocomplete2" placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete>
+                        <!--pb-autocomplete name="autocomplete2" placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete-->
+                        <pb-autocomplete name="autocomplete2" placeholder="query" source="api/search/autocomplete"></pb-autocomplete>
+                        <h2>Suggestion list supplied by remote XQuery with initial value set</h2>
+                        <!--pb-autocomplete name="autocomplete2" placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete-->
+                        <pb-autocomplete name="autocomplete3" placeholder="query" value="baalams" 
+                            source="api/search/autocomplete"></pb-autocomplete>
                         <h2>Combine with other form fields whose value is passed on</h2>
                         <pb-autocomplete name="autocomplete3" placeholder="query" source="modules/autocomplete.xql">
                             <select name="field">
@@ -33,7 +38,7 @@
                                 <option value="author">Author</option>
                             </select>
                         </pb-autocomplete>
-                        <button type="submit"><paper-button>Submit</paper-button></button>
+                        <button type="submit"><paper-button>Submit</paper-button></button> 
                     </form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>

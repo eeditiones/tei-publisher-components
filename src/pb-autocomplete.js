@@ -96,7 +96,8 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         if (this.value) {
             if (this.source) {
                 PbAutocomplete.waitOnce('pb-page-ready', () => {
-                    this._sendRequest(this.value);
+                    //console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
+                    this._sendRequest(this.value, 'autocompleteInit');
                 });
             } else {
                 const input = this.shadowRoot.getElementById('search');
@@ -148,6 +149,14 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             method="get"
             with-credentials
             @response="${this._updateSuggestions}"></iron-ajax>
+
+        <iron-ajax
+            id="autocompleteInit"
+            verbose
+            handle-as="json"
+            method="get"
+            with-credentials
+            @response="${this._initSuggestions}"></iron-ajax>
     `;
 
     }
@@ -172,17 +181,20 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _autocomplete(ev) {
         const search = this.shadowRoot.getElementById('search');
-        this._sendRequest(search.value);
+        this._sendRequest(search.value, 'autocompleteLoader');
     }
 
-    _sendRequest(query) {
-        const loader = this.shadowRoot.getElementById('autocompleteLoader');
+
+    _sendRequest(query, loaderId) {
+        const loader = this.shadowRoot.getElementById(loaderId);
         const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
         loader.url = new URL(this.source, base).toString();
 
         const params = this._getParameters();
         params['query'] = query;
         loader.params = params;
+        //console.log('send request for %s with %o', loaderId, params);
+
         loader.generateRequest();
     }
 
@@ -193,6 +205,34 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             this.suggestions = loader.lastResponse;
             autocomplete.suggestions(this.suggestions);
         }
+    }
+
+
+    _initSuggestions() {
+        const loader = this.shadowRoot.getElementById('autocompleteInit');
+        if (loader.lastResponse) {
+            let suggestions = loader.lastResponse;
+            //console.log('suggestions received', suggestions);
+
+            const input = this.shadowRoot.getElementById('search');
+            const value = suggestions.find((suggestion) => {
+                if (suggestion.text) {
+                    return suggestion.value === this.value;
+                }
+                return suggestion === this.value;
+            });
+            if (value) {
+                input.value = value.text || value;
+                if (this._hiddenInput) {
+                    this._hiddenInput.value = value.value || value;
+                }
+            } else {
+                if (this._hiddenInput) {
+                    this._hiddenInput.value = this.value;
+                }
+            }
+        }
+
     }
 
     _getParameters() {
@@ -209,7 +249,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         const input = this.shadowRoot.getElementById('search');
         console.log('autocomplete selected %s', ev.detail.text);
         input.value = ev.detail.text;
-        this.value = input.value;
+        this.value = ev.detail.value;
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
