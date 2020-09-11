@@ -81,6 +81,7 @@ export class PbSearch extends pbMixin(LitElement) {
             } else {
                 loader.url = `${options.endpoint}/modules/autocomplete.xql`;
             }
+        });
 
         if (this.submitOnLoad) {
             const params = this.getParameters();
@@ -90,11 +91,11 @@ export class PbSearch extends pbMixin(LitElement) {
             });
         }
 
-        this.addEventListener('click', e => {
-            if(e.target.slot === 'searchButton'){
+        this.addEventListener('click', (e) => {
+            if (e.target.slot === 'searchButton'){
                 this._doSearch();
             }
-            if(e.target.slot === 'resetButton'){
+            if (e.target.slot === 'resetButton'){
                 this._reset();
             }
         });
