@@ -121,7 +121,7 @@ export class PbLogin extends pbMixin(LitElement) {
             } else {
                 this._checkLogin.url = `${detail.endpoint}/api/login/`;
             }
-            this._checkLogin.method = 'get';
+            this._checkLogin.method = 'post';
             this._checkLogin.params = null;
             this._checkLogin.body = {
                 user: this.user,
@@ -208,7 +208,7 @@ export class PbLogin extends pbMixin(LitElement) {
     _show(ev) {
         ev.preventDefault();
         if (this.loggedIn) {
-            this._checkLogin.method = 'get';
+            this._checkLogin.method = 'post';
             this._checkLogin.params = {
                 logout: this.user
             };
