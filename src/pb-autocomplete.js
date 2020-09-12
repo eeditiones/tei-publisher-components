@@ -75,6 +75,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this.suggestions = [];
         this.lastSelected = null;
         this._hiddenInput = null;
+        this._initialized = false;
     }
 
     connectedCallback() {
@@ -97,7 +98,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             if (this.source) {
                 PbAutocomplete.waitOnce('pb-page-ready', () => {
                     //console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
-                    this._sendRequest(this.value, 'autocompleteInit');
+                    this._sendRequest(this.value);
                 });
             } else {
                 const input = this.shadowRoot.getElementById('search');
@@ -150,13 +151,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             with-credentials
             @response="${this._updateSuggestions}"></iron-ajax>
 
-        <iron-ajax
-            id="autocompleteInit"
-            verbose
-            handle-as="json"
-            method="get"
-            with-credentials
-            @response="${this._initSuggestions}"></iron-ajax>
+        
     `;
 
     }
@@ -181,12 +176,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _autocomplete(ev) {
         const search = this.shadowRoot.getElementById('search');
-        this._sendRequest(search.value, 'autocompleteLoader');
+        this._sendRequest(search.value);
     }
 
 
-    _sendRequest(query, loaderId) {
-        const loader = this.shadowRoot.getElementById(loaderId);
+    _sendRequest(query) {
+        const loader = this.shadowRoot.getElementById('autocompleteLoader');
         const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
         loader.url = new URL(this.source, base).toString();
 
@@ -198,40 +193,41 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         loader.generateRequest();
     }
 
+
     _updateSuggestions() {
-        const autocomplete = this.shadowRoot.getElementById('autocomplete');
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
-        if (loader.lastResponse) {
-            this.suggestions = loader.lastResponse;
-            autocomplete.suggestions(this.suggestions);
-        }
-    }
 
+        if (this._initialized) {
+            const autocomplete = this.shadowRoot.getElementById('autocomplete');
+            if (loader.lastResponse) {
+                this.suggestions = loader.lastResponse;
+                autocomplete.suggestions(this.suggestions);
+            }
+        } else {
+            if (loader.lastResponse) {
+                let suggestions = loader.lastResponse;
+                //console.log('suggestions received', suggestions);
 
-    _initSuggestions() {
-        const loader = this.shadowRoot.getElementById('autocompleteInit');
-        if (loader.lastResponse) {
-            let suggestions = loader.lastResponse;
-            //console.log('suggestions received', suggestions);
-
-            const input = this.shadowRoot.getElementById('search');
-            const value = suggestions.find((suggestion) => {
-                if (suggestion.text) {
-                    return suggestion.value === this.value;
-                }
-                return suggestion === this.value;
-            });
-            if (value) {
-                input.value = value.text || value;
-                if (this._hiddenInput) {
-                    this._hiddenInput.value = value.value || value;
-                }
-            } else {
-                if (this._hiddenInput) {
-                    this._hiddenInput.value = this.value;
+                const input = this.shadowRoot.getElementById('search');
+                const value = suggestions.find((suggestion) => {
+                    if (suggestion.text) {
+                        return suggestion.value === this.value;
+                    }
+                    return suggestion === this.value;
+                });
+                if (value) {
+                    input.value = value.text || value;
+                    if (this._hiddenInput) {
+                        this._hiddenInput.value = value.value || value;
+                    }
+                } else {
+                    if (this._hiddenInput) {
+                        this._hiddenInput.value = this.value;
+                    }
                 }
             }
         }
+        this._initialized = true;
 
     }
 
