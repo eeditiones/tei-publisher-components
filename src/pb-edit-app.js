@@ -103,7 +103,8 @@ export class PbEditApp extends pbMixin(LitElement) {
             this.request.body.index = index.selectedItem.getAttribute('value');
             this.request.body.template = template.selectedItem.getAttribute('value');
         });
-        form.addEventListener('iron-form-response', (event) =>
+        form.addEventListener('iron-form-response', (event) => {
+            console.log(event);
             event.detail.completes.then((r) => {
                 this.emitTo('pb-end-update');
                 const result = r.parseResponse();
@@ -116,15 +117,15 @@ export class PbEditApp extends pbMixin(LitElement) {
                     this.error = result.description;
                 }
                 this.shadowRoot.getElementById('dialog').open();
-            })
+            });
+        }
         );
         form.addEventListener('iron-form-error', (event) => {
-            event.detail.request.completes.then((r) => {
-                this.emitTo('pb-end-update');
-                const result = r.parseResponse();
-                console.log('<pb-edit-app> Received response: %o', result);
-                this.error = result.description;
-            });
+            this.emitTo('pb-end-update');
+            
+            console.log('<pb-edit-app> Received response: %o', event.detail.request.response);
+            this.error = event.detail.request.response.description;
+            this.shadowRoot.getElementById('dialog').open();
         });
         form.addEventListener('iron-form-invalid', () =>
             this.emitTo('pb-end-update')
