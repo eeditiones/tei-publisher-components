@@ -1,3 +1,4 @@
+import { cmpVersion, minVersion } from './utils.js';
 
 if (!window.TeiPublisher) {
     window.TeiPublisher = {};
@@ -92,7 +93,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 type: String
             },
             _apiVersion: {
-                type: Number
+                type: String
             }
         }
     }
@@ -478,7 +479,15 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return this._endpoint;
     }
 
-    getApiVersion() {
-        return this._apiVersion;
+    minApiVersion(requiredVersion) {
+        return cmpVersion(this._apiVersion, requiredVersion) >= 0;
+    }
+
+    lessThanApiVersion(requiredVersion) {
+        return cmpVersion(this._apiVersion, requiredVersion) < 0;
+    }
+
+    compareApiVersion(requiredVersion) {
+        return cmpVersion(this._apiVersion, requiredVersion);
     }
 }

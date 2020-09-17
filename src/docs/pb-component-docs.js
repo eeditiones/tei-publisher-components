@@ -32,7 +32,7 @@ export class PbComponentDocs extends LitElement {
                 reflect: true
             },
             _api: {
-                type: Number,
+                type: String,
                 reflect: true
             },
             _json: {
@@ -63,7 +63,7 @@ export class PbComponentDocs extends LitElement {
 
         const apiVersion = new URL(window.location).searchParams.get('_api');
         if (apiVersion) {
-            this._api = parseFloat(apiVersion);
+            this._api = apiVersion;
         }
 
         window.addEventListener('popstate', (ev) => {

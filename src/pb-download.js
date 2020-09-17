@@ -109,8 +109,10 @@ export class PbDownload extends pbMixin(LitElement) {
                 this._href = this._computeURL();
             }
         });
-        this._target = this._computeTarget();
-        this._href = this._computeURL();
+        PbDownload.waitOnce('pb-page-ready', () => {
+            this._target = this._computeTarget();
+            this._href = this._computeURL();
+        });
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -174,14 +176,14 @@ export class PbDownload extends pbMixin(LitElement) {
             } else {
                 path = doc.getFileName();
             }
-            if (this.getApiVersion() < 1.0) {
+            if (this.lessThanApiVersion('1.0.0')) {
                 url = `${serverPart}${path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
             } else {
                 url = `${serverPart}api/document/${encodeURIComponent(path)}/${this.type || 'html'}?odd=${this.odd ? this.odd : doc.odd}.odd&token=${this._token}`;
             }
         } else {
             url = /^(?:[a-z]+:)?\/\//i.test(this.url) ? this.url : `${this.getEndpoint()}/${this.url}`;
-            if (this.getApiVersion() < 1.0) {
+            if (this.lessThanApiVersion('1.0.0')) {
                 url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
             } else {
                 url = `${url}?odd=${this.odd}&token='${this._token}`;
@@ -192,7 +194,7 @@ export class PbDownload extends pbMixin(LitElement) {
             url += `&${this.params}`;
         }
         if (this.source) {
-            url += '&source=yes';
+            url += '&source=true';
         }
         return url;
     }

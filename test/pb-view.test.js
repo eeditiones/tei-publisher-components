@@ -6,7 +6,9 @@ import '../src/pb-page.js';
 import '../src/pb-view.js';
 
 describe('initialize and refresh view', () => {
-    it('emits and receives events', async () => {
+    it('emits and receives events', async function() {
+        this.timeout(10000);
+        
         const el = (
             await fixture(`
             <pb-page endpoint="${ __karma__.config.endpoint }">

@@ -9,6 +9,7 @@ import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
+import { cmpVersion } from './utils.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -148,10 +149,13 @@ export class PbBrowseDocs extends PbLoad {
 
     firstUpdated() {
         PbBrowseDocs.waitOnce('pb-page-ready', (options) => {
-            if (options.apiVersion >= 1.0) {
-                const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            if (cmpVersion(options.apiVersion, '1.0.0') >= 0) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
+            } else {
+                loader.url = `${options.endpoint}/modules/autocomplete.xql`;
             }
+            console.log('setting loader url to %s', loader.url);
         });
         this.shadowRoot.getElementById('autocomplete').addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
@@ -227,7 +231,6 @@ export class PbBrowseDocs extends PbLoad {
                 @error="${this._handleError}"></iron-ajax>
             <iron-ajax
                 id="autocompleteLoader"
-                url="${this.getEndpoint()}/modules/autocomplete.xql"
                 verbose
                 handle-as="json"
                 method="get"

@@ -9,7 +9,7 @@ import modeStex from "../lib/codemirror/mode/stex/stex.js";
 import addonDisplayPlaceholder from "../lib/codemirror/addon/display/placeholder.js";
 import addonEditMatchBracket from "../lib/codemirror/addon/edit/matchbrackets.js";
 import addonLint from "../lib/codemirror/addon/lint/lint.js";
-import { resolveURL } from './utils.js';
+import { resolveURL, cmpVersion } from './utils.js';
 import { get as i18n } from './pb-i18n.js';
 
 modeXquery(CodeMirror);
@@ -546,6 +546,7 @@ export class PbCodeEditor extends LitElement {
         this.linter = '';
         this.theme = null;
         this._themeStyles = null;
+        this.apiVersion = '0.9.0';
     }
 
     set theme(value) {
@@ -643,7 +644,7 @@ export class PbCodeEditor extends LitElement {
         const ajax = this.shadowRoot.getElementById('lint');
 
         return new Promise((resolve) => {
-            if (this.apiVersion < 1.0) {
+            if (cmpVersion(this.apiVersion, '1.0.0')) {
                 ajax.contentType="application/x-www-form-urlencoded";
                 ajax.params = null;
                 const params = {

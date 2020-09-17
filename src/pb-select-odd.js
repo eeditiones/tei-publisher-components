@@ -113,10 +113,10 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
     _refresh() {
         const load = this.shadowRoot.getElementById('load');
-        if (this.getApiVersion() < 1.0) {
-            load.url = `${this.getEndpoint()}/modules/lib/components-list-odds.xql`;
-        } else {
+        if (this.minApiVersion('1.0.0')) {
             load.url = `${this.getEndpoint()}/api/odds`;
+        } else {
+            load.url = `${this.getEndpoint()}/modules/lib/components-list-odds.xql`;
         }
         load.params = { odd: this.odd };
         load.generateRequest();

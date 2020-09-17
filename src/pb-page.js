@@ -136,7 +136,8 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
-        this.apiVersion = 1.0;
+        this.apiVersion = undefined;
+        this.requireLanguage = false;
         this._localeFallbacks = [];
 
         if (_instance) {
@@ -158,7 +159,7 @@ class PbPage extends pbMixin(LitElement) {
         }
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
         
         if (this.disabled) {
@@ -180,6 +181,26 @@ class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
+        if (!this.apiVersion) {
+            const json = await fetch(`${this.endpoint}/api/version`)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('request failed');
+                }
+                return res.json();
+            })
+            .catch(() => null)
+            
+            if (json) {
+                this.apiVersion = json.api;
+                console.log('<pb-page> Server reports API version %s', this.apiVersion);
+            } else {
+                console.log('<pb-page> No API version repored by server, assuming 0.9.0');
+                this.apiVersion = '0.9.0';
+            }
+        }
+
+        console.log('pb-page-ready: %s', this.requireLanguage);
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
                 endpoint: this.endpoint,

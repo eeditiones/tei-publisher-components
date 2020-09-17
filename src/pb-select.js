@@ -108,7 +108,9 @@ export class PbSelect extends pbMixin(LitElement) {
                 });
             });
         }
-        this._loadRemote();
+        PbSelect.waitOnce('pb-page-ready', () => {
+            this._loadRemote();
+        });
     }
 
     _refresh() {
@@ -134,6 +136,7 @@ export class PbSelect extends pbMixin(LitElement) {
     _loadRemote() {
         if (this.source) {
             const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
+            console.log('this.base: %o', base);
             let url = new URL(this.source, base).toString();
             if (url.indexOf('?') > -1) {
                 url = `${url}&${this._getParameters()}`;

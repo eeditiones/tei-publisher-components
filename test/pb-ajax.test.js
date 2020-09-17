@@ -10,7 +10,7 @@ describe('recompile ODD', () => {
         const el = (
             await fixture(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
-                    <pb-ajax url="modules/lib/regenerate.xql?odd=graves.odd" dialog="messageDialog">
+                    <pb-ajax url="api/odd?odd=graves.odd" dialog="messageDialog" method="post">
                     Recompile<span slot="title">Recompile ODD</span>
                     </pb-ajax>
                     <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>

@@ -64,10 +64,10 @@ export class PbEditApp extends pbMixin(LitElement) {
         }, []);
         PbEditApp.waitOnce('pb-page-ready', (detail) => {
             let url;
-            if (this.getApiVersion() < 1.0) {
-                url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
-            } else {
+            if (this.minApiVersion('1.0.0')) {
                 url = `${detail.endpoint}/api/templates`;
+            } else {
+                url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
             }
             fetch(url, {
                 method: 'GET',
@@ -77,10 +77,10 @@ export class PbEditApp extends pbMixin(LitElement) {
             .then((response) => response.json())
             .then(json => { this.templates = json });
 
-            if (this.getApiVersion() < 1.0) {
-                url = `${detail.endpoint}/modules/lib/components-list-odds.xql`;
-            } else {
+            if (this.minApiVersion('1.0.0')) {
                 url = `${detail.endpoint}/api/odd`;
+            } else {
+                url = `${detail.endpoint}/modules/lib/components-list-odds.xql`;
             }
             fetch(url, {
                 method: 'GET',
@@ -91,10 +91,10 @@ export class PbEditApp extends pbMixin(LitElement) {
             .then(json => { this.odds = json });
 
             const htmlForm = this.shadowRoot.querySelector('form');
-            if (this.getApiVersion() < 1.0) {
-                htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
-            } else {
+            if (this.minApiVersion('1.0.0')) {
                 htmlForm.action = `${detail.endpoint}/api/apps/generate`;
+            } else {
+                htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
             }
         });
         form.addEventListener('iron-form-presubmit', function () {

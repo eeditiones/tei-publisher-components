@@ -15,6 +15,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/color.js';
 import '@polymer/iron-collapse/iron-collapse.js';
 
+import { cmpVersion } from './utils.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';
 import './pb-code-editor.js';
@@ -447,7 +448,7 @@ export class PbOddModelEditor extends LitElement {
                 <pb-code-editor id="predicate"
                      code="${this.predicate}"   
                      mode="xquery"
-                     linter="${this.endpoint}/${this.apiVersion < 1.0 ? 'modules/editor.xql' : 'api/lint'}"
+                     linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') < 0 ? 'modules/editor.xql' : 'api/lint'}"
                      label="Predicate"
                      placeholder="${translate('odd.editor.model.predicate-placeholder')}"
                      @code-changed="${this._updatePredicate}"

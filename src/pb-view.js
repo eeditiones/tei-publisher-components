@@ -549,16 +549,16 @@ export class PbView extends pbMixin(LitElement) {
         const loadContent = this.shadowRoot.getElementById('loadContent');
         
         if (!this.url) {
-            if (this.getApiVersion() < 1.0) {
-                this.url = "modules/lib/components.xql";
-            } else {
+            if (this.minApiVersion('1.0.0')) {
                 this.url = "api/parts";
+            } else {
+                this.url = "modules/lib/components.xql";
             }
         }
-        if (this.getApiVersion() < 1.0) {
-            loadContent.url = `${this.getEndpoint()}/${this.url}`;
-        } else {
+        if (this.minApiVersion('1.0.0')) {
             loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
+        } else {
+            loadContent.url = `${this.getEndpoint()}/${this.url}`;
         }
         loadContent.params = params;
         loadContent.generateRequest();
@@ -858,7 +858,7 @@ export class PbView extends pbMixin(LitElement) {
         pos = pos || this.nodeId;
         const doc = this.getDocument();
         const params = this._getParameters();
-        if (this.getApiVersion() < 1.0) {
+        if (!this.minApiVersion('1.0.0')) {
             params.doc = doc.path;
         }
         params.odd = this.getOdd() + '.odd';

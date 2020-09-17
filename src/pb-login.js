@@ -7,6 +7,7 @@ import '@polymer/paper-dialog-scrollable';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/iron-icons';
+import { minVersion } from './utils.js';
 
 /**
  * Handles login/logout. Shows a link which opens a login dialog if clicked.
@@ -114,11 +115,10 @@ export class PbLogin extends pbMixin(LitElement) {
             }
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
-            console.log('<pb-login> Using API version %s', detail.apiVersion);
-            if (detail.apiVersion < 1.0) {
-                this._checkLogin.url = `${detail.endpoint}/login`;
-            } else {
+            if (minVersion(detail.apiVersion, '1.0.0')) {
                 this._checkLogin.url = `${detail.endpoint}/api/login/`;
+            } else {
+                this._checkLogin.url = `${detail.endpoint}/login`;
             }
             this._checkLogin.body = {
                 user: this.user,

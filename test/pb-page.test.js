@@ -8,11 +8,11 @@ describe('initializes', () => {
     });
     
     it('reports endpoint and language', (done) => {
-        oneEvent(document, 'pb-page-ready').then((ev) => {
+        document.addEventListener('pb-page-ready', (ev) => {
             expect(ev.detail.language).to.equal('de');
             expect(ev.detail.endpoint).to.equal(__karma__.config.endpoint);
             done();
-        })
+        }, { once: true });
         fixture(`
             <pb-page endpoint="${ __karma__.config.endpoint }" 
                 require-language language="de"></pb-page>
@@ -23,7 +23,7 @@ describe('initializes', () => {
         let initDone;
         document.addEventListener('pb-page-ready', () => {
             initDone = true;
-        });
+        }, { once: true });
         const el = (
             await fixture(`
                 <div>

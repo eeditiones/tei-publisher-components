@@ -130,7 +130,9 @@ export class PbLoad extends pbMixin(LitElement) {
     firstUpdated() {
         if (this.auto) {
             this.start = this.getParameter('start', this.start);
-            this.wait(() => this.load());
+            PbLoad.waitOnce('pb-page-ready', () => {
+                this.wait(() => this.load());
+            });
         }
     }
 

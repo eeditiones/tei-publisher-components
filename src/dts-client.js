@@ -100,7 +100,7 @@ export class DtsClient extends pbMixin(LitElement) {
         const path = member['dts:passage'] || member['dts:download'];
         const url = new URL(path, this.baseUri).toString();
         console.log('<dts-client> downloading %s', url);
-        if (this.getApiVersion() < 1.0) {
+        if (this.lessThanApiVersion('1.0.0')) {
             this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
             this.documentsAPI.params = {
                 'preview': url,
@@ -121,7 +121,7 @@ export class DtsClient extends pbMixin(LitElement) {
         const path = member['dts:passage'] || member['dts:download'];
         const url = new URL(path, this.baseUri).toString();
         console.log('<dts-client> importing %s', url);
-        if (this.getApiVersion() < 1.0) {
+        if (this.lessThanApiVersion('1.0.0')) {
             this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
             this.documentsAPI.params = {
                 'import': url,

@@ -75,7 +75,7 @@ export class PbSearch extends pbMixin(LitElement) {
         );
         PbSearch.waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
-            if (options.apiVersion >= 1.0) {
+            if (this.minApiVersion('1.0.0')) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
             } else {
                 loader.url = `${options.endpoint}/modules/autocomplete.xql`;

@@ -73,7 +73,7 @@ export class PbComponentView extends LitElement {
                 reflect: true
             },
             _api: {
-                type: Number,
+                type: String,
                 reflect: true
             },
             _component: {

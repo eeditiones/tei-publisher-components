@@ -467,7 +467,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         // this.$.loadContent.params = params;
         this.loadContent.params = params;
-        this.loadContent.url = `${this.getEndpoint()}/${this._apiVersion < 1.0 ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
+        this.loadContent.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         const request = this.loadContent.generateRequest();
 
         request.completes.then(r => this.handleOdd(r));
@@ -734,10 +734,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             ident
         };
 
-        const params = this._apiVersion < 1.0 ? oldApiParams : newApiParams;
+        const params = this.lessThanApiVersion('1.0.0') ? oldApiParams : newApiParams;
 
         this.loadContent.params = params;
-        this.loadContent.url = `${this.getEndpoint()}/${this.apiVersion < 1.0 ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
+        this.loadContent.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         let request = this.loadContent.generateRequest();
         request.completes.then(this._handleElementSpecResponse.bind(this));
     }
@@ -888,9 +888,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         this.shadowRoot.getElementById('dialog').show(i18n("odd.editor.save"), i18n('odd.editor.saving'));
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
-        saveOdd.url = `${this.getEndpoint()}/${this._apiVersion < 1.0 ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
+        saveOdd.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         console.log('url %s', saveOdd.url);
-        if (this._apiVersion < 1.0) {
+        if (this.lessThanApiVersion('1.0.0')) {
             saveOdd.contentType = 'x-www-form-urlencoded';
             saveOdd.method = "POST";
             saveOdd.params = null;
@@ -947,7 +947,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         let msg;
 
-        if (this._apiVersion < 1.0) {
+        if (this.lessThanApiVersion('1.0.0')) {
             const report = data.report.map(PbOddEditor._renderReport);
             msg = `<div class="list-group">${report.join('')}</div>`;
         } else {

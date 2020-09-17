@@ -47,12 +47,12 @@ export class PbUpload extends pbMixin(LitElement) {
         const uploader = this.shadowRoot.getElementById('uploader');
         uploader.addEventListener('upload-before', (event) => {
             this.emitTo('pb-start-update');
-            if (this.getApiVersion() >= 1.0) {
+            if (this.minApiVersion('1.0.0')) {
                 event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
             }
         });
         uploader.addEventListener('upload-request', (event) => {
-            if (this.target && this.getApiVersion() < 1.0) {
+            if (this.target && this.lessThanApiVersion('1.0.0')) {
                 event.detail.formData.append('root', this.target);
             }
         });
@@ -79,10 +79,10 @@ export class PbUpload extends pbMixin(LitElement) {
                 }
             }
         });
-        if (this.getApiVersion() < 1.0) {
-            uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
-        } else {
+        if (this.minApiVersion('1.0.0')) {
             uploader.target = `${this.getEndpoint()}/api/upload/`;
+        } else {
+            uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
         }
     }
 

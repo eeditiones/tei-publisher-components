@@ -12,6 +12,7 @@ import { translate } from './pb-i18n.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
 import './pb-edit-xml.js';
+import { cmpVersion } from './utils.js';
 
 /**
  * High-level component implementing the ODD management panel
@@ -58,10 +59,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
             // regenerate newly uploaded ODDs
             const regenAjax = this.shadowRoot.getElementById('regenerate');
             const params = ev.detail.odds.map(odd => `odd=${odd}`).join('&');
-            if (this.getApiVersion() < 1.0) {
-                regenAjax.url = `modules/lib/regenerate.xql?${params}`;
-            } else {
+            if (this.minApiVersion('1.0.0')) {
                 regenAjax.url = `api/odd?${params}`;
+            } else {
+                regenAjax.url = `modules/lib/regenerate.xql?${params}`;
             }
             regenAjax.trigger();
         });
@@ -73,7 +74,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
         this._loader = this.shadowRoot.getElementById('load');
 
         PbManageOdds.waitOnce('pb-page-ready', (options) => {
-            if (options.apiVersion < 1.0) {
+            if (cmpVersion(options.apiVersion, '1.0.0') < 0) {
                 this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
             } else {
                 this._loader.url = `${options.endpoint}/api/odd`;
@@ -115,7 +116,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
         const name = this.shadowRoot.querySelector('paper-input[name="new_odd"]').value;
         const title = this.shadowRoot.querySelector('paper-input[name="title"]').value;
         console.log('<pb-manage-odds> create ODD: %s, %s', name, title);
-        if (this.getApiVersion() < 1.0) {
+        if (this.lessThanApiVersion('1.0.0')) {
             this._refresh({ new_odd: name, title });
         } else {
             const createRequest = this.shadowRoot.getElementById('create');
@@ -162,7 +163,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
     _confirmDelete() {
         if (this._current) {
             console.log('<pb-manage-odds> deleting ODD: %s', this._current);
-            if (this.getApiVersion() < 1.0) {
+            if (this.lessThanApiVersion('1.0.0')) {
                 this._refresh({ 'delete': this._current });
             } else {
                 this.emitTo('pb-start-update');
@@ -198,7 +199,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
         if (!this.odds) {
             return null;
         }
-        const regenUrl = this.getApiVersion() < 1.0 ? 'modules/lib/regenerate.xql' : "api/odd";
+        const regenUrl = this.lessThanApiVersion('1.0.0') ? 'modules/lib/regenerate.xql' : "api/odd";
         return html`
             <pb-restricted login="login">
                 <pb-ajax id="regenerateAll" url="${regenUrl}" method="post" title="${translate('odd.manage.regenerate-all')}"
