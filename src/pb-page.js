@@ -200,7 +200,6 @@ class PbPage extends pbMixin(LitElement) {
             }
         }
 
-        console.log('pb-page-ready: %s', this.requireLanguage);
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
                 endpoint: this.endpoint,
