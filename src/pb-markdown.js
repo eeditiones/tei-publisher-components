@@ -69,8 +69,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
         this.style.display = 'block';
         if (this.url) {
             PbMarkdown.waitOnce('pb-page-ready', () => {
-                const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
-                const url = new URL(this.url, base);
+                const url = this.toAbsoluteURL(this.url);
                 fetch(url, { credentials: 'same-origin' })
                     .then((response) => response.text())
                     .catch(() => {

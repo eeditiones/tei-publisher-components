@@ -182,8 +182,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _sendRequest(query) {
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
-        const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
-        loader.url = new URL(this.source, base).toString();
+        loader.url = this.toAbsoluteURL(this.source);
 
         const params = this._getParameters();
         params['query'] = query;

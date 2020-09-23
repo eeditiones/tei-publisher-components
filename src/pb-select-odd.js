@@ -58,7 +58,9 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
     firstUpdated() {
         super.firstUpdated();
-        this._refresh();
+        PbSelectOdd.waitOnce('pb-page-ready', () => {
+            this._refresh();
+        });
     }
 
     render() {

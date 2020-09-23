@@ -800,7 +800,7 @@ export class PbView extends pbMixin(LitElement) {
     _fixLinks(content) {
         if (this.fixLinks) {
             const doc = this.getDocument();
-            const base = new URL(doc.path, this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`);
+            const base = this.toAbsoluteURL(doc.path);
             content.querySelectorAll('img').forEach((image) => {
                 const oldSrc = image.getAttribute('src');
                 const src = new URL(oldSrc, base);

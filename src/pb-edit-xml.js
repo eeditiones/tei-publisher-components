@@ -48,8 +48,13 @@ export class PbEditXml extends pbMixin(LitElement) {
                 this._href = '/exist/apps/eXide/';
             } else {
                 const host = /^(.*:\/+[^/]+)\/.*$/.exec(options.endpoint);
-                this._href = `${host[1]}/exist/apps/eXide/`;
+                if (host) {
+                    this._href = `${host[1]}/exist/apps/eXide/`;
+                } else {
+                    this._href = '/exist/apps/eXide/';
+                }
             }
+            console.log(this._href);
         });
     }
 

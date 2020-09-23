@@ -479,6 +479,17 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return this._endpoint;
     }
 
+    toAbsoluteURL(relative) {
+        if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
+            return relative;
+        }
+        const endpoint = this.getEndpoint();
+        const base = endpoint === '.' ? 
+            new URL(window.location.href) : 
+            new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);
+        return new URL(relative, base).href;
+    }
+
     minApiVersion(requiredVersion) {
         return cmpVersion(this._apiVersion, requiredVersion) >= 0;
     }

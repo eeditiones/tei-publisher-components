@@ -161,9 +161,7 @@ export class PbDownload extends pbMixin(LitElement) {
         const doc = this.getDocument();
         if (doc) {
             if (this.url) {
-                const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
-                const resolved = new URL(this.url, base).href;
-                url = `${resolved}?odd=${this.odd ? this.odd : doc.odd}.odd`;
+                url = `${this.toAbsoluteURL(this.url)}?odd=${this.odd ? this.odd : doc.odd}.odd`;
             } else {
                 const serverPart = `${this.getEndpoint()}/`;
                 if (this.lessThanApiVersion('1.0.0')) {
