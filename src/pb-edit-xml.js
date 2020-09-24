@@ -54,7 +54,6 @@ export class PbEditXml extends pbMixin(LitElement) {
                     this._href = '/exist/apps/eXide/';
                 }
             }
-            console.log(this._href);
         });
     }
 
