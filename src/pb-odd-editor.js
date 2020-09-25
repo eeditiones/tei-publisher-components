@@ -432,8 +432,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         // it is unclear to me why root-path is not read from attribute without this explicit call
         this.rootPath = this.getAttribute('root-path');
-        this.load();
-        this.inited = true;
+
+        PbOddEditor.waitOnce('pb-page-ready', () => {
+            this.load();
+            this.inited = true;
+        });
 
         this.registerHotkey('save', this.save.bind(this));
     }
