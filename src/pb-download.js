@@ -87,6 +87,7 @@ export class PbDownload extends pbMixin(LitElement) {
 
         this.source = false;
         this._target = '_self';
+        this.type = '';
     }
 
     firstUpdated() {

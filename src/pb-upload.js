@@ -47,7 +47,7 @@ export class PbUpload extends pbMixin(LitElement) {
         const uploader = this.shadowRoot.getElementById('uploader');
         uploader.addEventListener('upload-before', (event) => {
             this.emitTo('pb-start-update');
-            if (this.minApiVersion('1.0.0')) {
+            if (this.minApiVersion('1.0.0') && this.target) {
                 event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
             }
         });
