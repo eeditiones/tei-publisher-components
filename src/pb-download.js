@@ -165,7 +165,7 @@ export class PbDownload extends pbMixin(LitElement) {
             } else {
                 const serverPart = `${this.getEndpoint()}/`;
                 if (this.lessThanApiVersion('1.0.0')) {
-                    url = `${serverPart}${doc.path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
+                    url = `${doc.getFileName()}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
                 } else {
                     url = `${serverPart}api/document/${encodeURIComponent(doc.path)}/${this.type || 'html'}?odd=${this.odd ? this.odd : doc.odd}.odd&token=${this._token}`;
                 }
