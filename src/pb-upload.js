@@ -79,11 +79,13 @@ export class PbUpload extends pbMixin(LitElement) {
                 }
             }
         });
-        if (this.minApiVersion('1.0.0')) {
-            uploader.target = `${this.getEndpoint()}/api/upload/`;
-        } else {
-            uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
-        }
+        PbUpload.waitOnce('pb-page-ready', () => {
+            if (this.minApiVersion('1.0.0')) {
+                uploader.target = `${this.getEndpoint()}/api/upload/`;
+            } else {
+                uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
+            }
+        });
     }
 
     render() {
