@@ -889,9 +889,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
         saveOdd.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
-        console.log('url %s', saveOdd.url);
         if (this.lessThanApiVersion('1.0.0')) {
-            saveOdd.contentType = 'x-www-form-urlencoded';
+            saveOdd.contentType = 'application/x-www-form-urlencoded';
             saveOdd.method = "POST";
             saveOdd.params = null;
             saveOdd.body = {
