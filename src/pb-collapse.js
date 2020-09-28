@@ -21,7 +21,7 @@ import '@polymer/iron-collapse';
  *
  * @slot collapse-trigger - trigger toggling collapsed content on/off
  * @slot collapse-content - content to be collapsed
- * @cssprop --pb-collapse-icon-padding - 0 10px 0 0
+ * @cssprop [--pb-collapse-icon-padding=0 4px 0 0] - padding in px for the "caret-down" icon left to the collapsible item
  * @fires pb-collapse-open - Fires opening the collapsed section
  */
 export class PbCollapse extends pbMixin(LitElement) {
@@ -162,7 +162,7 @@ export class PbCollapse extends pbMixin(LitElement) {
 
             #trigger iron-icon {
                 display: table-cell;
-                padding: var(--pb-collapse-icon-padding, 0 10px 0 0);
+                padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
             }
 
             slot[name="collapse-trigger"] {
