@@ -611,11 +611,14 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         this.next = resp.next;
+        this.nextId = resp.nextId;
         this.previous = resp.previous;
+        this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
         if (!this.disableHistory && this.xmlId && !this.map) {
-            this.setParameter('root', this.nodeId);
+            //this.setParameter('root', this.nodeId);
+            this.setParameter('id', this.xmlId);
             this.pushHistory('Navigate to xml:id');
         }
         this.xmlId = null;
@@ -908,16 +911,22 @@ export class PbView extends pbMixin(LitElement) {
         if (direction === 'backward') {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
-                    this.setParameter('root', this.previous);
-                    this.setParameter('id');
+                    if (this.previousId) {
+                        this.setParameter('id', this.previousId);
+                    } else {
+                        this.setParameter('root', this.previous);
+                    }
                     this.pushHistory('Navigate backward');
                 }
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
-                this.setParameter('root', this.next);
-                this.setParameter('id');
+                if (this.nextId) {
+                    this.setParameter('id', this.nextId);
+                } else {
+                    this.setParameter('root', this.next);
+                }
                 this.pushHistory('Navigate forward');
             }
             this._load(this.next, direction);
