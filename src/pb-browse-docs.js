@@ -188,7 +188,7 @@ export class PbBrowseDocs extends PbLoad {
                 </paper-dropdown-menu>
                 <div>
                     <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}">
-                        <paper-listbox id="filter-list" selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
+                        <paper-listbox id="filter-list" selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value" @selected-item-changed="${this._filterChanged}">
                         ${this.filterOptions.map(option =>
             html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
         )}
@@ -332,6 +332,14 @@ export class PbBrowseDocs extends PbLoad {
             this.pushHistory('filter docs');
 
             this.load();
+        }
+    }
+
+    _filterChanged() {
+        const filterBy = this.shadowRoot.getElementById('filter-list').selected;
+        if (filterBy && filterBy !== this.filterBy) {
+            console.log('<pb-browse-docs> Filtering on %s', filterBy);
+            this.filterBy = filterBy;
         }
     }
 
