@@ -7,14 +7,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build docker image
-        run: docker build -t exist-db -f Dockerfile .
-      - name: Start docker image
-        run: docker run --publish 8080:8080 --detach exist-db
-
   build:
       runs-on: ubuntu-latest
       needs: setup
@@ -27,7 +19,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
+      - name: Build docker image
+        run: docker build -t exist-db -f Dockerfile .
+      - name: Start docker image
+        run: docker run --publish 8080:8080 --detach exist-db
       - name: npm install, build, and test
         run: |
           npm install -q
