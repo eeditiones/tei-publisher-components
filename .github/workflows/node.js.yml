@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build docker image
-        run: docker build -t exist-db -f Dockerfile.ci .
+        run: docker build -t exist-db -f Dockerfile .
       - name: Start docker image
         run: docker run --publish 8080:8080 --detach exist-db
 
