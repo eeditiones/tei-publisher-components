@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
        eXist:
-         image: existdb/teipublisher:6.0.0-RC1
+         image: existdb/teipublisher:6.0.1
          ports: 
           - 8080:8080
     steps:
