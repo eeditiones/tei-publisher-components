@@ -136,7 +136,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 </style>
             </custom-style>
             <slot></slot>
-            <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeholder)}"
+            <paper-input id="search" type="search" name="query" @keyup="${this._setInput}" label="${translate(this.placeholder)}"
                 always-float-label>
                 ${ this.icon ? html`<iron-icon icon="${this.icon}" @click="${this._doSearch}" slot="prefix"></iron-icon>` : null}
             </paper-input>
@@ -249,6 +249,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
+    }
+
+    _setInput(ev) {
+        const input = this.shadowRoot.getElementById('search');
+        console.log('Autocomplete set manually to %s', input.value);
+
+        this.value = input.value;
+        if (this._hiddenInput) {
+            this._hiddenInput.value = this.value;
+        } 
     }
 
    
