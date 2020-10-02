@@ -27,14 +27,12 @@ describe('initializes', () => {
         const el = (
             await fixture(`
                 <div>
-                    <pb-page endpoint="${ __karma__.config.endpoint }" 
-                        language="de"></pb-page>
-                    <pb-page endpoint="https://teipublisher.com/exist/apps/van-gogh" 
-                        language="en"></pb-page>
+                    <pb-page id="p1" endpoint="${ __karma__.config.endpoint }"></pb-page>
+                    <pb-page id="p2" endpoint="https://teipublisher.com/exist/apps/van-gogh"></pb-page>
                 </div>
             `)
         );
-        await waitUntil(() => initDone);
+        await waitUntil(() => initDone, 'waiting for pb-page-ready', { timeout: 5000 });
 
         const disabled = el.querySelectorAll('pb-page[disabled]');
         expect(disabled.length).to.equal(1);

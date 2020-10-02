@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
 
@@ -144,6 +144,10 @@ class PbPage extends pbMixin(LitElement) {
             this.disabled = true;
         } else {
             _instance = this;
+
+            // clear global page events which might have been set by other pb-page instances.
+            // important while running the test suite.
+            clearPageEvents();
         }
     }
 
@@ -195,7 +199,7 @@ class PbPage extends pbMixin(LitElement) {
                 this.apiVersion = json.api;
                 console.log('<pb-page> Server reports API version %s', this.apiVersion);
             } else {
-                console.log('<pb-page> No API version repored by server, assuming 0.9.0');
+                console.log('<pb-page> No API version reported by server, assuming 0.9.0');
                 this.apiVersion = '0.9.0';
             }
         }

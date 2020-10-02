@@ -1,4 +1,4 @@
-import { cmpVersion, minVersion } from './utils.js';
+import { cmpVersion } from './utils.js';
 
 if (!window.TeiPublisher) {
     window.TeiPublisher = {};
@@ -17,6 +17,10 @@ const readyEventsFired = new Set();
  * been received.
  */
 const initEventsFired = new Map();
+
+export function clearPageEvents() {
+    initEventsFired.clear();
+}
 
 /**
  * Implements the core channel/event mechanism used by components in TEI Publisher

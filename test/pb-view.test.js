@@ -21,7 +21,6 @@ describe('initialize and refresh view', () => {
         const view = el.querySelector('pb-view');
         await oneEvent(document, 'pb-end-update');
 
-        expect(view.getEndpoint()).to.equal(__karma__.config.endpoint);
         expect(view.getOdd()).to.equal('docbook');
         expect(view.getView()).to.equal('div');
         expect(view.getParameters().view).to.equal('div');
