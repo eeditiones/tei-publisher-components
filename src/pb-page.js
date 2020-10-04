@@ -139,6 +139,7 @@ class PbPage extends pbMixin(LitElement) {
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this._localeFallbacks = [];
+        this._i18nInstance = null;
 
         if (_instance) {
             this.disabled = true;
@@ -157,6 +158,7 @@ class PbPage extends pbMixin(LitElement) {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        this._i18nInstance = null;
         if (_instance === this) {
             // clear to allow future instances
             _instance = null;
@@ -259,30 +261,31 @@ class PbPage extends pbMixin(LitElement) {
             options.ns = fallbacks;
         }
         console.log('<pb-page> i18next options: %o', options);
-        i18next
+        this._i18nInstance = i18next.createInstance();
+        this._i18nInstance
             .use(LanguageDetector)
-            .use(Backend)
-            .init(options)
+            .use(Backend);
+        this._i18nInstance.init(options)
             .then((t) => {
-                initTranslation(t);
-                // initialized and ready to go!
-                this._updateI18n(t);
-                this.signalReady('pb-i18n-update', { t, language: i18next.language });
-                if (this.requireLanguage) {
-                    this.signalReady('pb-page-ready', {
-                        endpoint: this.endpoint,
-                        apiVersion: this.apiVersion,
-                        template: this.template,
-                        language: i18next.language
-                    });
-                }
-            });
+            initTranslation(t);
+            // initialized and ready to go!
+            this._updateI18n(t);
+            this.signalReady('pb-i18n-update', { t, language: i18next.language });
+            if (this.requireLanguage) {
+                this.signalReady('pb-page-ready', {
+                    endpoint: this.endpoint,
+                    apiVersion: this.apiVersion,
+                    template: this.template,
+                    language: this._i18nInstance.language
+                });
+            }
+        });
 
-        this.subscribeTo('pb-i18n-language', (ev) => {
+        this.subscribeTo('pb-i18n-language', ev => {
             const { language } = ev.detail;
-            i18next.changeLanguage(language).then((t) => {
-                this._updateI18n(t);
-                this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
+            this._i18nInstance.changeLanguage(language).then(t => {
+            this._updateI18n(t);
+            this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
             }, []);
         });
 

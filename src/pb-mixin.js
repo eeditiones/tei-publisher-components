@@ -106,6 +106,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         super();
         this._isReady = false;
         this.disabled = false;
+        this._subscriptions = new Map();
     }
 
     connectedCallback() {
@@ -113,6 +114,15 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         PbMixin.waitOnce('pb-page-ready', (options) => {
             this._endpoint = options.endpoint;
             this._apiVersion = options.apiVersion;
+        });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this._subscriptions.forEach((handlers, type) => {
+            handlers.forEach((handler) => {
+                document.removeEventListener(type, handler);
+            });
         });
     }
 
@@ -305,6 +315,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the emit property. Pass empty array to target the default channel.
      */
     subscribeTo(type, listener, channels) {
+        let handlers;
         const chs = channels || this.getSubscribedChannels();
         if (chs.length === 0) {
             // no channel defined: listen for all events not targetted at a channel
@@ -315,17 +326,21 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 listener(ev);
             };
             document.addEventListener(type, handle);
-            return [handle];
+            handlers = [handle];
+        } else {
+            handlers = chs.map(key => {
+                const handle = ev => {
+                    if (ev.detail && ev.detail.key && ev.detail.key === key) {
+                        listener(ev);
+                    }
+                };
+                document.addEventListener(type, handle);
+                return handle;
+            });
         }
-        return chs.map(key => {
-            const handle = ev => {
-                if (ev.detail && ev.detail.key && ev.detail.key === key) {
-                    listener(ev);
-                }
-            };
-            document.addEventListener(type, handle);
-            return handle;
-        });
+        // add new handlers to list of active subscriptions
+        this._subscriptions.set(type, handlers);
+        return handlers;
     }
 
     /**

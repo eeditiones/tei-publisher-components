@@ -1,24 +1,25 @@
-import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
+import { oneEvent, fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-page.js';
 import '../src/pb-i18n.js';
 
 describe('translate labels', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('uses default translations', async () => {
         let initDone;
         document.addEventListener('pb-i18n-update', () => {
             initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page require-language language="en">
+        }, { once: true });
+        const el = await fixture(`
+                <pb-page require-language language="en" api-version="1.0.0">
                     <span data-i18n="document.contents">unset</span>
                     <a href="#" data-i18n="[title]menu.download.title" title="123"></a>
                     <pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n>
                     <pb-i18n key="undefined">[No translation provided]</pb-i18n>
                 </pb-page>
-            `)
-        );
+            `);
         await waitUntil(() => initDone);
 
         let node = el.querySelector('span');
@@ -38,10 +39,10 @@ describe('translate labels', () => {
         let initDone;
         document.addEventListener('pb-i18n-update', () => {
             initDone = true;
-        });
+        }, { once: true });
         const el = (
             await fixture(`
-                <pb-page require-language>
+                <pb-page require-language api-version="1.0.0">
                     <span data-i18n="document.contents">unset</span>
                 </pb-page>
             `)
@@ -59,17 +60,16 @@ describe('translate labels', () => {
         let initDone;
         document.addEventListener('pb-i18n-update', () => {
             initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page require-language language="en" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
+        }, { once: true });
+        const el = await fixture(`
+                <pb-page require-language language="en" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom"
+                    api-version="1.0.0">
                     <pb-i18n key="demo.message"></pb-i18n>
                     <span data-i18n="document.contents">unset</span>
                     <pb-i18n key="document.normalized"></pb-i18n>
                     <pb-i18n key="mycomponent.info"></pb-i18n>
                 </pb-page>
-            `)
-        );
+            `);
         await waitUntil(() => initDone);
 
         const span = el.querySelector('span[data-i18n]');
@@ -90,17 +90,16 @@ describe('translate labels', () => {
         let initDone;
         document.addEventListener('pb-i18n-update', () => {
             initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page require-language language="de" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
+        }, { once: true });
+        const el = await fixture(`
+                <pb-page require-language language="de" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom"
+                    api-version="1.0.0">
                     <pb-i18n key="demo.message"></pb-i18n>
                     <span data-i18n="document.contents">unset</span>
                     <pb-i18n key="document.normalized"></pb-i18n>
                     <pb-i18n key="mycomponent.info"></pb-i18n>
                 </pb-page>
-            `)
-        );
+            `);
         await waitUntil(() => initDone);
 
         const span = el.querySelector('span[data-i18n]');
