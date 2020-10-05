@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-document.js';
 
 describe('create document', () => {
+  afterEach(() => {
+    fixtureCleanup();
+  });
   it('has correct paths', async () => {
     const el = (
         await fixture('<pb-document root-path="/db/apps/foo" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>')

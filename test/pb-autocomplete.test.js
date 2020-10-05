@@ -1,4 +1,4 @@
-import { fixture, expect, waitUntil } from '@open-wc/testing';
+import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
 import '../src/pb-autocomplete.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -6,6 +6,9 @@ import '@polymer/iron-form';
 
 
 describe('simple autocomplete with static suggestions', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('submits in form', async () => {
         let initDone;
         document.addEventListener('pb-page-ready', () => {

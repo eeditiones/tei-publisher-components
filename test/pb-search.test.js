@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
 import '../src/pb-search.js';
 
 describe('serialize URL parameters', () => {
+  afterEach(() => {
+    fixtureCleanup();
+  });
     it('pb-search setParameters and getParameters', async () => {
         const el = (
             await fixture(`

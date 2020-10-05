@@ -1,11 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-document.js';
 import '../src/pb-ajax.js';
 import '../src/pb-login.js';
 
 describe('recompile ODD', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('recompiles and shows message', async () => {
         const el = (
             await fixture(`

@@ -1,9 +1,12 @@
-import { fixture, expect } from '@open-wc/testing';
+import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-page.js';
 import { PbNavigation } from '../src/pb-navigation.js';
 
 describe('emits and subscribes', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('emits to channel', async () => {
         const el = (
             await fixture(`

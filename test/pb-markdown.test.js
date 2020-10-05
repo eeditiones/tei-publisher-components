@@ -1,10 +1,13 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-page.js';
 import '../src/pb-markdown.js';
 
 describe('render markdown', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('renders markdown passed as content', async () => {
         const el = (
             await fixture(`

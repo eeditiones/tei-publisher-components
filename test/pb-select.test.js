@@ -1,4 +1,4 @@
-import { fixture, expect, waitUntil, oneEvent } from '@open-wc/testing';
+import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
 import '../src/pb-select.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -8,6 +8,9 @@ import '@polymer/iron-form';
 
 
 describe('simple select', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('submits in form', async () => {
         let initDone;
         document.addEventListener('pb-page-ready', () => {
@@ -106,6 +109,9 @@ describe('simple select', () => {
 });
 
 describe('select initialized from remote data source', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('submits in form', async () => {
         let initDone;
         document.addEventListener('pb-page-ready', () => {
