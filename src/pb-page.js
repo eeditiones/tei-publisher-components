@@ -270,7 +270,7 @@ class PbPage extends pbMixin(LitElement) {
             initTranslation(t);
             // initialized and ready to go!
             this._updateI18n(t);
-            this.signalReady('pb-i18n-update', { t, language: i18next.language });
+            this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
             if (this.requireLanguage) {
                 this.signalReady('pb-page-ready', {
                     endpoint: this.endpoint,
@@ -285,7 +285,7 @@ class PbPage extends pbMixin(LitElement) {
             const { language } = ev.detail;
             this._i18nInstance.changeLanguage(language).then(t => {
             this._updateI18n(t);
-            this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
+            this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
             }, []);
         });
 
