@@ -1,4 +1,5 @@
 import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
+import { waitForPage } from './util.js';
 import '../src/pb-select.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -12,13 +13,9 @@ describe('simple select', () => {
       fixtureCleanup();
     });
     it('submits in form', async () => {
-        let initDone;
-        document.addEventListener('pb-page-ready', () => {
-            initDone = true;
-        });
         const el = (
-            await fixture(`
-                <pb-page endpoint=".">
+            await waitForPage(`
+                <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
                             <pb-select label="Dinosaurs" name="key" value="1">
@@ -33,7 +30,6 @@ describe('simple select', () => {
                 </pb-page>
             `)
         );
-        await waitUntil(() => initDone);
         
         const form = el.querySelector('iron-form');
         const select = el.querySelector('pb-select');
@@ -46,13 +42,8 @@ describe('simple select', () => {
         expect(form.serializeForm()).to.deep.equal({'key': '2'});
     });
     it('supports multiple selection', async () => {
-        let initDone;
-        document.addEventListener('pb-page-ready', () => {
-            initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page endpoint=".">
+        const el = await waitForPage(`
+                <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
                             <pb-select label="Items" name="key" values='["1"]' multi>
@@ -65,9 +56,7 @@ describe('simple select', () => {
                         </form>
                     <iron-form id="form">
                 </pb-page>
-            `)
-        );
-        await waitUntil(() => initDone);
+            `);
 
         const form = el.querySelector('iron-form');
         const select = el.querySelector('pb-select');
@@ -81,13 +70,8 @@ describe('simple select', () => {
         expect(form.serializeForm()).to.deep.equal({'key': ["2", "3"]});
     });
     it('works in standard HTML form', async () => {
-        let initDone;
-        document.addEventListener('pb-page-ready', () => {
-            initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page endpoint=".">
+        const el = await waitForPage(`
+                <pb-page endpoint="." api-version="1.0.0">
                     <form action="" id="form">
                         <pb-select label="Items" name="key" values='["1", "2"]' multi>
                             <paper-item></paper-item>
@@ -98,9 +82,7 @@ describe('simple select', () => {
                         </pb-select>
                     </form>
                 </pb-page>
-            `)
-        );
-        await waitUntil(() => initDone);
+            `);
 
         const form = el.querySelector('form');
         const data = new URLSearchParams(new FormData(form)).toString();
@@ -113,22 +95,15 @@ describe('select initialized from remote data source', () => {
       fixtureCleanup();
     });
     it('submits in form', async () => {
-        let initDone;
-        document.addEventListener('pb-page-ready', () => {
-            initDone = true;
-        });
-        const el = (
-            await fixture(`
-                <pb-page endpoint=".">
+        const el = await waitForPage(`
+                <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
                             <pb-select label="Language" name="lang" value="de" source="demo/select.json"></pb-select>
                         </form>
                     </iron-form>
                 </pb-page>
-            `)
-        );
-        await waitUntil(() => initDone);
+            `);
 
         const select = el.querySelector('pb-select');
         await waitUntil(() => select._items.length > 0);

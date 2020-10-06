@@ -7,9 +7,8 @@ describe('serialize URL parameters', () => {
     fixtureCleanup();
   });
     it('pb-search setParameters and getParameters', async () => {
-        const el = (
-            await fixture(`
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+        const el = await fixture(`
+            <pb-page endpoint="${__karma__.config.endpoint}">
               <pb-progress></pb-progress>
               <main>
                 <pb-search id="search-form">
@@ -21,8 +20,7 @@ describe('serialize URL parameters', () => {
                   <pb-load url="templates/search-results.html"></pb-load>
               </main>
             </pb-page>
-            `)
-        );
+            `);
         const inputJSON = {
           "autocomplete-custom-template":undefined,
           "query":"test",

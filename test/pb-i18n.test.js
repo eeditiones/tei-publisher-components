@@ -1,5 +1,5 @@
 import { oneEvent, fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-
+import { waitForPage } from './util.js';
 import '../src/pb-page.js';
 import '../src/pb-i18n.js';
 
@@ -8,19 +8,14 @@ describe('translate labels', () => {
       fixtureCleanup();
     });
     it('uses default translations', async () => {
-        let initDone;
-        document.addEventListener('pb-i18n-update', () => {
-            initDone = true;
-        }, { once: true });
-        const el = await fixture(`
+        const el = await waitForPage(`
                 <pb-page require-language language="en" api-version="1.0.0">
                     <span data-i18n="document.contents">unset</span>
                     <a href="#" data-i18n="[title]menu.download.title" title="123"></a>
                     <pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n>
                     <pb-i18n key="undefined">[No translation provided]</pb-i18n>
                 </pb-page>
-            `);
-        await waitUntil(() => initDone);
+            `, 'pb-i18n-update');
 
         let node = el.querySelector('span');
         expect(node).to.have.text('Contents');
@@ -36,18 +31,13 @@ describe('translate labels', () => {
     });
 
     it('reacts to language change', async () => {
-        let initDone;
-        document.addEventListener('pb-i18n-update', () => {
-            initDone = true;
-        }, { once: true });
         const el = (
-            await fixture(`
+            await waitForPage(`
                 <pb-page require-language api-version="1.0.0">
                     <span data-i18n="document.contents">unset</span>
                 </pb-page>
-            `)
+            `, 'pb-i18n-update')
         );
-        await waitUntil(() => initDone);
 
         document.dispatchEvent(new CustomEvent('pb-i18n-language', { detail: { "language": "de" }}));
         await oneEvent(document, 'pb-i18n-update');
@@ -57,11 +47,7 @@ describe('translate labels', () => {
     });
 
     it('loads custom translations', async () => {
-        let initDone;
-        document.addEventListener('pb-i18n-update', () => {
-            initDone = true;
-        }, { once: true });
-        const el = await fixture(`
+        const el = await waitForPage(`
                 <pb-page require-language language="en" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom"
                     api-version="1.0.0">
                     <pb-i18n key="demo.message"></pb-i18n>
@@ -69,8 +55,7 @@ describe('translate labels', () => {
                     <pb-i18n key="document.normalized"></pb-i18n>
                     <pb-i18n key="mycomponent.info"></pb-i18n>
                 </pb-page>
-            `);
-        await waitUntil(() => initDone);
+            `, 'pb-i18n-update');
 
         const span = el.querySelector('span[data-i18n]');
         expect(span).to.have.text('Custom Table of Contents');
@@ -87,11 +72,7 @@ describe('translate labels', () => {
     });
 
     it('translates to German', async () => {
-        let initDone;
-        document.addEventListener('pb-i18n-update', () => {
-            initDone = true;
-        }, { once: true });
-        const el = await fixture(`
+        const el = await waitForPage(`
                 <pb-page require-language language="de" locales="demo/i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom"
                     api-version="1.0.0">
                     <pb-i18n key="demo.message"></pb-i18n>
@@ -99,8 +80,7 @@ describe('translate labels', () => {
                     <pb-i18n key="document.normalized"></pb-i18n>
                     <pb-i18n key="mycomponent.info"></pb-i18n>
                 </pb-page>
-            `);
-        await waitUntil(() => initDone);
+            `, 'pb-i18n-update');
 
         const span = el.querySelector('span[data-i18n]');
         expect(span).to.have.text('Inhaltsverzeichnis angepasst');

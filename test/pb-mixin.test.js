@@ -1,5 +1,5 @@
-import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
-
+import { fixture, expect, fixtureCleanup, waitUntil } from '@open-wc/testing';
+import { waitForPage } from './util.js';
 import '../src/pb-page.js';
 import { PbNavigation } from '../src/pb-navigation.js';
 
@@ -8,8 +8,8 @@ describe('emits and subscribes', () => {
       fixtureCleanup();
     });
     it('emits to channel', async () => {
-        const el = (
-            await fixture(`
+        const el =
+            await waitForPage(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-navigation subscribe="channel1" emit="channel1"></pb-navigation>
                     <pb-navigation subscribe-config='{"channel2": ["pb-ready"], "channel1": ["pb-update"]}' emit="channel1">
@@ -19,8 +19,8 @@ describe('emits and subscribes', () => {
                     <pb-navigation></pb-navigation>
                     <pb-navigation></pb-navigation>
                 </pb-page>
-            `)
-        );
+            `);
+
         const navs = el.querySelectorAll('pb-navigation');
 
         expect(PbNavigation.getEmittedChannels(navs[0])).to.have.members(['channel1']);

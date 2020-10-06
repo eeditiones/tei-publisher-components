@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
-
+import { fixture, expect, fixtureCleanup, waitUntil } from '@open-wc/testing';
+import { waitForPage } from './util.js';
 import '../src/pb-page.js';
 import '../src/pb-markdown.js';
 
@@ -9,9 +9,8 @@ describe('render markdown', () => {
       fixtureCleanup();
     });
     it('renders markdown passed as content', async () => {
-        const el = (
-            await fixture(`
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+        const el = await waitForPage(`
+                <pb-page endpoint="${__karma__.config.endpoint}">
                     <pb-markdown>
                     # Embedding Markdown
 
@@ -22,8 +21,7 @@ describe('render markdown', () => {
                     \`\`\`
                     </pb-markdown>
                 </pb-page>
-            `)
-        );
+            `);
 
         const markdown = el.querySelector('pb-markdown');
         const h1 = markdown.querySelector('h1');
@@ -35,7 +33,7 @@ describe('render markdown', () => {
     });
     it('renders embedded HTML', async () => {
         const el = (
-            await fixture(`
+            await waitForPage(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-markdown>
                         <template>
