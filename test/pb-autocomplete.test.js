@@ -1,4 +1,5 @@
-import { fixture, expect, waitUntil } from '@open-wc/testing';
+import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
+import { waitForPage } from './util.js';
 import '../src/pb-autocomplete.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -6,14 +7,13 @@ import '@polymer/iron-form';
 
 
 describe('simple autocomplete with static suggestions', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('submits in form', async () => {
-        let initDone;
-        document.addEventListener('pb-page-ready', () => {
-            initDone = true;
-        });
         const el = (
-            await fixture(`
-                <pb-page endpoint=".">
+            await waitForPage(`
+                <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
                             <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
@@ -24,7 +24,6 @@ describe('simple autocomplete with static suggestions', () => {
                 </pb-page>
             `)
         );
-        await waitUntil(() => initDone);
 
         const form = el.querySelector('iron-form');
         expect(form.serializeForm()).to.deep.equal({'lang': 'pl'});

@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
 
@@ -51,6 +51,11 @@ class PbPage extends pbMixin(LitElement) {
              */
             endpoint: {
                 type: String,
+                reflect: true
+            },
+            apiVersion: {
+                type: String,
+                attribute: 'api-version',
                 reflect: true
             },
             /**
@@ -131,12 +136,19 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.apiVersion = undefined;
+        this.requireLanguage = false;
         this._localeFallbacks = [];
+        this._i18nInstance = null;
 
         if (_instance) {
             this.disabled = true;
         } else {
             _instance = this;
+
+            // clear global page events which might have been set by other pb-page instances.
+            // important while running the test suite.
+            clearPageEvents();
         }
     }
 
@@ -146,13 +158,14 @@ class PbPage extends pbMixin(LitElement) {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        this._i18nInstance = null;
         if (_instance === this) {
             // clear to allow future instances
             _instance = null;
         }
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
         
         if (this.disabled) {
@@ -169,10 +182,35 @@ class PbPage extends pbMixin(LitElement) {
             this.endpoint = target;
         }
 
+        const apiVersion = this.getParameter('_api');
+        if (apiVersion) {
+            this.apiVersion = apiVersion;
+        }
+
+        if (!this.apiVersion) {
+            const json = await fetch(`${this.endpoint}/api/version`)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('request failed');
+                }
+                return res.json();
+            })
+            .catch(() => null)
+            
+            if (json) {
+                this.apiVersion = json.api;
+                console.log('<pb-page> Server reports API version %s', this.apiVersion);
+            } else {
+                console.log('<pb-page> No API version reported by server, assuming 0.9.0');
+                this.apiVersion = '0.9.0';
+            }
+        }
+
         if (!this.requireLanguage) {
             this.signalReady('pb-page-ready', {
                 endpoint: this.endpoint,
-                template: this.template
+                template: this.template,
+                apiVersion: this.apiVersion
             });
         }
     }
@@ -223,29 +261,31 @@ class PbPage extends pbMixin(LitElement) {
             options.ns = fallbacks;
         }
         console.log('<pb-page> i18next options: %o', options);
-        i18next
+        this._i18nInstance = i18next.createInstance();
+        this._i18nInstance
             .use(LanguageDetector)
-            .use(Backend)
-            .init(options)
+            .use(Backend);
+        this._i18nInstance.init(options)
             .then((t) => {
-                initTranslation(t);
-                // initialized and ready to go!
-                this._updateI18n(t);
-                this.signalReady('pb-i18n-update', { t, language: i18next.language });
-                if (this.requireLanguage) {
-                    this.signalReady('pb-page-ready', {
-                        endpoint: this.endpoint,
-                        template: this.template,
-                        language: i18next.language
-                    });
-                }
-            });
+            initTranslation(t);
+            // initialized and ready to go!
+            this._updateI18n(t);
+            this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
+            if (this.requireLanguage) {
+                this.signalReady('pb-page-ready', {
+                    endpoint: this.endpoint,
+                    apiVersion: this.apiVersion,
+                    template: this.template,
+                    language: this._i18nInstance.language
+                });
+            }
+        });
 
-        this.subscribeTo('pb-i18n-language', (ev) => {
+        this.subscribeTo('pb-i18n-language', ev => {
             const { language } = ev.detail;
-            i18next.changeLanguage(language).then((t) => {
-                this._updateI18n(t);
-                this.emitTo('pb-i18n-update', { t, language: i18next.language }, []);
+            this._i18nInstance.changeLanguage(language).then(t => {
+            this._updateI18n(t);
+            this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
             }, []);
         });
 

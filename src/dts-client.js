@@ -100,11 +100,19 @@ export class DtsClient extends pbMixin(LitElement) {
         const path = member['dts:passage'] || member['dts:download'];
         const url = new URL(path, this.baseUri).toString();
         console.log('<dts-client> downloading %s', url);
-        this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
-        this.documentsAPI.params = {
-            'preview': url,
-            'id': member['@id']
-        };
+        if (this.lessThanApiVersion('1.0.0')) {
+            this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
+            this.documentsAPI.params = {
+                'preview': url,
+                'id': member['@id']
+            };
+        } else {
+            this.documentsAPI.url = `${this.getEndpoint()}/api/dts/import`;
+            this.documentsAPI.params = {
+                uri: url,
+                temp: true
+            };
+        }
         this.documentsAPI.generateRequest();
     }
 
@@ -113,11 +121,19 @@ export class DtsClient extends pbMixin(LitElement) {
         const path = member['dts:passage'] || member['dts:download'];
         const url = new URL(path, this.baseUri).toString();
         console.log('<dts-client> importing %s', url);
-        this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
-        this.documentsAPI.params = {
-            'import': url,
-            'id': member['@id']
-        };
+        if (this.lessThanApiVersion('1.0.0')) {
+            this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
+            this.documentsAPI.params = {
+                'import': url,
+                'id': member['@id']
+            };
+        } else {
+            this.documentsAPI.url = `${this.getEndpoint()}/api/dts/import`;
+            this.documentsAPI.params = {
+                uri: url,
+                temp: false
+            };
+        }
         this.documentsAPI.generateRequest();
     }
 

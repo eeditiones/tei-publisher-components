@@ -43,7 +43,12 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
         PbSelectTemplate.waitOnce('pb-page-ready', (options) => {
             this.template = options.template;
             const loader = this.shadowRoot.getElementById('getTemplates');
-            loader.url = options.endpoint + "/modules/lib/components-list-templates.xql";
+            if (this.minApiVersion('1.0.0')) {
+                loader.url = `${options.endpoint}/api/templates`;
+            } else {
+                loader.url = `${options.endpoint}/modules/lib/components-list-templates.xql`;
+            }
+                
             loader.generateRequest();
         });
     }

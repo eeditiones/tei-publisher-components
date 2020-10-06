@@ -72,6 +72,10 @@ export class PbComponentView extends LitElement {
                 type: String,
                 reflect: true
             },
+            _api: {
+                type: String,
+                reflect: true
+            },
             _component: {
                 type: Object
             },
@@ -191,7 +195,7 @@ export class PbComponentView extends LitElement {
 
         const src = Object.keys(this._component.demo)[this._tab - 1];
         if (this._target) {
-            return `${src}?_target=${this._target}`;
+            return `${src}?_target=${this._target}&_api=${this._api}`;
         }
         return src;
     }

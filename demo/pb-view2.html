@@ -122,7 +122,7 @@
                     <pb-progress></pb-progress>
                     <main>
                         <aside class="toc">
-                            <pb-load url="templates/toc.html?target=transcription&amp;collapse=true" src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
+                            <pb-load url="api/document/{doc}/contents?target=transcription&icons=false" expand src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
                         </aside>
                         <pb-view class="breadcrumbs" src="document1" load-css="odd/docbook.css">
                             <pb-param name="mode" value="breadcrumbs"/>

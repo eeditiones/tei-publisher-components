@@ -298,11 +298,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 handle-as="json" content-type="application/x-www-form-urlencoded"
                 with-credentials
                 method="GET"></iron-ajax>
-
+                
         <iron-ajax id="saveOdd"
-                handle-as="json" content-type="application/x-www-form-urlencoded"
-                with-credentials
-                method="POST"></iron-ajax>
+                handle-as="json"
+                with-credentials></iron-ajax>
 
         <div id="layout">
             <div id="drawer">
@@ -433,8 +432,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         // it is unclear to me why root-path is not read from attribute without this explicit call
         this.rootPath = this.getAttribute('root-path');
-        this.load();
-        this.inited = true;
+
+        PbOddEditor.waitOnce('pb-page-ready', () => {
+            this.load();
+            this.inited = true;
+        });
 
         this.registerHotkey('save', this.save.bind(this));
     }
@@ -468,7 +470,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         // this.$.loadContent.params = params;
         this.loadContent.params = params;
-        this.loadContent.url = `${this.getEndpoint()}/modules/editor.xql`;
+        this.loadContent.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         const request = this.loadContent.generateRequest();
 
         request.completes.then(r => this.handleOdd(r));
@@ -575,6 +577,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         newElementSpec.models = elementSpec.models;
         newElementSpec.mode = elementSpec.mode;
         newElementSpec.endpoint = this._endpoint;
+        newElementSpec.apiVersion = this._apiVersion;
+
         newElementSpec.hotkeys = this.hotkeys;
         currentElement.appendChild(newElementSpec);
     }
@@ -721,14 +725,22 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             target.click();
             return;
         }
-        const params = {
+
+        const oldApiParams = {
             action: "find",
             odd: this.odd,
             root: this.rootPath,
             ident
         };
+        const newApiParams = {
+            root: this.rootPath,
+            ident
+        };
+
+        const params = this.lessThanApiVersion('1.0.0') ? oldApiParams : newApiParams;
+
         this.loadContent.params = params;
-        this.loadContent.url = `${this.getEndpoint()}/modules/editor.xql`;
+        this.loadContent.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         let request = this.loadContent.generateRequest();
         request.completes.then(this._handleElementSpecResponse.bind(this));
     }
@@ -874,27 +886,41 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     save(e) {
         document.dispatchEvent(new CustomEvent('pb-start-update'));
         const data = this.serializeOdd()
-        console.log('serialised ODD:', data)
+        //console.log('serialised ODD:', data)
 
         this.shadowRoot.getElementById('dialog').show(i18n("odd.editor.save"), i18n('odd.editor.saving'));
 
         const saveOdd = this.shadowRoot.getElementById('saveOdd');
-        saveOdd.url = `${this.getEndpoint()}/modules/editor.xql`;
-        saveOdd.params = null;
-        saveOdd.body = {
-            action: "save",
-            root: this.rootPath,
-            "output-prefix": this.outputPrefix,
-            "output-root": this.outputRoot,
-            odd: this.odd,
-            data
-        };
+        saveOdd.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
+        if (this.lessThanApiVersion('1.0.0')) {
+            saveOdd.contentType = 'application/x-www-form-urlencoded';
+            saveOdd.method = "POST";
+            saveOdd.params = null;
+            saveOdd.body = {
+                action: "save",
+                root: this.rootPath,
+                "output-prefix": this.outputPrefix,
+                "output-root": this.outputRoot,
+                odd: this.odd,
+                data
+            };
+        } else {
+            saveOdd.contentType = 'application/xml';
+            saveOdd.method = "PUT";
+            saveOdd.params = {
+                root: this.rootPath,
+                "output-prefix": this.outputPrefix,
+                "output-root": this.outputRoot,};
+            saveOdd.body = data;
+        }
+        
         const request = saveOdd.generateRequest();
         request.completes
             .then(this.handleSaveComplete.bind(this))
             .catch(this.handleSaveError.bind(this));
     }
 
+    //to be deprecated: only used for old api
     static _renderReport(report) {
         if (report.error) {
             return `
@@ -920,9 +946,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             document.dispatchEvent(new CustomEvent('pb-end-update'));
             return;
         }
-        const report = data.report.map(PbOddEditor._renderReport);
-        const msg = `<div class="list-group">${report.join('')}</div>`;
+
+        let msg;
+
+        if (this.lessThanApiVersion('1.0.0')) {
+            const report = data.report.map(PbOddEditor._renderReport);
+            msg = `<div class="list-group">${report.join('')}</div>`;
+        } else {
+            const report = data.report;
+            msg = `<div class="list-group">${report}</div>`;
+        }
+        
         this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
+
         document.dispatchEvent(new CustomEvent('pb-end-update'));
     }
 

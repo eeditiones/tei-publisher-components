@@ -298,7 +298,7 @@ export class PbView extends pbMixin(LitElement) {
     constructor() {
         super();
         this.src = null;
-        this.url = "modules/lib/components.xql";
+        this.url = null;
         this.onUpdate = false;
         this.appendFootnotes = false;
         this.notFound = "the server did not return any content";
@@ -547,6 +547,19 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         const loadContent = this.shadowRoot.getElementById('loadContent');
+        
+        if (!this.url) {
+            if (this.minApiVersion('1.0.0')) {
+                this.url = "api/parts";
+            } else {
+                this.url = "modules/lib/components.xql";
+            }
+        }
+        if (this.minApiVersion('1.0.0')) {
+            loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
+        } else {
+            loadContent.url = `${this.getEndpoint()}/${this.url}`;
+        }
         loadContent.params = params;
         loadContent.generateRequest();
     }
@@ -565,25 +578,31 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _handleError() {
-        this.emitTo('pb-end-update');
         this._clear();
         const loader = this.shadowRoot.getElementById('loadContent');
         let message;
         const { response } = loader.lastError;
+
         if (response) {
-            message = response.message;
+            message = response.description;
         } else {
             message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
         }
+        
         const content = `
-            <p><pb-i18n key="dialogs.error"></pb-i18n>: ${message}</p>
+            <p>${this.notFound}</p>
+            <p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>
         `;
+
         this._replaceContent({ content });
+        this.emitTo('pb-end-update');
+
     }
 
     _handleContent() {
         const loader = this.shadowRoot.getElementById('loadContent');
         const resp = loader.lastResponse;
+
         if (!resp) {
             console.error('<pb-view> No response received');
             return;
@@ -781,7 +800,7 @@ export class PbView extends pbMixin(LitElement) {
     _fixLinks(content) {
         if (this.fixLinks) {
             const doc = this.getDocument();
-            const base = new URL(doc.path, this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`);
+            const base = this.toAbsoluteURL(doc.path);
             content.querySelectorAll('img').forEach((image) => {
                 const oldSrc = image.getAttribute('src');
                 const src = new URL(oldSrc, base);
@@ -839,7 +858,9 @@ export class PbView extends pbMixin(LitElement) {
         pos = pos || this.nodeId;
         const doc = this.getDocument();
         const params = this._getParameters();
-        params.doc = doc.path;
+        if (!this.minApiVersion('1.0.0')) {
+            params.doc = doc.path;
+        }
         params.odd = this.getOdd() + '.odd';
         params.view = this.getView();
         if (pos) {
@@ -1189,7 +1210,6 @@ export class PbView extends pbMixin(LitElement) {
             </paper-dialog>
             <iron-ajax
                 id="loadContent"
-                url="${this.getEndpoint()}/${this.url}"
                 verbose
                 handle-as="json"
                 method="get"

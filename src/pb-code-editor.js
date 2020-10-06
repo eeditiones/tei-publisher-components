@@ -9,7 +9,7 @@ import modeStex from "../lib/codemirror/mode/stex/stex.js";
 import addonDisplayPlaceholder from "../lib/codemirror/addon/display/placeholder.js";
 import addonEditMatchBracket from "../lib/codemirror/addon/edit/matchbrackets.js";
 import addonLint from "../lib/codemirror/addon/lint/lint.js";
-import { resolveURL } from './utils.js';
+import { resolveURL, cmpVersion } from './utils.js';
 import { get as i18n } from './pb-i18n.js';
 
 modeXquery(CodeMirror);
@@ -529,6 +529,9 @@ export class PbCodeEditor extends LitElement {
             },
             linter: {
                 attribute: true
+            },
+            apiVersion: {
+                type: String
             }
         };
     }
@@ -543,6 +546,7 @@ export class PbCodeEditor extends LitElement {
         this.linter = '';
         this.theme = null;
         this._themeStyles = null;
+        this.apiVersion = '0.9.0';
     }
 
     set theme(value) {
@@ -559,7 +563,7 @@ export class PbCodeEditor extends LitElement {
         return html`
             ${this._themeStyles}
             <iron-ajax id="lint" url="${this.linter}"
-               handle-as="json" content-type="application/x-www-form-urlencoded"
+               handle-as="json"
                method="POST"
                @error="${this._handleLintError}"></iron-ajax>
 
@@ -640,13 +644,20 @@ export class PbCodeEditor extends LitElement {
         const ajax = this.shadowRoot.getElementById('lint');
 
         return new Promise((resolve) => {
-            const params = {
-                action: "lint",
-                code: text
-            };
-
-            ajax.params = null;
-            ajax.body = params;
+            if (cmpVersion(this.apiVersion, '1.0.0')) {
+                ajax.contentType="application/x-www-form-urlencoded";
+                ajax.params = null;
+                const params = {
+                    action: "lint",
+                    code: text
+                };
+                ajax.body = params;
+            } else {
+                ajax.contentType="text";
+                ajax.params = {
+                    code: text
+                };
+            }
 
             const request = ajax.generateRequest();
             request.completes.then((req) => {

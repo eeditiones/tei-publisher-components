@@ -16,21 +16,16 @@ export class PbDownload extends pbMixin(LitElement) {
         return {
             ...super.properties,
             /**
-             * optional id reference to a pb-document. If present the pb-download will allow to download the
-             * referenced pb-document.
+             * optional id reference to a pb-document. If `url` is not specified, 
+             * a correct download URL is constructed using the given document path and parameters.
+             * Otherwise `url` will be used as main URL.
              */
             src: {
                 type: String
             },
             /**
-             * If true, an absolute URL will be constructed using the endpoint defined by `pb-page`.
-             * Otherwise only the file name of the document is used as relative URL.
-             */
-            full: {
-                type: Boolean
-            },
-            /**
-             * the base URL to construct the link from. If not specified, the path to the document will be used.
+             * the base URL to construct the link from. If specified, only the ODD and optional parameters
+             * will be appended to the URL.
              */
             url: {
                 type: String
@@ -91,8 +86,8 @@ export class PbDownload extends pbMixin(LitElement) {
         super();
 
         this.source = false;
-        this.full = false;
         this._target = '_self';
+        this.type = '';
     }
 
     firstUpdated() {
@@ -109,8 +104,10 @@ export class PbDownload extends pbMixin(LitElement) {
                 this._href = this._computeURL();
             }
         });
-        this._target = this._computeTarget();
-        this._href = this._computeURL();
+        PbDownload.waitOnce('pb-page-ready', () => {
+            this._target = this._computeTarget();
+            this._href = this._computeURL();
+        });
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -164,25 +161,30 @@ export class PbDownload extends pbMixin(LitElement) {
         let url;
         const doc = this.getDocument();
         if (doc) {
-            let path;
             if (this.url) {
-                path = this.url;
-            } else if (this.full) {
-                path = `${this.getEndpoint()}/${doc.path}`;
+                url = `${this.toAbsoluteURL(this.url)}?odd=${this.odd ? this.odd : doc.odd}.odd`;
             } else {
-                path = doc.getFileName();
+                const serverPart = `${this.getEndpoint()}/`;
+                if (this.lessThanApiVersion('1.0.0')) {
+                    url = `${doc.getFileName()}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
+                } else {
+                    url = `${serverPart}api/document/${encodeURIComponent(doc.path)}/${this.type || 'html'}?odd=${this.odd ? this.odd : doc.odd}.odd&token=${this._token}`;
+                }
             }
-            url = `${path}${this.type ? `.${this.type}` : ''}?odd=${this.odd ? this.odd : doc.odd}.odd&cache=no&token=${this._token}`;
         } else {
             url = /^(?:[a-z]+:)?\/\//i.test(this.url) ? this.url : `${this.getEndpoint()}/${this.url}`;
-            url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
+            if (this.lessThanApiVersion('1.0.0')) {
+                url = `${url}${this.type ? `.${this.type}` : ''}?odd=${this.odd}&cache=no&token='${this._token}`;
+            } else {
+                url = `${url}/${this.type}?odd=${this.odd}&token='${this._token}`;
+            }
         }
 
         if (this.params) {
             url += `&${this.params}`;
         }
         if (this.source) {
-            url += '&source=yes';
+            url += '&source=true';
         }
         return url;
     }

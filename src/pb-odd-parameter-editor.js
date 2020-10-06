@@ -8,6 +8,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@cwmr/paper-autocomplete/paper-autocomplete';
 
+import { cmpVersion } from './utils.js';
 import './pb-code-editor.js';
 
 import { get as i18n, translate } from "./pb-i18n.js";
@@ -53,7 +54,8 @@ export class PbOddParameterEditor extends LitElement {
                         label="Parameter"
                         mode="xquery"
                         code="${this.value}"
-                        linter="${this.endpoint}/modules/editor.xql"></pb-code-editor>
+                        linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') ? 'modules/editor.xql' : 'api/lint'}"
+                        apiVersion="${this.apiVersion}"></pb-code-editor>
 
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
@@ -89,6 +91,9 @@ export class PbOddParameterEditor extends LitElement {
                 type: Array
             },
             endpoint: {
+                type: String
+            },
+            apiVersion: {
                 type: String
             }
 
