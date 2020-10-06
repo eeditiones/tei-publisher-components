@@ -9,16 +9,15 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    services:
-       eXist:
-         image: existdb/teipublisher:6.0.1
-         ports: 
-          - 8080:8080
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
+      - name: Build docker image
+        run: docker build -t exist-db -f Dockerfile .
+      - name: Start docker image
+        run: docker run --publish 8080:8080 --detach exist-db
       - run: npm ci
       - run: npm test
       - run: npx semantic-release
