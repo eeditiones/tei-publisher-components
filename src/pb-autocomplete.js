@@ -136,9 +136,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 </style>
             </custom-style>
             <slot></slot>
-            <paper-input id="search" type="search" name="query" @keyup="${this._handleEnter}" label="${translate(this.placeholder)}"
+            <paper-input id="search" type="search" name="query" @keyup="${this._setInput}" label="${translate(this.placeholder)}"
                 always-float-label>
-                ${ this.icon ? html`<iron-icon icon="${this.icon}" @click="${this._doSearch}" slot="prefix"></iron-icon>` : null}
+                ${this.icon ? html`<iron-icon icon="${this.icon}" slot="prefix"></iron-icon>` : null}
             </paper-input>
             <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"
                 @autocomplete-selected="${this._autocompleteSelected}"></paper-autocomplete-suggestions>
@@ -182,8 +182,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _sendRequest(query) {
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
-        const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
-        loader.url = new URL(this.source, base).toString();
+        loader.url = this.toAbsoluteURL(this.source);
 
         const params = this._getParameters();
         params['query'] = query;
@@ -249,6 +248,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
+    }
+
+    _setInput(ev) {
+        const input = this.shadowRoot.getElementById('search');
+        console.log('Autocomplete set manually to %s', input.value);
+
+        this.value = input.value;
+        if (this._hiddenInput) {
+            this._hiddenInput.value = this.value;
+        } 
     }
 
    

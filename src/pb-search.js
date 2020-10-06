@@ -2,7 +2,6 @@ import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
 import '@polymer/paper-checkbox';
 import '@polymer/iron-ajax';
 import '@polymer/iron-form';
@@ -74,6 +73,14 @@ export class PbSearch extends pbMixin(LitElement) {
         ironform.addEventListener('iron-form-response', (event) =>
             event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
         );
+        PbSearch.waitOnce('pb-page-ready', (options) => {
+            const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            if (this.minApiVersion('1.0.0')) {
+                loader.url = `${options.endpoint}/api/search/autocomplete`;
+            } else {
+                loader.url = `${options.endpoint}/modules/autocomplete.xql`;
+            }
+        });
 
         if (this.submitOnLoad) {
             const params = this.getParameters();
@@ -83,18 +90,16 @@ export class PbSearch extends pbMixin(LitElement) {
             });
         }
 
-        this.addEventListener('click', e => {
-            if(e.target.slot === 'searchButton'){
+        this.addEventListener('click', (e) => {
+            if (e.target.slot === 'searchButton'){
                 this._doSearch();
             }
-            if(e.target.slot === 'resetButton'){
+            if (e.target.slot === 'resetButton'){
                 this._reset();
             }
-        })
-
+        });
     }
-
-
+    
     render() {
         return html`
             <custom-style>
@@ -127,7 +132,6 @@ export class PbSearch extends pbMixin(LitElement) {
             </iron-form>
             <iron-ajax
                 id="autocompleteLoader"
-                url="${this.getEndpoint()}/modules/autocomplete.xql"
                 verbose
                 handle-as="json"
                 method="get"

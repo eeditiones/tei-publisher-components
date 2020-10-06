@@ -25,6 +25,7 @@ module.exports = config => {
         // if you are using 'bare module imports' you will need this option
         nodeResolve: true
       },
+      concurrency: 1,
       client: {
         endpoint: config.endpoint ? config.endpoint : 'http://localhost:8080/exist/apps/tei-publisher/',
         passwd: config.passwd ? config.passwd : 'simple',

@@ -12,6 +12,7 @@ import { translate } from './pb-i18n.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
 import './pb-edit-xml.js';
+import { cmpVersion } from './utils.js';
 
 /**
  * High-level component implementing the ODD management panel
@@ -58,7 +59,11 @@ export class PbManageOdds extends pbMixin(LitElement) {
             // regenerate newly uploaded ODDs
             const regenAjax = this.shadowRoot.getElementById('regenerate');
             const params = ev.detail.odds.map(odd => `odd=${odd}`).join('&');
-            regenAjax.url = `modules/lib/regenerate.xql?${params}`;
+            if (this.minApiVersion('1.0.0')) {
+                regenAjax.url = `api/odd?${params}`;
+            } else {
+                regenAjax.url = `modules/lib/regenerate.xql?${params}`;
+            }
             regenAjax.trigger();
         });
     }
@@ -69,7 +74,11 @@ export class PbManageOdds extends pbMixin(LitElement) {
         this._loader = this.shadowRoot.getElementById('load');
 
         PbManageOdds.waitOnce('pb-page-ready', (options) => {
-            this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
+            if (cmpVersion(options.apiVersion, '1.0.0') < 0) {
+                this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
+            } else {
+                this._loader.url = `${options.endpoint}/api/odd`;
+            }
             this._refresh();
         });
     }
@@ -106,9 +115,27 @@ export class PbManageOdds extends pbMixin(LitElement) {
     _createODD() {
         const name = this.shadowRoot.querySelector('paper-input[name="new_odd"]').value;
         const title = this.shadowRoot.querySelector('paper-input[name="title"]').value;
-        const params = { new_odd: name, title };
         console.log('<pb-manage-odds> create ODD: %s, %s', name, title);
-        this._refresh(params);
+        if (this.lessThanApiVersion('1.0.0')) {
+            this._refresh({ new_odd: name, title });
+        } else {
+            const createRequest = this.shadowRoot.getElementById('create');
+            createRequest.url = `${this.getEndpoint()}/api/odd/${name}`;
+            createRequest.params = {
+                title
+            };
+            this.emitTo('pb-start-update');
+            createRequest.generateRequest();
+        }
+    }
+
+    _created(ev) {
+        this.emitTo('pb-end-update');
+        if (ev.detail.status === 201) {
+            this._refresh();
+        } else {
+            console.log('<pb-manage-odds> unexpected response for create odd: %o', ev.detail);
+        }
     }
 
     _createByExample() {
@@ -136,10 +163,28 @@ export class PbManageOdds extends pbMixin(LitElement) {
     _confirmDelete() {
         if (this._current) {
             console.log('<pb-manage-odds> deleting ODD: %s', this._current);
-            this._refresh({ 'delete': this._current });
+            if (this.lessThanApiVersion('1.0.0')) {
+                this._refresh({ 'delete': this._current });
+            } else {
+                this.emitTo('pb-start-update');
+                const deleteRequest = this.shadowRoot.getElementById('delete');
+                deleteRequest.url = `${this.getEndpoint()}/api/odd/${this._current}`;
+                deleteRequest.generateRequest();
+            }
             this._current = null;
         } else {
             console.error('<pb-manage-odds> no file marked for deletion');
+        }
+    }
+
+    _deleted() {
+        const deleteRequest = this.shadowRoot.getElementById('delete');
+        const error = deleteRequest.lastError;
+        if (error.status === 410) {
+            this._refresh();
+        } else {
+            console.error('<pb-manage-odds> failed to delete odd: %d %o', error.status, error.response);
+            this.emitTo('pb-end-update');
         }
     }
 
@@ -154,9 +199,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
         if (!this.odds) {
             return null;
         }
+        const regenUrl = this.lessThanApiVersion('1.0.0') ? 'modules/lib/regenerate.xql' : "api/odd";
         return html`
             <pb-restricted login="login">
-                <pb-ajax id="regenerateAll" url="modules/lib/regenerate.xql" title="${translate('odd.manage.regenerate-all')}"
+                <pb-ajax id="regenerateAll" url="${regenUrl}" method="post" title="${translate('odd.manage.regenerate-all')}"
                     emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                     <h3 slot="title">${translate('odd.manage.regenerate-all')}</h3>
                     <a href="#">${translate('odd.manage.regenerate-all')}</a>
@@ -172,12 +218,12 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 odd.canWrite ?
                     html`
                                     <pb-restricted login="login">
-                                        <pb-ajax url="modules/lib/regenerate.xql?odd=${odd.name}.odd"
+                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post" 
                                             emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                                             <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                             <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
                                         </pb-ajax>
-                                        <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(odd.path)}"></paper-icon-button>
+                                        <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(`${odd.name}.odd`)}"></paper-icon-button>
                                     </pb-restricted>
                                 ` : null
                 }
@@ -203,7 +249,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     </paper-button-->
                 </form>
             </pb-restricted>
-            <pb-ajax id="regenerate" url="modules/lib/regenerate.xql"></pb-ajax>
+            <pb-ajax id="regenerate" url="${regenUrl}" method="post"></pb-ajax>
             <iron-ajax
                 id="load"
                 verbose
@@ -212,7 +258,8 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 with-credentials
                 @response="${this._update}">
             </iron-ajax>
-
+            <iron-ajax id="delete" method="delete" with-credentials @error="${this._deleted}"></iron-ajax>
+            <iron-ajax id="create" method="post" with-credentials @response="${this._created}" @error="${this._created}"></iron-ajax>
             <paper-dialog id="deleteDialog">
                 <h2>${translate('browse.delete')}</h2>
                 <paper-dialog-scrollable>

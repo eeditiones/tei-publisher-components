@@ -27,8 +27,17 @@ export class PbLoad extends pbMixin(LitElement) {
             url: {
                 type: String
             },
+            /**
+             * If set to true, the `url` property will be interpreted as a template string
+             * containing placeholders for parameters in `{parameter-name}`. The placeholders
+             * will be replaced by the actual parameters when building the final URL. Each parameter
+             * used in the URL template will be removed from the request parameter list.
+             */
+            expand: {
+                type: Boolean
+            },
             /** ID of the pb-document this element is connected to. The document path to
-            * load will be taken from the pb-document.
+             * load will be taken from the pb-document.
              */
             src: {
                 type: String
@@ -121,7 +130,9 @@ export class PbLoad extends pbMixin(LitElement) {
     firstUpdated() {
         if (this.auto) {
             this.start = this.getParameter('start', this.start);
-            this.wait(() => this.load());
+            PbLoad.waitOnce('pb-page-ready', () => {
+                this.wait(() => this.load());
+            });
         }
     }
 
@@ -164,8 +175,16 @@ export class PbLoad extends pbMixin(LitElement) {
         }
     }
 
-    getURL() {
-        return this.getEndpoint() + '/' + this.url;
+    getURL(params) {
+        let url = this.url;
+        if (this.expand) {
+            url = url.replace(/{([^})]+)}/g, (match, key) => {
+                const param = encodeURIComponent(params[key] || key);
+                delete params[key];
+                return param;
+            });
+        }
+        return `${this.getEndpoint()}/${url}`;
     }
 
     load(ev) {
@@ -199,10 +218,12 @@ export class PbLoad extends pbMixin(LitElement) {
 
         params = this.prepareParameters(params);
 
-        console.log("<pb-load> Loading %s with parameters %o", this.url, params);
+        const url = this.getURL(params);
+
+        console.log("<pb-load> Loading %s with parameters %o", url, params);
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.params = params;
-        loader.url = this.getURL();
+        loader.url = url;
         loader.generateRequest();
 
         if (this.loadOnce) {

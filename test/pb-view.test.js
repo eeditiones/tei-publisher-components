@@ -1,25 +1,28 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
-
+import { oneEvent, fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
+import { waitForPage } from './util.js';
 import '../src/pb-document.js';
 import '../src/pb-page.js';
 import '../src/pb-view.js';
 
 describe('initialize and refresh view', () => {
-    it('emits and receives events', async () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
+    it('emits and receives events', async function() {
+        this.timeout(10000);
+        
         const el = (
-            await fixture(`
+            await waitForPage(`
             <pb-page endpoint="${ __karma__.config.endpoint }">
                 <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
                 <pb-view src="document1"></pb-view>
             </pb-page>
-        `)
+        `, 'pb-end-update')
         );
 
         const view = el.querySelector('pb-view');
-        await oneEvent(document, 'pb-end-update');
 
-        expect(view.getEndpoint()).to.equal(__karma__.config.endpoint);
         expect(view.getOdd()).to.equal('docbook');
         expect(view.getView()).to.equal('div');
         expect(view.getParameters().view).to.equal('div');
@@ -49,15 +52,13 @@ describe('initialize and refresh view', () => {
     });
     it('shows placeholder for non existing document', async () => {
         const el = (
-            await fixture(`
+            await waitForPage(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-document id="document1" path="xxx/yyy.xml" odd="docbook" view="div"></pb-document>
                     <pb-view src="document1" not-found="Not found"></pb-view>
                 </pb-page>
-            `)
+            `, 'pb-end-update')
         );
-
-        await oneEvent(document, 'pb-end-update');
 
         const view = el.querySelector('pb-view');
         const content = view.shadowRoot.querySelector('#content');
@@ -66,17 +67,15 @@ describe('initialize and refresh view', () => {
 
     it('shows footnotes', async () => {
         const el = (
-            await fixture(`s
+            await waitForPage(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
                     <pb-document id="document1" path="test/orlik_to_serafin.xml" odd="serafin"></pb-document>
                     <pb-view src="document1" xpath="//text[@xml:lang = 'la']/body" view="single"
                         append-footnotes></pb-view>
                 </pb-page>
-            `)
+            `, 'pb-end-update')
         );
         const view = el.querySelector('pb-view');
-
-        await oneEvent(document, 'pb-end-update');
 
         const notes = view.shadowRoot.querySelector('#footnotes');
         expect(notes.innerHTML).to.contain('brata');

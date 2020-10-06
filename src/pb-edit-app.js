@@ -63,7 +63,13 @@ export class PbEditApp extends pbMixin(LitElement) {
             indexListbox.selected = old;
         }, []);
         PbEditApp.waitOnce('pb-page-ready', (detail) => {
-            fetch(`${detail.endpoint}/modules/lib/components-list-templates.xql`, {
+            let url;
+            if (this.minApiVersion('1.0.0')) {
+                url = `${detail.endpoint}/api/templates`;
+            } else {
+                url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
+            }
+            fetch(url, {
                 method: 'GET',
                 mode: 'cors',
                 credentials: 'same-origin'
@@ -71,7 +77,12 @@ export class PbEditApp extends pbMixin(LitElement) {
             .then((response) => response.json())
             .then(json => { this.templates = json });
 
-            fetch(`${detail.endpoint}/modules/lib/components-list-odds.xql`, {
+            if (this.minApiVersion('1.0.0')) {
+                url = `${detail.endpoint}/api/odd`;
+            } else {
+                url = `${detail.endpoint}/modules/lib/components-list-odds.xql`;
+            }
+            fetch(url, {
                 method: 'GET',
                 mode: 'cors',
                 credentials: 'same-origin'
@@ -80,7 +91,11 @@ export class PbEditApp extends pbMixin(LitElement) {
             .then(json => { this.odds = json });
 
             const htmlForm = this.shadowRoot.querySelector('form');
-            htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
+            if (this.minApiVersion('1.0.0')) {
+                htmlForm.action = `${detail.endpoint}/api/apps/generate`;
+            } else {
+                htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
+            }
         });
         form.addEventListener('iron-form-presubmit', function () {
             const view = defaultView.selectedItem.getAttribute('value');
@@ -88,21 +103,30 @@ export class PbEditApp extends pbMixin(LitElement) {
             this.request.body.index = index.selectedItem.getAttribute('value');
             this.request.body.template = template.selectedItem.getAttribute('value');
         });
-        form.addEventListener('iron-form-response', (event) =>
+        form.addEventListener('iron-form-response', (event) => {
+            console.log(event);
             event.detail.completes.then((r) => {
                 this.emitTo('pb-end-update');
                 const result = r.parseResponse();
                 console.log('<pb-edit-app> Received response: %o', result);
-                if (result.result === 'ok') {
+                if (result.target) {
                     const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, "$1");
                     this.url = baseURL + '/' + this.shadowRoot.querySelector('paper-input[name=abbrev]').value;
                     this.error = null;
                 } else {
-                    this.error = result.message;
+                    this.error = result.description;
                 }
                 this.shadowRoot.getElementById('dialog').open();
-            })
+            });
+        }
         );
+        form.addEventListener('iron-form-error', (event) => {
+            this.emitTo('pb-end-update');
+            
+            console.log('<pb-edit-app> Received response: %o', event.detail.request.response);
+            this.error = event.detail.request.response.description;
+            this.shadowRoot.getElementById('dialog').open();
+        });
         form.addEventListener('iron-form-invalid', () =>
             this.emitTo('pb-end-update')
         );
@@ -117,7 +141,7 @@ export class PbEditApp extends pbMixin(LitElement) {
     render() {
         return html`
             <iron-form id="form">
-                <form action="modules/components-generate.xql" method="POST" accept="application/json" enctype="application/json">
+                <form method="POST" accept="application/json" enctype="application/json">
                     <fieldset>
                         <legend>${translate('document.selectODD')}</legend>
                         ${ this.odds.map(odd => html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`)}

@@ -15,6 +15,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/color.js';
 import '@polymer/iron-collapse/iron-collapse.js';
 
+import { cmpVersion } from './utils.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';
 import './pb-code-editor.js';
@@ -315,6 +316,9 @@ export class PbOddModelEditor extends LitElement {
             },
             endpoint: {
                 type: String
+            },
+            apiVersion: {
+                type: String
             }
         };
     }
@@ -444,10 +448,11 @@ export class PbOddModelEditor extends LitElement {
                 <pb-code-editor id="predicate"
                      code="${this.predicate}"   
                      mode="xquery"
-                     linter="${this.endpoint}/modules/editor.xql"
+                     linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') < 0 ? 'modules/editor.xql' : 'api/lint'}"
                      label="Predicate"
                      placeholder="${translate('odd.editor.model.predicate-placeholder')}"
-                     @code-changed="${this._updatePredicate}"></pb-code-editor>
+                     @code-changed="${this._updatePredicate}"
+                     apiVersion="${this.apiVersion}"></pb-code-editor>
                
                 ${this._isModel()
                 ? html`
@@ -479,7 +484,8 @@ export class PbOddModelEditor extends LitElement {
                                              mode="${this.output === 'latex' ? 'stex' : 'xml'}"
                                              label="Template"
                                              placeholder="${translate('odd.editor.model.template-placeholder')}"
-                                             @code-changed="${this._updateTemplate}"></pb-code-editor>
+                                             @code-changed="${this._updateTemplate}"
+                                             apiVersion="${this.apiVersion}"></pb-code-editor>
                         </div>
         
                         <div class="parameters">
@@ -495,6 +501,7 @@ export class PbOddModelEditor extends LitElement {
                                        name="${parameter.name}"
                                        value="${parameter.value}"
                                        endpoint="${this.endpoint}"
+                                       apiVersion="${this.apiVersion}"
                                        @parameter-remove="${(e) => this._removeParam(e, index)}"
                                        @parameter-changed="${(e) => this._updateParam(e, index)}"
                                        ></pb-odd-parameter-editor>
@@ -543,6 +550,7 @@ export class PbOddModelEditor extends LitElement {
                     .template="${model.template}"
                     .show="${model.show}"
                     endpoint="${this.endpoint}"
+                    apiVersion="${this.apiVersion}"
                     @model-remove="${this._removeModel}"
                     @model-move-down="${this._moveModelDown}"
                     @model-move-up="${this._moveModelUp}"

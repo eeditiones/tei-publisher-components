@@ -89,8 +89,7 @@ export class PbMei extends pbMixin(LitElement) {
                 this._verovio = new window.verovio.toolkit();
 
                 PbMei.waitOnce('pb-page-ready', () => {
-                    const base = this.getEndpoint() === '.' ? window.location.href : `${this.getEndpoint()}/`;
-                    this.url = new URL(this.url, base);
+                    this.url = this.toAbsoluteURL(this.url);
 
                     fetch(this.url)
                         .then(response => response.text())

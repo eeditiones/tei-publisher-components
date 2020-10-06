@@ -1,16 +1,19 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect } from '@open-wc/testing';
+import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
 
 import '../src/pb-document.js';
 import '../src/pb-ajax.js';
 import '../src/pb-login.js';
 
 describe('recompile ODD', () => {
+    afterEach(() => {
+      fixtureCleanup();
+    });
     it('recompiles and shows message', async () => {
         const el = (
             await fixture(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
-                    <pb-ajax url="modules/lib/regenerate.xql?odd=graves.odd" dialog="messageDialog">
+                    <pb-ajax url="api/odd?odd=graves.odd" dialog="messageDialog" method="post">
                     Recompile<span slot="title">Recompile ODD</span>
                     </pb-ajax>
                     <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>

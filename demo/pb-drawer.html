@@ -108,7 +108,7 @@
                             <h3>
                                 <pb-i18n key="document.contents">Contents</pb-i18n>
                             </h3>
-                            <pb-load url="templates/toc.html?target=transcription&icons=true" src="document1" subscribe="toc" load-once>Loading...</pb-load>
+                            <pb-load url="api/document/{doc}/contents?target=transcription&icons=true" src="document1" expand subscribe="toc" load-once>Loading...</pb-load>
                         </div>
                     </pb-drawer>
                     <main>

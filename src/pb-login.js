@@ -7,6 +7,7 @@ import '@polymer/paper-dialog-scrollable';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/iron-icons';
+import { minVersion } from './utils.js';
 
 /**
  * Handles login/logout. Shows a link which opens a login dialog if clicked.
@@ -114,7 +115,11 @@ export class PbLogin extends pbMixin(LitElement) {
             }
         });
         PbLogin.waitOnce('pb-page-ready', (detail) => {
-            this._checkLogin.url = `${detail.endpoint}/login`;
+            if (minVersion(detail.apiVersion, '1.0.0')) {
+                this._checkLogin.url = `${detail.endpoint}/api/login/`;
+            } else {
+                this._checkLogin.url = `${detail.endpoint}/login`;
+            }
             this._checkLogin.body = {
                 user: this.user,
                 password: this.password
@@ -155,9 +160,9 @@ export class PbLogin extends pbMixin(LitElement) {
             </paper-dialog>
 
             <iron-ajax id="checkLogin" with-credentials
-                handle-as="json" @response="${this._handleResponse}"
-                content-type="application/x-www-form-urlencoded"
-                method="POST"></iron-ajax>
+                handle-as="json" @response="${this._handleResponse}" @error="${this._handleError}"
+                method="post"
+                content-type="application/x-www-form-urlencoded"></iron-ajax>
         `;
     }
 
@@ -238,6 +243,22 @@ export class PbLogin extends pbMixin(LitElement) {
                 this._loginDialog.open();
             }
         }
+        this.emitTo('pb-login', resp);
+    }
+
+    _handleError() {
+        const resp = {
+            userChanged: this.loggedIn,
+            user: null
+        };
+        this.loggedIn = false;
+        this.password = null;
+        if (this._loginDialog.opened) {
+            this._invalid = true;
+        } else if (this.auto) {
+            this._loginDialog.open();
+        }
+
         this.emitTo('pb-login', resp);
     }
 
