@@ -11,6 +11,7 @@ import { resolveURL } from './utils.js';
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
  * 
  * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
+ * @cssprop --pb-facsimile-border - Style for the annotation highlight border
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
@@ -161,6 +162,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 height: var(--pb-facsimile-height, 500px);
             }
 
+            #runtime-overlay {
+                border: var(--pb-facsimile-border, 4px solid rgba(0, 0, 128, 0.5));
+            }
+
             #viewer {
                 position: relative;
                 height: 100%;
@@ -293,7 +298,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
             // create new overlay
             const overlay = this.overlay = document.createElement('div');
             overlay.id = overlayId;
-            overlay.style.border = this.getBorderStyle();
 
             // place marker
             const marker = this.viewer.viewport.imageToViewportRectangle(x1, y1, w, h);
@@ -307,11 +311,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     _pageIndexByUrl(file) {
         return this._facsimiles.indexOf(file);
-    }
-
-    // returns the border styling for facsimile viewer
-    getBorderStyle() {
-        return '4px solid rgba(128, 0, 0, 0.5)'
     }
 
     // reset zoom
