@@ -25,7 +25,9 @@
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
                     <main>
-                        <pb-login id="loginElem"></pb-login>
+                        <pb-login id="loginElem">
+                            <p slot="information">Please log in with your eXist-db credentials.</p>
+                        </pb-login>
 
                         <pb-restricted login="loginElem">
                             <p>This paragraph will only be shown if a user is logged in.</p>

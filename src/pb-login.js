@@ -13,6 +13,7 @@ import { minVersion } from './utils.js';
  * Handles login/logout. Shows a link which opens a login dialog if clicked.
  * If a user is logged in, clicking the link will log him out instead.
  *
+ * @slot information - Additional information to be presented on the login dialog
  * @fires pb-login - Sends results of checking user credentials
  * @cssprop --pb-login-link-color - Color of the link text
  */
@@ -146,6 +147,7 @@ export class PbLogin extends pbMixin(LitElement) {
                         <paper-input id="password" name="password" label="${translate('login.password')}" type="password"></paper-input>
                         <input id="logout" type="hidden" name="logout"></input>
                     </form>
+                    <slot name="information"></slot>
                     ${this._invalid ?
                 html`
                             <p id="message">${translate('login.invalid')}
