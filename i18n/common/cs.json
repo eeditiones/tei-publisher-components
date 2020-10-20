@@ -60,7 +60,7 @@
     "documents": "Dokumenty",
     "collections": "Místní kolekce",
     "dts": "Distribuované textové služby (ve vývoji)",
-    "demo": {
+    "test": {
       "title": "Kolekce ukázek TEI Publisheru",
       "description": "Dokumenty obsahují ukázky různých funkcí. Výběr není úplný, představuje pouze část toho, čeho je možné dosáhnout. Obohaťte prosím tento seznam o své vlastní ukázky."
     },
@@ -68,7 +68,7 @@
       "title": "Plácek",
       "description": "Kolekce s možností zápisu, do níž můžete nahrát své dokumenty pro testování."
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentace",
       "description": "Dokumentace (pomocí Docbook XML)."
     },

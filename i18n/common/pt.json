@@ -60,7 +60,7 @@
     "documents": "Documentos",
     "collections": "Coleção local",
     "dts": "Distributed Text Services (Experimental)",
-    "demo": {
+    "test": {
       "title": "Coleção Demo do TEI Publisher",
       "description": "Documentos que demonstram vários recursos. A seleção não é, de forma alguma, exaustiva, mas representa parte do que é possível. Por favor, contribua com os seus próprios casos de uso para complementá-la."
     },
@@ -68,7 +68,7 @@
       "title": "Parquinho",
       "description": "Uma coleção gravável na qual você pode fazer upload dos seus próprios documentos para teste."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentação",
       "description": "Documentação (usando Docbook XML)."
     },

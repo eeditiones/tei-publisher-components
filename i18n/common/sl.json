@@ -60,7 +60,7 @@
     "documents": "Dokumenti",
     "collections": "Lokalna zbirka",
     "dts": "Ponujene besedilne zbirke (poskusno)",
-    "demo": {
+    "test": {
       "title": "Primeri uporabe TEI Publisher",
       "description": "Ti dokumenti demonstrirajo razne zmogljivosti TEI Publisher. Izbor nikakor ni izčrpen, marveč predstavlja ožji nabor možnosti, ki jih TEI Publisher nudi. Prosimo, prispevajte svoje primere uporabe."
     },
@@ -68,7 +68,7 @@
       "title": "Igrišče",
       "description": "Zbirka, v katero lahko za preizkus naložite svoje lastne dokumente."
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentacija",
       "description": "Dokumentacija (v zapisu Docbook XML)."
     },

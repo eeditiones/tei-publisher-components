@@ -60,7 +60,7 @@
     "documents": "Dokümanlar",
     "collections": "Yerel koleksiyon",
     "dts": "Dağıtık Metin Hizmetleri (Deneysel)",
-    "demo": {
+    "test": {
       "title": "TEI Yayıncı Demo Koleksiyonu",
       "description": "Çeşitli özellikleri gösteren belgeler. Seçim hiçbir şekilde kapsamlı değildir ancak mümkün olanın bir alt kümesini temsil eder. Lütfen bunu tamamlamak için kendi kullanım durumlarınıza katkıda bulunun."
     },
@@ -68,7 +68,7 @@
       "title": "Oyun bahçesi",
       "description": "Test için kendi belgelerinizi yükleyebileceğiniz yazılabilir bir koleksiyon."
     },
-    "documentation": {
+    "doc": {
       "title": "Dökümantasyon",
       "description": "Dokümantasyon (Docbook XML kullanarak)."
     },

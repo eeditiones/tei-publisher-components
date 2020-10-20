@@ -60,7 +60,7 @@
     "documents": "Documente",
     "collections": "Colecție locală",
     "dts": "Servicii de Text Distribuite (Experimental)",
-    "demo": {
+    "test": {
       "title": "Colecție Demo TEI Publisher",
       "description": "Documente demonstrând diferite caracteristici. Selecția nu este desigur exhaustivă dar prezintă o parte din posibilități. Vă rugăm să contribuiți cu use-casei personale pentru a completa selecția."
     },
@@ -68,7 +68,7 @@
       "title": "Spațiu de încercare",
       "description": "O colecție editabilăîn care puteți încărca propriile documente pentru testare."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentație",
       "description": "Documentație (folosind Docbook XML)."
     },

@@ -60,7 +60,7 @@
     "documents": "Documentos",
     "collections": "Colección local",
     "dts": "Servicios de texto distribuidos (versión experimental)",
-    "demo": {
+    "test": {
       "title": "Muestrario de publicaciones basadas en TEI Publisher",
       "description": "Documentos que ejemplifican algunas funcionalidades del programa. La selección no es exhaustiva, pero sí representa una parte de lo que puede hacerse. Agradeceremos que contribuyas a aumentar la muestra con tus propios propios casos de uso."
     },
@@ -68,7 +68,7 @@
       "title": "Pruebas",
       "description": "Una colección con permisos de escritura en la que puedes cargar tus propios documentos para probarlos."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentación",
       "description": "Documentación (usando Docbook XML)."
     },

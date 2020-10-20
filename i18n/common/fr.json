@@ -60,7 +60,7 @@
     "documents": "Documents",
     "collections": "Collection locale",
     "dts": "Protocole de partage de textes DTS",
-    "demo": {
+    "test": {
       "title": "Collection de démonstration de TEI Publisher",
       "description": "Documents présentant diverses caractéristiques. Cette sélection n’est en aucun cas exhaustive mais représente un sous-ensemble de ce qu’il est possible de faire. Vous êtes invités à proposer vos propres cas d'utilisation pour compléter cette liste."
     },
@@ -68,7 +68,7 @@
       "title": "Aire de jeux",
       "description": "Une collection accessible en écriture dans laquelle vous pouvez télécharger vos propres documents à tester."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentation",
       "description": "Guide de démarrage et d'utilisation (au format XML Docbook)."
     },

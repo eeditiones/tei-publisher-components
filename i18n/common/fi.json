@@ -60,7 +60,7 @@
     "documents": "Dokumentit",
     "collections": "Local Collection",
     "dts": "Distributed Text Services (Experimental)",
-    "demo": {
+    "test": {
       "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
@@ -68,7 +68,7 @@
       "title": "Leikkikenttä",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentation",
       "description": "Documentation (using Docbook XML)."
     },

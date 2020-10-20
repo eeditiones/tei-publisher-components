@@ -60,7 +60,7 @@
     "documents": "Documenten",
     "collections": "Locale collectie",
     "dts": "Distributed Text Services (experimenteel)",
-    "demo": {
+    "test": {
       "title": "TEI Publisher Demo Collectie",
       "description": "Document die diverse functies demonstreren. Het is geen uitputtende set, maar een subset van wat mogelijk is. Draag alstublieft uw eigen voorbeelden bij zodat de set completer wordt."
     },
@@ -68,7 +68,7 @@
       "title": "Speeltuin",
       "description": "Een collectie waarin getest kan worden met eigen documenten."
     },
-    "documentation": {
+    "doc": {
       "title": "Documentatie",
       "description": "Documentatie (met behulp van Docbook XML)."
     },

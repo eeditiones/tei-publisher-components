@@ -60,7 +60,7 @@
     "documents": "Dokumenter",
     "collections": "Lokal samling",
     "dts": "Distribuerte tekst-tjenester (Eksperimentell)",
-    "demo": {
+    "test": {
       "title": "TEI Publisher Demo samling",
       "description": "Dokumenter for å demonstrere forskjellige muligheter. Utvalget er er et lite delsett av hva som er mulig. Bidra gjerne med egne eksempler for å utvide utvalget."
     },
@@ -68,7 +68,7 @@
       "title": "Lekeplass",
       "description": "En samling med skriverettigheter, der du kan laste opp egne dokumenter for testing."
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentasjon",
       "description": "Dokumentasjon (bruker Docbook XML)."
     },

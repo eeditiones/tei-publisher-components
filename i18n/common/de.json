@@ -60,7 +60,7 @@
     "documents": "Dokumente",
     "collections": "Lokale Sammlung",
     "dts": "Distributed Text Services (experimentell)",
-    "demo": {
+    "test": {
       "title": "TEI Publisher Beispielsammlung",
       "description": "Dokumente zur Demonstration diverser Features. Die Auswahl ist in keiner Weise erschöpfend, sondern zeigt nur einen kleinen Ausschnitt des Möglichen. Weitere Beispiele sind jederzeit willkommen!"
     },
@@ -68,7 +68,7 @@
       "title": "Spielwiese",
       "description": "Eine beschreibbare Sammlung zum Hochladen eigener Dokumente"
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentation",
       "description": "Dokumentation, verfasst in Docbook XML."
     },

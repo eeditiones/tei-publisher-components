@@ -60,7 +60,7 @@
     "documents": "Dokument",
     "collections": "Lokal samling",
     "dts": "Distribuerade texttjänster (DTS, experimentella)",
-    "demo": {
+    "test": {
       "title": "Demosamling för TEI-publisher",
       "description": "Dokument som visar olika funktioner. Urvalet är inte på något sätt komplett utan representerar en delmängd av vad som är möjligt. Bidra gärna med egna användningsfall för att komplettera dessa."
     },
@@ -68,7 +68,7 @@
       "title": "Testa med egna dokument",
       "description": "En skrivbar samling där du kan ladda upp egna testdokument."
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentation",
       "description": "Dokumentation (i Docbook-XML-format)."
     },

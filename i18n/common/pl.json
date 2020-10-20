@@ -60,7 +60,7 @@
     "documents": "Dokumenty",
     "collections": "Kolekcja lokalna",
     "dts": "Serwis DTS (Distributed Text Services - wersja eksperymentalna)",
-    "demo": {
+    "test": {
       "title": "Kolekcja Demo",
       "description": "Kolekcja dokumentów demonstrujących różne dziedziny i formy prezentacji. Dobór przykładów nie stanowi reprezentatywnej próbki, jedynie podzbiór tego, co można uzyskać. Zachęcamy do współpracy przy poszerzaniu naszej kolekcji przykładów poprzez nadsyłanie własnych 'use cases'."
     },
@@ -68,7 +68,7 @@
       "title": "Poletko eksperymentalne",
       "description": "Kolekcja z prawem zapisu plików. Tutaj można zapisać własne pliki źródłowe dla celów testowych."
     },
-    "documentation": {
+    "doc": {
       "title": "Dokumentacja",
       "description": "Dokumentacja (w formacie Docbook XML)."
     },
