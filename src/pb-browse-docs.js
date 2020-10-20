@@ -28,6 +28,11 @@ import { cmpVersion } from './utils.js';
  * @cssprop --pb-search-input-color - Determines the color of the text in the sort by/filter by/filter fields
  * @cssprop --pb-search-focus-color - Color of the field labels and underline when in focus
  * @cssprop --pb-browse-toolbar-justify-content - How to justify the browse toolbar content, following flexbox justify-content property e.g. center, space-evenly, start...
+ * 
+ * @csspart delete-button - the delete button
+ * @csspart sort-dropdown - dropdown for sorting
+ * @csspart filter-dropdown - dropdown for filtering
+ * @csspart filter-input - input for filtering
  */
 export class PbBrowseDocs extends PbLoad {
 
@@ -189,7 +194,7 @@ export class PbBrowseDocs extends PbLoad {
                 </style>
             </custom-style>
             <div class="toolbar">
-                <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}">
+                <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}" part="sort-dropdown">
                     <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
                     ${this.sortOptions.map(option =>
             html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
@@ -197,7 +202,7 @@ export class PbBrowseDocs extends PbLoad {
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <div>
-                    <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}">
+                    <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}" part="filter-dropdown">
                         <paper-listbox id="filter-list" selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value" @selected-item-changed="${this._filterChanged}">
                         ${this.filterOptions.map(option =>
             html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
@@ -205,7 +210,7 @@ export class PbBrowseDocs extends PbLoad {
                         </paper-listbox>
                     </paper-dropdown-menu>
                     <paper-input id="filterString" type="search" name="filter" label="Filter" value="${this.filter}"
-                        @keyup="${this._handleEnter}">
+                        @keyup="${this._handleEnter}" part="filter-input">
                         <iron-icon icon="search" @click="${this._filter}" slot="prefix"></iron-icon>
                     </paper-input>
                     <paper-autocomplete-suggestions id="autocomplete" for="filterString" source="${this._suggestions}" remote-source></paper-autocomplete-suggestions>
@@ -213,7 +218,7 @@ export class PbBrowseDocs extends PbLoad {
             </div>
             <div class="toolbar">
                 <slot name="toolbar"></slot>
-                <paper-button id="delete" title="${translate('browse.delete')}" class="${this._canModify(this._allowModification)}">
+                <paper-button id="delete" part="delete-button" title="${translate('browse.delete')}" class="${this._canModify(this._allowModification)}">
                     <iron-icon icon="delete"></iron-icon>
                     <span class="label">${translate('browse.delete')}</span>
                 </paper-button>
