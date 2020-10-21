@@ -1,8 +1,9 @@
-import { LitElement, html } from 'lit-element';
+import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@vaadin/vaadin-upload';
 import '@polymer/paper-button';
+import '@polymer/paper-icon-button';
 
 /**
  * Component for uploading resources to TEI Publisher or a generated app.
@@ -29,8 +30,16 @@ export class PbUpload extends pbMixin(LitElement) {
              */
             accept: {
                 type: String
+            },
+            _files: {
+                type: Object
             }
         };
+    }
+
+    constructor() {
+        super();
+        this._files = new Map();
     }
 
     connectedCallback() {
@@ -47,8 +56,13 @@ export class PbUpload extends pbMixin(LitElement) {
         const uploader = this.shadowRoot.getElementById('uploader');
         uploader.addEventListener('upload-before', (event) => {
             this.emitTo('pb-start-update');
+            const {file} = event.detail;
+            // clear list of uploaded files
+            this._files.set(file.name, file);
+            this.requestUpdate();
+
             if (this.minApiVersion('1.0.0') && this.target) {
-                event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
+                file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
             }
         });
         uploader.addEventListener('upload-request', (event) => {
@@ -57,9 +71,10 @@ export class PbUpload extends pbMixin(LitElement) {
             }
         });
         uploader.addEventListener('upload-error', (event) => {
+            this.emitTo('pb-end-update');
             // eslint-disable-next-line no-param-reassign
             event.detail.file.error = event.detail.xhr.responseText;
-            this.emitTo('pb-end-update');
+            this.requestUpdate();
         });
         uploader.addEventListener('upload-success', () => {
             let done = true;
@@ -70,6 +85,7 @@ export class PbUpload extends pbMixin(LitElement) {
                 } else if (/^.*\.odd$/.test(file.name)) {
                     oddsUploaded.push(file.name);
                 }
+                this.requestUpdate();
             });
             if (done) {
                 this.emitTo('pb-end-update');
@@ -94,7 +110,67 @@ export class PbUpload extends pbMixin(LitElement) {
                 with-credentials>
                 <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
                 <paper-button id="uploadBtn" slot="add-button">${translate('upload.upload')}</paper-button>
+                <div slot="file-list">
+                    <ul>
+                    ${
+                        this._files.size > 0 ? html`
+                            <li class="close">
+                                <paper-icon-button icon="icons:clear" @click="${this.clearList}"></paper-icon-button>
+                            </li>` : ''
+                    }
+                    ${ this.renderFiles() }
+                    </ul>
+                </div>
             </vaadin-upload>
+        `;
+    }
+
+    renderFiles() {
+        const rows = [];
+        for (const file of this._files.values()) {
+            let icon = 'icons:hourglass-empty';
+            if (file.complete) {
+                icon = 'icons:check';
+            } else if (file.error || file.aborted) {
+                icon = 'icons:error-outline';
+            }
+            const link = /.docx/.test(file.name) ? `${file.name}.xml` : file.name;
+            rows.push(html`
+                <li>
+                    <iron-icon icon="${icon}"></iron-icon>
+                    ${ file.error ? file.name : html`<a href="${this.target}/${link}">${file.name}</a>` }
+                </li>
+            `);
+            if (file.error) {
+                rows.push(html`
+                    <li class="error" part="error">${JSON.parse(file.error).description}</li>
+                `);
+            }
+        }
+        return rows;
+    }
+
+    clearList() {
+        this._files.clear();
+        this.requestUpdate();
+    }
+
+    static get styles() {
+        return css`
+            ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            li {
+                margin-top: 8px;
+            }
+            .close {
+                text-align: right;
+            }
+            .error {
+                color: red;
+            }
         `;
     }
 }
