@@ -310,12 +310,12 @@ export class PbLoad extends pbMixin(LitElement) {
         if (this.fixLinks) {
             content.querySelectorAll('img').forEach((image) => {
                 const oldSrc = image.getAttribute('src');
-                const src = new URL(oldSrc, this.getURL());
+                const src = new URL(oldSrc, `${this.getEndpoint()}/`);
                 image.src = src;
             });
             content.querySelectorAll('a').forEach((link) => {
                 const oldHref = link.getAttribute('href');
-                const href = new URL(oldHref, this.getURL());
+                const href = new URL(oldHref, `${this.getEndpoint()}/`);
                 link.href = href;
             });
         }

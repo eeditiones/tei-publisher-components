@@ -160,7 +160,6 @@ export class PbBrowseDocs extends PbLoad {
             } else {
                 loader.url = `${options.endpoint}/modules/autocomplete.xql`;
             }
-            console.log('setting loader url to %s', loader.url);
         });
         this.shadowRoot.getElementById('autocomplete').addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
