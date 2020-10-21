@@ -14,11 +14,14 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
+      - name: npm install and build
+        run: /
+          npm ci
+          npm run build:production
       - name: Build docker image
         run: docker build -t exist-db -f Dockerfile .
       - name: Start docker image
         run: docker run --publish 8080:8080 --detach exist-db
-      - run: npm ci
       - run: npm test
       - run: npx semantic-release
         env:
