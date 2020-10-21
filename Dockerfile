@@ -30,6 +30,10 @@ RUN wget http://www-us.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bi
 
 ENV PATH ${PATH}:${ANT_HOME}/bin
 
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs \
+    && curl -L https://www.npmjs.com/install.sh | sh
+
 FROM builder as tei
 # add key
 RUN  mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
@@ -47,9 +51,16 @@ RUN  git clone https://github.com/eeditiones/oas-router.git \
 # Build tei-publisher-app
 RUN  git clone https://github.com/eeditiones/tei-publisher-app.git \
     && cd tei-publisher-app \
-    && git checkout ${PUBLISHER_VERSION}
+    && git checkout ${PUBLISHER_VERSION} \
+    # if you prefer to have webcomponents included locally, comment out following line and
+    # enable the ones below
+    && sed -i 's/$config:webcomponents :=.*;/$config:webcomponents := "local";/' modules/config.xqm \
+    && ant -Dnpm=npm xar-local
 
 WORKDIR /tmp/tei-publisher-app
+
+COPY dist/*.js resources/scripts/
+COPY i18n/common/* resources/i18n/common/
 
 RUN ant
 
