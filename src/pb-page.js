@@ -187,13 +187,18 @@ class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
+        // try to figure out what version of TEI Publisher the server is running
         if (!this.apiVersion) {
-            const json = await fetch(`${this.endpoint}/api/version`)
+            // first check if it has a login endpoint, i.e. runs a version < 7
+            // this is necessary to prevent a CORS failure
+            const json = await fetch(`${this.endpoint}/login`)
             .then((res) => {
-                if (!res.ok) {
-                    throw new Error('request failed');
+                if (res.ok) {
+                    return null;
                 }
-                return res.json();
+                // if not, access the actual /api/version endpoint to retrieve the API version
+                return fetch(`${this.endpoint}/api/version`)
+                    .then((res2) => res2.json());
             })
             .catch(() => null)
             
