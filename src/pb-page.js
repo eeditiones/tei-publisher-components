@@ -204,7 +204,7 @@ class PbPage extends pbMixin(LitElement) {
             
             if (json) {
                 this.apiVersion = json.api;
-                console.log('<pb-page> Server reports API version %s', this.apiVersion);
+                console.log(`<pb-page> Server reports API version ${this.apiVersion} with app ${json.app.name}/${json.app.version} running on ${json.engine.name}/${json.engine.version}`);
             } else {
                 console.log('<pb-page> No API version reported by server, assuming 0.9.0');
                 this.apiVersion = '0.9.0';

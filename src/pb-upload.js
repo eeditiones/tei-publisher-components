@@ -134,11 +134,17 @@ export class PbUpload extends pbMixin(LitElement) {
             } else if (file.error || file.aborted) {
                 icon = 'icons:error-outline';
             }
-            const link = /.docx/.test(file.name) ? `${file.name}.xml` : file.name;
+            const fileName = /.docx/.test(file.name) ? `${file.name}.xml` : file.name;
+            let link;
+            if (this.target) {
+                link = `${this.target}/${fileName}`;
+            } else {
+                link = fileName;
+            }
             rows.push(html`
                 <li>
                     <iron-icon icon="${icon}"></iron-icon>
-                    ${ file.error ? file.name : html`<a href="${this.target}/${link}">${file.name}</a>` }
+                    ${ file.error ? file.name : html`<a href="${link}">${file.name}</a>` }
                 </li>
             `);
             if (file.error) {
