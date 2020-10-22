@@ -157,8 +157,14 @@ export class PbBrowseDocs extends PbLoad {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             if (cmpVersion(options.apiVersion, '1.0.0') >= 0) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
+                if (!this.url) {
+                    this.url = 'api/collection';
+                }
             } else {
                 loader.url = `${options.endpoint}/modules/autocomplete.xql`;
+                if (!this.url) {
+                    this.url = 'collection/';
+                }
             }
         });
         this.shadowRoot.getElementById('autocomplete').addEventListener('autocomplete-change', this._autocomplete.bind(this));
