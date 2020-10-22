@@ -25,14 +25,22 @@ export class PbGeolocation extends PbHighlight {
              */
             label: {
                 type: String
+            },
+            event: {
+                type: String
             }
         };
+    }
+
+    constructor() {
+        super();
+        this.event = 'mouseover';
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        this.addEventListener('mouseover', () =>
+        this.addEventListener(this.event, () =>
             this.emitTo('pb-geolocation', {
                 coordinates: {
                     latitude: this.latitude,
@@ -51,6 +59,7 @@ export class PbGeolocation extends PbHighlight {
         return css`
             :host {
                 display: inline;
+                cursor: pointer;
             }
 
             @keyframes keyFrameBackgroundColorIn {

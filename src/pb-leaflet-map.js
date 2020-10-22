@@ -32,6 +32,13 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'access-token'
             },
+            /**
+             * If enabled, the map will remain invisible until an event is received from `pb-geolocation`.
+             * In this case the map also offers a close button to hide it again.
+             */
+            toggle: {
+                type: Boolean
+            },
             imagesPath: {
                 type: String,
                 attribute: 'images-path'
@@ -59,6 +66,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this._markers = [];
         this.imagesPath = '../images/leaflet/';
         this.cssPath = '../css/leaflet/';
+        this.toggle = false;
     }
 
     connectedCallback() {
@@ -117,6 +125,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             if (ev.detail.coordinates) {
                 this.latitude = ev.detail.coordinates.latitude;
                 this.longitude = ev.detail.coordinates.longitude;
+                if (this.toggle) {
+                    this.style.visibility = 'visible';
+                }
                 this._locationChanged();
             }
         });
@@ -124,6 +135,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
     firstUpdated() {
         this._initMap();
+        if (this.toggle) {
+            this._hide();
+        }
     }
 
     render() {
@@ -143,6 +157,17 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             #map {
                 width: 100%;
                 height: 100%;
+            }
+
+            .close {
+                border-radius: 4px;
+                background-color: #fff;
+                color: inherit;
+                padding: 8px;
+                font-size: 18px;
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
             }
         `;
     }
@@ -175,10 +200,12 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         //     maxZoom: 18,
         //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         // }).addTo(this._map);
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
             maxZoom: 18,
-            id: 'mapbox.streets',
+            zoomOffset: -1,
+            tileSize: 512,
+            id: 'mapbox/streets-v11',
             accessToken: this.accessToken
         }).addTo(this._map);
         // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -186,6 +213,27 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         // }).addTo(this._map);
 
         L.control.scale().addTo(this._map);
+
+        if (this.toggle) {
+            let container;
+            L.Control.CloseButton = L.Control.extend({
+                options: {
+                    position: 'topright'
+                },
+                onAdd: (map) => {
+                    container = L.DomUtil.create('div');
+                    container.className = 'close';
+                    container.innerHTML = 'X';
+                    L.DomEvent.on(container, 'click', this._hide.bind(this));
+                    return container;
+                },
+                onRemove: (map) => {
+                    L.DomEvent.off(container, 'click', this._hide.bind(this));
+                }
+            });
+            L.control.closeButton = (options) => new L.Control.CloseButton(options);
+            L.control.closeButton({ position: 'topright' }).addTo(this._map);
+        }
     }
 
     _locationChanged() {
@@ -200,6 +248,10 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             })
             this._map.setView(coords, this.zoom);
         }
+    }
+
+    _hide(ev) {
+        this.style.visibility = 'hidden';
     }
 }
 customElements.define('pb-leaflet-map', PbLeafletMap);
