@@ -746,7 +746,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
 
-    async _handleElementSpecResponse(req) {
+    _handleElementSpecResponse(req) {
         const identNew = this.shadowRoot.getElementById('identNew');
 
         const data = req.response;
@@ -769,14 +769,15 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
         this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
-        await this.update();
-        const elem = this.shadowRoot.querySelectorAll('paper-item');
-        const idx = this.elementSpecs.indexOf(newSpec);
+        this.requestUpdate().then(() => {
+            const elem = this.shadowRoot.querySelectorAll('paper-item');
+            const idx = this.elementSpecs.indexOf(newSpec);
 
-        this._updateAutoComplete();
+            this._updateAutoComplete();
 
-        elem[idx].click();
-        elem[idx].focus();
+            elem[idx].click();
+            elem[idx].focus();
+        });
     }
 
     removeElementSpec(ev) {
@@ -886,7 +887,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     save(e) {
         document.dispatchEvent(new CustomEvent('pb-start-update'));
         const data = this.serializeOdd()
-        //console.log('serialised ODD:', data)
+        console.log('serialised ODD:', data)
 
         this.shadowRoot.getElementById('dialog').show(i18n("odd.editor.save"), i18n('odd.editor.saving'));
 
