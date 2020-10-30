@@ -41,6 +41,7 @@
     "view-type": "Page View",
     "add-panel": "Add View",
     "caveat-heading": "Caveat",
+    "settings": "Settings",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "Sort by",
     "filter": "Filter by",
+    "filterPlaceholder": "Filter",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
     "title": "Title",
