@@ -22,7 +22,7 @@ export class PbLoad extends pbMixin(LitElement) {
         return {
             ...super.properties,
             /** The URL for the AJAX request. If a relative URL is passed, it will be resolved
-             * either against the app root (if known) or the location of the webcomponent.
+             * against the current API endpoint.
              */
             url: {
                 type: String
@@ -97,7 +97,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        this.subscribeTo(this.event, function (ev) {
+        this.subscribeTo(this.event, (ev) => {
             if (this.history && ev.detail && ev.detail.params) {
                 const start = ev.detail.params.start;
                 if (start) {
@@ -107,17 +107,19 @@ export class PbLoad extends pbMixin(LitElement) {
                     });
                 }
             }
-            this.load(ev);
-        }.bind(this));
+            PbLoad.waitOnce('pb-page-ready', () => {
+                this.load(ev);
+            });
+        });
 
         if (this.history) {
-            window.addEventListener('popstate', function (ev) {
+            window.addEventListener('popstate', (ev) => {
                 ev.preventDefault();
                 if (ev.state && ev.state.start && ev.state.start !== this.start) {
                     this.start = ev.state.start;
                     this.load();
                 }
-            }.bind(this));
+            });
         }
 
         this.subscribeTo('pb-toggle', ev => {
@@ -184,7 +186,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 return param;
             });
         }
-        return `${this.getEndpoint()}/${url}`;
+        return this.toAbsoluteURL(url);
     }
 
     load(ev) {
