@@ -389,6 +389,7 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     _onLoad(content) {
+        window.scrollTo(0, 0);
         const div = content.querySelector('[data-root]');
         const collection = div && div.getAttribute('data-root');
         const writable = div && div.classList.contains('writable');
