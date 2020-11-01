@@ -13,6 +13,9 @@ import '@polymer/paper-icon-button';
  * @fires pb-load - Fired after the upload has completed
  * @fires pb-collection - when received, sets the upload collection to the one passed from the event
  * @fires pb-refresh-odds - Fired if an ODD file was uploaded
+ * 
+ * @cssprop [--pb-upload-button-icon=icons:file-upload] - icon to show in the upload button
+ * @cssprop [--pb-upload-drop-icon] - icon to show next to the drop label text (none by default)
  */
 export class PbUpload extends pbMixin(LitElement) {
     static get properties() {
@@ -105,11 +108,17 @@ export class PbUpload extends pbMixin(LitElement) {
     }
 
     render() {
+        const uploadIcon = this._getCSSProperty('--pb-upload-button-icon', 'icons:file-upload');
+        const dropLabelIcon = this._getCSSProperty('--pb-upload-drop-icon', null);
         return html`
             <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
                 with-credentials>
+                ${ dropLabelIcon ? html`<iron-icon slot="drop-label-icon" icon="${dropLabelIcon}"></iron-icon>` : html`<span slot="drop-label-icon"></span>` }
                 <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
-                <paper-button id="uploadBtn" slot="add-button">${translate('upload.upload')}</paper-button>
+                <paper-button id="uploadBtn" slot="add-button">
+                    ${ uploadIcon ? html`<iron-icon icon="${uploadIcon}"></iron-icon>` : null }
+                    ${translate('upload.upload')}
+                </paper-button>
                 <div slot="file-list">
                     <ul>
                     ${
@@ -161,6 +170,18 @@ export class PbUpload extends pbMixin(LitElement) {
         this.requestUpdate();
     }
 
+    _getCSSProperty(name, defaultValue) {
+        const property = getComputedStyle(this).getPropertyValue(name);
+        if (property) {
+            try {
+                return JSON.parse(property);
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
     static get styles() {
         return css`
             ul {
@@ -176,6 +197,9 @@ export class PbUpload extends pbMixin(LitElement) {
             }
             .error {
                 color: red;
+            }
+            #uploadBtn iron-icon {
+                padding-right: 8px;
             }
         `;
     }
