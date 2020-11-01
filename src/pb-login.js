@@ -16,6 +16,8 @@ import { minVersion } from './utils.js';
  * @slot information - Additional information to be presented on the login dialog
  * @fires pb-login - Sends results of checking user credentials
  * @cssprop --pb-login-link-color - Color of the link text
+ * @csspart message-invalid - Block displayed if login is invalid
+ * @csspart group-invalid - Text displayed if login is invalid concerning group
  */
 export class PbLogin extends pbMixin(LitElement) {
     static get properties() {
@@ -150,8 +152,7 @@ export class PbLogin extends pbMixin(LitElement) {
                     <slot name="information"></slot>
                     ${this._invalid ?
                 html`
-                            <p id="message">${translate('login.invalid')}
-                            ${this.group ? html`(${translate('login.requiredGroup', { group: this.group })})` : null}
+                            <p id="message" part="message-invalid">${translate('login.invalid')}<span part="group-invalid">${this.group ? html` (${translate('login.requiredGroup', { group: this.group })})` : null}</span>.
                             </p>
                         `: null
             }
