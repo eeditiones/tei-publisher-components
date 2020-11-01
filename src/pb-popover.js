@@ -285,7 +285,6 @@ export class PbPopover extends pbMixin(LitElement) {
                     display: inline;
                     color: inherit;
                     text-decoration: var(--pb-popover-link-decoration, var(--pb-link-text-decoration, inherit));
-                    cursor: text;
                 }
                 #link.persistent {
                     cursor: pointer;
