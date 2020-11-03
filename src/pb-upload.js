@@ -90,6 +90,7 @@ export class PbUpload extends pbMixin(LitElement) {
 
     render() {
         return html`
+            <slot></slot>
             <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
                 with-credentials>
                 <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
