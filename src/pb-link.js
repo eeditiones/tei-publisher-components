@@ -89,7 +89,8 @@ export class PbLink extends pbMixin(LitElement) {
         };
         if (this.xmlId) {
             params.id = this.xmlId;
-            this.history && this.setParameter('id', this.xmlId);
+            console.log('link setURL %s', this.xmlId);
+            this.history && this.setURL(this.xmlId);
         } else if (this.nodeId) {
             params.position = this.nodeId;
             this.history && this.setParameter('root', this.nodeId);

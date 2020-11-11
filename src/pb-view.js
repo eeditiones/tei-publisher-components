@@ -336,6 +336,7 @@ export class PbView extends pbMixin(LitElement) {
             const id = this.getParameter('id');
             if (id && !this.xmlId) {
                 this.xmlId = id;
+                console.log('connected with xml-id set to %s', this.xmlId);
             }
 
             const action = this.getParameter('action');
@@ -635,9 +636,13 @@ export class PbView extends pbMixin(LitElement) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
+
         if (!this.disableHistory && this.xmlId && !this.map) {
+            console.log('set URL %o', this.xmlId);
+            console.log('previous: %s, next: %s', this.previousId, this.nextId);
             //this.setParameter('root', this.nodeId);
-            this.setParameter('id', this.xmlId);
+            //this.setParameter('id', this.xmlId);
+            this.setURL((typeof this.xmlId) == "array" ? this.xmlId[0] : this.xmlId);
             this.pushHistory('Navigate to xml:id');
         }
         this.xmlId = null;
@@ -928,12 +933,17 @@ export class PbView extends pbMixin(LitElement) {
      */
     navigate(direction) {
         this.lastDirection = direction;
+        console.log('navigate %s', direction);
+
 
         if (direction === 'backward') {
             if (this.previous) {
+                console.log('navigage backward to %s', this.previousId);
+
                 if (!this.disableHistory && !this.map) {
                     if (this.previousId) {
-                        this.setParameter('id', this.previousId);
+                        //this.setParameter('id', this.previousId);
+                        this.setURL(this.previousId);
                     } else {
                         this.setParameter('root', this.previous);
                     }
@@ -942,9 +952,14 @@ export class PbView extends pbMixin(LitElement) {
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
+            console.log('navigage forward to %s', this.nextId);
+
             if (!this.disableHistory && !this.map) {
                 if (this.nextId) {
-                    this.setParameter('id', this.nextId);
+                    //this.setParameter('id', this.nextId);
+                    this.setURL(this.nextId);
+                    console.log('navigate forward to %s', this.nextId);
+
                 } else {
                     this.setParameter('root', this.next);
                 }

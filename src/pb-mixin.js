@@ -420,6 +420,11 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return fallback;
     }
 
+    setURL(id) {
+        TeiPublisher.url.pathname = TeiPublisher.url.pathname.replace(/^(.*)\/[^\/]+/, `$1/${id}`);
+        console.log('new URL %s', TeiPublisher.url.pathname);
+    }
+
     getParameterValues(name) {
         return TeiPublisher.url.searchParams.getAll(name);
     }
