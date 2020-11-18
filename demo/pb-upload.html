@@ -4,12 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
-    <title>pb-svg Demo</title>
+    <title>pb-upload Demo</title>
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-upload.js"></script>
     <script type="module" src="../src/pb-select.js"></script>
+    <script type="module" src="../src/pb-login.js"></script>
+    <script type="module" src="../src/pb-restricted.js"></script>
     <!--/scripts-->
 </head>
 
@@ -18,12 +23,33 @@
         <template>
             <style>
                 body {
+                    font-family: "Roboto", Verdana, "Helvetica", sans-serif;
                 }
             </style>
         </template>
-        <pb-upload>
+        <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
 
-        </pb-upload>
+            <h1>Upload Demo</h1>
+            <p>You need to login to be able to upload file(s)</p>
+
+            <pb-login id="loginElem" group="tei"></pb-login>
+
+            <h2>Standard upload will store uploaded file(s) in default collection</h2>
+
+            <pb-restricted login="loginElem" canWrite>
+                <pb-upload accept="text/xml"></pb-upload>
+            </pb-restricted>
+
+            <h2>Upload with explicit target URL</h2>
+            <p>DOI registration needs to set 'availability' as a param</p>
+            <pb-upload accept="text/xml" target="http://localhost:8080/exist/apps/tei-publisher/api/upload"></pb-upload>
+
+            <h2>Upload with <a href="https://doi.org" target="_blank">DOI</a> registration</h2>
+            <div style="width:400px;">
+                <pb-upload accept="text/xml" target="http://localhost:8080/exist/apps/tei-publisher/api/upload" registerdoi></pb-upload>
+            </div>
+
+        </pb-page>
     </pb-demo-snippet>
 </body>
 

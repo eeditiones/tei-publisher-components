@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import "./pb-select.js";
 import '@vaadin/vaadin-upload';
 import '@polymer/paper-button';
 
@@ -29,8 +30,21 @@ export class PbUpload extends pbMixin(LitElement) {
              */
             accept: {
                 type: String
+            },
+            /**
+             * optional boolean value to trigger DOI registration
+             * for uploaded files
+             */
+            registerDOI:{
+                type:Boolean,
+                attribute:"registerdoi"
             }
         };
+    }
+
+    constructor() {
+        super();
+        this.registerDOI = false;
     }
 
     connectedCallback() {
@@ -47,9 +61,10 @@ export class PbUpload extends pbMixin(LitElement) {
         const uploader = this.shadowRoot.getElementById('uploader');
         uploader.addEventListener('upload-before', (event) => {
             this.emitTo('pb-start-update');
-            if (this.minApiVersion('1.0.0') && this.target) {
-                event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
-            }
+            // if (this.minApiVersion('1.0.0') && this.target) {
+            //     event.detail.file.uploadTarget = `${uploader.target}${encodeURIComponent(this.target)}`;
+            // }
+            // this.target = encodeURIComponent(this.target);
         });
         uploader.addEventListener('upload-request', (event) => {
             if (this.target && this.lessThanApiVersion('1.0.0')) {
@@ -81,17 +96,49 @@ export class PbUpload extends pbMixin(LitElement) {
         });
         PbUpload.waitOnce('pb-page-ready', () => {
             if (this.minApiVersion('1.0.0')) {
-                uploader.target = `${this.getEndpoint()}/api/upload/`;
+                if(this.registerDOI){
+                    // uploader.target = `${this.getEndpoint()}/api/upload/doi/`;
+                    this.target = `${this.getEndpoint()}/api/upload/doi/`;
+                }else{
+                    // uploader.target = `${this.getEndpoint()}/api/upload/`;
+                    this.target = `${this.getEndpoint()}/api/upload/`;
+                }
             } else {
                 uploader.target = `${this.getEndpoint()}/modules/lib/upload.xql`;
             }
         });
+
+        if(this.registerDOI){
+            const availability = this.shadowRoot.getElementById('availability');
+            availability.addEventListener('change', e => {
+               console.log('availability change ', e);
+               console.log('availability change ', availability.value);
+
+               if(this.target.endsWith('/')) {
+                   this.target += availability.value;
+               }else{
+                   const root = this.target.substring(0,this.target.lastIndexOf('/')+1);
+                   console.log('root path ', root);
+                   this.target = root + availability.value;
+               }
+            });
+        }
     }
 
     render() {
         return html`
-            <slot></slot>
-            <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
+            ${this.registerDOI?
+            html`
+                <pb-select id="availability" label="Availability">
+                    <paper-item value="Download">Download</paper-item>
+                    <paper-item value="Delivery">Delivery</paper-item>
+                    <paper-item value="OnSite">OnSite</paper-item>
+                    <paper-item value="NotAvailable">NotAvailable</paper-item>
+                    <paper-item value="Unknown">Unknown</paper-item>
+                </pb-select>
+            `: ''}
+
+            <vaadin-upload id="uploader" target="${this.target}" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
                 with-credentials>
                 <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
                 <paper-button id="uploadBtn" slot="add-button">${translate('upload.upload')}</paper-button>
