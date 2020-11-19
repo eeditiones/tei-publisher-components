@@ -119,7 +119,9 @@
       "create": "Create",
       "create-from-example": "Create from examples",
       "delete": "Are you sure you want to delete the ODD file {{file}}?",
-      "regenerate-all": "Regenerate All ODDs (Slow)"
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",

@@ -237,9 +237,9 @@ export class PbManageOdds extends pbMixin(LitElement) {
             <pb-restricted login="login">
                 <form action="" method="GET">
                     <paper-input name="new_odd" label="${translate('odd.manage.filename')}" required auto-validate pattern="[a-zA-Z0-9-_]+"
-                        error-message="Required. Use letters, numbers, - and _"></paper-input>
+                        error-message="${translate('odd.manage.filename-error')}"></paper-input>
                     <paper-input name="title" label="${translate('odd.manage.title')}" auto-validate required minlength="1"
-                        error-message="A title is required"></paper-input>
+                        error-message="${translate('odd.manage.title-error')}"></paper-input>
                     <paper-button id="createBtn" @click="${this._createODD}">
                         <iron-icon icon="create"></iron-icon>${translate('odd.manage.create')}
                     </paper-button>
