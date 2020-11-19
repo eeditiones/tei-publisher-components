@@ -88,6 +88,10 @@
       "hide": "Close Editor"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Login",
     "as": "Logged in as {{user}}",
