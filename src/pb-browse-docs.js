@@ -64,6 +64,9 @@ export class PbBrowseDocs extends PbLoad {
             filterByLabel: {
                 type: String
             },
+            filterPlaceholderLabel: {
+                type: String
+            },
             collection: {
                 type: String
             },
@@ -109,6 +112,8 @@ export class PbBrowseDocs extends PbLoad {
             }
         ];
         this.filterByLabel = 'browse.filter';
+        this.filterPlaceholderLabel = 'browse.filterPlaceholder';
+
         this.filterBy = 'title';
         this._allowModification = false;
         this._suggestions = [];
@@ -214,7 +219,7 @@ export class PbBrowseDocs extends PbLoad {
         )}
                         </paper-listbox>
                     </paper-dropdown-menu>
-                    <paper-input id="filterString" type="search" name="filter" label="Filter" value="${this.filter}"
+                    <paper-input id="filterString" type="search" name="filter" label="${translate(this.filterPlaceholderLabel)}" value="${this.filter}"
                         @keyup="${this._handleEnter}" part="filter-input">
                         <iron-icon icon="search" @click="${this._filter}" slot="prefix"></iron-icon>
                     </paper-input>
