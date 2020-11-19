@@ -22,7 +22,8 @@ export class PbUpload extends pbMixin(LitElement) {
              * the server-side script to handle the upload
              */
             target: {
-                type: String
+                type: String,
+                reflect:true
             },
             /**
              * a comma-separated list of file suffixes to accept for upload
@@ -98,7 +99,8 @@ export class PbUpload extends pbMixin(LitElement) {
             if (this.minApiVersion('1.0.0')) {
                 if(this.registerDOI){
                     // uploader.target = `${this.getEndpoint()}/api/upload/doi/`;
-                    this.target = `${this.getEndpoint()}/api/upload/doi/`;
+                    this.target = `${this.getEndpoint()}/api/doi/upload`;
+                    this.basePath = this.target;
                 }else{
                     // uploader.target = `${this.getEndpoint()}/api/upload/`;
                     this.target = `${this.getEndpoint()}/api/upload/`;
@@ -111,16 +113,7 @@ export class PbUpload extends pbMixin(LitElement) {
         if(this.registerDOI){
             const availability = this.shadowRoot.getElementById('availability');
             availability.addEventListener('change', e => {
-               console.log('availability change ', e);
-               console.log('availability change ', availability.value);
-
-               if(this.target.endsWith('/')) {
-                   this.target += availability.value;
-               }else{
-                   const root = this.target.substring(0,this.target.lastIndexOf('/')+1);
-                   console.log('root path ', root);
-                   this.target = root + availability.value;
-               }
+               this.target = `${this.basePath}?availability=${availability.value}`;
             });
         }
     }
