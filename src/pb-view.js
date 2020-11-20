@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbMixin } from "./pb-mixin.js";
+import { getParameter, setParameter, pushHistory } from "./urls.js";
+import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
@@ -371,17 +372,17 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         if (!this.disableHistory) {
-            const id = this.getParameter('id');
+            const id = getParameter('id');
             if (id && !this.xmlId) {
                 this.xmlId = id;
             }
 
-            const action = this.getParameter('action');
+            const action = getParameter('action');
             if (action && action === 'search') {
                 this.highlight = true;
             }
 
-            const nodeId = this.getParameter('root');
+            const nodeId = getParameter('root');
             if (this.view === 'single') {
                 this.nodeId = null;
             } else if (nodeId && !this.nodeId) {
@@ -740,9 +741,9 @@ export class PbView extends pbMixin(LitElement) {
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
         if (!this.disableHistory && this.xmlId && !this.map) {
-            //this.setParameter('root', this.nodeId);
-            this.setParameter('id', this.xmlId);
-            this.pushHistory('Navigate to xml:id');
+            //setParameter('root', this.nodeId);
+            setParameter('id', this.xmlId);
+            pushHistory('Navigate to xml:id');
         }
         this.xmlId = null;
 
@@ -1064,22 +1065,22 @@ export class PbView extends pbMixin(LitElement) {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
                     if (this.previousId) {
-                        this.setParameter('id', this.previousId);
+                        setParameter('id', this.previousId);
                     } else {
-                        this.setParameter('root', this.previous);
+                        setParameter('root', this.previous);
                     }
-                    this.pushHistory('Navigate backward');
+                    pushHistory('Navigate backward');
                 }
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
                 if (this.nextId) {
-                    this.setParameter('id', this.nextId);
+                    setParameter('id', this.nextId);
                 } else {
-                    this.setParameter('root', this.next);
+                    setParameter('root', this.next);
                 }
-                this.pushHistory('Navigate forward');
+                pushHistory('Navigate forward');
             }
             this._load(this.next, direction);
         }

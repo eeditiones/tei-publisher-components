@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
+import { getParameter, setURLTemplate } from "./urls.js";
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
@@ -42,6 +43,10 @@ class PbPage extends pbMixin(LitElement) {
              */
             template: {
                 type: String
+            },
+            urlTemplate: {
+                type: String,
+                attribute: 'url-template'
             },
             /**
              * The base URL of the TEI Publisher instance. All nested elements will
@@ -174,17 +179,25 @@ class PbPage extends pbMixin(LitElement) {
             return;
         }
 
+        if (!this.appRoot) {
+            this.appRoot = window.location.href;
+        }
+
+        if (this.urlTemplate) {
+            setURLTemplate(this.urlTemplate);
+        }
+
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');
         }
         this._localeFallbacks.push('common');
 
-        const target = this.getParameter('_target');
+        const target = getParameter('_target');
         if (target) {
             this.endpoint = target;
         }
 
-        const apiVersion = this.getParameter('_api');
+        const apiVersion = getParameter('_api');
         if (apiVersion) {
             this.apiVersion = apiVersion;
         }

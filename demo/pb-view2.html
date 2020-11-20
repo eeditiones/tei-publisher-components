@@ -116,7 +116,7 @@
                     margin-left: 14px;
                 }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-template="{?odd,root}{#id}">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
                     <pb-progress></pb-progress>
