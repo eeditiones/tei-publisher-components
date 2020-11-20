@@ -18,6 +18,10 @@ export class PbFacsLink extends pbMixin(LitElement) {
             coordinates: {
                 type: Array
             },
+            /** Type of event which should trigger the facsimile to display. Either 'click' or 'mouseover' */
+            trigger: {
+                type: String
+            },
             emitOnLoad: {
                 type: Boolean
             }
@@ -26,6 +30,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
     constructor() {
         super();
+        this.trigger = 'mouseover';
     }
 
     connectedCallback() {
@@ -33,13 +38,22 @@ export class PbFacsLink extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        const link = this.shadowRoot.querySelector('a');
+        switch (this.trigger) {
+            case 'click':
+                link.addEventListener('click', this._linkListener.bind(this));
+                break;
+            default:
+                link.addEventListener('mouseover', this._linkListener.bind(this));
+                break;
+        }
         if (this.emitOnLoad) {
             this._trigger();
         }
     }
 
     render() {
-        return html`<a href="#" @mouseover="${this._mouseoverListener}" @click="${(ev) => ev.preventDefault()}"><slot></slot></a>`;
+        return html`<a href="#"><slot></slot></a>`;
     }
 
     static get styles() {
@@ -54,7 +68,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         `;
     }
 
-    _mouseoverListener(ev) {
+    _linkListener(ev) {
         ev.preventDefault();
         this._trigger();
     }
