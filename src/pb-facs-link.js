@@ -18,7 +18,9 @@ export class PbFacsLink extends pbMixin(LitElement) {
             coordinates: {
                 type: Array
             },
-            /** Type of event which should trigger the facsimile to display. Either 'click' or 'mouseover' */
+            /** 
+             * Type of event which should trigger the facsimile to display. 
+             * Either 'click' or 'mouseover' (default). */
             trigger: {
                 type: String
             },
