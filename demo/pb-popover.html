@@ -43,6 +43,8 @@
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <main>
+                        <p>Qui veniam ipsum officia consequat aute nostrud sunt proident ut incididunt amet<br/>
+                            <span class="trigger" id="dolore">dolore</span>.</p>
                         <p>Lorem <pb-popover theme="material">
                             <span slot="default">ipsum dolor sit amet</span>
                             <template slot="alternate">
@@ -67,6 +69,9 @@
                         </pb-popover>
                         <pb-popover for="lorem">This popover is connected to its trigger element
                             using the 'for' attribute.</pb-popover>
+                        <pb-popover for="nested">This popover is nested into another popover.</pb-popover>
+                        <pb-popover for="dolore">This is a popover containing a link to 
+                            <span class="trigger" id="nested">another popover</span>.</pb-popover>
                     </main>
                 </pb-page>
             </template>

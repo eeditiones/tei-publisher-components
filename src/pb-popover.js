@@ -25,6 +25,8 @@ import * as themes from './pb-popover-themes.js';
  * </pb-popover>
  * ```
  * 
+ * If you would like popovers to contain nested popovers, choose approach 1 above and use `for`.
+ * 
  * If property `persistent` is true, the popover will be shown
  * on click. Otherwise display a tooltip on mouseover.
  * 
@@ -171,7 +173,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (slot) {
             const content = document.createElement('div');
             slot.assignedNodes().forEach((node) => {
-                content.appendChild(document.importNode(node.content || node, true));
+                content.appendChild(node.content ? node.content : node);
             });
             return content;
         }
