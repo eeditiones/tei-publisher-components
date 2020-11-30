@@ -102,7 +102,14 @@ export class PbLink extends pbMixin(LitElement) {
             params.odd = this.odd;
             this.history && this.setParameter('odd', this.odd);
         }
-        params.hash = this.hash;
+        if (this.hash){
+            params.hash = this.hash;
+            if (this.history) {
+                this.getUrl().hash = this.hash;
+            }
+        } else if (this.history) {
+            this.getUrl().hash = '';
+        }
         this.pushHistory('link click');
 
         this.emitTo('pb-refresh', params);

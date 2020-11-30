@@ -621,9 +621,12 @@ export class PbView extends pbMixin(LitElement) {
 
         if (this._scrollTarget) {
             this.updateComplete.then(() => {
-                const target = this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
+                const target = this.shadowRoot.getElementById(this._scrollTarget) || 
+                    this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
                 if (target) {
-                    target.scrollIntoView();
+                    setTimeout(() => {
+                        target.scrollIntoView();
+                    });
                 }
                 this._scrollTarget = null;
             });
