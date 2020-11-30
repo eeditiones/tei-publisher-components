@@ -74,6 +74,18 @@ export class PbLoad extends pbMixin(LitElement) {
             start: {
                 type: Number
             },
+            /**
+             * If set, a parameter "language" will be added to the parameter list. 
+             * Also, a refresh will be triggered if a `pb-i18n-update` event is received,
+             * e.g. due to the user selecting a different interface language.
+             * 
+             * Also requires `requireLanguage` to be set on the surrounding `pb-page`.
+             * See there for more information.
+             */
+            useLanguage: {
+                type: Boolean,
+                attribute: 'use-language'
+            },
             history: {
                 type: Boolean
             },
@@ -93,6 +105,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.history = false;
         this.event = 'pb-load';
         this.loaded = false;
+        this.language = null;
     }
 
     connectedCallback() {
@@ -126,13 +139,24 @@ export class PbLoad extends pbMixin(LitElement) {
             this.toggleFeature(ev);
         });
 
+        this.subscribeTo('pb-i18n-update', ev => {
+            const needsRefresh = this.language && this.language !== ev.detail.language;
+            this.language = ev.detail.language;
+            if (this.useLanguage && needsRefresh) {
+                this.load();
+            }
+        }, []);
+
         this.signalReady();
     }
 
     firstUpdated() {
         if (this.auto) {
             this.start = this.getParameter('start', this.start);
-            PbLoad.waitOnce('pb-page-ready', () => {
+            PbLoad.waitOnce('pb-page-ready', (data) => {
+                if (data && data.language) {
+                    this.language = data.language;
+                }
                 this.wait(() => this.load());
             });
         }
@@ -216,6 +240,10 @@ export class PbLoad extends pbMixin(LitElement) {
         // set start parameter to start property, but only if not provided otherwise already
         if (this.start && !params.start) {
             params.start = this.start;
+        }
+
+        if (this.language) {
+            params.language = this.language;
         }
 
         params = this.prepareParameters(params);
