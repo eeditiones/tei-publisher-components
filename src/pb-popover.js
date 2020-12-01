@@ -49,6 +49,8 @@ import * as themes from './pb-popover-themes.js';
  * @prop {Boolean} persistent - If true, show the popup on click instead of mouseover.
  * @prop {String} poupClass - Additional class names which will be added to the popup element.
  * Use this to apply a specific style to certain popovers, but not others.
+ * @prop {String} remote - An optional URL to asynchronously load the popover's content from. Content will
+ * be loaded after the popover is displayed. The downloaded HTML content will replace the text set via the alternate slot.
  * 
  * @slot default - the content to show for the trigger. If not specified, this will fall back to the unnamed slot.
  * @slot alternate - the content to show in the popup
@@ -84,6 +86,9 @@ export class PbPopover extends pbMixin(LitElement) {
             popupClass: {
                 type: String,
                 attribute: 'popup-class'
+            },
+            remote: {
+                type: String
             }
         };
     }
@@ -264,11 +269,30 @@ export class PbPopover extends pbMixin(LitElement) {
                 };
             }
             options.onShow = () => {
+                if (this.remote) {
+                    this._loadRemoteContent();
+                }
                 this.emitTo('pb-popover-show', { source: this });
             };
 
             this._tippy = tippy(target, options);
         }
+    }
+
+    _loadRemoteContent() {
+        const url = this.toAbsoluteURL(this.remote);
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin'
+        })
+        .then((response) => response.text())
+        .then((data) => {
+            this.alternate = data;
+        })
+        .catch((error) => {
+            console.error('<pb-popover> Error retrieving remote content: %o', error);
+        });
     }
 
     static get styles() {

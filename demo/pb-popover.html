@@ -41,7 +41,7 @@
                         font-style: italic;
                     }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint=".">
                     <main>
                         <p>Qui veniam ipsum officia consequat aute nostrud sunt proident ut incididunt amet<br/>
                             <span class="trigger" id="dolore">dolore</span>.</p>
@@ -59,6 +59,8 @@
                             erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
                             et ea rebum. <pb-popover persistent theme="light-border">Stet clita kasd gubergren<template slot="alternate"><p>A persistent tooltip</p></template></pb-popover>, no sea takimata sanctus est<br>
                             <span class="trigger" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
+                        <p>You can also load popover content asynchronously from a
+                            <pb-popover remote="popover-data.html" persistent>remote URL<span slot="alternate">Loading ...</span></pb-popover>.</p>
                         <pb-popover for="aliquyam" popup-class="info">
                             <blockquote class="note">Popover content using block level elements should be placed outside the text flow using attribute <code>for</code>
                             to link to an inline trigger element.</blockquote>
