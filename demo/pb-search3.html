@@ -18,6 +18,7 @@
     <script type="module" src="../src/pb-progress.js"></script>
     <script type="module" src="../src/pb-i18n.js"></script>
     <script type="module" src="../src/pb-select.js"></script>
+    <script type="module" src="../src/pb-custom-form.js"></script>
 
     <!--/scripts-->
 </head>
@@ -61,31 +62,14 @@
                 <pb-progress></pb-progress>
                 <main>
                     <h2>multi-select</h2>
-                    <pb-search id="search-form">
-                        <pb-select label="language" name="lang" value="en" multi="multi">
-                            <paper-item value="bg">Български</paper-item>
-                            <paper-item value="cs">český</paper-item>
-                            <paper-item value="de">Deutsch</paper-item>
-                            <paper-item value="en">English</paper-item>
-                            <paper-item value="es">Español</paper-item>
-                            <paper-item value="el">ελληνικά</paper-item>
-                            <paper-item value="fr">Français</paper-item>
-                            <paper-item value="it">Italiano</paper-item>
-                            <paper-item value="ka">ქართული</paper-item>
-                            <paper-item value="nl">Nederlands</paper-item>
-                            <paper-item value="no">Norsk</paper-item>
-                            <paper-item value="pl">Polski</paper-item>
-                            <paper-item value="pt">Português</paper-item>
-                            <paper-item value="ro">Română</paper-item>
-                            <paper-item value="ru">русский</paper-item>
-                            <paper-item value="sl">Slovenščina</paper-item>
-                            <paper-item value="sv">Svenska</paper-item>
-                            <paper-item value="tr">Türkçe</paper-item>
-                            <paper-item value="uk">Українська</paper-item>
-                        </pb-select>
-                    </pb-search>
+                    <pb-custom-form id="custom-form">
+                        <input type="text" name="custom">
+                        <button type="submit" slot="searchButton">Submit</button>
+                        <button type="reset" slot="resetButton">Reset</button>
+                    </pb-custom-form>
+                    <pb-search id="search-form" subforms="pb-custom-form"></pb-search>
                     <pb-paginate per-page="10" range="5"></pb-paginate>
-                    <pb-load url="templates/search-results.html"></pb-load>
+                    <pb-load url="api/search"></pb-load>
                 </main>
             </pb-page>
         </template>

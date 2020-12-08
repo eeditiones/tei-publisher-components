@@ -84,6 +84,9 @@ export class PbBrowseDocs extends PbLoad {
             group: {
                 type: String
             },
+            subforms: {
+                type: String
+            },
             _file: {
                 type: String
             },
@@ -314,6 +317,7 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     prepareParameters(params) {
+        params = this._paramsFromSubforms(params);
         params.sort = this.sortBy;
         if (this.filter) {
             params.filter = this.filter;
@@ -321,6 +325,17 @@ export class PbBrowseDocs extends PbLoad {
         }
         if (this.facets) {
             params = Object.assign(params, this.facets);
+        }
+        return params;
+    }
+
+    _paramsFromSubforms(params) {
+        if (this.subforms) {
+            document.querySelectorAll(this.subforms).forEach((form) => {
+                if (form.serializeForm) {
+                    Object.assign(params, form.serializeForm());
+                }
+            });
         }
         return params;
     }

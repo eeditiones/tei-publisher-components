@@ -214,6 +214,9 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     load(ev) {
+        if (!this.url) {
+            return;
+        }
         if (this.loadOnce && this.loaded) {
             return;
         }

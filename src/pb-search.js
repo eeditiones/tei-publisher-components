@@ -48,6 +48,9 @@ export class PbSearch extends pbMixin(LitElement) {
             submitOnLoad: {
                 type: Boolean,
                 attribute: 'submit-on-load'
+            },
+            subforms: {
+                type: String
             }
         };
     }
@@ -158,9 +161,10 @@ export class PbSearch extends pbMixin(LitElement) {
     }
 
     _doSearch() {
-        const json = this.shadowRoot.getElementById('ironform').serializeForm();
+        let json = this.shadowRoot.getElementById('ironform').serializeForm();
         // always start on first result after submitting new search
         json.start = 1;
+        json = this._paramsFromSubforms(json);
         this.setParameters(json);
         if (this.redirect) {
             window.location.href = this.action + TeiPublisher.url.search;
@@ -173,8 +177,19 @@ export class PbSearch extends pbMixin(LitElement) {
         }
     }
 
+    _paramsFromSubforms(params) {
+        if (this.subforms) {
+            document.querySelectorAll(this.subforms).forEach((form) => {
+                if (form.serializeForm) {
+                    Object.assign(params, form.serializeForm());
+                }
+            });
+        }
+        return params;
+    }
+
     _handleEnter(e) {
-        if (this.shadowRoot.getElementById('search').value.length != 0 && e.keyCode == 13) {
+        if (e.keyCode === 13) {
             this._doSearch();
         }
     }
