@@ -23,13 +23,23 @@ export class PbCustomForm extends PbLoad {
             ev.preventDefault();
             this._submit();
         });
+        this.addEventListener('click', (e) => {
+            if (e.target.slot === 'searchButton'){
+                this.submit();
+            }
+            if (e.target.slot === 'resetButton'){
+                this._reset();
+            }
+        });
     }
 
     render() {
         return html`
             <iron-form id="ironform">
-                <form action="" accept="text/html" method="get">
+                <form action="" accept="text/html" method="GET">
                     <slot></slot>
+                    <slot name="searchButton"></slot>
+                    <slot name="resetButton"></slot>
                 </form>
             </iron-form>
 
@@ -66,8 +76,16 @@ export class PbCustomForm extends PbLoad {
     }
 
     _submit() {
-        const json = this.shadowRoot.getElementById('ironform').serializeForm();
+        const json = this.serializeForm();
         this.emitTo('pb-search-resubmit', { 'params': json });
+    }
+
+    _reset(){
+        this.shadowRoot.getElementById('ironform').reset();
+    }
+    
+    serializeForm() {
+        return this.shadowRoot.getElementById('ironform').serializeForm();
     }
 
     _parseHeaders(xhr) {
