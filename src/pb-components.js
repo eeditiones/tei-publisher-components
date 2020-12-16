@@ -1,4 +1,5 @@
 import './pb-mixin.js';
+import './pb-events.js';
 import './pb-version.js';
 import './pb-i18n.js';
 import './pb-popover.js';

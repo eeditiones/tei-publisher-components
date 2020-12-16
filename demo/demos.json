@@ -20,7 +20,8 @@
         "demo/pb-codepen.html": "Demo"
     },
     "pb-collapse": {
-        "demo/pb-collapse.html": "Demo"
+        "demo/pb-collapse.html": "Demo",
+        "demo/pb-collapse2.html": "Custom Event Wiring"
     },
     "pb-download": {
         "demo/pb-download.html": "Demo"
