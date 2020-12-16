@@ -24,7 +24,10 @@ export class PbCustomForm extends PbLoad {
             this._submit();
         });
         this.addEventListener('click', (e) => {
-            if (e.target.slot === 'searchButton'){
+            if (e.target.slot === 'searchButtonTop'){
+                this.submit();
+            }
+            if (e.target.slot === 'searchButtonBottom'){
                 this.submit();
             }
             if (e.target.slot === 'resetButton'){
@@ -37,8 +40,9 @@ export class PbCustomForm extends PbLoad {
         return html`
             <iron-form id="ironform">
                 <form action="" accept="text/html" method="GET">
+                    <slot name="searchButtonTop"></slot>
                     <slot></slot>
-                    <slot name="searchButton"></slot>
+                    <slot name="searchButtonBottom"></slot>
                     <slot name="resetButton"></slot>
                 </form>
             </iron-form>
