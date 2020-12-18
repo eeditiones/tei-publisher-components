@@ -41,6 +41,7 @@
     "view-type": "Изглед на страница",
     "add-panel": "Добавяне на изглед",
     "caveat-heading": "Предупреждение",
+    "settings": "Settings",
     "caveat": "Експериментирайте с различни шаблони за страници и ODD само с променянето на опциите тук. Обърнете внимание, че не всяка комбинация от настройки има смисъл за всеки документ. Например не може да се получи карта без изрично кодирани и обработени координати, а изгледът по страници предполага предварителното кодиране на начало на страница. Ако виждате съобщението: „Сървърът не връща съдържание“, това обикновено е признак на подобно разминаване между кодирани данни, ODD и шаблон на страница."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "за качване на файлове или преглед на административните функции (user: 'tei-demo', password: 'demo').",
     "sort": "Сортирай по",
     "filter": "Филтрирай по",
+    "filterPlaceholder": "Filter",
     "items": "{{count}} резултат",
     "items_plural": "{{count}} резултата",
     "title": "Заглавие",
@@ -61,18 +63,22 @@
     "collections": "Локална колекция",
     "dts": "Дистибуирани текстови услуги (eкспериментално)",
     "test": {
-      "title": "Демо колекция на TEI Publisher",
-      "description": "Документи, демонстриращи различни характеристики. Селекцията в никакъв случай не е всеобхватна, но представя подмножество от всички възможности. Молим Ви да допълните с Ваши собствени образци."
+      "title": "TEI Publisher Demo Collection",
+      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
       "title": "Площадка за игра",
       "description": "Подлежаща на редактиране колекция, към която може да добавите своите документи за тестване."
     },
     "doc": {
-      "title": "Документация",
-      "description": "Документация (използва Docbook XML)."
+      "title": "Documentation",
+      "description": "Documentation (using Docbook XML)."
     },
-    "up": "Нагоре"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "Качване",
@@ -88,6 +94,10 @@
       "hide": "Затваряне на редактора"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Вписване",
     "as": "Вписан като {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "трябва да сте член на групата {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "Въвеждане на търсене",
     "sections": "Търсене в разделите",
     "headings": "Търсене в заглавията"
@@ -112,7 +124,10 @@
       "title": "Заглавие за визуализация",
       "create": "Създаване",
       "create-from-example": "Създай от образци",
-      "delete": "Наистина ли искате да изтриете ODD файла {{file}}?"
+      "delete": "Наистина ли искате да изтриете ODD файла {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "Наистина ли да се изтрие спецификацията към елемент за '{{ident}}'?",

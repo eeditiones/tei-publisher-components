@@ -41,6 +41,7 @@
     "view-type": "Visualização de página",
     "add-panel": "Adicionar Visualização",
     "caveat-heading": "Atenção",
+    "settings": "Configuração",
     "caveat": "Experimente diferentes modelos de página e ODDs alterando essas opções. Por favor, note que nem todas as combinações de configurações são apropriadas para todos os documentos. Por exemplo, um mapa não pode ser produzido sem coordenadas explicitamente codificadas e processadas, e o modo de exibição de página pressupõe que as quebras de página foram identificadas. Se você vir a mensagem \"o servidor não encontrou nenhum conteúdo\", poder ser sinal de um desalinhamento entre dados codificados, ODD e modelo de página."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "para enviar os arquivos ou ver funções administrativas (usuário padrão: 'tei-demo', senha: 'demo').",
     "sort": "Ordenar por",
     "filter": "Filtrar por",
+    "filterPlaceholder": "Filtro",
     "items": "{{count}} ítem encontrado",
     "items_plural": "{{count}} ítens encontrados",
     "title": "Título",
@@ -72,7 +74,11 @@
       "title": "Documentação",
       "description": "Documentação (usando Docbook XML)."
     },
-    "up": "Acima"
+    "markdown": {
+      "title": "Exemplo de Markdown",
+      "description": "Um exemplo de uso de markdown para conteúdo estático."
+    },
+    "up": "Voltar ao registo pai"
   },
   "upload": {
     "upload": "Fazer Upload",
@@ -88,6 +94,10 @@
       "hide": "Fechar editor"
     }
   },
+  "clipboard": {
+    "copy": "Clique para copiar para a área de transferência",
+    "paste": "Colar no campo de entrada para testar"
+  },
   "login": {
     "login": "Conectar-se",
     "as": "Conectado como {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "deve ser membro do grupo {{group}}"
   },
   "search": {
+    "search": "Buscar",
+    "reset": "Reinicializar",
     "placeholder": "Inserir Consulta",
     "sections": "Pesquisar em Secções",
     "headings": "Pesquisar títulos"
@@ -112,7 +124,10 @@
       "title": "Título para visualização",
       "create": "Criar",
       "create-from-example": "Criar a partir dos exemplos",
-      "delete": "Tem certeza que deseja eliminar o ficheiro ODD {{file}}?"
+      "delete": "Tem certeza que deseja eliminar o ficheiro ODD {{file}}?",
+      "regenerate-all": "Regenerar todos os ODDs (Lento)",
+      "filename-error": "Obrigatório. Use letras, números, - e _",
+      "title-error": "É necessário um título"
     },
     "editor": {
       "delete-spec": "Deseja realmente eliminar o especificação do elemento para '{{ident}}'?",

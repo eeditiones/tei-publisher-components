@@ -41,13 +41,15 @@
     "view-type": "Seitenansicht",
     "add-panel": "Ansicht hinzufügen",
     "caveat-heading": "Achtung",
+    "settings": "Einstellungen",
     "caveat": "Die Optionen hier erlauben es, mit verschiedenen Seitenvorlagen und ODDs zu experimentieren. Bitte beachten Sie, dass nicht jede Kombination für jedes Dokument Sinn macht. Zum Beispiel ist eine Karte nur sinnvoll, wenn Koordinaten vorhanden sind. Ebenso erfordert eine seitenweise Ansicht, dass Seitenumbrüche ausgezeichnet wurden. Die Fehlermeldung 'the server did not return any content' weißt in der Regel auf solche Unstimmigkeiten zwischen Markup, ODD und Seitenvorlage hin."
   },
   "browse": {
     "description": "Diese Anwendung dient vorrangig zum Experimentieren mit verschiedenen Dokumenten und deren Transformationen über das TEI Processing Model. Es können eigene Dateien hochgeladen und neue ODDs erstellt werden.",
-    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei-demo', Passwort: 'demo').",
+    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei', Passwort: 'simple').",
     "sort": "Sortiere nach",
     "filter": "Filtere nach",
+    "filterPlaceholder": "Filter",
     "items": "{{count}} Eintrag gefunden",
     "items_plural": "{{count}} Einträge gefunden",
     "title": "Titel",
@@ -61,8 +63,8 @@
     "collections": "Lokale Sammlung",
     "dts": "Distributed Text Services (experimentell)",
     "test": {
-      "title": "TEI Publisher Beispielsammlung",
-      "description": "Dokumente zur Demonstration diverser Features. Die Auswahl ist in keiner Weise erschöpfend, sondern zeigt nur einen kleinen Ausschnitt des Möglichen. Weitere Beispiele sind jederzeit willkommen!"
+      "title": "TEI Publisher Demo Sammlung",
+      "description": "Dokumente zur Demonstration diverser Features. Die Auswahl ist in keiner Weise erschöpfend, sondern zeigt nur einen kleinen Teil des Möglichen. Weitere Beispiele sind jederzeit willkommen!"
     },
     "playground": {
       "title": "Spielwiese",
@@ -72,7 +74,11 @@
       "title": "Dokumentation",
       "description": "Dokumentation, verfasst in Docbook XML."
     },
-    "up": "Nach oben"
+    "markdown": {
+      "title": "Markdown-Beispiel",
+      "description": "Ein Beispiel zur Verwendung von Markdown für statische Inhalte."
+    },
+    "up": "Übergeordnetes Verzeichnis"
   },
   "upload": {
     "upload": "Hochladen",
@@ -88,6 +94,10 @@
       "hide": "Editor schließen"
     }
   },
+  "clipboard": {
+    "copy": "Mit einem Klick in die Zwischenablage kopieren",
+    "paste": "Zum Testen in das Eingabefeld einfügen"
+  },
   "login": {
     "login": "Anmelden",
     "as": "Angemeldet als {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "muss Mitglied der Gruppe {{group}} sein"
   },
   "search": {
+    "search": "Suche",
+    "reset": "Zurücksetzen",
     "placeholder": "Suche nach",
     "sections": "Abschnitte durchsuchen",
     "headings": "Überschriften durchsuchen"
@@ -112,14 +124,17 @@
       "title": "Titel für die Anzeige",
       "create": "Erzeugen",
       "create-from-example": "Aus Beispielen erzeugen",
-      "delete": "Möchten Sie die ODD-Datei {{file}} wirklich löschen?"
+      "delete": "Möchten Sie die ODD-Datei {{file}} wirklich löschen?",
+      "regenerate-all": "Alle ODDs neu generieren (langsam)",
+      "filename-error": "Erforderlich. Benutze Buchstaben, Zahlen - und _",
+      "title-error": "Ein Titel ist erforderlich"
     },
     "editor": {
       "delete-spec": "Elementspezifikation für '{{ident}}' wirklich löschen?",
       "save": "Speichern",
       "saving": "Speichern ...",
       "saved": "Gespeichert",
-      "denied": "Speichern nicht möglich",
+      "denied": "Fehlende Berechtigung",
       "denied-message": "Sie haben keine Berechtigung zum Speichern von {{odd}}",
       "reload": "Neu laden",
       "reload-confirm": "Nicht gespeicherte Änderungen gehen verloren. Fortsetzen?",
@@ -148,7 +163,8 @@
         "template-placeholder": "[Code Vorlage für den Inhalt angeben]",
         "param-name-placeholder": "[Name des Parameters]",
         "empty": "[Leer]"
-      }
+      },
+      "css-source": "CSS Datei öffnen"
     }
   },
   "facets": {

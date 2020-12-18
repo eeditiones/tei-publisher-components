@@ -41,6 +41,7 @@
     "view-type": "Vizualizare pagină",
     "add-panel": "Adaugă Vedere",
     "caveat-heading": "Avertisment",
+    "settings": "Settings",
     "caveat": "Experimentați cu diferite șabloane de pagină și ODD-uri doar prin schimbarea aici a acestor opțiuni. Vă rugăm să țineți cont că nu fiecare combinație de setări are sens pentru fiecare document. De exemplu o hartă nu poate fi creeată fără a avea coordonatele codate și procesate, iar vizualizarea în mod pagină presupune că au fost marcate sfârșiturile de pagină. Dacă vedeți mesajul’serverul nu a întors nici un conținut’, acesta este in general un semn de aliniere necorespunzătoare între datele codificate, ODD și șablonul paginii."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "pentru a încărca fișiere sau a vedea funcțiile administrative (utilizator implicit: 'tei-demo', parola: 'demo').",
     "sort": "Sortare după",
     "filter": "Filtrare după",
+    "filterPlaceholder": "Filter",
     "items": "A fost găsit obiectul {{count}}",
     "items_plural": "Au fost găsite {{count}} obiecte",
     "title": "Titlu",
@@ -61,18 +63,22 @@
     "collections": "Colecție locală",
     "dts": "Servicii de Text Distribuite (Experimental)",
     "test": {
-      "title": "Colecție Demo TEI Publisher",
-      "description": "Documente demonstrând diferite caracteristici. Selecția nu este desigur exhaustivă dar prezintă o parte din posibilități. Vă rugăm să contribuiți cu use-casei personale pentru a completa selecția."
+      "title": "TEI Publisher Demo Collection",
+      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
       "title": "Spațiu de încercare",
       "description": "O colecție editabilăîn care puteți încărca propriile documente pentru testare."
     },
     "doc": {
-      "title": "Documentație",
-      "description": "Documentație (folosind Docbook XML)."
+      "title": "Documentation",
+      "description": "Documentation (using Docbook XML)."
     },
-    "up": "Sus"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "Încărcaţi",
@@ -88,6 +94,10 @@
       "hide": "Închideți Editorul"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Autentificare",
     "as": "Autentificat ca {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "trebuie să fie membru al grupului {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "Introduceți interogarea",
     "sections": "Caută secțiuni",
     "headings": "Căutați titluri"
@@ -112,7 +124,10 @@
       "title": "Titlu pentru afişare",
       "create": "Creează",
       "create-from-example": "Creați din exemple",
-      "delete": "Sunteţi sigur că doriţi să ştergeţi fişierul ODD {{file}}?"
+      "delete": "Sunteţi sigur că doriţi să ştergeţi fişierul ODD {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "Chiar doriți să ștergeți specificația elementului pentru '{{ident}}'?",

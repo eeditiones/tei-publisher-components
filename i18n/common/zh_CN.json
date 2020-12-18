@@ -41,6 +41,7 @@
     "view-type": "页面视图",
     "add-panel": "添加视图",
     "caveat-heading": "注意事项",
+    "settings": "Settings",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "排序方式",
     "filter": "筛选依据",
+    "filterPlaceholder": "Filter",
     "items": "找到 {{count}} 项",
     "items_plural": "找到 {{count}} 项",
     "title": "标题",
@@ -69,10 +71,14 @@
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "doc": {
-      "title": "文档",
-      "description": "文檔(Docbook XML格式)"
+      "title": "Documentation",
+      "description": "Documentation (using Docbook XML)."
     },
-    "up": "向上"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "上传",
@@ -88,6 +94,10 @@
       "hide": "关闭编辑器"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "登入",
     "as": "已以 {{user}} 身份登录",
@@ -97,6 +107,8 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "输入查询",
     "sections": "Search sections",
     "headings": "Search headings"
@@ -112,7 +124,10 @@
       "title": "显示的标题",
       "create": "Create",
       "create-from-example": "Create from examples",
-      "delete": "确实要删除ODD文件 {{file}}?"
+      "delete": "确实要删除ODD文件 {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "是否确定要删除元素规格 '{{ident}}'?",

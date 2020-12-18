@@ -41,6 +41,7 @@
     "view-type": "Sidevisning",
     "add-panel": "Legg til visning",
     "caveat-heading": "Pass på",
+    "settings": "Innstillinger",
     "caveat": "Utforsk forskjellige sidemaler og ODDer ved å endre disse egenskapene. Merk at ikke alle kombinasjoner av egenskaper er fornuftig for alle dokument. For eksempel vil ikke kart bli produsert uten at koordinater er riktig kodet og sidevisning avhenger av at input fil har pb-elementer. Om du ser en beskjed om at 'serveren har ikke returnert noe innhold' er det som oftest et tegn på manglende koordinering av kodet data, ODD og sidemaler."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "for å laste opp filer eller se admistrativt grensesnitt (standard bruker 'tei-demo', passord: 'demo').",
     "sort": "Sorter etter",
     "filter": "Filtrer etter",
+    "filterPlaceholder": "Filtrer",
     "items": "Fant {{count}} treff",
     "items_plural": "Fant {{count}} dokumenter",
     "title": "Tittel",
@@ -70,9 +72,13 @@
     },
     "doc": {
       "title": "Dokumentasjon",
-      "description": "Dokumentasjon (bruker Docbook XML)."
+      "description": "Dokumentasjon (ved hjelp av Docbook XML)."
     },
-    "up": "Opp"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Gå til overordnet"
   },
   "upload": {
     "upload": "Last opp",
@@ -88,6 +94,10 @@
       "hide": "Lukk editor"
     }
   },
+  "clipboard": {
+    "copy": "Klikk for å kopiere til utklippstavlen",
+    "paste": "Lim inn i inndatafeltet for å teste"
+  },
   "login": {
     "login": "Logg inn",
     "as": "Logget inn som {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "må være medlem av gruppen {{group}}"
   },
   "search": {
+    "search": "Søk",
+    "reset": "Tilbakestill",
     "placeholder": "Skriv spørring",
     "sections": "Søk seksjoner",
     "headings": "Søk i overskrifter"
@@ -112,7 +124,10 @@
       "title": "Tittel for visning",
       "create": "Opprett",
       "create-from-example": "Opprett fra eksempler",
-      "delete": "Er du sikker på at du vil slette ODD-filen {{file}}?"
+      "delete": "Er du sikker på at du vil slette ODD-filen {{file}}?",
+      "regenerate-all": "Regenerer alle ODD-filer (treigt)",
+      "filename-error": "Påkrevd. Bruk bokstaver, tall, - og _",
+      "title-error": "En tittel er påkrevd"
     },
     "editor": {
       "delete-spec": "Vil du slette element spec for '{{ident}}'?",

@@ -1,5 +1,5 @@
 {
-  "language": "Dil Seç",
+  "language": "Dil ",
   "menu": {
     "documentation": "Dökümantasyon",
     "admin": {
@@ -22,7 +22,7 @@
     }
   },
   "dialogs": {
-    "error": "Hoop",
+    "error": "Hay aksi!",
     "close": "Kapat",
     "yes": "Evet",
     "no": "hayır",
@@ -41,6 +41,7 @@
     "view-type": "Sayfa Görünümü",
     "add-panel": "Görünüm Ekle",
     "caveat-heading": "Uyarılar",
+    "settings": "Ayarlar",
     "caveat": "Burada sadece bu seçenekleri değiştiren farklı sayfa şablonları ve ODD'leri deneyin. Her ayar kombinasyonunun her belge için anlamlı olmadığını lütfen unutmayın. Örneğin, koordinatlar açıkça kodlanıp işlenmeden bir harita oluşturulamaz ve sayfa görünümünde sayfa sonları işaretlenmiş demektir. 'Sunucu herhangi bir içerik döndürmedi' iletisini görürseniz, bu genellikle kodlanmış veriler, ODD ve sayfa şablonu arasında böyle bir yanlış hizalama belirtisidir."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "dosya yüklemek veya yönetim işlevlerini görmek için (varsayılan kullanıcı: 'tei-demo', şifre: 'demo').",
     "sort": "Sıralama şekli",
     "filter": "Kriter seç",
+    "filterPlaceholder": "Filtrele",
     "items": "{{count}} öğe bulundu",
     "items_plural": "{{count}} öğe bulundu",
     "title": "Başlık",
@@ -62,17 +64,21 @@
     "dts": "Dağıtık Metin Hizmetleri (Deneysel)",
     "test": {
       "title": "TEI Yayıncı Demo Koleksiyonu",
-      "description": "Çeşitli özellikleri gösteren belgeler. Seçim hiçbir şekilde kapsamlı değildir ancak mümkün olanın bir alt kümesini temsil eder. Lütfen bunu tamamlamak için kendi kullanım durumlarınıza katkıda bulunun."
+      "description": "Çeşitli özellikleri gösteren belgeler. Seçim hiçbir şekilde kapsamlı değildir, ancak mümkün olanın bir alt kümesini temsil eder. Lütfen bunu tamamlamak için kendi kullanım senaryolarınıza katkıda bulunun.\n\n"
     },
     "playground": {
       "title": "Oyun bahçesi",
       "description": "Test için kendi belgelerinizi yükleyebileceğiniz yazılabilir bir koleksiyon."
     },
     "doc": {
-      "title": "Dökümantasyon",
+      "title": "Dokümantasyon",
       "description": "Dokümantasyon (Docbook XML kullanarak)."
     },
-    "up": "Yukarı"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Ebeveyne git"
   },
   "upload": {
     "upload": "Yükle",
@@ -88,6 +94,10 @@
       "hide": "Düzenleyiciyi kapat"
     }
   },
+  "clipboard": {
+    "copy": "Panoya kopyalamak için simgeye tıklayın",
+    "paste": "Test etmek için giriş alanına yapıştırın"
+  },
   "login": {
     "login": "Oturum Aç",
     "as": "{{user}} olarak giriş yapıldı",
@@ -97,6 +107,8 @@
     "requiredGroup": "{{group}} grubunun üyesi olmalı"
   },
   "search": {
+    "search": "Arama",
+    "reset": "Sıfırla",
     "placeholder": "Sorgu Gir",
     "sections": "Bölümleri ara",
     "headings": "Arama başlıkları"
@@ -112,7 +124,10 @@
       "title": "Görüntüleme başlığı",
       "create": "Oluştur",
       "create-from-example": "Örneklerden oluşturma",
-      "delete": "ODD Dosyasını {{file}} silmek istediğinizden emin misiniz?"
+      "delete": "ODD Dosyasını {{file}} silmek istediğinizden emin misiniz?",
+      "regenerate-all": "Tüm ODD'leri Yeniden Oluştur (Yavaş)",
+      "filename-error": "Gereklidir. Harf, rakam ve _ kullanın",
+      "title-error": "Bir başlık gereklidir"
     },
     "editor": {
       "delete-spec": "Için öğe spesifikasyonunu gerçekten silmek istiyor musunuz {{ident}}?",

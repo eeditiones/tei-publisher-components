@@ -41,6 +41,7 @@
     "view-type": "Pagina aanzicht",
     "add-panel": "Weergave Toevoegen",
     "caveat-heading": "Opmerking",
+    "settings": "Instellingen",
     "caveat": "Experimenteer met verschillende sjablonen en ODD's door de opties hier simpelweg aan te passen. Merk hierbij wel op dat niet elk type document compatibel is met elke combinatie van instellingen. Zo is het bijvoorbeeld onmogelijk om een kaart te genereren indien haar coordinaten niet eerst expliciet gecodeerd en verwerkt werden, of veronderstelt de Pagina Weergave dat het begin van nieuwe pagina's correct gemarkeerd werd in het document. Indien u het bericht 'de server heeft geen inhoud teruggestuurd' te lezen krijgt, is dat meestal een teken dat de gecodeerde data, de ODD, en/of het sjabloon niet goed op elkaar afgestemd zijn."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "om bestanden te uploaden, of administratieve functies weer te geven (standaard gebruiker: 'tei-demo', wachtwoord: 'demo').",
     "sort": "Sorteer op",
     "filter": "Filteren op",
+    "filterPlaceholder": "Filter",
     "items": "{{count}} item gevonden",
     "items_plural": "{{count}} items gevonden",
     "title": "Titel",
@@ -72,7 +74,11 @@
       "title": "Documentatie",
       "description": "Documentatie (met behulp van Docbook XML)."
     },
-    "up": "Omhoog"
+    "markdown": {
+      "title": "Markdown Voorbeeld",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "Uploaden",
@@ -88,6 +94,10 @@
       "hide": "Sluit editor"
     }
   },
+  "clipboard": {
+    "copy": "Klik op naar klembord kopiëren",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Aanmelden",
     "as": "Aangemeld als {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "moet lid zijn van de groep {{group}}"
   },
   "search": {
+    "search": "Zoek",
+    "reset": "Reset",
     "placeholder": "Voer zoekopdracht in",
     "sections": "Secties doorzoeken",
     "headings": "Zoek in Headers"
@@ -112,7 +124,10 @@
       "title": "Titel voor aanzicht",
       "create": "Aanmaken",
       "create-from-example": "Maak uit voorbeelden",
-      "delete": "Weet u zeker dat u ODD {{file}} wilt verwijderen?"
+      "delete": "Weet u zeker dat u ODD {{file}} wilt verwijderen?",
+      "regenerate-all": "Alle ODD's opnieuw genereren (Onder)",
+      "filename-error": "Vereist. Gebruik letters, cijfers, - en _",
+      "title-error": "Titel is vereist"
     },
     "editor": {
       "delete-spec": "Weet u zeker dat u de elementspecificatie voor '{{ident}}' wilt verwijderen?",

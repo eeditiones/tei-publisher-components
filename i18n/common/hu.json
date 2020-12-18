@@ -41,6 +41,7 @@
     "view-type": "Page View",
     "add-panel": "Add View",
     "caveat-heading": "Caveat",
+    "settings": "Settings",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "Sort by",
     "filter": "Filter by",
+    "filterPlaceholder": "Filter",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
     "title": "Cím",
@@ -72,7 +74,11 @@
       "title": "Documentation",
       "description": "Documentation (using Docbook XML)."
     },
-    "up": "Up"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "Upload",
@@ -88,6 +94,10 @@
       "hide": "Close Editor"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Login",
     "as": "Logged in as {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "Enter Query",
     "sections": "Search sections",
     "headings": "Search headings"
@@ -112,7 +124,10 @@
       "title": "Title for display",
       "create": "Create",
       "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "delete": "Are you sure you want to delete the ODD file {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",

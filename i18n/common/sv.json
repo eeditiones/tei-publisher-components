@@ -41,6 +41,7 @@
     "view-type": "Visa som sidor",
     "add-panel": "Lägg till vy",
     "caveat-heading": "Detaljer och egenheter",
+    "settings": "Inställningar",
     "caveat": "Ändra inställningarna här för att testa olika sidmallar och ODD-filer. Tänk på att inte alla inställningar är meningsfulla för alla typer av dokument. Till exempel förutsätter sidvyn att sidbrytningar har märkts upp och väljer du visa en karta måste koordinater läggas till och märkas upp. Om du ser meddelandet 'servern returnerade inte något innehåll'  är det troligen tt tecken  på att det saknas kodade data för ODD och sidmall."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "för att kunna ladda upp filer eller utföra administrativa uppgifter (standardanvändare: 'tei-demo', lösenord: 'demo').",
     "sort": "Sortera efter",
     "filter": "Filtrera efter",
+    "filterPlaceholder": "Filter",
     "items": "Hittade {{count}} objekt",
     "items_plural": "Hittade {{count}} objekt",
     "title": "Titel",
@@ -61,8 +63,8 @@
     "collections": "Lokal samling",
     "dts": "Distribuerade texttjänster (DTS, experimentella)",
     "test": {
-      "title": "Demosamling för TEI-publisher",
-      "description": "Dokument som visar olika funktioner. Urvalet är inte på något sätt komplett utan representerar en delmängd av vad som är möjligt. Bidra gärna med egna användningsfall för att komplettera dessa."
+      "title": "Demosamling för TEI Publisher",
+      "description": "Dokument som visar olika funktioner. Urvalet är inte fullständigt för att täcka in vad som är möjligt. Bidra med egna användningsfall för att komplettera dessa dokument."
     },
     "playground": {
       "title": "Testa med egna dokument",
@@ -72,7 +74,11 @@
       "title": "Dokumentation",
       "description": "Dokumentation (i Docbook-XML-format)."
     },
-    "up": "Uppåt"
+    "markdown": {
+      "title": "Markdown-exempel",
+      "description": "Ett exempel på hur markdown används för statiskt innehåll."
+    },
+    "up": "Tillbaka till föräldramappen"
   },
   "upload": {
     "upload": "Ladda upp",
@@ -88,6 +94,10 @@
       "hide": "Stäng redigerare"
     }
   },
+  "clipboard": {
+    "copy": "Klicka på ikonen för att kopiera till urklipp",
+    "paste": "Klistra in i inmatningsfältet för att testa"
+  },
   "login": {
     "login": "Logga in",
     "as": "Inloggad som {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "måste vara medlem i grupp {{group}}"
   },
   "search": {
+    "search": "Sök",
+    "reset": "Återställ",
     "placeholder": "Ange sökfråga",
     "sections": "Sök i avdelningar",
     "headings": "Sök i rubriker"
@@ -112,7 +124,10 @@
       "title": "Titel för visning",
       "create": "Skapa",
       "create-from-example": "Skapa från exempel",
-      "delete": "Är du säker på att du vill ta bort ODD-filen {{file}}?"
+      "delete": "Är du säker på att du vill ta bort ODD-filen {{file}}?",
+      "regenerate-all": "Återskapa alla ODD-filer (långsam)",
+      "filename-error": "Krävs. Använd bokstäver, siffror, - och _",
+      "title-error": "Titel krävs"
     },
     "editor": {
       "delete-spec": "Är du säker på att du vill ta bort elementspecifikationen för  '{ident}}'?",

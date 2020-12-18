@@ -41,6 +41,7 @@
     "view-type": "Visualizzazione pagina",
     "add-panel": "Aggiungi una visualizzazione",
     "caveat-heading": "Caveat",
+    "settings": "Opzioni",
     "caveat": "Prova diversi modelli di pagina e diverse ODD, semplicemente cambiando le impostazioni che trovi qui. Fai attenzione al fatto che non tutte le combinazioni di impostazioni funzionano su tutti i documenti. Per esempio, per visualizzare una mappa serviranno delle coordinate codificate e pre-processate a seconda dei risultati che si vogliono ottenere; la visualizzazione per pagine implica che i salti di pagina siano codificati nel testo. Se vedi il messaggio \"the server did not return any content / il server non dà risultati\" si tratta probabilmente di questo problema, cioé di una non corrispondenza tra dati codificati, ODD e modello di pagina."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "per caricare documenti o avere accesso alle funzionalità di amministrazione (utente predefinito: 'tei-demo', password: 'demo').",
     "sort": "Ordina per",
     "filter": "Filtra per",
+    "filterPlaceholder": "Filtra",
     "items": "Trovato {{count}} risultato",
     "items_plural": "Trovati {{count}} risultati",
     "title": "Titolo",
@@ -70,9 +72,13 @@
     },
     "doc": {
       "title": "Documentazione",
-      "description": "Documentation using Docbook XML."
+      "description": "Documentazione (usando Docbook XML)."
     },
-    "up": "Su"
+    "markdown": {
+      "title": "Esempio Markdown",
+      "description": "Un esempio di utilizzo di markdown per contenuto statico."
+    },
+    "up": "Sali di un livello"
   },
   "upload": {
     "upload": "Carica",
@@ -88,6 +94,10 @@
       "hide": "Chiudere l'editore"
     }
   },
+  "clipboard": {
+    "copy": "Clicca per copiare negli appunti",
+    "paste": "Incolla nel campo di input per testare"
+  },
   "login": {
     "login": "Accedi",
     "as": "Collegato come {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "deve essere membro del gruppo {{group}}"
   },
   "search": {
+    "search": "Ricerca",
+    "reset": "Reset",
     "placeholder": "Inserisci ricerca",
     "sections": "Cerca nelle sezioni",
     "headings": "Cerca nei titoli"
@@ -112,7 +124,10 @@
       "title": "Titolo da mostrare",
       "create": "Crea",
       "create-from-example": "Crea da esempi",
-      "delete": "Sei sicuro di che voler cancellare l'ODD file {{file}}?"
+      "delete": "Sei sicuro di che voler cancellare l'ODD file {{file}}?",
+      "regenerate-all": "Rigenera tutti gli ODD (lento)",
+      "filename-error": "Obbligatorio. Utilizzare lettere, numeri, - e _",
+      "title-error": "Il titolo è obbligatorio"
     },
     "editor": {
       "delete-spec": "Vuoi davvero eliminare la specificazione dell'elemento '{{ident}}'?",
