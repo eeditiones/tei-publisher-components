@@ -74,6 +74,10 @@
       "title": "Documentation",
       "description": "Documentation (using Docbook XML)."
     },
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
     "up": "Go to parent"
   },
   "upload": {
