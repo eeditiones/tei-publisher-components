@@ -41,6 +41,7 @@
     "view-type": "Zobrazení strany",
     "add-panel": "Přidat zobrazení",
     "caveat-heading": "Upozornění",
+    "settings": "Nastavení",
     "caveat": "Pohrajte si s nastavením a vyzkoušejte různé šablony stránek a ODD. Ne všechny kombinace však dávají smysl u všech dokumentů. Například pro vykreslení mapy musíte zadat souřadnice a správně je zpracovat, zobrazení strany předpokládá použití elementů pro začátek strany (&lt;pb&gt;) ap. Pokud uvidíte že, ‚server nevrátil žádný obsah‘, obvykle to znamená nesoulad mezi daty a způsobem jejich zpracování v dokumentu, zvoleným ODD a šablonou stránky."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": ", abyste mohli nahrát soubory a spravovat aplikaci (výchozí uživatel: 'tei-demo', heslo: 'demo').",
     "sort": "Řadit podle",
     "filter": "Filtrovat podle",
+    "filterPlaceholder": "Filtr",
     "items": "Nalezeno položek: {{count}}",
     "items_plural": "Nalezeno položek: {{count}}",
     "title": "Titul",
@@ -72,7 +74,11 @@
       "title": "Dokumentace",
       "description": "Dokumentace (pomocí Docbook XML)."
     },
-    "up": "Nahoru"
+    "markdown": {
+      "title": "Ukázka Markdown",
+      "description": "Příklad použití markdown pro statický obsah."
+    },
+    "up": "O úroveň výš"
   },
   "upload": {
     "upload": "Nahrát",
@@ -88,6 +94,10 @@
       "hide": "Zavřít editor"
     }
   },
+  "clipboard": {
+    "copy": "Kliknutím na ikonu zkopírujete do schránky",
+    "paste": "Pro testování vložte do vstupního pole"
+  },
   "login": {
     "login": "Přihlásit se",
     "as": "Přihlášen/a jako {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "musí být členem skupiny {{group}}"
   },
   "search": {
+    "search": "Hledat",
+    "reset": "Obnovit",
     "placeholder": "Zadejte dotaz",
     "sections": "Hledat v oddílech",
     "headings": "Hledat v nadpisech"
@@ -112,7 +124,10 @@
       "title": "Zobrazovaný titul",
       "create": "Vytvořit",
       "create-from-example": "Vytvořit z příkladů",
-      "delete": "Určitě chcete odstranit soubor ODD {{file}}?"
+      "delete": "Určitě chcete odstranit soubor ODD {{file}}?",
+      "regenerate-all": "Přegenerovat všechna ODD (pomalé)",
+      "filename-error": "Povinné. Použijte písmena, číslice, - nebo _",
+      "title-error": "Titul je povinný"
     },
     "editor": {
       "delete-spec": "Opravdu odstranit specifikaci prvku pro '{{ident}}'?",

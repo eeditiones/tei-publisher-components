@@ -40,7 +40,8 @@
     "plain": "プレーン",
     "view-type": "ページビュー",
     "add-panel": "ビューを追加する",
-    "caveat-heading": "Caveat",
+    "caveat-heading": "注意事項",
+    "settings": "Settings",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "Sort by",
     "filter": "Filter by",
+    "filterPlaceholder": "Filter",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
     "title": "タイトル",
@@ -65,14 +67,18 @@
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
     "playground": {
-      "title": "Playground",
+      "title": "プレイグラウンド",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "doc": {
       "title": "Documentation",
       "description": "Documentation (using Docbook XML)."
     },
-    "up": "Up"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "Upload",
@@ -88,6 +94,10 @@
       "hide": "Close Editor"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "Login",
     "as": "Logged in as {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "Enter Query",
     "sections": "Search sections",
     "headings": "Search headings"
@@ -112,7 +124,10 @@
       "title": "Title for display",
       "create": "Create",
       "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "delete": "Are you sure you want to delete the ODD file {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "Really delete the element spec for '{{ident}}'?",

@@ -41,6 +41,7 @@
     "view-type": "頁面檢視",
     "add-panel": "新增檢視",
     "caveat-heading": "注意事項",
+    "settings": "Settings",
     "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
     "sort": "排序條件",
     "filter": "篩選條件",
+    "filterPlaceholder": "Filter",
     "items": "搜索結果: {{count}}文件",
     "items_plural": "搜索結果: {{count}}文件",
     "title": "標題",
@@ -69,10 +71,14 @@
       "description": "A writable collection into which you can upload your own documents for testing."
     },
     "doc": {
-      "title": "文檔",
-      "description": "文檔(Docbook XML格式)"
+      "title": "Documentation",
+      "description": "Documentation (using Docbook XML)."
     },
-    "up": "向上"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
   },
   "upload": {
     "upload": "上傳",
@@ -88,6 +94,10 @@
       "hide": "關閉編輯器"
     }
   },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
   "login": {
     "login": "登錄",
     "as": "已以 {{user}} 身份登錄",
@@ -97,6 +107,8 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
+    "search": "Search",
+    "reset": "Reset",
     "placeholder": "輸入關鍵字",
     "sections": "Search sections",
     "headings": "Search headings"
@@ -112,7 +124,10 @@
       "title": "顯示的標題",
       "create": "Create",
       "create-from-example": "Create from examples",
-      "delete": "是否確定要刪除ODD檔案 {{file}}?"
+      "delete": "是否確定要刪除ODD檔案 {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
     },
     "editor": {
       "delete-spec": "是否確定要刪除元素規格 '{{ident}}'?",

@@ -41,6 +41,7 @@
     "view-type": "Ver por páginas",
     "add-panel": "Añadir Vista",
     "caveat-heading": "Cuidado",
+    "settings": "Configuración",
     "caveat": "Experimenta con diferentes plantillas y ODDs cambiando las opciones aquí. Por favor, ten en cuenta que no todas las combinaciones de configuración tienen sentido para todos los documentos. Por ejemplo, un mapa no puede ser producido sin marcar ni procesar las coordenadas explícitamente, y la vista de página asume que se han marcado los saltos de página. Si ves el mensaje \"el servidor no devolvió ningún contenido\", generalmente es señal de una desalineacion entre los datos codificados, la ODD y la plantilla."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "para subir archivos o ver funciones administrativas (usuario predeterminado: 'tei-demo', contraseña: 'demo').",
     "sort": "Ordenar por",
     "filter": "Filtrar por",
+    "filterPlaceholder": "Filtro",
     "items": "Se ha encontrado {{count}} elemento",
     "items_plural": "Se han encontrado {{count}} elementos",
     "title": "Título",
@@ -61,7 +63,7 @@
     "collections": "Colección local",
     "dts": "Servicios de texto distribuidos (versión experimental)",
     "test": {
-      "title": "Muestrario de publicaciones basadas en TEI Publisher",
+      "title": "Colección demo del editor TEI",
       "description": "Documentos que ejemplifican algunas funcionalidades del programa. La selección no es exhaustiva, pero sí representa una parte de lo que puede hacerse. Agradeceremos que contribuyas a aumentar la muestra con tus propios propios casos de uso."
     },
     "playground": {
@@ -70,9 +72,13 @@
     },
     "doc": {
       "title": "Documentación",
-      "description": "Documentación (usando Docbook XML)."
+      "description": "Documentación (en Docbook XML)."
     },
-    "up": "Arriba"
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Ir a la carpeta anterior"
   },
   "upload": {
     "upload": "Cargar",
@@ -88,6 +94,10 @@
       "hide": "Cerrar el editor"
     }
   },
+  "clipboard": {
+    "copy": "Haz clic para copiarlo al portapapeles",
+    "paste": "Pegar en el campo de entrada para probar"
+  },
   "login": {
     "login": "Conectarse",
     "as": "Sesión iniciada como {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "debe ser miembro del grupo {{group}}"
   },
   "search": {
+    "search": "Buscar",
+    "reset": "Reestablecer",
     "placeholder": "Escribe el término a buscar",
     "sections": "Buscar en secciones",
     "headings": "Buscar en títulos"
@@ -112,7 +124,10 @@
       "title": "Título para mostrar",
       "create": "Crear",
       "create-from-example": "Crear a partir de ejemplos",
-      "delete": "¿Seguro que quieres eliminar el archivo {{file}}?"
+      "delete": "¿Seguro que quieres eliminar el archivo {{file}}?",
+      "regenerate-all": "Regenerar todos los ODD (lento)",
+      "filename-error": "Requerido. Usa letras, números, - y _",
+      "title-error": "El título es obligatorio"
     },
     "editor": {
       "delete-spec": "¿Realmente deseas eliminar la especificación del elemento '{{ident}}'?",

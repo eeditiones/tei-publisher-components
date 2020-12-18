@@ -4,9 +4,9 @@
     "documentation": "Käyttöohjeet",
     "admin": {
       "title": "Ylläpito",
-      "recompile": "Recompile ODD",
-      "appGenerator": "App Generator",
-      "edit-odd": "Edit ODD"
+      "recompile": "Käännä ODD uudelleen",
+      "appGenerator": "Sovelluksen luonti",
+      "edit-odd": "Muokkaa ODD"
     },
     "news": "Uutiset",
     "download": {
@@ -14,11 +14,11 @@
       "pdf-latex": "PDF (LaTeX versio)",
       "pdf-fo": "PDF (FO versio)",
       "pdf-title": "Lataa PDF",
-      "fo-source": "FO Source",
-      "latex-source": "TeX Source",
-      "single-page": "Single Page",
-      "epub-download": "Lataa epub kirja",
-      "view-tei": "View TEI XML"
+      "fo-source": "FO-lähde",
+      "latex-source": "TeX-lähde",
+      "single-page": "Yksi sivu",
+      "epub-download": "Lataa epub-sähkökirjana",
+      "view-tei": "Näytä TEI XML"
     }
   },
   "dialogs": {
@@ -26,30 +26,32 @@
     "close": "Sulje",
     "yes": "Kyllä",
     "no": "ei",
-    "serverError": "The request to the server failed.",
-    "generatingFile": "Generating File...",
-    "downloadMessage": "Generating a file for download may take up to a few minutes. Please wait. This dialog should close automatically when the download has completed.",
-    "loading": "Lataa..."
+    "serverError": "Pyyntö palvelimelle epäonnistui.",
+    "generatingFile": "Luodaan tiedosto...",
+    "downloadMessage": "Ladattavan tiedoston luonti voi kestää jopa muutaman minuutin. Ole hyvä ja odota hetki. Tämä valintaikkuna sulkeutuu automaattisesti, kun lataus on valmis.",
+    "loading": "Ladataan..."
   },
   "document": {
     "contents": "Sisältö",
     "selectODD": "Valitse ODD",
     "selectTemplate": "Valitse malli",
     "selectFeature": "Valitse ominaisuus",
-    "normalized": "Normalized View",
-    "plain": "Plain Reading View",
-    "view-type": "Page View",
-    "add-panel": "Add View",
-    "caveat-heading": "Caveat",
-    "caveat": "Experiment with different page templates and ODDs just changing these options here. Please note that not every combination of settings makes sense for every document. For example, a map cannot be produced without coordinates explicitly encoded and processed, and page view assumes page breaks have been marked up. If you see 'the server did not return any content' message, it is usually a sign of such misalignment between encoded data, ODD and page template."
+    "normalized": "Normalisoitu näkymä",
+    "plain": "Yksinkertainen lukunäkynä",
+    "view-type": "Sivunäkymä",
+    "add-panel": "Lisää näkymä",
+    "caveat-heading": "Huomautus",
+    "settings": "Asetukset",
+    "caveat": "Kokeile eri sivumalleja ja ODD-tiedostoja muuttamalla näitä valintoja. Huomaa, että kaikki asetukset eivät sovi kaikille dokumenteille. Esimerkiksi karttaa ei voi tuottaa ilman koordinaatteja, jotka on nimenomaisesti koodattu ja käsitelty, ja sivunäkymä olettaa, että sivun vaihdokset on merkitty. Jos näet 'palvelin ei palauttanut mitään sisältöä' -viestin, se on yleensä merkki tällaisesta epäsuhtaisuudesta koodattujen tietojen, ODD:n ja sivumallin välillä."
   },
   "browse": {
-    "description": "Use this app to experiment and try out various ODDs containing processing model instructions. Upload your own files and create a custom ODD.",
-    "login": "to upload files or see administrative functions (default user: 'tei-demo', password: 'demo').",
+    "description": "Käytä tätä sovellusta kokeiluihin ja erilaisten ODD-tiedostojen kokeilemiseen, jotka sisältävät käännösohjeita. Lataa omat tiedostot ja luo mukautettu ODD.",
+    "login": "Tiedostojen lataaminen ja pääkäyttäjän toiminnot (oletuskäyttäjä: 'tei-demo', salasana: 'demo').",
     "sort": "Lajittelujärjestys",
     "filter": "Suodata",
-    "items": "Found {{count}} item",
-    "items_plural": "Found {{count}} items",
+    "filterPlaceholder": "Suodata",
+    "items": "Löytyi {{count}} kohde",
+    "items_plural": "Löytyi {{count}} kohdetta",
     "title": "Otsikko",
     "author": "Tekijä",
     "modificationDate": "Muokkauspäivä",
@@ -58,25 +60,29 @@
     "confirmDeletion": "Haluatko varmasti poistaa tämän tiedoston?",
     "confirmDeletion_plural": "Haluatko varmasti poistaa {{count}} tiedostoa?",
     "documents": "Dokumentit",
-    "collections": "Local Collection",
-    "dts": "Distributed Text Services (Experimental)",
+    "collections": "Paikallinen kokoelma",
+    "dts": "Hajautetut tekstipalvelut (Kokeellinen)",
     "test": {
-      "title": "TEI Publisher Demo Collection",
-      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+      "title": "TEI Publisherin demokokoelma",
+      "description": "Dokumentteja, jotka esittelevät erilaisia ominaisuuksia. Valikoima ei ole millään tavalla kattava, vaan se edustaa osaa siitä, mikä on mahdollista. Ole hyvä ja lisää omia käyttötapauksia näiden täydentämiseksi."
     },
     "playground": {
       "title": "Leikkikenttä",
-      "description": "A writable collection into which you can upload your own documents for testing."
+      "description": "Kirjoitusoikeuksilla varustettu kokoelma, johon voit ladata omia dokumentteja testausta varten."
     },
     "doc": {
-      "title": "Documentation",
-      "description": "Documentation (using Docbook XML)."
+      "title": "Käyttöohjeet",
+      "description": "Dokumentaatio (käyttää Docbook XML:ää)."
     },
-    "up": "Ylös"
+    "markdown": {
+      "title": "Markdown Näyte",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Siirry ylempään"
   },
   "upload": {
-    "upload": "Upload",
-    "drop": "Drop {{accept}} files here to upload."
+    "upload": "Lataa",
+    "drop": "Pudota {{accept}} tiedostot tähän ladataksesi."
   },
   "demo": {
     "showCode": {
@@ -88,68 +94,77 @@
       "hide": "Sulje editori"
     }
   },
+  "clipboard": {
+    "copy": "Kopioi leikepöydälle",
+    "paste": "Liitä syötekenttään testaamista varten"
+  },
   "login": {
     "login": "Kirjaudu sisään",
-    "as": "Logged in as {{user}}",
-    "user": "User",
-    "password": "Password",
-    "invalid": "Wrong password or invalid user",
-    "requiredGroup": "must be member of group {{group}}"
+    "as": "Kirjautunut käyttäjänä %{user}",
+    "user": "Käyttäjä",
+    "password": "Salasana",
+    "invalid": "Väärä salasana tai virheellinen käyttäjä",
+    "requiredGroup": "täytyy olla ryhmän {{group}} jäsen"
   },
   "search": {
-    "placeholder": "Enter Query",
-    "sections": "Search sections",
-    "headings": "Search headings"
+    "search": "Haku",
+    "reset": "Nollaa",
+    "placeholder": "Syötä kysely",
+    "sections": "Hae osioita",
+    "headings": "Hae otsikoista"
   },
   "dts": {
-    "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "endpoint": "Valitse endpoint",
+    "note": "Kokeellinen: muita editioita, jotka paljastavat DTS APIn"
   },
   "odd": {
-    "files": "ODD Files",
+    "files": "ODD-tiedostot",
     "manage": {
-      "filename": "File name of the ODD (without suffix)",
-      "title": "Title for display",
-      "create": "Create",
-      "create-from-example": "Create from examples",
-      "delete": "Are you sure you want to delete the ODD file {{file}}?"
+      "filename": "ODD-tiedoston nimi (ilman päätettä)",
+      "title": "Näytettävä otsikko",
+      "create": "Luo",
+      "create-from-example": "Luo esimerkeistä",
+      "delete": "Haluatko varmasti poistaa tiedoston \"{tiedostonimi}\"?",
+      "regenerate-all": "Luo uudelleen kaikki ODD:t (hidas)",
+      "filename-error": "Vaadittu kenttä. Käyttä kirjaimia, numeroita, merkkejä - ja _",
+      "title-error": "Otsikko on pakollinen"
     },
     "editor": {
-      "delete-spec": "Really delete the element spec for '{{ident}}'?",
+      "delete-spec": "Haluatko varmasti poistaa elementin spec kohteelle '{{ident}}'?",
       "save": "Tallenna",
       "saving": "Tallennetaan...",
       "saved": "Tallennettu",
-      "denied": "Permission Denied",
-      "denied-message": "You do not have permission to save {{odd}}",
+      "denied": "Lupa evätty",
+      "denied-message": "Sinulla ei ole muokkausoikeutta tiedostoon {{odd}}",
       "reload": "Päivitä",
       "reload-confirm": "Kaikki tallentamattomat muutokset menetetään. Haluatko edetä?",
       "add-element": "Lisää elementti",
-      "odd-source": "ODD Source",
-      "specs": "Element Specs",
-      "jump-to": "Jump to element ...",
+      "odd-source": "ODD-lähde",
+      "specs": "Elementtien tekniset tiedot",
+      "jump-to": "Siirry elementtiin ...",
       "title-short": "Lyhyt otsikko",
-      "title-short-placeholder": "Short title for display",
-      "description-label": "Description",
-      "description-placeholder": "Description of the ODD",
-      "source-label": "Base ODD",
-      "source-placeholder": "ODD to inherit from",
-      "use-namespace": "Check for using a different namespace than TEI",
-      "namespace-placeholder": "Default namespace URI (if not TEI)",
+      "title-short-placeholder": "Näytettävä lyhyt otsikko",
+      "description-label": "Kuvaus",
+      "description-placeholder": "ODD:n kuvaus",
+      "source-label": "ODD-pohja",
+      "source-placeholder": "Perittävä ODD",
+      "use-namespace": "Valitse, jos haluat käyttää muuta nimiavaruutta kuin TEI",
+      "namespace-placeholder": "Oletusnimiavaruuden URI (jos ei TEI)",
       "title": "Otsikko",
       "title-placeholder": "ODD:n otsikko",
       "model": {
-        "delete-model-label": "Delete Model?",
+        "delete-model-label": "Poistetaanko malli?",
         "delete-model-message": "Haluatko todella poistaa valitut mallit (modellit)?",
-        "description-placeholder": "[Document the model]",
-        "predicate-placeholder": "[Define further conditions that have to be met (in xquery)]",
+        "description-placeholder": "[Dokumentoi malli]",
+        "predicate-placeholder": "[Määrittele muut ehdot, jotka on täytettävä (xquery)]",
         "link-with-or": "tai",
-        "css-class-placeholder": "[Define CSS class name (for external CSS)]",
-        "custom-behaviour-placeholder": "[Custom Behaviour]",
-        "template-placeholder": "[Define code template to apply to content]",
-        "param-name-placeholder": "[Param name]",
-        "empty": "[Empty]"
+        "css-class-placeholder": "[Määritä CSS-luokan nimi (ulkoiselle CSS:lle)]",
+        "custom-behaviour-placeholder": "[Mukautettu käyttäytyminen]",
+        "template-placeholder": "[Määritä koodimalli, jota sovelletaan sisältöön]",
+        "param-name-placeholder": "[Parametrin nimi]",
+        "empty": "[Tyhjä]"
       },
-      "css-source": "Open CSS file"
+      "css-source": "Avaa CSS-tiedosto"
     }
   },
   "facets": {
@@ -159,20 +174,20 @@
   },
   "appgen": {
     "account": {
-      "user": "User account for administrative tasks. The user will be created if it does not yet exist.",
-      "owner": "The user account who will own the app.",
-      "password": "Password for the user owning this app."
+      "user": "Käyttäjätili pääkäyttäjän tehtäviin. Käyttäjä luodaan, jos sitä ei ole vielä olemassa.",
+      "owner": "Käyttäjätili, joka omistaa sovelluksen.",
+      "password": "Salasana sovelluksen omistavalle käyttäjälle."
     },
     "submit": "Tallenna/Luo",
     "index": {
-      "help": "Define the smallest block on which a full text index is created. For documents                         organized into divisions, choosing 'Create on division' is usually best. If there are no divisions, choose 'Create on text'.",
-      "label": "Default Full Text Index",
-      "index-div": "Create on division",
-      "index-text": "Create on text"
+      "help": "Määritä pienin lohko, jonka pohjalta koko teksti luodaan. Asiakirjoihin, jotka on järjestetty osioiksi, valinta 'Luo osiolle' on yleensä paras. Jos osioita ei ole, valitse 'Luo tekstille'.",
+      "label": "Oletusindeksi koko tekstille",
+      "index-div": "Luo osion pohjalta",
+      "index-text": "Luo tekstille"
     },
     "view": {
-      "help": "Choose what is shown by default when browsing text: a single page                         or an entire division. Display by page requires that the TEI is properly marked up                         with &lt;tei:pb&gt; tags.",
-      "div": "By division (chapter/section...)",
+      "help": "Valitse mitä näytetään oletuksena tekstiä selatessa: yksi sivu tai koko osio. Sivuttainen näkymä edellyttää, että TEI on oikein merkitty &lt;tei:pb&gt;-tageilla.",
+      "div": "Osion mukaan (luku/osio...)",
       "page": "Sivu sivulta"
     },
     "label": "Oletusnäkymä",
@@ -181,19 +196,19 @@
       "label": "HTML-malli"
     },
     "title": {
-      "help": "Title of the app which will be shown e.g. in the dashboard",
+      "help": "Sovelluksen nimi, joka näytetään esimerkiksi hallintapaneelissa",
       "label": "Äppin otsikko"
     },
-    "collection": "Name of subcollection to hold TEI documents",
+    "collection": "Nimi TEI-asiakirjoja sisältävälle alakokoelmalle",
     "abbrev": {
-      "label": "Short name to be used in URLs and file names",
+      "label": "Lyhyt nimi, jota käytetään URL-osoitteissa ja tiedostonimissä",
       "placeholder": "Lyhyt nimi"
     },
-    "uri": "URL to uniquely identify the app",
+    "uri": "URL-osoite, jolla sovellus voidaan tunnistaa yksilöllisesti",
     "dialog": {
-      "title": "App generated"
+      "title": "Luotu sovellus"
     },
     "open": "Avaa",
-    "success": "Your app has been successfully generated!"
+    "success": "Sovelluksesi on onnistuneesti luotu!"
   }
 }

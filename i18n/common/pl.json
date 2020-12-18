@@ -41,6 +41,7 @@
     "view-type": "Podział wg stron",
     "add-panel": "Dodaj panel",
     "caveat-heading": "Uwaga",
+    "settings": "Ustawienia",
     "caveat": "Eksperymentuj z różnymi kombinacjami szablonów i plików ODD. Zwróć uwagę, że nie wszystkie kombinacje prowadzą do sensownych rezultatów w połączeniu z danym dokumentem źródłowym. Dla przykładu do wygenerowania mapy niezbędne jest zawarcie w dokumencie koordynat geograficznych, zaś Widok wg strony zakłada, że są one oznakowane. W przypadku kiedy zamiast fragmentu strony widoczny jest komunikat 'zapytanie do serwera nie przyniosło rezultatu' lub podobny, jest to najczęściej symptom niedopasowania pomiędzy dokumentem źródłowym a ODD lub szablonem strony."
   },
   "browse": {
@@ -48,6 +49,7 @@
     "login": "aby zaimportować pliki oraz uzyskać dostęp do funkcji administracyjnych (domyślny użytkownik: 'tei-demo', hasło: 'demo').",
     "sort": "Sortuj",
     "filter": "Filtruj według",
+    "filterPlaceholder": "Filtruj",
     "items": "Znaleziono {{count}} rezultat",
     "items_plural": "Znaleziono {{count}} rezultatów",
     "title": "Tytuł",
@@ -72,7 +74,11 @@
       "title": "Dokumentacja",
       "description": "Dokumentacja (w formacie Docbook XML)."
     },
-    "up": "W górę"
+    "markdown": {
+      "title": "Próbka Markdown",
+      "description": "Przykład użycia formatu Markdown dla treści statycznych."
+    },
+    "up": "Przejdź do katalogu nadrzędnego"
   },
   "upload": {
     "upload": "Prześlij",
@@ -88,6 +94,10 @@
       "hide": "Zamknij edytor"
     }
   },
+  "clipboard": {
+    "copy": "Kliknij, aby skopiować do schowka",
+    "paste": "Wklej w polu edycji, aby przetestować"
+  },
   "login": {
     "login": "Zaloguj",
     "as": "Zalogowano jako {{user}}",
@@ -97,6 +107,8 @@
     "requiredGroup": "musi być członkiem grupy {{group}}"
   },
   "search": {
+    "search": "Szukaj",
+    "reset": "Resetuj",
     "placeholder": "Wprowadź zapytanie",
     "sections": "Przeszukaj sekcje",
     "headings": "Przeszukaj nagłówki"
@@ -112,7 +124,10 @@
       "title": "Tytuł do wyświetlania",
       "create": "Utwórz",
       "create-from-example": "Utwórz na bazie przykładów",
-      "delete": "Czy na pewno chcesz usunąć plik ODD {{file}}?"
+      "delete": "Czy na pewno chcesz usunąć plik ODD {{file}}?",
+      "regenerate-all": "Wygeneruj wszystkie transformacje ODD (czasochłonne)",
+      "filename-error": "Pole wymagane. Użyj liter, cyfr, oraz znaków - i _",
+      "title-error": "Tytuł jest wymagany"
     },
     "editor": {
       "delete-spec": "Czy na pewno usunąć elementSpec dla '{{ident}}'?",
