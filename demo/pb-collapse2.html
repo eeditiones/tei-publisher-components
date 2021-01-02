@@ -43,18 +43,8 @@
                 </pb-page>
                 <script>
                 window.addEventListener('load', () => {
-                    pbEvents.subscribe('pb-collapse-open', 'meta', null, true)
+                    pbEvents.subscribeOnce('pb-collapse-open', 'meta')
                         .then(() => pbEvents.emit('pb-update', 'meta'));
-                    
-                    // document.addEventListener('pb-collapse-open', (ev) => {
-                    //     if (ev.detail.key && ev.detail.key === 'meta') {
-                    //         document.dispatchEvent(new CustomEvent('pb-update', {
-                    //             detail: {
-                    //                 key: 'meta'
-                    //             }
-                    //         }));
-                    //     }
-                    // });
                 });
                 </script>
             </template>
