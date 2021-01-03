@@ -12,6 +12,9 @@ import { resolveURL } from './utils.js';
  * 
  * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
+ * 
+ * @slot before - use for content which should be shown above the facsimile viewer
+ * @slot after - use for content which should be shown below the facsimile viewer
  */
 export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
@@ -148,18 +151,27 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <!-- Openseadragon -->
-            <div id="viewer"></div>
+            <div class="content">
+                <slot name="before"></slot>
+                <!-- Openseadragon -->
+                <div id="viewer"></div>
+                <slot name="after"></slot>
+            </div>
         `;
     }
 
     static get styles() {
         return css`
             :host {
-                display: block;
                 position: relative;
                 background: transparent;
                 height: var(--pb-facsimile-height, 500px);
+            }
+
+            .content {
+                display: grid;
+                grid-template-rows: auto 1fr auto;
+                height: 100%;
             }
 
             #runtime-overlay {
@@ -168,7 +180,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
             #viewer {
                 position: relative;
-                height: 100%;
                 width: 100%;
             }
         `;
