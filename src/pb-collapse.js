@@ -51,6 +51,13 @@ export class PbCollapse extends pbMixin(LitElement) {
                 type: Boolean
             },
             /**
+             * By default, an open collapse is closed if another pb-collapse is expanded on the same event channel.
+             * Set to true to keep multiple pb-collapse open at the same time.
+             */
+            toggles: {
+                type: Boolean
+            },
+            /**
              * The iron-icon when collapsed. Value must be one of the icons defined by iron-icons
              */
             expandIcon: {
@@ -82,7 +89,7 @@ export class PbCollapse extends pbMixin(LitElement) {
         this.expandIcon = 'icons:expand-more';
         this.collapseIcon = 'icons:expand-less';
         this.noIcons = false;
-        this.expandOnClick = false;
+        this.toggles = false;
     }
 
     connectedCallback() {
@@ -90,17 +97,19 @@ export class PbCollapse extends pbMixin(LitElement) {
         this.addEventListener('pb-collapse-open', () => {
             this.open();
         });
-        this.subscribeTo('pb-collapse-open', (ev) => {
-            if (!ev.detail || ev.detail._source == this) {
-                return;
-            }
-            for (const collapse of this.querySelectorAll('pb-collapse')) {
-                if (collapse == ev.detail._source) {
+        if (this.toggles) {
+            this.subscribeTo('pb-collapse-open', (ev) => {
+                if (!ev.detail || ev.detail._source === this) {
                     return;
                 }
-            }
-            this.close();
-        });
+                for (const collapse of this.querySelectorAll('pb-collapse')) {
+                    if (collapse === ev.detail._source) {
+                        return;
+                    }
+                }
+                this.close();
+            });
+        }
     }
 
     /**

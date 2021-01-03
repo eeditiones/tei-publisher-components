@@ -42,10 +42,10 @@
                     </pb-collapse>
                 </pb-page>
                 <script>
-                window.addEventListener('load', () => {
+                window.addEventListener('load', () =>
                     pbEvents.subscribeOnce('pb-collapse-open', 'meta')
-                        .then(() => pbEvents.emit('pb-update', 'meta'));
-                });
+                        .then(() => pbEvents.emit('pb-update', 'meta'))
+                );
                 </script>
             </template>
         </pb-demo-snippet>
