@@ -94,10 +94,14 @@ export class PbSearch extends pbMixin(LitElement) {
         }
 
         this.addEventListener('click', (e) => {
-            if (e.target.slot === 'searchButton'){
+            const root = e.target.closest('[slot]');
+            if (!root) {
+                return;
+            }
+            if (root.slot === 'searchButton'){
                 this._doSearch();
             }
-            if (e.target.slot === 'resetButton'){
+            if (root.slot === 'resetButton'){
                 this._reset();
             }
         });
