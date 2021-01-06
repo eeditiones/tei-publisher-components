@@ -207,6 +207,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
         });
 
         this.viewer.addHandler('open', this.resetZoom.bind(this));
+        this.viewer.addHandler('open-failed', (ev) => {
+            console.error('<pb-facsimile> open failed: %s', ev.message);
+            this.loaded = false;
+        });
         this._facsimileObserver();
 
         this.signalReady();
