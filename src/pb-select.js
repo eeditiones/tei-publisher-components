@@ -249,13 +249,10 @@ export class PbSelect extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display: block;
+                display: flex;
+                flex-direction: column;
                 position:relative;
-                overflow:auto;
                 margin-top:1rem;
-            }
-            :host([multi]) paper-listbox{
-                height:16rem;
             }
 
             iron-label {
@@ -264,14 +261,9 @@ export class PbSelect extends pbMixin(LitElement) {
                 font-weight: 400;
                 color: var(--pb-color-lighter);
             }
-
-            paper-dropdown-menu{
-                width:100%;
-            }
             
             paper-listbox{
                 overflow:auto;
-                height:100%;
             }
         `;
     }
