@@ -1053,6 +1053,7 @@ export class PbView extends pbMixin(LitElement) {
         }
         if (ev.detail.action === 'refresh') {
             if (Object.keys(properties).length > 0) {
+                this._updateStyles();
                 this._load();
             } else {
                 applyToggles();
