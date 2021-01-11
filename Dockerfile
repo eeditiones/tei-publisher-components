@@ -45,8 +45,8 @@ RUN  git clone https://github.com/eeditiones/tei-publisher-lib.git \
     && git checkout ${PUBLISHER_LIB_VERSION} \
     && ant
 
-RUN  git clone https://github.com/eeditiones/oas-router.git \
-    && cd oas-router \
+RUN  git clone https://github.com/eeditiones/roaster.git \
+    && cd roaster \
     && git checkout ${ROUTER_VERSION} \
     && ant
 
@@ -69,7 +69,7 @@ RUN ant
 FROM existdb/existdb:${EXIST_VERSION}
 
 COPY --from=tei /tmp/tei-publisher-lib/build/*.xar /exist/autodeploy
-COPY --from=tei /tmp/oas-router/build/*.xar /exist/autodeploy
+COPY --from=tei /tmp/roaster/build/*.xar /exist/autodeploy
 COPY --from=tei /tmp/tei-publisher-app/build/*.xar /exist/autodeploy
 
 ENV DATA_DIR /exist-data
