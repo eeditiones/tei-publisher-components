@@ -1,4 +1,5 @@
 ARG PUBLISHER_LIB_VERSION=v2.8.10
+ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
 ARG SHAKESPEARE_VERSION=1.1.2
 ARG VANGOGH_VERSION=1.0.6
@@ -46,6 +47,7 @@ RUN  git clone https://github.com/eeditiones/tei-publisher-lib.git \
 
 RUN  git clone https://github.com/eeditiones/oas-router.git \
     && cd oas-router \
+    && git checkout ${ROUTER_VERSION} \
     && ant
 
 # Build tei-publisher-app
