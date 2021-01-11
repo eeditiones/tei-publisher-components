@@ -1,8 +1,3 @@
-ARG PUBLISHER_LIB_VERSION=v2.8.10
-ARG ROUTER_VERSION=v0.5.1
-ARG PUBLISHER_VERSION=master
-ARG SHAKESPEARE_VERSION=1.1.2
-ARG VANGOGH_VERSION=1.0.6
 ARG EXIST_VERSION=5.2.0
 
 # START STAGE 1
@@ -36,6 +31,13 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && curl -L https://www.npmjs.com/install.sh | sh
 
 FROM builder as tei
+
+ARG PUBLISHER_LIB_VERSION=v2.8.10
+ARG ROUTER_VERSION=v0.5.1
+ARG PUBLISHER_VERSION=master
+ARG SHAKESPEARE_VERSION=1.1.2
+ARG VANGOGH_VERSION=1.0.6
+
 # add key
 RUN  mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
