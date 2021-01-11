@@ -121,6 +121,9 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this._tippy) {
             this._tippy.destroy();
         }
+        if (this._observer) {
+            this._observer.disconnect();
+        }
     }
 
     _checkCSSProperties() {
@@ -178,7 +181,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (slot) {
             const content = document.createElement('div');
             slot.assignedNodes().forEach((node) => {
-                content.appendChild(node.content ? node.content : node);
+                content.appendChild(node.content ? node.content.cloneNode(true) : node.cloneNode(true));
             });
             return content;
         }
@@ -193,6 +196,25 @@ export class PbPopover extends pbMixin(LitElement) {
     }
 
     /**
+     * Listen for changes of the current element or its alternate slot
+     * and update popover content accordingly.
+     */
+    _registerMutationObserver() {
+        const slot = this._getSlot();
+        this._observer = new MutationObserver(() => {
+            console.log('<pb-popover> Changed: %o', slot);
+            this.alternate = this._getContent();
+            this.emitTo('pb-popover-changed', this.alternate);
+        });
+        this._observer.observe(this, {subtree: true, childList: true, characterData: true})
+        if (slot) {
+            slot.assignedNodes().forEach((node) => {
+                this._observer.observe(node.content ? node.content : node, {subtree: true, childList: true, characterData: true})
+            });
+        }
+    }
+
+    /**
      * Returns the root element of the alternate content currently shown in the popover.
      * This will be initialized from either the default slot or the slot with name 'alternate' (if present).
      * The returned element is always a `div` and can be modified.
@@ -203,7 +225,8 @@ export class PbPopover extends pbMixin(LitElement) {
 
     /**
      * Set the element to be shown in the popover. Use this to set popover
-     * content dynamically.
+     * content dynamically. Alternatively you can also modify the DOM of the slots
+     * directly and the changes should be picked up by the component.
      */
     set alternate(content) {
         this._content = content;
@@ -216,6 +239,8 @@ export class PbPopover extends pbMixin(LitElement) {
         super.firstUpdated();
 
         this._injectStyles();
+
+        this._registerMutationObserver();
 
         const root = this.getRootNode();
         let target;
