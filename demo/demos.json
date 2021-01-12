@@ -138,5 +138,8 @@
     },
     "pb-clipboard": {
         "demo/pb-clipboard.html": "Clipboard Demo"
+    },
+    "pb-formula": {
+        "demo/pb-formula.html": "Demo"
     }
 }
