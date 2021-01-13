@@ -6,7 +6,7 @@ import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
-import { parseMath } from "./pb-formula.js";
+import { typesetMath } from "./pb-formula.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -300,7 +300,7 @@ class PbPage extends pbMixin(LitElement) {
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
         this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());
 
-        parseMath(this);
+        typesetMath(this);
     }
 
     _updateI18n(t) {

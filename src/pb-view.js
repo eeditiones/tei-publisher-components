@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -649,6 +650,7 @@ export class PbView extends pbMixin(LitElement) {
             const view = this.shadowRoot.getElementById('view');
             this._applyToggles(view);
             this._fixLinks(view);
+            typesetMath(view);
 
             const eventOptions = {
                 data: resp,
