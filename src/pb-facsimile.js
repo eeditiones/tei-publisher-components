@@ -165,13 +165,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
             :host {
                 position: relative;
                 background: transparent;
-                height: var(--pb-facsimile-height, 500px);
-            }
-
-            .content {
-                display: grid;
-                grid-template-rows: auto 1fr auto;
-                height: 100%;
             }
 
             #runtime-overlay {
@@ -180,6 +173,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
             #viewer {
                 position: relative;
+                height: var(--pb-facsimile-height, 500px);
                 width: 100%;
             }
         `;
