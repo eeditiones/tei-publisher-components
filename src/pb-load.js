@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -297,6 +298,7 @@ export class PbLoad extends pbMixin(LitElement) {
             div.slot = '';
             this.appendChild(div);
             this._fixLinks(div);
+
             this._onLoad(div);
         }
 
@@ -340,6 +342,7 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     _fixLinks(content) {
+        typesetMath(content);
         if (this.fixLinks) {
             content.querySelectorAll('img').forEach((image) => {
                 const oldSrc = image.getAttribute('src');
