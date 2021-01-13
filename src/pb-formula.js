@@ -96,6 +96,10 @@ export function typesetMath(elem) {
  * pass it the root context which should be searched for `pb-notation` elements. The function will
  * then do the actual typesetting. The reason for this is that formulas need to be typeset synchronously, i.e. one
  * after the other.
+ * 
+ * The component detects automatically if the formula to typeset is in TeX notation or MathML.
+ * 
+ * @slot - should contain math in TeX notation or MathML
  */
 export class PbFormula extends pbMixin(LitElement) {
     static get properties() {
