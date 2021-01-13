@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import "@lrnwebcomponents/es-global-bridge";
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
+import { translate } from "./pb-i18n.js";
 
 /** Import external script dynamically */
 function _import(name, location) {
@@ -15,20 +16,39 @@ function _import(name, location) {
     });
 }
 
-window.MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-    },
-    svg: {
-        fontCache: 'global'
-    },
-    startup: {
-        typeset: false // Perform initial typeset?
-      //   ready: Startup.defaultReady.bind(Startup),          // Called when components are loaded
-      //   pageReady: Startup.defaultPageReady.bind(Startup),  // Called when MathJax and page are ready
-    }
-};
+function _initMath(formulas) {
+    formulas.forEach((formula) => {
+        const display = formula.hasAttribute('display') || false;
+        const mathml = formula.querySelector('math');
+        window.MathJax.texReset();
+        let chtml;
+        if (mathml) {
+            chtml = window.MathJax.mathml2chtml(mathml.outerHTML, { display });
+        } else {
+            chtml = window.MathJax.tex2chtml(formula.innerHTML, { display });
+        }
+        formula.innerHTML = '';
+        formula.appendChild(chtml);
+        formula.setAttribute('loaded', 'loaded');
 
+        // update document to include styles for generated Math
+        window.MathJax.startup.document.clear();
+        window.MathJax.startup.document.updateDocument();
+    });
+}
+
+export function parseMath(elem) {
+    const formulas = elem.querySelectorAll('pb-formula');
+    if (formulas.length > 0) {
+        window.MathJax = {
+            startup: {
+                typeset: false, // Perform initial typeset?
+                pageReady: () => _initMath(formulas)  // Called when MathJax and page are ready
+            }
+        };
+        _import('MathJax', 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js');
+    }
+}
 
 /**
  *
@@ -41,36 +61,48 @@ window.MathJax = {
 export class PbFormula extends pbMixin(LitElement) {
     static get properties() {
         return {
-            _output: {
-                type: Object
+            /**
+             * Render the formula in display mode, i.e. as block level element
+             */
+            display: {
+                type: Boolean
+            },
+            loaded: {
+                type: Boolean
             },
             ...super.properties
         };
     }
 
-    firstUpdated() {
-        super.firstUpdated();
-            
-        _import('MathJax', 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js').then(_ => {
-            console.log(window.MathJax)
-            const svg = window.MathJax.tex2svg('$a^{2}\\dot{x}+x\\dot{y}^{2}=0$');
-            console.log("mjx", svg);
-            this.appendChild(svg);
-        });
+    constructor() {
+        super();
+        this.display = false;
     }
 
+    attributeChangedCallback(name, oldVal, newVal) {
+        super.attributeChangedCallback(name, oldVal, newVal);
+        if (name === 'loaded') {
+            this.loaded = true;
+        }
+    }
 
     render() {
-        return html`
-            <div id="input"><slot></slot></div>
-            <div id="output">${this._output}</div>
-        `;
+        if (!this.loaded) {
+            return html`<span class="loading">${translate('dialogs.loading')}</span>`;
+        }
+        return html`<div id="content" class="${this.display ? 'block' : ''}"><slot></slot></div>`;
     }
 
     static get styles() {
         return css`
             :host {
+                display: inline-block;
+            }
+            .block {
                 display: block;
+            }
+            .loading {
+                color: #808080;
             }
         `;
     }
