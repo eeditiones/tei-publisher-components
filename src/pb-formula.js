@@ -20,12 +20,13 @@ function _initMath(formulas) {
     formulas.forEach((formula) => {
         const display = formula.hasAttribute('display') || false;
         const mathml = formula.querySelector('math');
-        window.MathJax.texReset();
+        const options = window.MathJax.getMetricsFor(formula.parentNode, display);
         let chtml;
         if (mathml) {
-            chtml = window.MathJax.mathml2chtml(mathml.outerHTML, { display });
+            chtml = window.MathJax.mathml2chtml(mathml.outerHTML, options);
         } else {
-            chtml = window.MathJax.tex2chtml(formula.innerHTML, { display });
+            window.MathJax.texReset();
+            chtml = window.MathJax.tex2chtml(formula.innerHTML, options);
         }
         formula.innerHTML = '';
         formula.appendChild(chtml);
@@ -62,7 +63,7 @@ export class PbFormula extends pbMixin(LitElement) {
     static get properties() {
         return {
             /**
-             * Render the formula in display mode, i.e. as block level element
+             * Render the formula in display mode, i.e. as block level element.
              */
             display: {
                 type: Boolean
