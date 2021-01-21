@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
 import "@lrnwebcomponents/es-global-bridge";
-import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 
 /** Import external script dynamically */
@@ -40,24 +39,26 @@ function _updateStyles(context, styles) {
  */
 function _initMath(context, formulas) {
     formulas.forEach((formula) => {
-        const display = formula.hasAttribute('display') || false;
-        const mathml = formula.querySelector('math');
-        const options = window.MathJax.getMetricsFor(formula.parentNode, display);
-        options.display = display;
-        let chtml;
-        let source;
-        if (mathml) {
-            source = mathml.outerHTML;
-            chtml = window.MathJax.mathml2chtml(source, options);
-        } else {
-            window.MathJax.texReset();
-            source = formula.innerHTML;
-            chtml = window.MathJax.tex2chtml(source, options);
+        if (formula.hasChildNodes()) {
+            const display = formula.hasAttribute('display') || false;
+            const mathml = formula.querySelector('math');
+            const options = window.MathJax.getMetricsFor(formula.parentNode, display);
+            options.display = display;
+            let chtml;
+            let source;
+            if (mathml) {
+                source = mathml.outerHTML;
+                chtml = window.MathJax.mathml2chtml(source, options);
+            } else {
+                window.MathJax.texReset();
+                source = formula.innerHTML;
+                chtml = window.MathJax.tex2chtml(source, options);
+            }
+            formula.innerHTML = '';
+            formula.appendChild(chtml);
+            formula.setAttribute('loaded', 'loaded');
+            formula.setAttribute('source', source);
         }
-        formula.innerHTML = '';
-        formula.appendChild(chtml);
-        formula.setAttribute('loaded', 'loaded');
-        formula.setAttribute('source', source);
     });
     _updateStyles(context, window.MathJax.chtmlStylesheet());
 }
@@ -80,12 +81,17 @@ export function typesetMath(elem) {
             _initMath(elem, formulas);
             return;
         }
+        const showMenu = elem.querySelector('pb-formula[menu]');
         window.MathJax = {
             startup: {
                 typeset: false, // Perform initial typeset?
                 pageReady: () => _initMath(elem, formulas)  // Called when MathJax and page are ready
+            },
+            options: {
+                enableMenu: showMenu !== null
             }
         };
+
         _import('MathJax', 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js');
     }
 }
@@ -101,13 +107,20 @@ export function typesetMath(elem) {
  * 
  * @slot - should contain math in TeX notation or MathML
  */
-export class PbFormula extends pbMixin(LitElement) {
+export class PbFormula extends LitElement {
     static get properties() {
         return {
             /**
-             * Render the formula in display mode, i.e. as block level element.
+             * TeX notation only: render the formula in display mode, i.e. as block level element.
              */
             display: {
+                type: Boolean
+            },
+            /**
+             * Option: if set, enable the MathJax context menu. This affects **all** formulas
+             * in the context (the page or pb-view), not just the current component!
+             */
+            menu: {
                 type: Boolean
             },
             /**
@@ -146,6 +159,9 @@ export class PbFormula extends pbMixin(LitElement) {
     }
 
     render() {
+        if (!this.hasChildNodes()) {
+            return null;
+        }
         if (!this.loaded) {
             return html`<span class="loading">${translate('dialogs.loading')}</span>`;
         }
