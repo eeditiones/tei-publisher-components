@@ -106,10 +106,6 @@ export class PbPopover extends pbMixin(LitElement) {
     }
 
     render() {
-        if (this.disabled) {
-            return html`<slot name="default"></slot>`;
-        }
-
         if (this.for) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
@@ -232,6 +228,22 @@ export class PbPopover extends pbMixin(LitElement) {
         this._content = content;
         if (this._tippy) {
             this._tippy.setContent(this._content);
+        }
+    }
+
+    /**
+     * Overwrite to enable/disable tippy instance
+     */
+    command(command, state) {
+        if (command === 'disable') {
+            this.disabled = state;
+            if (this._tippy) {
+                if (state) {
+                    this._tippy.disable();
+                } else {
+                    this._tippy.enable();
+                }
+            }
         }
     }
 
