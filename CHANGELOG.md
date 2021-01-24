@@ -1,3 +1,10 @@
+## [1.17.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.17.3...v1.17.4) (2021-01-24)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** add map configuration to allow for no automatic scroll ([303beaf](https://github.com/eeditiones/tei-publisher-components/commit/303beafecd5e0fd5b37afada4677882be0307ade))
+
 ## [1.17.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.17.2...v1.17.3) (2021-01-22)
 
 
