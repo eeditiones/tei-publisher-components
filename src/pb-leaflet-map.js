@@ -28,6 +28,13 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             crs: {
                 type: String
             },
+            /**
+             * If enabled, the map will not automatically scroll to the coordinates received via `pb-geolocation`
+             */
+            noScroll: {
+                type: Boolean,
+                attribute: 'no-scroll'
+            },
             accessToken: {
                 type: String,
                 attribute: 'access-token'
@@ -67,6 +74,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.imagesPath = '../images/leaflet/';
         this.cssPath = '../css/leaflet/';
         this.toggle = false;
+        this.noScroll = false;
     }
 
     connectedCallback() {
@@ -246,7 +254,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     marker.closeTooltip();
                 }
             })
-            this._map.setView(coords, this.zoom);
+            if (!this.noScroll) 
+                this._map.setView(coords, this.zoom);
         }
     }
 

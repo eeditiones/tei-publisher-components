@@ -5,6 +5,10 @@ import { PbHighlight } from "./pb-highlight.js";
 /**
  * Represents a geo location. Extends `pb-highlight`, but sends an additional `pb-geolocation` event
  * on mouseover.
+ * 
+ * For `pb-leaflet-map` to show markers for `pb-geolocation` elements, make sure that map subscribes to the channel
+ * into which `pb-geolocation`s emit and that map is loaded before the emitting component, e.g. `pb-view`, by specifying 
+ * `wait-for` property
  *
  * @slot - default unnamed slot for content
  * @fires pb-geolocation - Sends geocoordinates
