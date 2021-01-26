@@ -23,6 +23,7 @@ let _instance;
  * @fires pb-page-ready - fired when the endpoint and language settings have been determined
  * @fires pb-i18n-update - fired when the user selected a different display language
  * @fires pb-i18n-language - when received, changes the language to the one passed in the event and proceeds to pb-i18-update
+ * @fires pb-toggle - when received, dispatch state changes to the elements on the page (see `pb-toggle-feature`, `pb-select-feature`)
  */
 class PbPage extends pbMixin(LitElement) {
 
@@ -295,6 +296,9 @@ class PbPage extends pbMixin(LitElement) {
             }, []);
         });
 
+
+        this.subscribeTo('pb-toggle', this._toggleFeatures.bind(this));
+
         this.unresolved = false;
 
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
@@ -318,6 +322,28 @@ class PbPage extends pbMixin(LitElement) {
                 m = regex.exec(targets);
             }
         });
+    }
+
+    /**
+     * Handle the `pb-toggle` event sent by `pb-select-feature` or `pb-toggle-feature`
+     * and dispatch actions to the elements on the page.
+     */
+    _toggleFeatures(ev) {
+        if (ev.detail.selectors) {
+            ev.detail.selectors.forEach(sc => {
+                this.querySelectorAll(sc.selector).forEach(node => {
+                    const command = sc.command || 'toggle';
+                    if (node.command) {
+                        node.command(command, sc.state);
+                    }
+                    if (sc.state) {
+                        node.classList.add(command);
+                    } else {
+                        node.classList.remove(command);
+                    }
+                });
+            });
+        }
     }
 
     render() {
