@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.17.4...v1.18.0) (2021-01-26)
+
+
+### Features
+
+* **pb-page:** make pb-page react to pb-toggle events and dispatch the state changes to elements on the page ([a15ab4d](https://github.com/eeditiones/tei-publisher-components/commit/a15ab4db8e80a6ee7340724b55863ff3e3800626))
+
 ## [1.17.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.17.3...v1.17.4) (2021-01-24)
 
 
