@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.18.0...v1.18.1) (2021-01-30)
+
+
+### Bug Fixes
+
+* **pb-svg:** do not try to load svg if url is not set ([b1c55e0](https://github.com/eeditiones/tei-publisher-components/commit/b1c55e0036f46dead38274238845035b9dce8f90))
+
 # [1.18.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.17.4...v1.18.0) (2021-01-26)
 
 
