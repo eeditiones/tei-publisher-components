@@ -16,6 +16,9 @@ export class PbSvg extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
+            /**
+             * The URL to load the SVG from.
+             */
             url: {
                 type: String
             }
@@ -34,7 +37,7 @@ export class PbSvg extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
         window.ESGlobalBridge.requestAvailability();
-        window.ESGlobalBridge.instance.load("svg-pan-zoom", `https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js`);
+        window.ESGlobalBridge.instance.load("svg-pan-zoom", `https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js`);
         window.addEventListener(
             "es-bridge-svg-pan-zoom-loaded",
             this._onSvgPanZoomLoaded.bind(this),
@@ -53,17 +56,18 @@ export class PbSvg extends pbMixin(LitElement) {
     _onSvgPanZoomLoaded() {
         this.load();
     }
-
+ 
     load() {
         if (this._pan) {
             this._pan.destroy();
             this._pan = null;
             this.container.innerHTML = '';
         }
+        if (!this.url) {
+            return;
+        }
         fetch(this.url)
-            .then((response) => {
-                return response.text();
-            })
+            .then((response) => response.text())
             .then((data) => {
                 const doc = new DOMParser().parseFromString(data, "image/svg+xml");
                 const svg = doc.documentElement;
