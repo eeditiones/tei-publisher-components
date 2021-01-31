@@ -1,3 +1,15 @@
+# [1.19.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.18.1...v1.19.0) (2021-01-31)
+
+
+### Bug Fixes
+
+* **pb-facs-link:** emitOnLoad should be specified as emit-on-load attribute ([516a575](https://github.com/eeditiones/tei-publisher-components/commit/516a5750e5ca902b5002d8a1be24e36f84cb6c98))
+
+
+### Features
+
+* **pb-leaflet-map:** add feature to configure different map layers ([0f6d96e](https://github.com/eeditiones/tei-publisher-components/commit/0f6d96ed93986a6f693a004dbb853f46b33640b3))
+
 ## [1.18.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.18.0...v1.18.1) (2021-01-30)
 
 
