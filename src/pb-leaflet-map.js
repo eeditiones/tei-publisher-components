@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import * as L from 'leaflet/dist/leaflet-src.esm.js';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import './pb-map-layer.js';
 
 /**
  * A wrapper component for [leaflet](https://leafletjs.com/) displaying a map.
@@ -80,9 +81,15 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
+        /**
+         * @param {{ detail: any[]; }} ev
+         */
         this.subscribeTo('pb-update-map', (ev) => {
             const markers = [];
             const bounds = L.latLngBounds();
+            /**
+             * @param {{ latitude: any; longitude: any; label: any; }} loc
+             */
             /**
              * @param {{ latitude: any; longitude: any; label: any; }} loc
              */
@@ -104,6 +111,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             }
         });
 
+        /**
+         * @param {{ detail: { root: { querySelectorAll: (arg0: string) => any[]; }; }; }} ev
+         */
         this.subscribeTo('pb-update', (ev) => {
             this._markers.forEach((marker) =>
                 marker.remove()
@@ -111,6 +121,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
             const markers = [];
             const bounds = L.latLngBounds();
+            /**
+             * @param {{ latitude: any; longitude: any; }} loc
+             */
             /**
              * @param {{ latitude: any; longitude: any; }} loc
              */
@@ -129,6 +142,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             }
         });
 
+        /**
+         * @param {{ detail: { coordinates: { latitude: number; longitude: number; }; }; }} ev
+         */
         this.subscribeTo('pb-geolocation', (ev) => {
             if (ev.detail.coordinates) {
                 this.latitude = ev.detail.coordinates.latitude;
@@ -201,24 +217,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             center: L.latLng([this.latitude, this.longitude]),
             crs
         });
-
+        this._configureLayers();
         this.signalReady();
-
-        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     maxZoom: 18,
-        //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        // }).addTo(this._map);
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
-            maxZoom: 18,
-            zoomOffset: -1,
-            tileSize: 512,
-            id: 'mapbox/streets-v11',
-            accessToken: this.accessToken
-        }).addTo(this._map);
-        // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        // 	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        // }).addTo(this._map);
 
         L.control.scale().addTo(this._map);
 
@@ -244,6 +244,52 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
+    _configureLayers() {
+        const configs = this.querySelectorAll('pb-map-layer');
+        if (configs.length === 0) {
+            // configure a default layer
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                maxZoom: 18,
+                zoomOffset: -1,
+                tileSize: 512,
+                id: 'mapbox/streets-v11',
+                accessToken: this.accessToken
+            }).addTo(this._map);
+            return;
+        }
+        const layers = L.control.layers(null, null, { collapsed: false });
+        configs.forEach(config => {
+            let layer;
+            switch (config.type) {
+                case 'geojson':
+                    config.data().then((data) => {
+                        layer = L.geoJSON([data]);
+                        this._addLayer(config, layer, layers);
+                    });
+                    break;
+                default:
+                    layer = L.tileLayer(config.url, config.options);
+                    this._addLayer(config, layer, layers);
+                    break;
+            }
+        });
+        layers.addTo(this._map);
+    }
+
+    _addLayer(config, layer, layers) {
+        if (config.show) {
+            layer.addTo(this._map);
+        }
+        if (config.label) {
+            if (config.base) {
+                layers.addBaseLayer(layer, config.label);
+            } else {
+                layers.addOverlay(layer, config.label);
+            }
+        }
+    }
+
     _locationChanged() {
         if (this._map) {
             const coords = L.latLng([this.latitude, this.longitude]);
@@ -259,6 +305,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
+    /**
+     * @param {undefined} [ev]
+     */
     _hide(ev) {
         this.style.visibility = 'hidden';
     }

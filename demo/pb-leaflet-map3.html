@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-leaflet-map Demo</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-leaflet-map.js"></script>
+    <script type="module" src="../src/pb-geolocation.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            main {
+                display: grid;
+                grid-template-columns: minmax(256px, auto) 1fr;
+            }
+
+            pb-leaflet-map {
+                height: 640px;
+            }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <main>
+                    <ul id="locations">
+                        <li>
+                            <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation event="click" longitude="8.035903639726621" latitude="47.860249912035364">Feldberg</pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation event="click" longitude="8.125068739930907" latitude="47.97215106146882">Thurner</pb-geolocation>
+                        </li>
+                    </ul>
+                    <pb-leaflet-map id="map" zoom="14">
+                        <pb-map-layer show base label="HikeBike Map" url="https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png" max-zoom="19"
+                            attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
+                        <pb-map-layer base label="ESRI World Imagery" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                            attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'></pb-map-layer>
+                        <pb-map-layer show label="Hillshading" url="https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png" max-zoom="15"
+                            attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
+                        <pb-map-layer show label="Ski Slopes" url="https://tile.waymarkedtrails.org/slopes/{z}/{x}/{y}.png"
+                            attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors | Map style: &copy; &lt;a href="https://waymarkedtrails.org">waymarkedtrails.org</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'
+                            max-zoom="18"></pb-map-layer>
+                        <pb-map-layer label="Hiking Trails" url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
+                            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://waymarkedtrails.org">waymarkedtrails.org</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+                            max-zoom="18"></pb-map-layer>
+                        <pb-map-layer type="geojson" label="Gemeindegrenzen" url="gemeinden.geojson"></pb-map-layer>
+                    </pb-leaflet-map>
+                </main>
+            </pb-page>
+            <script type="text/javascript">
+                /** 
+                 * Manually initialize map markers once components are ready. 
+                 * Not necessary if the pb-geolocation appear inside a component
+                 * which does itself send the `pb-update` event, e.g. `pb-view`.
+                 */
+                document.addEventListener('WebComponentsReady', () => { 
+                    document.dispatchEvent(new CustomEvent('pb-update', { 
+                        detail: { 
+                            root: document.getElementById('locations')
+                        }
+                    }));
+                });
+            </script>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

@@ -8,6 +8,7 @@
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-leaflet-map.js"></script>
     <script type="module" src="../src/pb-geolocation.js"></script>
     <!--/scripts-->
@@ -33,17 +34,25 @@
                     box-shadow: -7px -6px 8px 0px #00000038;
                 }
             </style>
-            <main>
-                <p id="locations">Lorem ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="13.33920479" latitude="52.50671377" label="Berlin">Berlin</pb-geolocation> sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut 
-                    labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores 
-                    et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
-                    ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="2.32003101" latitude="48.85881005" label="Paris">Paris</pb-geolocation>
-                    sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
-                    dolore magna aliquyam erat, sed diam voluptua <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>. At vero eos et accusam et justo duo dolores et ea rebum. 
-                    Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-                <pb-leaflet-map id="map" zoom="11" toggle
-                    access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" />
-            </main>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <main>
+                    <p id="locations">Lorem ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="13.33920479" latitude="52.50671377" label="Berlin">Berlin</pb-geolocation> sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut 
+                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores 
+                        et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
+                        ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="2.32003101" latitude="48.85881005" label="Paris">Paris</pb-geolocation>
+                        sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
+                        dolore magna aliquyam erat, sed diam voluptua <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>. At vero eos et accusam et justo duo dolores et ea rebum. 
+                        Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                    <pb-leaflet-map id="map" zoom="11" toggle
+                        access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw">
+                        <pb-leaflet-map-layer url="https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png" max-zoom="17"
+                            attribution="Map data: &copy; "/>
+                        <pb-leaflet-map-layer url="https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"
+                            attribution="Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors | Map style: &copy; &lt;a href="https://www.OpenRailwayMap.org"&gt;OpenRailwayMap&lt;/a&gt; (&lt;a href="https://creativecommons.org/licenses/by-sa/3.0/"&gt;CC-BY-SA&lt;/a&gt;)"
+                            max-zoom="19"/>
+                    </pb-leaflet-map>
+                </main>
+            </pb-page>
             <script type="text/javascript">
                 /** 
                  * Manually initialize map markers once components are ready. 

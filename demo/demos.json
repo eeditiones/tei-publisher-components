@@ -53,7 +53,8 @@
     },
     "pb-leaflet-map": {
         "demo/pb-leaflet-map.html": "Demo",
-        "demo/pb-leaflet-map2.html": "Show map on demand"
+        "demo/pb-leaflet-map2.html": "Show map on demand",
+        "demo/pb-leaflet-map3.html": "Map with layers"
     },
     "pb-link": {
         "demo/pb-link.html": "Demo"
