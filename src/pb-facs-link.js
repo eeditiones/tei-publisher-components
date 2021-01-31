@@ -24,8 +24,14 @@ export class PbFacsLink extends pbMixin(LitElement) {
             trigger: {
                 type: String
             },
+            /**
+             * If set, trigger a `pb-show-annotation` event as soon as the element is initialized.
+             * Use this to make `pb-facsimile` or `pb-svg` switch to the given image/coordinates upon
+             * load.
+             */
             emitOnLoad: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'emit-on-load'
             }
         };
     }
