@@ -91,7 +91,7 @@ export default [
             copy({
                 targets: [
                     {
-                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map.html'],
+                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html'],
                         dest: 'dist/demo',
                         transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
                     },
@@ -102,7 +102,7 @@ export default [
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`)
                     },
                     {
-                        src: 'demo/pb-leaflet-map.html',
+                        src: ['demo/pb-leaflet-map.html', 'demo/pb-leaflet-map2.html', 'demo/pb-leaflet-map3.html'],
                         dest: 'dist/demo',
                         transform: (contents) =>
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
