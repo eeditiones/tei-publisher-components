@@ -1,3 +1,10 @@
+## [1.19.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.0...v1.19.1) (2021-01-31)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** fix demo ([b8cdcb1](https://github.com/eeditiones/tei-publisher-components/commit/b8cdcb15fda48f93a21a1fad213430db7767c586))
+
 # [1.19.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.18.1...v1.19.0) (2021-01-31)
 
 
