@@ -48,13 +48,13 @@ export class PbDrawer extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        const toggle = document.getElementById(this.toggle);
+        const toggle = this.toggle ? document.getElementById(this.toggle) : null;
         if (toggle) {
             toggle.addEventListener('click', this._toggle.bind(this));
         }
 
-        document.body.addEventListener('click', (ev) => {
-            if (ev.target !== toggle && this.opened) {
+        document.body.addEventListener('click', () => {
+            if (this.opened) {
                 this.opened = false;
             }
         });
@@ -101,7 +101,10 @@ export class PbDrawer extends pbMixin(LitElement) {
     }
 
     _toggle(ev) {
-        ev.preventDefault();
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
         if (this.opened) {
             this.opened = false;
         } else {

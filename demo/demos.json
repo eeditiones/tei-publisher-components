@@ -30,7 +30,8 @@
         "demo/pb-download.html": "Demo"
     },
     "pb-drawer": {
-        "demo/pb-drawer.html": "Demo"
+        "demo/pb-drawer.html": "Demo",
+        "demo/pb-drawer2.html": "Toggling drawer from custom event"
     },
     "pb-edit-xml": {
         "demo/pb-edit-xml.html": "Demo"
