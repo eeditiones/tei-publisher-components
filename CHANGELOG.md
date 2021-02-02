@@ -1,3 +1,10 @@
+## [1.19.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.1...v1.19.2) (2021-02-02)
+
+
+### Bug Fixes
+
+* **pb-drawer:** toggle may not have been specified - allow controlling pb-drawer via custom event ([d311968](https://github.com/eeditiones/tei-publisher-components/commit/d31196894cb8d3f14049cab22633ddfc6503076c))
+
 ## [1.19.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.0...v1.19.1) (2021-01-31)
 
 
