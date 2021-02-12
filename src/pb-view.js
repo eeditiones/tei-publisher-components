@@ -45,6 +45,8 @@ import '@polymer/paper-dialog-scrollable';
  * @cssprop --pb-footnote-padding - Padding around a footnote marker
  * @cssprop --pb-footnote-font-size - Font size for the footnote marker
  * @cssprop --pb-footnote-font-family - Font family for the footnote marker
+ * @csspart content - The root div around the displayed content
+ * @csspart footnotes - div containing the footnotes
   
  * @fires pb-start-update - Fired before the element updates its content
  * @fires pb-update - Fired when the component received content from the server
@@ -1203,7 +1205,7 @@ export class PbView extends pbMixin(LitElement) {
                 html`<div id="bottom-observer" class="observer"></div>` :
                 null
             }
-                <div id="footnotes">${this._footnotes}</div>
+                <div id="footnotes" part="footnotes">${this._footnotes}</div>
             </div>
             <paper-dialog id="errorDialog">
                 <h2>${translate('dialogs.error')}</h2>
