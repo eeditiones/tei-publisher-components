@@ -38,8 +38,18 @@
                     position: relative;
                 }
 
+                pb-view::part(footnotes) {
+                    border-top: 1px solid #d0d0d0;
+                    margin-top: 20px;
+                }
+
                 pb-drawer {
                     background-color: #f0f0f0;
+                    --pb-drawer-width: 33vw;
+                }
+
+                pb-drawer::part(content) {
+                    padding: 0 20px;
                 }
 
                 .tei-persName3, .tei-placeName3 {
@@ -57,7 +67,7 @@
                         The content to be displayed is taken from the alternate and copied into the drawer.
                     </p>
                     <hr>
-                    <pb-drawer id="info-drawer" emit="info" subscribe="info">
+                    <pb-drawer id="info-drawer" emit="info" subscribe="info" position="right">
                         <div class="drawer-content">
                             <h3>Additional Information</h3>
                             <div id="info-content"></div>

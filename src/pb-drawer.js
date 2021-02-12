@@ -8,6 +8,9 @@ import { pbMixin } from './pb-mixin.js';
  * @slot - unnamed default slot for the content
  * @fires pb-load - Fires a load request when opened
  * @fires pb-refresh - When received, closes the drawer
+ * @cssprop [--pb-drawer-width=448px] - width of the drawer
+ * @cssprop [--pb-drawer-transition=.5s] - transition to use for sliding in
+ * @csspart content - the inner div wrapping around the drawer content
  */
 export class PbDrawer extends pbMixin(LitElement) {
     static get properties() {
@@ -36,6 +39,14 @@ export class PbDrawer extends pbMixin(LitElement) {
             maxWidth: {
                 type: String,
                 attribute: 'max-width'
+            },
+            /**
+             * Determines the position at which the drawer will appear in overlay mode.
+             * Should be either 'left' or 'right'.
+             */
+            position: {
+                type: String,
+                reflect: true
             }
         };
     }
@@ -43,6 +54,7 @@ export class PbDrawer extends pbMixin(LitElement) {
     constructor() {
         super();
         this.opened = false;
+        this.position = 'left';
     }
 
     connectedCallback() {
@@ -65,6 +77,10 @@ export class PbDrawer extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        const width = getComputedStyle(this).getPropertyValue('width');
+        // calculate the negative width to be used when the drawer is hidden
+        this.style.setProperty('--pb-drawer-offset', `-${width}`);
+
         if (!this.maxWidth) {
             this.classList.add('overlay');
             return;
@@ -119,7 +135,7 @@ export class PbDrawer extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <div><slot></slot></div>
+            <div part="content"><slot></slot></div>
         `;
     }
 
@@ -127,28 +143,36 @@ export class PbDrawer extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
+                width: var(--pb-drawer-width, 448px);
             }
 
             :host(.overlay) {
                 position: fixed;
-                width: 0;
-                left: -448px;
                 bottom: 0;
                 height: 100vh;
                 z-index: 1000;
                 overflow: auto;
                 display: block;
-                transition: .5s;
+                transition: var(--pb-drawer-transition, .5s);
+            }
+            :host(.overlay[position="left"]) {
+                left: var(--pb-drawer-offset);
+            }
+            :host(.overlay[position="right"]) {
+                right: var(--pb-drawer-offset);
             }
 
-            :host([opened]) {
+            :host([opened][position="left"]) {
                 left: 0;
-                width: 448px;
-                transition: .5s;
+                transition: var(--pb-drawer-transition, .5s);
+            }
+            :host([opened][position="right"]) {
+                right: 0;
+                transition: var(--pb-drawer-transition, .5s);
             }
 
             div {
-                padding: 10px 10px;
+                padding: 10px;
             }
         `;
     }
