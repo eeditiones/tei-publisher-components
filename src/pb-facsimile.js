@@ -40,11 +40,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
             },
             /** If true then the 'Go home' button is displayed to go back to the original zoom and pan. */
             showHomeControl: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'show-home-control'
             },
             /** If true then the 'Toggle full page' button is displayed to switch between full page and normal mode. */
             showFullPageControl: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'show-full-page-control'
             },
             /**
              * Default zoom between: set to 0 to adjust to viewer size.
@@ -59,11 +61,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
              * browser support for rotate (e.g. viewer.drawer.canRotate()).
              */
             showRotationControl: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'show-rotation-control'
             },
             // Constrain during pan
             constrainDuringPan: {
-                type: Boolean
+                type: Boolean,
+                attribute: 'contrain-during-pan'
             },
             /**
              *  The percentage ( as a number from 0 to 1 ) of the source image
@@ -74,7 +78,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
              * to true will provide the effect of an infinitely scrolling viewport.
              */
             visibilityRatio: {
-                type: Number
+                type: Number,
+                attribute: 'visibility-ratio'
             },
             /**
              * Type of the source of the image to display: either 'iiif' or 'image'
@@ -119,8 +124,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.type = 'iiif';
         this.visibilityRatio = 1;
         this.defaultZoomLevel = 0;
-        this.showHomeControl = true;
-        this.showNavigationControl = true;
+        this.showHomeControl = false;
+        this.showNavigator = false;
+        this.showNavigationControl = false;
+        this.showFullPageControl = false;
+        this.showRotationControl = false;
+        this.constrainDuringPan = false;
         this.src = '';
         this.prefixUrl = '../images/openseadragon/';
         this.loaded = false;
