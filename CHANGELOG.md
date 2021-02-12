@@ -1,3 +1,12 @@
+## [1.19.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.2...v1.19.3) (2021-02-12)
+
+
+### Bug Fixes
+
+* **pb-drawer:** add property position=left|right to slide in from right or left; add CSS properties for width; support ::part for inner div ([01df3f1](https://github.com/eeditiones/tei-publisher-components/commit/01df3f154cc1a962341418ef4ce7b1a4c0237247))
+* **pb-facsimile:** all properties should be dash-separated, not camel case; show-xxx-control properties had no effect; set all boolean properties to false by default ([f9610d2](https://github.com/eeditiones/tei-publisher-components/commit/f9610d20bd5a5dd67afb0d7cccf8d9225cdd28ab))
+* **pb-view:** document parts; add part to style footnote div ([4499d92](https://github.com/eeditiones/tei-publisher-components/commit/4499d92df5c39ed8f99532b0a28089b220f83d86))
+
 ## [1.19.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.1...v1.19.2) (2021-02-02)
 
 
