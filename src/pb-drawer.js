@@ -143,12 +143,12 @@ export class PbDrawer extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
-                width: var(--pb-drawer-width, 448px);
             }
 
             :host(.overlay) {
                 position: fixed;
                 bottom: 0;
+                width: var(--pb-drawer-width, 448px);
                 height: 100vh;
                 z-index: 1000;
                 overflow: auto;
