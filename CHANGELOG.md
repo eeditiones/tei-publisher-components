@@ -1,3 +1,10 @@
+## [1.19.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.3...v1.19.4) (2021-02-12)
+
+
+### Bug Fixes
+
+* **pb-drawer:** only enforce fixed width in overlay mode ([8f90984](https://github.com/eeditiones/tei-publisher-components/commit/8f90984edc0c5bcce1cfe300586961a2629b5c2c))
+
 ## [1.19.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.2...v1.19.3) (2021-02-12)
 
 
