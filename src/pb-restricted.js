@@ -21,6 +21,11 @@ export class PbRestricted extends pbMixin(LitElement) {
             show: {
                 type: Boolean
             },
+            /** Id of the HTML element to be displayed as a fallback */
+            fallbackElement: {
+                attribute: 'fallback-element',
+                type: String
+            },
             /**
              * If set, requires the logged in user to be member of
              * the given group.
@@ -51,8 +56,10 @@ export class PbRestricted extends pbMixin(LitElement) {
     render() {
         if (this.show) {
             this.style.display = '';
+            toggleFallback(this.fallback);
         } else {
             this.style.display = 'none';
+            toggleFallback(this.fallback);
         }
         return html`
             ${this.show && !this.disabled ? html`<slot></slot>` : null}
@@ -80,4 +87,24 @@ export class PbRestricted extends pbMixin(LitElement) {
         return true;
     }
 }
+
+function toggleFallback(fallbackId) {
+
+    if(fallbackId) {
+        const fallbackEl = document.getElementById(fallbackId);
+        if(!fallbackEl) {
+            console.error(`a fallback element is defined, but no element with id ${fallbackId} is found!`);
+            return;
+        }
+        switch(fallbackEl.style.display) {
+            case 'none':
+                fallbackEl.style.display = '';
+                break;
+            case '':
+            default:
+                fallbackEl.style.display = 'none';
+        }
+    }
+}
+
 customElements.define('pb-restricted', PbRestricted);
