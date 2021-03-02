@@ -1,13 +1,17 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 
 
 /**
  * Show content if the user is logged in. Optionally requires the user
  * to be member of a specific group. Listens for the `pb-login` event
  * triggered by `pb-login` to be notified of user changes.
+ * 
+ * You may specify fallback content to be shown if the user is not logged in
+ * within a slot named 'fallback'.
  *
  * @slot - unnamed default slot
+ * @slot fallback - optional content to show if user is not logged in
  * @fires pb-login - When received, changes the state of the component according to the user info received
  */
 export class PbRestricted extends pbMixin(LitElement) {
@@ -19,7 +23,8 @@ export class PbRestricted extends pbMixin(LitElement) {
                 type: String
             },
             show: {
-                type: Boolean
+                type: Boolean,
+                reflect: true
             },
             /**
              * If set, requires the logged in user to be member of
@@ -49,13 +54,8 @@ export class PbRestricted extends pbMixin(LitElement) {
     }
 
     render() {
-        if (this.show) {
-            this.style.display = '';
-        } else {
-            this.style.display = 'none';
-        }
         return html`
-            ${this.show && !this.disabled ? html`<slot></slot>` : null}
+            ${this.show && !this.disabled ? html`<slot></slot>` : html`<slot name="fallback"></slot>`}
         `;
     }
 

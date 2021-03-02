@@ -20,6 +20,9 @@
                 pb-login {
                     --pb-login-link-color: #886666;
                 }
+                [slot="fallback"] {
+                    color: #ff9922;
+                }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
@@ -31,6 +34,7 @@
 
                         <pb-restricted login="loginElem">
                             <p>This paragraph will only be shown if a user is logged in.</p>
+                            <p slot="fallback">You need to be logged in to see this content.</p>
                         </pb-restricted>
 
                         <pb-restricted login="loginElem" group="dba">
