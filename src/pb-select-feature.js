@@ -127,7 +127,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-dropdown-menu id="menu" label="${translate(this.label)}">
+            <paper-dropdown-menu id="menu" label="${translate(this.label)}" .disabled="${this.disabled}">
                 <paper-listbox id="list" slot="dropdown-content" selected="${this.selected}">
                     ${this.items.map((item) => html`<paper-item>${item.name}</paper-item>`)}
                 </paper-listbox>

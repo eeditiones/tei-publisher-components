@@ -161,7 +161,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-checkbox id="checkbox" @change="${this._changed}" .checked="${this.checked}"><slot></slot></paper-checkbox>
+            <paper-checkbox id="checkbox" @change="${this._changed}" .checked="${this.checked}" .disabled="${this.disabled}"><slot></slot></paper-checkbox>
         `;
     }
 
