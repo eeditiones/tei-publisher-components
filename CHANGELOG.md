@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.4...v1.20.0) (2021-03-02)
+
+
+### Bug Fixes
+
+* **pb-toggle-feature,pb-select-feature:** respect the global disabled property ([7597a6c](https://github.com/eeditiones/tei-publisher-components/commit/7597a6c2d3eb301b55a13742f91598a8be88ad4c))
+
+
+### Features
+
+* **i18n:** add support for Chinese simplified and traditional ([b5fa659](https://github.com/eeditiones/tei-publisher-components/commit/b5fa6599598c6b76b5d7749eed71e457f7f8f29d))
+* **pb-restricted:** add optional fallback slot to show content if user is not logged in ([0140d63](https://github.com/eeditiones/tei-publisher-components/commit/0140d63abca155d2479b1b63fbf2094bca5be114))
+
 ## [1.19.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.3...v1.19.4) (2021-02-12)
 
 
