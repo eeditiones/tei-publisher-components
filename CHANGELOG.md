@@ -1,3 +1,15 @@
+# [1.21.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.20.0...v1.21.0) (2021-03-17)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** properly show location markers, support tooltips and popups ([f2a7641](https://github.com/eeditiones/tei-publisher-components/commit/f2a7641c1b1b5e4389b005f2df87c60aa2b726d1))
+
+
+### Features
+
+* **pb-geolocation:** support popups to be displayed in map ([6cc2aa1](https://github.com/eeditiones/tei-publisher-components/commit/6cc2aa19d03fafd45b8b12d6eb076f69289001bd))
+
 # [1.20.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.19.4...v1.20.0) (2021-03-02)
 
 
