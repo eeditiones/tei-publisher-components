@@ -33,7 +33,7 @@
                 <main>
                     <ul id="locations">
                         <li>
-                            <pb-geolocation longitude="20.99761963" latitude="52.23621035" label="Warsaw">Warszawa
+                            <pb-geolocation longitude="8.035903639726621" latitude="47.860249912035364" label="Feldberg">Feldberg
                             </pb-geolocation>
                         </li>
                         <li>
@@ -45,8 +45,11 @@
                             </pb-geolocation>
                         </li>
                     </ul>
-                    <pb-leaflet-map id="map" zoom="11"
-                        access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" />
+                    <pb-leaflet-map id="map" zoom="11">
+                        <pb-map-layer show base label="HikeBike Map" url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}" max-zoom="19"
+                            access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw"
+                            attribution='&copy; &lt;a href="https://www.mapbox.com/about/maps/"&gt;Mapbox&lt;/a&gt; &copy &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; &lt;strong&gt;&lt;a href="https://www.mapbox.com/map-feedback/" target="_blank"&gt;Improve this map&lt;/a&gt;&lt;/strong&gt;'></pb-map-layer>
+                    </pb-leaflet-map>
                 </main>
             </pb-page>
             <script type="text/javascript">

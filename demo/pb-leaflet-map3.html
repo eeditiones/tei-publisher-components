@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
     <title>pb-leaflet-map Demo</title>
+
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
@@ -24,23 +25,41 @@
             }
 
             pb-leaflet-map {
-                height: 640px;
+                height: 480px;
             }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <main>
                     <ul id="locations">
                         <li>
-                            <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>
+                            <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">
+                                Titisee
+                                <template slot="popup">
+                                    <p>Der <b>Titisee</b> ist ein <a href="https://de.wikipedia.org/wiki/See" title="See">See</a> im südlichen <a href="https://de.wikipedia.org/wiki/Schwarzwald" title="Schwarzwald">Schwarzwald</a> in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a>.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Titisee">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
                         </li>
                         <li>
-                            <pb-geolocation event="click" longitude="8.035903639726621" latitude="47.860249912035364">Feldberg</pb-geolocation>
+                            <pb-geolocation event="click" longitude="8.035903639726621" latitude="47.860249912035364">
+                                Feldberg
+                                <template slot="popup">
+                                    <p>Der <b>Feldberg</b> ist mit <span style="border-width:0px; padding:0px; margin:0px;">1493 <abbr title="Meter über Normalhöhennull">m ü. NHN</abbr></span></sup> der höchste Berg in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a>.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Feldberg_(Berg_im_Schwarzwald)">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
                         </li>
                         <li>
-                            <pb-geolocation event="click" longitude="8.125068739930907" latitude="47.97215106146882">Thurner</pb-geolocation>
+                            <pb-geolocation event="click" longitude="8.125068739930907" latitude="47.97215106146882">
+                                Thurner
+                                <template slot="popup">
+                                    <p>Der <b>Thurner</b> ist eine Passhöhe und ein <a href="https://de.wikipedia.org/wiki/Weiler" title="Weiler">Weiler</a> im Südosten der Gemeinde <a href="https://de.wikipedia.org/wiki/St._M%C3%A4rgen" title="St. Märgen">St. Märgen</a>, Ortsteil dieser Gemeinde im <a href="https://de.wikipedia.org/wiki/Landkreis_Breisgau-Hochschwarzwald" title="Landkreis Breisgau-Hochschwarzwald">Landkreis Breisgau-Hochschwarzwald</a> in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a> (<a href="https://de.wikipedia.org/wiki/Deutschland" title="Deutschland">Deutschland</a>) auf einer kleinen Hochebene, auf die Straßensteigen aus den Talsystemen von <a href="https://de.wikipedia.org/wiki/Zartenbach" class="mw-redirect" title="Zartenbach">Zartenbach</a> im Süden, <a href="https://de.wikipedia.org/wiki/Wagensteigbach" title="Wagensteigbach">Wagensteigbach</a> im Nordosten, <a href="https://de.wikipedia.org/wiki/Wilde_Gutach" title="Wilde Gutach">Wilder Gutach</a> im Norden, <a href="https://de.wikipedia.org/wiki/Urach_(Hammerbach)" title="Urach (Hammerbach)">Urach</a> im Osten und <a href="https://de.wikipedia.org/wiki/Wutach" title="Wutach">Wutach</a> im Südosten führen.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Thurner_(St._M%C3%A4rgen)">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
                         </li>
                     </ul>
-                    <pb-leaflet-map id="map" zoom="14">
+                    <pb-leaflet-map id="map" zoom="14" access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw">
                         <pb-map-layer show base label="HikeBike Map" url="https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png" max-zoom="19"
                             attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
                         <pb-map-layer base label="ESRI World Imagery" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -63,7 +82,7 @@
                  * Not necessary if the pb-geolocation appear inside a component
                  * which does itself send the `pb-update` event, e.g. `pb-view`.
                  */
-                document.addEventListener('WebComponentsReady', () => { 
+                document.addEventListener('WebComponentsReady', () => {
                     document.dispatchEvent(new CustomEvent('pb-update', { 
                         detail: { 
                             root: document.getElementById('locations')

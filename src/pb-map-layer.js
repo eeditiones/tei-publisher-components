@@ -64,7 +64,8 @@ export class PbMapLayer extends LitElement {
                 type: String
             },
             accessToken: {
-                type: String
+                type: String,
+                attribute: 'access-token'
             }
         };
     }
@@ -78,7 +79,7 @@ export class PbMapLayer extends LitElement {
     get options() {
         const options = {};
         Object.keys(PbMapLayer.properties).forEach(key => {
-            if (ignore.indexOf(key) > -1 && this[key]) {
+            if (ignore.indexOf(key) < 0 && this[key]) {
                 options[key] = this[key];
             }
         });

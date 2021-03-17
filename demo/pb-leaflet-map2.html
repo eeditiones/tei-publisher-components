@@ -43,27 +43,12 @@
                         sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
                         dolore magna aliquyam erat, sed diam voluptua <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>. At vero eos et accusam et justo duo dolores et ea rebum. 
                         Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-                    <pb-leaflet-map id="map" zoom="11" toggle
-                        access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw">
+                    <pb-leaflet-map id="map" zoom="11" toggle>
                         <pb-map-layer show base label="HikeBike Map" url="https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png" max-zoom="19"
                             attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
                     </pb-leaflet-map>
                 </main>
             </pb-page>
-            <script type="text/javascript">
-                /** 
-                 * Manually initialize map markers once components are ready. 
-                 * Not necessary if the pb-geolocation appear inside a component
-                 * which does itself send the `pb-update` event, e.g. `pb-view`.
-                 */
-                document.addEventListener('WebComponentsReady', () => { 
-                    document.dispatchEvent(new CustomEvent('pb-update', { 
-                        detail: { 
-                            root: document.getElementById('locations')
-                        }
-                    }));
-                });
-            </script>
         </template>
     </pb-demo-snippet>
 </body>
