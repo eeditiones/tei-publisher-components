@@ -10,7 +10,7 @@ import { PbHighlight } from "./pb-highlight.js";
  * into which `pb-geolocation`s emit and that map is loaded before the emitting component, e.g. `pb-view`, by specifying 
  * `wait-for` property
  *
- * @slot - default unnamed slot for content
+ * @slot - default unnamed slot for content. May also contain an option `<template>` element for content to be shown in a popup
  * @fires pb-geolocation - Sends geocoordinates
  * @cssprop --pb-highlight-color - Background color to highlight an element
  */
@@ -50,7 +50,9 @@ export class PbGeolocation extends PbHighlight {
                     latitude: this.latitude,
                     longitude: this.longitude
                 },
-                label: this.label
+                label: this.label,
+                popup: this.popup,
+                element: this
             })
         );
     }
@@ -59,11 +61,25 @@ export class PbGeolocation extends PbHighlight {
         return html`<span id="content"><slot></slot></span>`;
     }
 
+    get popup() {
+        const template = this.querySelector('template');
+        if (template) {
+            const wrapper = document.createElement('div');
+            wrapper.appendChild(template.content.cloneNode(true));
+            return wrapper;
+        }
+        return null;
+    }
+
     static get styles() {
         return css`
             :host {
                 display: inline;
                 cursor: pointer;
+            }
+
+            [name="popup"] {
+                display: none;
             }
 
             @keyframes keyFrameBackgroundColorIn {
