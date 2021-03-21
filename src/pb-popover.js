@@ -218,7 +218,6 @@ export class PbPopover extends pbMixin(LitElement) {
     _registerMutationObserver() {
         const slot = this._getSlot();
         this._observer = new MutationObserver(() => {
-            console.log('<pb-popover> Changed: %o', slot);
             this.alternate = this._getContent();
             this.emitTo('pb-popover-changed', this.alternate);
         });
@@ -245,7 +244,6 @@ export class PbPopover extends pbMixin(LitElement) {
      * directly and the changes should be picked up by the component.
      */
     set alternate(content) {
-        console.log('<pb-popover> Setting alternate: %o', content);
         this._content = content;
         if (this._tippy) {
             this._tippy.setContent(this._content);
@@ -303,7 +301,9 @@ export class PbPopover extends pbMixin(LitElement) {
                 trigger: this.trigger
             };
             if (this.persistent) {
-                options.hideOnClick = true;
+                options.onClickOutside = (instance, ev) => {
+                    instance.hideWithInteractivity(ev);
+                };
             }
             if (this.theme && this.theme !== 'none') {
                 options.theme = this.theme;
