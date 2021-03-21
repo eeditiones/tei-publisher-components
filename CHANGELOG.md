@@ -1,3 +1,10 @@
+## [1.21.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.1...v1.21.2) (2021-03-21)
+
+
+### Bug Fixes
+
+* **pb-popover:** if persistent is true, only hide the popover when user clicks outside ([59f6c5e](https://github.com/eeditiones/tei-publisher-components/commit/59f6c5eacd7847e626491a2d292a9f448adb4ce8))
+
 ## [1.21.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.0...v1.21.1) (2021-03-21)
 
 
