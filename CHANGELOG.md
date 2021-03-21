@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.0...v1.21.1) (2021-03-21)
+
+
+### Bug Fixes
+
+* **pb-popover:** fix display of nested popovers; allow trigger action to be set for all pb-popover via CSS custom variable ([cbb625b](https://github.com/eeditiones/tei-publisher-components/commit/cbb625ba960e0be20ff344aaef883f7d21593e81))
+
 # [1.21.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.20.0...v1.21.0) (2021-03-17)
 
 
