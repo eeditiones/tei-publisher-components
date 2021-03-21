@@ -46,7 +46,10 @@ import * as themes from './pb-popover-themes.js';
  * Default is 'auto'.
  * @prop {String} fallbackPlacement - Fallback placement if there is more space on another side.
  * Accepts same values as `placement`. Separate by space if more than one.
- * @prop {Boolean} persistent - If true, show the popup on click instead of mouseover.
+ * @prop {Boolean} persistent - If true, show the 'hand' cursor when hovering over the link; `trigger` will be set to 'click'
+ * unless defined otherwise; clicking anywhere on the page will close the popup.
+ * @prop {"click" | "mouseenter" | "focus" | "focusin"} trigger - Defines one or more actions (space separated) which should cause
+ * the popover to show. If property `persistent` is set, `trigger` will by default be set to `click`.
  * @prop {String} poupClass - Additional class names which will be added to the popup element.
  * Use this to apply a specific style to certain popovers, but not others.
  * @prop {String} remote - An optional URL to asynchronously load the popover's content from. Content will
@@ -55,6 +58,8 @@ import * as themes from './pb-popover-themes.js';
  * @slot default - the content to show for the trigger. If not specified, this will fall back to the unnamed slot.
  * @slot alternate - the content to show in the popup
  * 
+ * @csspart trigger - the inline element used as trigger
+ * 
  * @cssprop [--pb-popover-theme=none] - popup theme to use. One of 'material', 'light', 'translucent' or 'light-border'
  * @cssprop [--pb-popover-link-decoration=inherit] - text decoration for the trigger
  * @cssprop [--pb-popover-max-height=calc(100vh - 60px)] - limit the maximum height of the popup
@@ -62,6 +67,8 @@ import * as themes from './pb-popover-themes.js';
  * @cssprop --pb-popover-color - Color of the popup text
  * @cssprop [--pb-popover-placement=auto] - Preferred popup placement, see property `placement`
  * @cssprop --pb-popover-fallback-placement - Fallback placements separated by space
+ * @cssprop --pb-popover-trigger - define the trigger action, same as property `trigger`
+ * @cssprop --pb-popover-persistent - switch to persistent behaviour, see property `persistent`
  */
 export class PbPopover extends pbMixin(LitElement) {
     static get properties() {
@@ -83,6 +90,9 @@ export class PbPopover extends pbMixin(LitElement) {
             persistent: {
                 type: Boolean
             },
+            trigger: {
+                type: String
+            },
             popupClass: {
                 type: String,
                 attribute: 'popup-class'
@@ -96,6 +106,7 @@ export class PbPopover extends pbMixin(LitElement) {
     constructor() {
         super();
         this.persistent = false;
+        this.trigger = null;
         this.for = null;
         this.theme = null;
         this.placement = null;
@@ -109,7 +120,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
-        return html`<span id="link" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
+        return html`<span id="link" part="trigger" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     disconnectedCallback() {
@@ -131,6 +142,12 @@ export class PbPopover extends pbMixin(LitElement) {
         }
         if (!this.fallbackPlacement) {
             this.fallbackPlacement = this._getCSSProperty('--pb-popover-fallback-placement', null);
+        }
+        if (!this.persistent) {
+            this.persistent = this._getCSSProperty('--pb-popover-persistent', false);
+        }
+        if (!this.trigger) {
+            this.trigger = this._getCSSProperty('--pb-popover-trigger', null);
         }
     }
 
@@ -173,6 +190,9 @@ export class PbPopover extends pbMixin(LitElement) {
     }
 
     _getContent() {
+        if (this._content) {
+            return this._content;
+        }
         const slot = this._getSlot();
         if (slot) {
             const content = document.createElement('div');
@@ -216,7 +236,7 @@ export class PbPopover extends pbMixin(LitElement) {
      * The returned element is always a `div` and can be modified.
      */
     get alternate() {
-        return this._content;
+        return this._getContent();
     }
 
     /**
@@ -225,6 +245,7 @@ export class PbPopover extends pbMixin(LitElement) {
      * directly and the changes should be picked up by the component.
      */
     set alternate(content) {
+        console.log('<pb-popover> Setting alternate: %o', content);
         this._content = content;
         if (this._tippy) {
             this._tippy.setContent(this._content);
@@ -254,6 +275,10 @@ export class PbPopover extends pbMixin(LitElement) {
 
         this._registerMutationObserver();
 
+        if (!this.trigger) {
+            this.trigger = this.persistent ? 'click' : 'mouseenter';
+        }
+
         const root = this.getRootNode();
         let target;
         if (this.for) {
@@ -265,11 +290,7 @@ export class PbPopover extends pbMixin(LitElement) {
             target = this.shadowRoot.getElementById('link');
         }
         if (target) {
-            if (!this._content) {
-                this._content = this._getContent();
-            }
             const options = {
-                content: this._content,
                 allowHTML: true,
                 appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
                 placement: this.placement,
@@ -278,10 +299,10 @@ export class PbPopover extends pbMixin(LitElement) {
                 boundary: 'viewport',
                 maxWidth: 'none',
                 touch: 'hold',
-                hideOnClick: false
+                hideOnClick: false,
+                trigger: this.trigger
             };
             if (this.persistent) {
-                options.trigger = 'click';
                 options.hideOnClick = true;
             }
             if (this.theme && this.theme !== 'none') {
@@ -305,9 +326,11 @@ export class PbPopover extends pbMixin(LitElement) {
                     instance.popper.classList.add(this.popupClass);
                 };
             }
-            options.onShow = () => {
+            options.onShow = (instance) => {
                 if (this.remote) {
                     this._loadRemoteContent();
+                } else {
+                    instance.setContent(this._getContent());
                 }
                 this.emitTo('pb-popover-show', { source: this });
             };

@@ -32,6 +32,14 @@
                         text-decoration: underline;
                     }
 
+                    pb-popover[for="dolore"] {
+                        --pb-popover-trigger: 'click';
+                        --pb-popover-persistent: true;
+                    }
+                    #dolore {
+                        cursor: pointer;
+                    }
+
                     /* Address a specific popup (popup-class="info")*/
                     .info {
                         --pb-popover-font-size: 18px;
@@ -60,9 +68,10 @@
                             et ea rebum. <pb-popover persistent theme="light-border">Stet clita kasd gubergren<template slot="alternate"><p>A persistent tooltip</p></template></pb-popover>, no sea takimata sanctus est<br>
                             <span class="trigger" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
                         <p>You can also load popover content asynchronously from a
-                            <pb-popover remote="popover-data.html" persistent>remote URL<span slot="alternate">Loading ...</span></pb-popover>.</p>
+                            <pb-popover remote="popover-data.html" trigger="mouseenter focus">remote URL<span slot="alternate">Loading ...</span></pb-popover>.</p>
+                        <p>It is also possible to <pb-popover id="dynamic">set or modify the content of a popup dynamically</pb-popover> by setting the property <code>alternate</code>.</p>
                         <pb-popover for="aliquyam" popup-class="info">
-                            <blockquote class="note">Popover content using block level elements should be placed outside the text flow using attribute <code>for</code>
+                            <blockquote class="note">Popover content using block level elements should either be specified in a HTML <code>template</code> tag or placed outside the text flow using attribute <code>for</code>
                             to link to an inline trigger element.</blockquote>
                             <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
                             <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
@@ -71,9 +80,19 @@
                         </pb-popover>
                         <pb-popover for="lorem">This popover is connected to its trigger element
                             using the 'for' attribute.</pb-popover>
-                        <pb-popover for="nested">This popover is nested into another popover.</pb-popover>
                         <pb-popover for="dolore">This is a popover containing a link to 
-                            <span class="trigger" id="nested">another popover</span>.</pb-popover>
+                            <pb-popover><span class="trigger" id="nested">a nested popover</span>
+                                <template slot="alternate">
+                                    <p>Nested popovers should be inlined in the containing popover. Don't use <code>for</code>
+                                    in this case.</p>
+                                </template>
+                            </pb-popover>.
+                        </pb-popover>
+                        <script>
+                            window.addEventListener('WebComponentsReady', () => {
+                                document.getElementById('dynamic').alternate = '<p>This was set dynamically</p>';
+                            });
+                        </script>
                     </main>
                 </pb-page>
             </template>
