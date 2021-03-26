@@ -1,3 +1,10 @@
+## [1.21.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.2...v1.21.3) (2021-03-26)
+
+
+### Bug Fixes
+
+* **pb-markdown:** update content when url property is changed dynamically ([c5073fc](https://github.com/eeditiones/tei-publisher-components/commit/c5073fc306fc962bd6de4a4e72a5f11a29401ca4))
+
 ## [1.21.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.1...v1.21.2) (2021-03-21)
 
 
