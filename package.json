@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
-    "@open-wc/eslint-config": "^3.0.0",
+    "@open-wc/eslint-config": "^4.2.0",
     "@open-wc/prettier-config": "^1.1.0",
     "@open-wc/testing": "^2.5.29",
     "@open-wc/testing-karma": "^4.0.8",

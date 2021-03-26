@@ -498,11 +498,11 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return this._endpoint;
     }
 
-    toAbsoluteURL(relative) {
+    toAbsoluteURL(relative, server) {
         if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
             return relative;
         }
-        const endpoint = this.getEndpoint();
+        const endpoint = server || this.getEndpoint();
         const base = endpoint === '.' ? 
             new URL(window.location.href) : 
             new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);

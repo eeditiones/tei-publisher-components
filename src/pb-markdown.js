@@ -64,23 +64,22 @@ export class PbMarkdown extends pbMixin(LitElement) {
         };
     }
 
+    constructor() {
+        super();
+        this._url = null;
+    }
+
+    set url(value) {
+        this._url = value;
+        PbMarkdown.waitOnce('pb-page-ready', (options) => {
+            this._load(options.endpoint);
+        });
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.style.display = 'block';
-        if (this.url) {
-            PbMarkdown.waitOnce('pb-page-ready', () => {
-                const url = this.toAbsoluteURL(this.url);
-                fetch(url, { credentials: 'same-origin' })
-                    .then((response) => response.text())
-                    .catch(() => {
-                        console.error('<pb-markdown> failed to load content from %s', url.toString());
-                        return Promise.resolve(this.content);
-                    })
-                    .then((text) => {
-                        this.content = text;
-                    });
-            });
-        }
+
         if (!this.content) {
             const content = document.createElement('div');
             for (let i = 0; i < this.childNodes.length; i++) {
@@ -91,11 +90,27 @@ export class PbMarkdown extends pbMixin(LitElement) {
         }
     }
 
+    _load(server) {
+        const url = this.toAbsoluteURL(this._url, server);
+        fetch(url, { credentials: 'same-origin' })
+          .then(response => response.text())
+          .catch(() => {
+            console.error('<pb-markdown> failed to load content from %s', url.toString());
+            return Promise.resolve(this.content);
+          })
+          .then(text => {
+            this.content = text;
+          });
+    }
+
     createRenderRoot() {
         return this;
     }
 
     render() {
+        if (!this.content) {
+            return null;
+        }
         return html`<div>${unsafeHTML(window.marked(this.content))}</div>`;
     }
 }
