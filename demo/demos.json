@@ -129,7 +129,8 @@
     "demo/pb-version.html": "Demo"
   },
   "pb-mei": {
-    "demo/pb-mei.html": "Demo"
+    "demo/pb-mei.html": "Demo",
+    "demo/pb-mei2.html": "Extended Features"
   },
   "pb-autocomplete": {
     "demo/pb-autocomplete.html": "Demo",

@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-mei Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
+    <script type="module" src="../src/pb-mei.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                pb-mei {
+                    max-width: 1024px;
+                    width: 100%;
+                    margin: 40px 0;
+                    padding: 20px 0;
+                    border-bottom: 1px solid #919191;
+                    border-top: 1px solid #919191;
+                }
+                pb-mei:first-child {
+                    margin-top: 0;
+                }
+
+                #clefs {
+                    margin-left: 32px;
+                }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <main>
+                    <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
+                        footer="none">
+                        <paper-checkbox id="clefs">Original Clefs</paper-checkbox>
+                    </pb-mei>
+                    <!--pb-mei player url="test/app-scoreDef.mei" footer="none"
+                        ></pb-mei-->
+                </main>
+                <script>
+                    const mei = document.getElementById('viewer');
+                    const checkbox = document.getElementById('clefs');
+                    checkbox.addEventListener('change', () => {
+                        mei.appXPath = checkbox.checked ? "./rdg[contains(@label, 'original')]" : null;
+                    });
+                </script>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
