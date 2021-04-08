@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.3...v1.22.0) (2021-04-08)
+
+
+### Features
+
+* **pb-mei:** support dynamic switching of app/lem/rdg and other alternates in MEI content ([5de4d03](https://github.com/eeditiones/tei-publisher-components/commit/5de4d03fc63d48b3be0fff72ae548f38b8fc96f7))
+
 ## [1.21.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.21.2...v1.21.3) (2021-03-26)
 
 
