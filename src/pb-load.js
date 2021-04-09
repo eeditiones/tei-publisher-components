@@ -206,6 +206,9 @@ export class PbLoad extends pbMixin(LitElement) {
         let url = this.url;
         if (this.expand) {
             url = url.replace(/{([^})]+)}/g, (match, key) => {
+                if (!params[key]) {
+                    return '';
+                }
                 const param = encodeURIComponent(params[key] || key);
                 delete params[key];
                 return param;
@@ -316,14 +319,16 @@ export class PbLoad extends pbMixin(LitElement) {
     _handleError() {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
-        const msg = loader.lastError.response;
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(msg, "application/xml");
-        const node = doc.querySelector('message');
-
+        const { response } = loader.lastError;
+        let message;
+        if (response) {
+            message = response.description;
+        } else {
+            message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
+        }
         const dialog = this.shadowRoot.getElementById('errorDialog');
         const body = dialog.querySelector("paper-dialog-scrollable");
-        body.innerHTML = node.textContent;
+        body.innerHTML = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
         dialog.open();
     }
 
