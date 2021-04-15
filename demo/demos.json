@@ -109,6 +109,9 @@
   "pb-tabs": {
     "demo/pb-tabs.html": "Demo"
   },
+  "pb-timeline": {
+    "demo/pb-timeline.html": "Demo"
+  },
   "pb-toggle-feature": {
     "demo/pb-toggle-feature.html": "Server-side with pb-view",
     "demo/pb-toggle-feature2.html": "Client-side",

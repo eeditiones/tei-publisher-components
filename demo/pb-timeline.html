@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-timeline Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-timeline.js"></script>
+        <!--/scripts-->
+
+        <style>
+            main{
+                padding: 50px;
+            }
+            pb-timeline{
+                padding: 5rem 0;
+            }
+            #start, #end, #scope{
+                display: block;
+                margin-bottom: 1rem;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <h1>Timeline Demo</h1>
+            <!--
+        <pb-demo-snippet>
+            <template>
+-->
+
+            <label for="start">Start Date</label>
+            <input id="start" type="date" value="1891-05-18">
+            <label for="end">End Date</label>
+            <input id="end" type="date" value="1978-01-01">
+
+
+            <label for="scope">Scope</label>
+            <select id="scope">
+                <option value="D">Day</option>
+                <option value="W">Week</option>
+                <option value="M">Month</option>
+                <option value="Y">Year</option>
+                <option value="5Y">5 Years</option>
+                <option value="10Y">10 Years</option>
+            </select>
+            <pb-timeline scope="D"></pb-timeline>
+
+            <textarea id="logs"></textarea>
+            <!--
+
+                </template>
+            </pb-demo-snippet>
+    -->
+
+        </main>
+    </body>
+
+
+    <script type="module">
+        import { jsonDataDev } from './timeline-dev-data.js';
+        import {SearchResultService} from "../src/search-result-service.js";
+
+        const jsonData = jsonDataDev;
+
+        const dispatchPbTimelineDataLoadedEvent = (jsonData) => {
+            document.dispatchEvent(new CustomEvent('pb-timeline-data-loaded', {
+                bubbles: true,
+                detail: {
+                    jsonData: jsonData,
+                }
+            }));
+        }
+
+
+
+        const initDevControls = () => {
+            const tl = document.querySelector('pb-timeline');
+
+            const startDateStr = document.getElementById('start').value;
+            const endDateStr = document.getElementById('end').value;
+
+            // filter jsonData (was previously loaded)
+            const newJsonData = {};
+            Object.keys(jsonData).filter(key => key >= startDateStr && key < endDateStr).forEach(key => {
+                newJsonData[key] = jsonData[key];
+            })
+            // init seearch result object and make visible to window
+            const searchResult = new SearchResultService(newJsonData);
+            window.sr = searchResult;
+
+            // Output intervallsizes to console
+            let sizes = window.sr.getIntervalSizes();
+            const maxInterval = 60;
+            const selection = sizes["D"] <= maxInterval ? "D" : sizes["W"] <= maxInterval ? "W" : sizes["M"] <= maxInterval ? "M" : sizes["Y"] <= maxInterval ? "Y" : sizes["5Y"] <= maxInterval ? "5Y" : sizes["10Y"] <= maxInterval ? "10Y" : "invalid";
+            let msg = `${startDateStr} to ${endDateStr}\n------------------------\n`;
+            Object.keys(sizes).forEach(scope => {
+                msg += `${scope.padStart(3, " ")} : ${sizes[scope]} ${selection === scope ? "<----" : ""}\n`;
+            })
+            document.querySelector("textarea#logs").innerHTML = msg;
+            // dispatch event to commuicate with components (daterange picker + timeline)
+            dispatchPbTimelineDataLoadedEvent(newJsonData);
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initDevControls();
+        });
+
+    </script>
+</html>
