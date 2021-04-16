@@ -28,7 +28,9 @@ import '@polymer/iron-ajax';
 *
 * Public Events
 *   pb-timeline-daterange-changed
+*   pb-timeline-date-changed
 *   pb-timeline-reset-selection
+*   pb-timeline-loaded
 */
 const scopes = ['D','W','M','Y','5Y','10Y'];
 
@@ -50,9 +52,6 @@ export class PbTimeline extends LitElement {
         padding-right: 30px !important;
       }
       .wrapper {
-        max-width:100vw;
-        overflow-Y:hidden;
-        overflow-x:auto;
         margin: 0 auto;
         width: auto;
         height: 80px;
@@ -214,17 +213,32 @@ export class PbTimeline extends LitElement {
 
     static get properties() {
         return {
+            /**
+             * start date for timeline to display
+             */
             startDate:{
                 type:String,
                 attribute: 'start-date'
             },
+            /**
+             * endDate for timeline to display
+             */
             endDate: {
                 type: String,
                 attribute: 'end-date'
             },
+            /**
+             * the scope for the timeline. Must be one of the pre-defined scopes.
+             */
             scope:{
                 type: String
             },
+            /**
+             * endpoint to load timeline data. Expects response to be an
+             * object with key value pairs for (date, hits).
+             *
+             * Will be reloaded whenever 'start-date' or 'end-date' attributes change.
+             */
             url:{
                 type: String
             }
@@ -246,13 +260,7 @@ export class PbTimeline extends LitElement {
   firstUpdated() {
     this.bins = this.shadowRoot.querySelectorAll(".bin-container");
     this.tooltip = this.shadowRoot.getElementById("tooltip");
-    // load data event
-/*
-    document.addEventListener("pb-timeline-data-loaded", e => {
-      this.searchResult = new SearchResultService(e.detail.jsonData);
-      this.setData(this.searchResult.export());
-    })
-*/
+
     // global mouseup event
     document.addEventListener("mouseup", () => {
       this._mouseUp();
@@ -281,29 +289,27 @@ export class PbTimeline extends LitElement {
       this._hideTooltip();
     });
 
-    // const loader = this.shadowRoot.getElementById('loadData');
-    // loader.generateRequest();
-
   }
 
+    /**
+     * checks if 'scope' has changed and re-applies dataset accordingly
+     *
+     * @param changedProperties
+     */
   updated (changedProperties){
-    console.log('updated ', changedProperties);
     if(changedProperties.has('scope')){
-        console.log('scope changed ', this.scope);
+
         if(this.searchResult){
-            this.setData(this.searchResult.export(this.scope));
+            if(scopes.includes(this.scope)){
+                this.setData(this.searchResult.export(this.scope));
+            }else{
+                console.error('unknown scope ', this.scope);
+            }
         }
 
     }
-    // if(this.startDate === '' || this.endDate === ''){
-    //     console.error('start- or end-date missing');
-    //     return;
-    // }
-    //
-    // // +++ trigger data reload
-    // console.log('startDate ', this.startDate);
-    // console.log('endDate ', this.endDate);
   }
+
 
   setData(dataObj) {
     this.dataObj = dataObj;
@@ -343,8 +349,7 @@ export class PbTimeline extends LitElement {
     this.bins.forEach(bin => {
       if (bin.dataset.isodatestr >= startDateStr && bin.dataset.isodatestr <= endDateStr) {
         bin.classList.add("selected");
-      } else {
-        bin.classList.remove("selected");
+      } else {bin.classList.remove("selected");
       }
     });
     this._displayTooltip();
@@ -405,13 +410,23 @@ export class PbTimeline extends LitElement {
   }
 
   _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr) {
-    document.dispatchEvent(new CustomEvent('pb-timeline-daterange-changed', {
-      bubbles: true,
-      detail: {
-        startDateStr: startDateStr,
-        endDateStr: endDateStr,
-      }
-    }));
+    if(startDateStr === endDateStr){
+        document.dispatchEvent(new CustomEvent('pb-timeline-date-changed', {
+            bubbles: true,
+            detail: {
+                date: startDateStr
+            }
+        }));
+
+    }else{
+        document.dispatchEvent(new CustomEvent('pb-timeline-daterange-changed', {
+            bubbles: true,
+            detail: {
+                startDateStr: startDateStr,
+                endDateStr: endDateStr,
+            }
+        }));
+    }
   }
 
   _dispatchPbTimelineResetSelectionEvent() {
@@ -583,6 +598,13 @@ export class PbTimeline extends LitElement {
         })
         this.searchResult = new SearchResultService(newJsonData);
         this.setData(this.searchResult.export(this.scope));
+        this.dispatchEvent(new CustomEvent('pb-timeline-loaded', {
+            detail: {
+                value: true
+            },
+            composed: true,
+            bubbles: true
+        }));
 
         console.log('data:', data);
     }

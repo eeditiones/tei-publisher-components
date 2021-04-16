@@ -14,14 +14,19 @@
         <style>
             main{
                 padding: 50px;
+
             }
             pb-timeline{
-                padding: 5rem 0;
-                max-width: 50vw;
+                padding: 2rem 0;
             }
             #start, #end, #scope{
                 display: block;
                 margin-bottom: 1rem;
+            }
+            .wraptl{
+                max-width: 60vw;
+                overflow-y:hidden;
+                overflow-x:auto;
             }
         </style>
     </head>
@@ -49,10 +54,14 @@
                 <option value="5Y">5 Years</option>
                 <option value="10Y">10 Years</option>
             </select>
-            <pb-timeline scope="Y"
-                         start-date="1891-05-18"
-                         end-date="1978-01-01"
-                         url="./timeline-dev-data.json"></pb-timeline>
+
+
+            <div class="wraptl">
+                <pb-timeline scope="Y"
+                             start-date="1891-05-18"
+                             end-date="1978-01-01"
+                             url="./timeline-dev-data.json"></pb-timeline>
+            </div>
 
 <!--            <textarea id="logs"></textarea>-->
             <!--
@@ -101,6 +110,13 @@
                 console.log('scope changed')
                 const val = e.target.value;
                 const tl = document.querySelector('pb-timeline').scope = val;
+            });
+
+            document.addEventListener('pb-timeline-date-changed', (e) =>{
+                console.log('date changed ', e.detail.date);
+            });
+            document.addEventListener('pb-timeline-daterange-changed', (e) =>{
+                console.log('daterange changed ', e.detail.startDateStr, e.detail.endDateStr);
             });
         });
 
