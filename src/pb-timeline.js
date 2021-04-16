@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { SearchResultService } from "./search-result-service.js";
 import { ParseDateService } from "./parse-date-service.js";
+import '@polymer/iron-ajax';
 
 /**
 * A timeline component that displays a barchart for search results
@@ -29,9 +30,12 @@ import { ParseDateService } from "./parse-date-service.js";
 *   pb-timeline-daterange-changed
 *   pb-timeline-reset-selection
 */
+const scopes = ['D','W','M','Y','5Y','10Y'];
+
 export class PbTimeline extends LitElement {
 
-  static get styles() {
+
+    static get styles() {
     return css`
       :host{
         display:block;
@@ -46,6 +50,9 @@ export class PbTimeline extends LitElement {
         padding-right: 30px !important;
       }
       .wrapper {
+        max-width:100vw;
+        overflow-Y:hidden;
+        overflow-x:auto;
         margin: 0 auto;
         width: auto;
         height: 80px;
@@ -205,15 +212,34 @@ export class PbTimeline extends LitElement {
     `;
   }
 
-  static get properties() {
-    return { };
-  }
+    static get properties() {
+        return {
+            startDate:{
+                type:String,
+                attribute: 'start-date'
+            },
+            endDate: {
+                type: String,
+                attribute: 'end-date'
+            },
+            scope:{
+                type: String
+            },
+            url:{
+                type: String
+            }
+        };
+    }
 
   constructor() {
     super();
     this.maxHeight = 80; // in pixels, has to be identical to the max-height specified in CSS
     this.multiplier = 0.75; // max percentage of bin compared to the bin-conainer. Set 1 for full height (not recommended)
     this.mousedown = false;
+    this.startDate = '';
+    this.endDate = '';
+    this.scope = '';
+    this.url = '';
     this._resetSelectionProperty();
   }
 
@@ -221,10 +247,12 @@ export class PbTimeline extends LitElement {
     this.bins = this.shadowRoot.querySelectorAll(".bin-container");
     this.tooltip = this.shadowRoot.getElementById("tooltip");
     // load data event
+/*
     document.addEventListener("pb-timeline-data-loaded", e => {
       this.searchResult = new SearchResultService(e.detail.jsonData);
       this.setData(this.searchResult.export());
     })
+*/
     // global mouseup event
     document.addEventListener("mouseup", () => {
       this._mouseUp();
@@ -252,6 +280,29 @@ export class PbTimeline extends LitElement {
       this.resetSelection();
       this._hideTooltip();
     });
+
+    // const loader = this.shadowRoot.getElementById('loadData');
+    // loader.generateRequest();
+
+  }
+
+  updated (changedProperties){
+    console.log('updated ', changedProperties);
+    if(changedProperties.has('scope')){
+        console.log('scope changed ', this.scope);
+        if(this.searchResult){
+            this.setData(this.searchResult.export(this.scope));
+        }
+
+    }
+    // if(this.startDate === '' || this.endDate === ''){
+    //     console.error('start- or end-date missing');
+    //     return;
+    // }
+    //
+    // // +++ trigger data reload
+    // console.log('startDate ', this.startDate);
+    // console.log('endDate ', this.endDate);
   }
 
   setData(dataObj) {
@@ -465,6 +516,15 @@ export class PbTimeline extends LitElement {
         @mouseleave="${this._hideTooltip}">
         ${this.dataObj ? this.renderBins() : ""}
         ${this.renderTooltip()}
+        <iron-ajax
+            id="loadData"
+            verbose
+            handle-as="json"
+            method="get"
+            with-credentials
+            @response="${this._handleResponse}"
+            url="${this.url}?start=${this.startDate}&end=${this.endDate}"
+            auto></iron-ajax>
       </div>
     `;
   }
@@ -500,7 +560,7 @@ export class PbTimeline extends LitElement {
             <div class="bin" style="height: ${(binObj.value / this.maxValue) * this.maxHeight * this.multiplier}px"></div>
             <p class="bin-title
               ${this.dataObj.binTitleRotated ? "rotated" : ""}
-              ${this.dataObj.scope === "M" ? "months" : this.dataObj.scope === "W" ? "weeks" : this.dataObj.scope === "D" ? "days" : ""}"
+              ${this.scope}"
               >${binObj.binTitle ? binObj.binTitle : ""}
             </p>
             ${binObj.title ? html`
@@ -511,6 +571,22 @@ export class PbTimeline extends LitElement {
       })}
     `
   }
+
+    async _handleResponse (){
+        await this.updateComplete;
+        const loader = this.shadowRoot.getElementById('loadData');
+        const data = loader.lastResponse;
+
+        const newJsonData = {};
+        Object.keys(data).filter(key => key >= this.startDate && key < this.endDate).forEach(key => {
+            newJsonData[key] = data[key];
+        })
+        this.searchResult = new SearchResultService(newJsonData);
+        this.setData(this.searchResult.export(this.scope));
+
+        console.log('data:', data);
+    }
+
 }
 
 customElements.define('pb-timeline', PbTimeline);

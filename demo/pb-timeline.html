@@ -17,6 +17,7 @@
             }
             pb-timeline{
                 padding: 5rem 0;
+                max-width: 50vw;
             }
             #start, #end, #scope{
                 display: block;
@@ -44,13 +45,16 @@
                 <option value="D">Day</option>
                 <option value="W">Week</option>
                 <option value="M">Month</option>
-                <option value="Y">Year</option>
+                <option value="Y" selected="selected">Year</option>
                 <option value="5Y">5 Years</option>
                 <option value="10Y">10 Years</option>
             </select>
-            <pb-timeline scope="D"></pb-timeline>
+            <pb-timeline scope="Y"
+                         start-date="1891-05-18"
+                         end-date="1978-01-01"
+                         url="./timeline-dev-data.json"></pb-timeline>
 
-            <textarea id="logs"></textarea>
+<!--            <textarea id="logs"></textarea>-->
             <!--
 
                 </template>
@@ -62,9 +66,10 @@
 
 
     <script type="module">
-        import { jsonDataDev } from './timeline-dev-data.js';
+        // import { jsonDataDev } from './timeline-dev-data.js';
         import {SearchResultService} from "../src/search-result-service.js";
 
+/*
         const jsonData = jsonDataDev;
 
         const dispatchPbTimelineDataLoadedEvent = (jsonData) => {
@@ -75,41 +80,30 @@
                 }
             }));
         }
-
-
-
-        const initDevControls = () => {
-            const tl = document.querySelector('pb-timeline');
-
-            const startDateStr = document.getElementById('start').value;
-            const endDateStr = document.getElementById('end').value;
-
-            // filter jsonData (was previously loaded)
-            const newJsonData = {};
-            Object.keys(jsonData).filter(key => key >= startDateStr && key < endDateStr).forEach(key => {
-                newJsonData[key] = jsonData[key];
-            })
-            // init seearch result object and make visible to window
-            const searchResult = new SearchResultService(newJsonData);
-            window.sr = searchResult;
-
-            // Output intervallsizes to console
-            let sizes = window.sr.getIntervalSizes();
-            const maxInterval = 60;
-            const selection = sizes["D"] <= maxInterval ? "D" : sizes["W"] <= maxInterval ? "W" : sizes["M"] <= maxInterval ? "M" : sizes["Y"] <= maxInterval ? "Y" : sizes["5Y"] <= maxInterval ? "5Y" : sizes["10Y"] <= maxInterval ? "10Y" : "invalid";
-            let msg = `${startDateStr} to ${endDateStr}\n------------------------\n`;
-            Object.keys(sizes).forEach(scope => {
-                msg += `${scope.padStart(3, " ")} : ${sizes[scope]} ${selection === scope ? "<----" : ""}\n`;
-            })
-            document.querySelector("textarea#logs").innerHTML = msg;
-            // dispatch event to commuicate with components (daterange picker + timeline)
-            dispatchPbTimelineDataLoadedEvent(newJsonData);
-        }
-
+*/
 
         document.addEventListener("DOMContentLoaded", () => {
-            initDevControls();
+            // initDevControls();
+
+            const startInput = document.getElementById('start');
+            startInput.addEventListener('input', (e)=>{
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').startDate = val;
+            });
+
+            const endInput = document.getElementById('end');
+            endInput.addEventListener('input', (e)=>{
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').endDate = val;
+            });
+            const select = document.getElementById('scope');
+            select.addEventListener('change', (e)=>{
+                console.log('scope changed')
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').scope = val;
+            });
         });
+
 
     </script>
 </html>
