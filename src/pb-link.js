@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from './urls.js';
 
 /**
  * Create an internal link: clicking it will cause connected views to
@@ -34,6 +35,9 @@ export class PbLink extends pbMixin(LitElement) {
             },
             /** Switch the ODD to use for display */
             odd: {
+                type: String
+            },
+            view: {
                 type: String
             },
             /**
@@ -85,32 +89,38 @@ export class PbLink extends pbMixin(LitElement) {
         ev.preventDefault();
 
         const params = {
-            position: null
+            root: null
+        };
+        const urlParams = {
+            root: null
         };
         if (this.xmlId) {
             params.id = this.xmlId;
-            this.history && this.setParameter('id', this.xmlId);
+            urlParams.id = this.xmlId;
         } else if (this.nodeId) {
             params.position = this.nodeId;
-            this.history && this.setParameter('root', this.nodeId);
+            urlParams.root = this.nodeId;
         }
         if (this.path) {
             params.path = this.path;
-            this.history && this.setPath(this.path);
+            urlParams.path = this.path;
         }
         if (this.odd) {
             params.odd = this.odd;
-            this.history && this.setParameter('odd', this.odd);
+            urlParams.odd = this.odd;
         }
-        if (this.hash){
+        if (this.hash) {
             params.hash = this.hash;
-            if (this.history) {
-                this.getUrl().hash = this.hash;
-            }
-        } else if (this.history) {
-            this.getUrl().hash = '';
+            urlParams.hash = this.hash;
         }
-        this.pushHistory('link click');
+        if (this.view) {
+            params.view = this.view;
+            urlParams.view = this.view;
+        }
+        if (this.history) {
+            registry.set(urlParams);
+            registry.commit('link click');
+        }
 
         this.emitTo('pb-refresh', params);
     }

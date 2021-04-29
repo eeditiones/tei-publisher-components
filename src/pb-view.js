@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { getParameter, setParameter, pushHistory } from "./urls.js";
+import { registry } from "./urls.js";
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
@@ -372,22 +372,23 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         if (!this.disableHistory) {
-            const id = getParameter('id');
+            const id = registry.get('id');
             if (id && !this.xmlId) {
                 this.xmlId = id;
             }
 
-            const action = getParameter('action');
+            const action = registry.get('action');
             if (action && action === 'search') {
                 this.highlight = true;
             }
 
-            const nodeId = getParameter('root');
+            const nodeId = registry.get('root');
             if (this.view === 'single') {
                 this.nodeId = null;
             } else if (nodeId && !this.nodeId) {
                 this.nodeId = nodeId;
             }
+            registry.subscribe(this._refresh.bind(this));
         }
         if (!this.waitFor) {
             this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
@@ -556,10 +557,10 @@ export class PbView extends pbMixin(LitElement) {
                 this.nodeId = null;
             }
             // clear nodeId if set to null
-            if (ev.detail.position === null) {
+            if (this.getView() === 'single' || ev.detail.root === null) {
                 this.nodeId = null;
             } else {
-                this.nodeId = ev.detail.position || this.nodeId;
+                this.nodeId = ev.detail.root || this.nodeId;
             }
             if (!this.noScroll) {
                 this._scrollTarget = ev.detail.hash;
@@ -740,11 +741,10 @@ export class PbView extends pbMixin(LitElement) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        if (!this.disableHistory && this.xmlId && !this.map) {
-            //setParameter('root', this.nodeId);
-            setParameter('id', this.xmlId);
-            pushHistory('Navigate to xml:id');
-        }
+        // if (!this.disableHistory && this.xmlId && !this.map) {
+        //     registry.set('id', this.xmlId);
+        //     registry.commit('Navigate to xml:id');
+        // }
         this.xmlId = null;
 
         this.updateComplete.then(() => {
@@ -1059,28 +1059,33 @@ export class PbView extends pbMixin(LitElement) {
      * @param {string} direction either `backward` or `forward`
      */
     navigate(direction) {
+        // in single view mode there should be no navigation
+        if (this.getView() === 'single') {
+            return;
+        }
+
         this.lastDirection = direction;
 
         if (direction === 'backward') {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
                     if (this.previousId) {
-                        setParameter('id', this.previousId);
+                        registry.set('id', this.previousId);
                     } else {
-                        setParameter('root', this.previous);
+                        registry.set('root', this.previous);
                     }
-                    pushHistory('Navigate backward');
+                    registry.commit('Navigate backward');
                 }
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
                 if (this.nextId) {
-                    setParameter('id', this.nextId);
+                    registry.set('id', this.nextId);
                 } else {
-                    setParameter('root', this.next);
+                    registry.set('root', this.next);
                 }
-                pushHistory('Navigate forward');
+                registry.commit('Navigate forward');
             }
             this._load(this.next, direction);
         }

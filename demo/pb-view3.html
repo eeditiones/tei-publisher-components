@@ -8,14 +8,17 @@
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
-        <script type="module" src="../src/pb-popover.js"></script>
         <script type="module" src="../src/pb-navigation.js"></script>
         <script type="module" src="../src/pb-progress.js"></script>
-        <script type="module" src="../src/pb-events.js"></script>
+        <script type="module" src="../src/pb-drawer.js"></script>
+        <script type="module" src="../src/pb-load.js"></script>
+        <script type="module" src="../src/pb-link.js"></script>
+        <script type="module" src="../src/pb-collapse.js"></script>
+        <script type="module" src="../src/pb-observable.js"></script>
         <!--/scripts-->
     </head>
 
@@ -27,75 +30,72 @@
                     position: relative;
                 }
 
-                #view1 {
-                    height: 70vh;
-                    overflow: auto;
-                    display: flex;
-                    justify-content: center;
-                    margin-left: auto;
-                    margin-right: auto;
+                main {
+                    display: grid;
+                    height: calc(100vh - 128px);
+                    grid-template-columns: 360px 1fr;
+                    grid-template-rows: 1fr auto;
                 }
 
-                @media (min-width: 769px) {
-                    #view1, footer {
-                        max-width: 60vw;
-                    }
+                ul {
+                    grid-row: 1 / 2;
+                }
+
+                #view1 {
+                    grid-column: 2 / 2;
+                    grid-row: 1 / 1;
+                    overflow: auto;
+                    font-family: var(--pb-base-font-family);
+                    font-size: 20px;
+                    padding: 0;
                 }
 
                 footer {
-                    position: relative;
-                    margin-top: 10px;
-                    bottom: 0;
-                    background-color: #f2f2f2;
-                    margin-left: auto;
-                    margin-right: auto;
+                    grid-column: 2 / 2;
+                    grid-row: 2 / 2;
+                    background-color: var(--pb-toolbar-background-color);
                 }
 
-                pb-navigation[disabled] {
-                    display: block;
-                    visibility: hidden;
-                }
-
-                pb-navigation[direction="forward"] {
+                footer pb-navigation[direction=forward] {
                     float: right;
                 }
                 </style>
-                <p>Demonstrates how to manipulate pb-view contents via Javascript before they are displayed in a pb-view:</p>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                    <pb-document id="document1" path="test/graves6.xml"></pb-document>
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-template="{?path,root}{#id}">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
-                    <pb-progress subscribe="transcription"></pb-progress>
-                    <!-- Output the document title -->
-                    <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
-                        subscribe="transcription">
-                        <pb-param name="header" value="short"/>
-                    </pb-view>
-                    <pb-view id="view1" src="document1" view="single" append-footnotes animation
-                        before-update-event="before-transcription-update"
-                        subscribe="transcription" emit="transcription"></pb-view>
+                    <pb-progress></pb-progress>
+                    <main>
+                        <ul>
+                            <li>
+                                <pb-link path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page">Kant chapter by
+                                    xml:id</pb-link>
+                            </li>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" odd="docbook" view="div">Documentation</pb-link>
+                            </li>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook" view="div">Link by xml:id
+                                </pb-link>
+                            </li>
+                        </ul>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links
+                            load-css="odd/docbook.css"></pb-view>
+                        <footer>
+                            <!-- Navigate to next page -->
+                            <pb-navigation direction="forward" keyboard="right">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-right"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                            <!-- Navigate to previous page -->
+                            <pb-navigation direction="backward" keyboard="left">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-left"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                        </footer>
+                    </main>
                 </pb-page>
-                <script>
-                    window.addEventListener('DOMContentLoaded', () => {
-                        pbEvents.subscribe('before-transcription-update', 'transcription', (ev) => {
-                            const root = ev.detail.root;
-                            // walk through all .tei-name elements and insert a node before each
-                            root.querySelectorAll('.tei-name').forEach((name) => {
-                                // create a span with text 'Name' and orange color
-                                const span = document.createElement('span');
-                                span.innerHTML = 'Name';
-                                span.style.backgroundColor = 'orange';
-                                span.style.padding = '0 4px';
-                                span.style.fontSize = '.85em';
-                                // insert the span before the name
-                                name.parentNode.insertBefore(span, name);
-                            });
-
-                            // to actually show the modified content in the pb-view,
-                            // we need to call the render function passed in the event detail:
-                            ev.detail.render(root);
-                        });
-                    });
-                </script>
             </template>
         </pb-demo-snippet>
     </body>

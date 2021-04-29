@@ -67,13 +67,15 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
         }
     }
 
-    _handleClick() {
+    _handleClick(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
         this.emitTo('pb-navigate', { direction: this.direction });
     }
 
     render() {
         return html`
-            <a id="button" @click="${this._handleClick}"><slot></slot></a>
+            <a href="#" @click="${this._handleClick}"><slot></slot></a>
         `;
     }
 

@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
-import { getParameter, setURLTemplate } from "./urls.js";
+import { registry } from "./urls.js";
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
@@ -145,6 +145,7 @@ class PbPage extends pbMixin(LitElement) {
         this.endpoint = ".";
         this.apiVersion = undefined;
         this.requireLanguage = false;
+        this.urlTemplate = `{?root}{#id}`;
         this._localeFallbacks = [];
         this._i18nInstance = null;
 
@@ -184,7 +185,7 @@ class PbPage extends pbMixin(LitElement) {
         }
 
         if (this.urlTemplate) {
-            setURLTemplate(this.urlTemplate);
+            registry.configure(this.urlTemplate);
         }
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
@@ -192,12 +193,12 @@ class PbPage extends pbMixin(LitElement) {
         }
         this._localeFallbacks.push('common');
 
-        const target = getParameter('_target');
+        const target = registry.get('_target');
         if (target) {
             this.endpoint = target;
         }
 
-        const apiVersion = getParameter('_api');
+        const apiVersion = registry.get('_api');
         if (apiVersion) {
             this.apiVersion = apiVersion;
         }

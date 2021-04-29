@@ -1,27 +1,62 @@
 import { UriTemplate } from 'uri-templates-es';
 
-const url = new URL(window.location.href);
-let urlTemplate;
+const logStyle = 'color: #99FF33';
 
-export function setURLTemplate(template) {
-    urlTemplate = new UriTemplate(template);
+class Registry {
+    constructor() {
+        this.state = {};
+    }
+
+    configure(template) {
+        const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        this.urlTemplate = new UriTemplate(template);
+        this.state = this.urlTemplate.fromUri(absPath);
+        window.history.replaceState(JSON.stringify(this.state), '');
+        console.log(
+          '<registry> %cinitial state: %o',
+          logStyle,
+          this.state
+        );
+
+        window.addEventListener('popstate', (ev) => {
+            if (!ev.state) {
+                return;
+            }
+            const state = JSON.parse(ev.state);
+            console.log('<registry> %cpopstate: %o', logStyle, state);
+            document.dispatchEvent(
+              new CustomEvent('pb-popstate', {
+                detail: state,
+                composed: true,
+                bubbles: true,
+              })
+            );
+        });
+    }
+
+    subscribe(handler) {
+        document.addEventListener('pb-popstate', handler);
+    }
+
+    get(name) {
+        return this.state[name];
+    }
+
+    set(name, value) {
+        if (value) {
+            this.state[name] = value;
+        } else {
+            this.state = name;
+        }
+    }
+
+    commit(message) {
+        const newUrl = this.urlTemplate.fill(this.state);
+        const resolved = new URL(newUrl, window.location.href);
+        console.log('<registry> %ccommit %s: %s %o', logStyle, message, resolved.toString(), this.state);
+        const serialized = JSON.stringify(this.state);
+        window.history.pushState(serialized, message, resolved.toString());
+    }
 }
 
-export function getParameter(name) {
-    const params = urlTemplate.fromUri(window.location.href);
-    console.log('<urls> %s: %o', window.location.href, params);
-    return params[name];
-}
-
-export function setParameter(name, value) {
-    const params = urlTemplate.fromUri(window.location.href);
-    params[name] = value;
-    const newUrl = urlTemplate.fill(params);
-    const resolved = new URL(newUrl, window.location.href);
-    console.log('<urls> new URL: %s', resolved.toString());
-    url.href = resolved.toString();
-}
-
-export function pushHistory(msg, state) {
-    history.pushState(state, msg, url.toString());
-}
+export const registry = new Registry();
