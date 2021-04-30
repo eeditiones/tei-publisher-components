@@ -91,35 +91,25 @@ export class PbLink extends pbMixin(LitElement) {
         const params = {
             root: null
         };
-        const urlParams = {
-            root: null
-        };
         if (this.xmlId) {
             params.id = this.xmlId;
-            urlParams.id = this.xmlId;
         } else if (this.nodeId) {
-            params.position = this.nodeId;
-            urlParams.root = this.nodeId;
+            params.root = this.nodeId;
         }
         if (this.path) {
             params.path = this.path;
-            urlParams.path = this.path;
         }
         if (this.odd) {
             params.odd = this.odd;
-            urlParams.odd = this.odd;
         }
         if (this.hash) {
             params.hash = this.hash;
-            urlParams.hash = this.hash;
         }
         if (this.view) {
             params.view = this.view;
-            urlParams.view = this.view;
         }
         if (this.history) {
-            registry.set(urlParams);
-            registry.commit('link click');
+            registry.commit('link click', params);
         }
 
         this.emitTo('pb-refresh', params);

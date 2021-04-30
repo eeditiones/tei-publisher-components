@@ -181,11 +181,11 @@ class PbPage extends pbMixin(LitElement) {
         }
 
         if (!this.appRoot) {
-            this.appRoot = window.location.href;
+            this.appRoot = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         }
 
         if (this.urlTemplate) {
-            registry.configure(this.urlTemplate);
+            registry.configure(this.urlTemplate, this.appRoot);
         }
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {

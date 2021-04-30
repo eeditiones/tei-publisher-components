@@ -5,17 +5,24 @@ const logStyle = 'color: #99FF33';
 class Registry {
     constructor() {
         this.state = {};
+        this.rootPath = '';
     }
 
-    configure(template) {
+    configure(template, rootPath = '') {
+        this.rootPath = rootPath;
         const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        this.urlTemplate = new UriTemplate(template);
-        this.state = this.urlTemplate.fromUri(absPath);
+        this.urlTemplate = new UriTemplate(`${rootPath}${template}`);
+        const initialState = this.urlTemplate.fromUri(absPath);
+        if (!initialState) {
+            console.error('<registry> failed to parse URL');
+        } else {
+            this.state = initialState;
+        }
         window.history.replaceState(JSON.stringify(this.state), '');
         console.log(
-          '<registry> %cinitial state: %o',
-          logStyle,
-          this.state
+          '<registry> template: %s; initial state: %o',
+          `${rootPath}${template}`,
+          this.state,
         );
 
         window.addEventListener('popstate', (ev) => {
@@ -43,18 +50,15 @@ class Registry {
     }
 
     set(name, value) {
-        if (value) {
-            this.state[name] = value;
-        } else {
-            this.state = name;
-        }
+        this.state[name] = value;
     }
 
-    commit(message) {
+    commit(message, replaceState) {
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);
-        console.log('<registry> %ccommit %s: %s %o', logStyle, message, resolved.toString(), this.state);
-        const serialized = JSON.stringify(this.state);
+        const newState = replaceState || this.state;
+        console.log('<registry> %ccommit %s: %s %o', logStyle, message, resolved.toString(), newState);
+        const serialized = JSON.stringify(newState);
         window.history.pushState(serialized, message, resolved.toString());
     }
 }
