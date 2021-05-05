@@ -1,15 +1,24 @@
 import { UriTemplate } from 'uri-templates-es';
 
-const logStyle = 'color: #99FF33';
+function log(...args) {
+    args[0] = `%c<registry>%c ${args[0]}`;
+    args.splice(1, 0, 'font-weight: bold; color: #99FF33;', 'color: inherit; font-weight: normal');
+    console.log.apply(null, args);
+}
+
+function stateToJson(state) {
+    const cleanState = {};
+    Object.keys(state).filter(key => key !== '_source').forEach(key => { cleanState[key] = state[key] });
+    return JSON.stringify(cleanState);
+}
 
 class Registry {
+    
     constructor() {
         this.state = {};
-        this.rootPath = '';
     }
 
     configure(template, rootPath = '') {
-        this.rootPath = rootPath;
         const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         this.urlTemplate = new UriTemplate(`${rootPath}${template}`);
         const initialState = this.urlTemplate.fromUri(absPath);
@@ -18,19 +27,15 @@ class Registry {
         } else {
             this.state = initialState;
         }
-        window.history.replaceState(JSON.stringify(this.state), '');
-        console.log(
-          '<registry> template: %s; initial state: %o',
-          `${rootPath}${template}`,
-          this.state,
-        );
+        window.history.replaceState(stateToJson(this.state), '');
+        log('template: %s; initial state: %o', `${rootPath}${template}`, this.state);
 
         window.addEventListener('popstate', (ev) => {
             if (!ev.state) {
                 return;
             }
             const state = JSON.parse(ev.state);
-            console.log('<registry> %cpopstate: %o', logStyle, state);
+            log('popstate: %o', state);
             document.dispatchEvent(
               new CustomEvent('pb-popstate', {
                 detail: state,
@@ -54,11 +59,13 @@ class Registry {
     }
 
     commit(message, replaceState) {
+        if (replaceState) {
+            this.state = replaceState;
+        }
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);
-        const newState = replaceState || this.state;
-        console.log('<registry> %ccommit %s: %s %o', logStyle, message, resolved.toString(), newState);
-        const serialized = JSON.stringify(newState);
+        log('commit %s: %s %o', message, resolved.toString(), this.state);
+        const serialized = stateToJson(this.state);
         window.history.pushState(serialized, message, resolved.toString());
     }
 }
