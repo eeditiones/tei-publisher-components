@@ -1142,56 +1142,60 @@ export class PbView extends pbMixin(LitElement) {
             this._applyToggles(view);
         }
 
-        const properties = ev.detail.properties;
-        for (const [key, value] of Object.entries(properties)) {
-            switch (key) {
-                case 'odd':
-                case 'view':
-                case 'columnSeparator':
-                case 'xpath':
-                case 'nodeId':
-                    break;
-                default:
-                    this._features[key] = value;
-                    break;
-            }
-        }
-        if (properties) {
-            if (properties.odd) {
-                this.odd = properties.odd;
-            }
-            if (properties.view) {
-                this.view = properties.view;
-                if (this.view === 'single') {
-                    // when switching to single view, clear current node id
-                    this.nodeId = null;
-                } else {
-                    // otherwise use value for alternate view returned from server
-                    this.nodeId = this.switchView;
-                }
-            }
-            if (properties.xpath) {
-                this.xpath = properties.xpath;
-            }
-            if (properties.hasOwnProperty('columnSeparator')) {
-                this.columnSeparator = properties.columnSeparator;
-            }
-        }
-        if (ev.detail.selectors) {
-            ev.detail.selectors.forEach(sc => {
-                this._selector.set(sc.selector, {
-                    state: sc.state,
-                    command: sc.command || 'toggle'
-                });
-            });
-        }
+        this._configureToggles(ev.detail);
         if (ev.detail.action === 'refresh') {
-            if (Object.keys(properties).length > 0) {
+            if (Object.keys(ev.detail.properties).length > 0) {
                 this._updateStyles();
                 this._load();
             } else {
                 applyToggles();
             }
+        }
+    }
+
+    _configureToggles(details) {
+        const properties = details.properties;
+        for (const [key, value] of Object.entries(properties)) {
+          switch (key) {
+            case 'odd':
+            case 'view':
+            case 'columnSeparator':
+            case 'xpath':
+            case 'nodeId':
+              break;
+            default:
+              this._features[key] = value;
+              break;
+          }
+        }
+        if (properties) {
+          if (properties.odd) {
+            this.odd = properties.odd;
+          }
+          if (properties.view) {
+            this.view = properties.view;
+            if (this.view === 'single') {
+              // when switching to single view, clear current node id
+              this.nodeId = null;
+            } else {
+              // otherwise use value for alternate view returned from server
+              this.nodeId = this.switchView;
+            }
+          }
+          if (properties.xpath) {
+            this.xpath = properties.xpath;
+          }
+          if (properties.hasOwnProperty('columnSeparator')) {
+            this.columnSeparator = properties.columnSeparator;
+          }
+        }
+        if (details.selectors) {
+          details.selectors.forEach(sc => {
+            this._selector.set(sc.selector, {
+              state: sc.state,
+              command: sc.command || 'toggle',
+            });
+          });
         }
     }
 

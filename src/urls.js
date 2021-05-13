@@ -68,6 +68,11 @@ class Registry {
         const serialized = stateToJson(this.state);
         window.history.pushState(serialized, message, resolved.toString());
     }
+
+    replace(message) {
+        const serialized = stateToJson(this.state);
+        window.history.replaceState(serialized, message);
+    }
 }
 
 export const registry = new Registry();

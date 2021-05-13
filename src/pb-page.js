@@ -181,7 +181,7 @@ class PbPage extends pbMixin(LitElement) {
         }
 
         if (!this.appRoot) {
-            this.appRoot = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            this.appRoot = window.location.pathname;
         }
 
         if (this.urlTemplate) {

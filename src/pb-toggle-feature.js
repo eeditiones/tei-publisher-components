@@ -1,5 +1,6 @@
 import { LitElement, html } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
+import { registry } from './urls.js';
 import '@polymer/paper-checkbox';
 
 /**
@@ -187,11 +188,15 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                     properties: {},
                     action: 'init'
                 };
+                this._setState();
+                registry.replace('pb-toggle init');
                 this.emitTo('pb-toggle', params);
+                console.log('pb-toggle ready');
                 this.signalReady();
             });
         } else {
-            const param = this.getParameter(this.name);
+            const param = registry.get(this.name);
+            console.log('<pb-toggle-feature> Param: %s; default: %s', param, this.default);
             if (typeof param !== 'undefined') {
                 this.checked = param === 'on';
             } else {
@@ -207,10 +212,16 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                     properties: this.checked ? this.propertiesOn : this.propertiesOff,
                     action: 'init'
                 };
+                this._setState();
+                registry.replace('pb-toggle init');
                 this.emitTo('pb-toggle', params);
                 this.signalReady();
             });
         }
+        registry.subscribe((ev) => {
+            this.checked = ev.detail[this.name] === 'on';
+            this.shadowRoot.getElementById('checkbox').checked = this.checked;
+        });
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -227,11 +238,14 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         }
     }
 
-    _changed() {
+    _changed(ev) {
+        if (ev.type !== 'change') {
+            return;
+        }
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
         if (this.name) {
-            this.setParameter(this.name, this.checked ? 'on' : 'off');
-            this.pushHistory('toggle feature ' + this.name);
+            this._setState();
+            registry.commit(`toggle feature ${this.name}`);
         }
 
         const params = {
@@ -244,6 +258,26 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             action: 'refresh'
         };
         this.emitTo('pb-toggle', params);
+    }
+
+    _setState() {
+        const state = {
+          selectors: [
+            {
+              selector: this.selector,
+              command: this.action,
+              state: this.checked,
+            },
+          ],
+          properties: this.checked ? this.propertiesOn : this.propertiesOff,
+        };
+        let toggleState = registry.get('toggles');
+        if (!toggleState) {
+          toggleState = {};
+          registry.state.toggles = toggleState;
+        }
+        toggleState[this.name] = state;
+        registry.set(this.name, this.checked ? 'on' : 'off');
     }
 }
 
