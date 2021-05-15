@@ -193,12 +193,12 @@ class PbPage extends pbMixin(LitElement) {
         }
         this._localeFallbacks.push('common');
 
-        const target = registry.get('_target');
+        const target = registry.state._target;
         if (target) {
             this.endpoint = target;
         }
 
-        const apiVersion = registry.get('_api');
+        const apiVersion = registry.state._api;
         if (apiVersion) {
             this.apiVersion = apiVersion;
         }

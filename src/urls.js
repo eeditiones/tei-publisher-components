@@ -34,11 +34,11 @@ class Registry {
             if (!ev.state) {
                 return;
             }
-            const state = JSON.parse(ev.state);
-            log('popstate: %o', state);
+            this.state = JSON.parse(ev.state);
+            log('popstate: %o', this.state);
             document.dispatchEvent(
               new CustomEvent('pb-popstate', {
-                detail: state,
+                detail: this.state,
                 composed: true,
                 bubbles: true,
               })
@@ -50,12 +50,33 @@ class Registry {
         document.addEventListener('pb-popstate', handler);
     }
 
-    get(name) {
-        return this.state[name];
+    get(path) {
+        if (!this.state) {
+            return null;
+        }
+        return path.split('.').reduce((state, component) => {
+            if (!state[component]) {
+                return null;
+            }
+            return state[component];
+        }, this.state);
     }
 
-    set(name, value) {
-        this.state[name] = value;
+    set(path, value) {
+        const components = path.split('.');
+        let last;
+        if (components.length > 1) {
+            const last = components.slice(0, components.length - 1)
+                .reduce((result, component) => {
+                    if (!result[component]) {
+                        result[component] = {};
+                    }
+                    return result[component];
+                }, this.state);
+            last[components[components.length - 1]] = value;
+        } else {
+            this.state[path] = value;
+        }
     }
 
     commit(message, replaceState) {

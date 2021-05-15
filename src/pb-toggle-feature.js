@@ -180,6 +180,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             });
             this.waitForChannel(() => {
                 const params = {
+                    state: this.checked,
                     selectors: [{
                         selector: this.selector,
                         command: this.action,
@@ -188,22 +189,23 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                     properties: {},
                     action: 'init'
                 };
-                this._setState();
+                registry.set(`toggles.${this.name}`, params);
+                registry.state[this.name] = this.checked ? 'on' : 'off';
                 registry.replace('pb-toggle init');
                 this.emitTo('pb-toggle', params);
                 console.log('pb-toggle ready');
                 this.signalReady();
             });
         } else {
-            const param = registry.get(this.name);
-            console.log('<pb-toggle-feature> Param: %s; default: %s', param, this.default);
-            if (typeof param !== 'undefined') {
-                this.checked = param === 'on';
+            console.log('<pb-toggle-feature> Param: %s; default: %s', registry.state[this.name], this.default);
+            if (typeof registry.state[this.name] !== 'undefined') {
+                this.checked = registry.state[this.name] === 'on';
             } else {
                 this.checked = this.default === 'on';
             }
             this.waitForChannel(() => {
                 const params = {
+                    state: this.checked,
                     selectors: [{
                         selector: this.selector,
                         command: this.action,
@@ -212,14 +214,16 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                     properties: this.checked ? this.propertiesOn : this.propertiesOff,
                     action: 'init'
                 };
-                this._setState();
+                registry.set(`toggles.${this.name}`, params);
+                registry.state[this.name] = this.checked ? 'on' : 'off';
                 registry.replace('pb-toggle init');
                 this.emitTo('pb-toggle', params);
                 this.signalReady();
             });
         }
         registry.subscribe((ev) => {
-            this.checked = ev.detail[this.name] === 'on';
+            this.checked = registry.get(`toggles.${this.name}.state`);
+            // this.checked = (ev.detail.toggles && ev.detail.toggles[this.name]) ? ev.detail.toggles[this.name].state : null;
             this.shadowRoot.getElementById('checkbox').checked = this.checked;
         });
     }
@@ -243,12 +247,9 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             return;
         }
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
-        if (this.name) {
-            this._setState();
-            registry.commit(`toggle feature ${this.name}`);
-        }
-
+        
         const params = {
+            state: this.checked,
             selectors: [{
                 selector: this.selector,
                 command: this.action,
@@ -257,27 +258,12 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             properties: this.checked ? this.propertiesOn : this.propertiesOff,
             action: 'refresh'
         };
-        this.emitTo('pb-toggle', params);
-    }
-
-    _setState() {
-        const state = {
-          selectors: [
-            {
-              selector: this.selector,
-              command: this.action,
-              state: this.checked,
-            },
-          ],
-          properties: this.checked ? this.propertiesOn : this.propertiesOff,
-        };
-        let toggleState = registry.get('toggles');
-        if (!toggleState) {
-          toggleState = {};
-          registry.state.toggles = toggleState;
+        if (this.name) {
+            registry.set(`toggles.${this.name}`, params);
+            registry.state[this.name] = this.checked ? 'on' : 'off';
+            registry.commit(`toggle feature ${this.name}`);
         }
-        toggleState[this.name] = state;
-        registry.set(this.name, this.checked ? 'on' : 'off');
+        this.emitTo('pb-toggle', params);
     }
 }
 

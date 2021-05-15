@@ -372,21 +372,18 @@ export class PbView extends pbMixin(LitElement) {
         }
 
         if (!this.disableHistory) {
-            const id = registry.get('id');
-            if (id && !this.xmlId) {
-                this.xmlId = id;
+            if (registry.state.id && !this.xmlId) {
+                this.xmlId = registry.state.id;
             }
 
-            const action = registry.get('action');
-            if (action && action === 'search') {
+            if (registry.state.action && registry.state.action === 'search') {
                 this.highlight = true;
             }
 
-            const nodeId = registry.get('root');
             if (this.view === 'single') {
                 this.nodeId = null;
-            } else if (nodeId && !this.nodeId) {
-                this.nodeId = nodeId;
+            } else if (registry.state.root && !this.nodeId) {
+                this.nodeId = registry.state.root;
             }
             registry.subscribe(this._refresh.bind(this));
         }
@@ -1070,9 +1067,9 @@ export class PbView extends pbMixin(LitElement) {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
                     if (this.previousId) {
-                        registry.set('id', this.previousId);
+                        registry.state.id = this.previousId;
                     } else {
-                        registry.set('root', this.previous);
+                        registry.state.root = this.previous;
                     }
                     registry.commit('Navigate backward');
                 }
@@ -1081,9 +1078,9 @@ export class PbView extends pbMixin(LitElement) {
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
                 if (this.nextId) {
-                    registry.set('id', this.nextId);
+                    registry.state.id = this.nextId;
                 } else {
-                    registry.set('root', this.next);
+                    registry.state.root = this.next;
                 }
                 registry.commit('Navigate forward');
             }
