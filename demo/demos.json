@@ -1,7 +1,8 @@
 {
   "pb-view": {
     "demo/pb-view.html": "View TEI document",
-    "demo/pb-view2.html": "Docbook document"
+    "demo/pb-view2.html": "Docbook document",
+    "demo/pb-view-annotate.html": "Annotate a document"
   },
   "pb-document": {
     "demo/pb-document.html": "Demo"
