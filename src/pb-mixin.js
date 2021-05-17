@@ -143,6 +143,20 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     /**
+     * Returns true if the element is disabled, i.e. either the disabled property is
+     * set or the element's computed style contains display: none.
+     * 
+     * @returns true if the element is in disabled state
+     */
+    isDisabled() {
+        if (this.disabled) {
+            return true;
+        }
+        const style = window.getComputedStyle(this);
+        return style.display === 'none';
+    }
+
+    /**
      * Wait for the components referenced by the selector given in property `waitFor`
      * to signal that they are ready to respond to events. Only wait for elements which
      * emit to one of the channels this component subscribes to.

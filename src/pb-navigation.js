@@ -48,7 +48,11 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
         this.subscribeTo('pb-update', this._update.bind(this));
 
-        this.registerHotkey('next', () => this.emitTo('pb-navigate', { direction: this.direction }));
+        this.registerHotkey('next', () => {
+            if (!this.isDisabled()) {
+                this.emitTo('pb-navigate', { direction: this.direction });
+            }
+        });
 
         this.signalReady();
     }
@@ -70,7 +74,9 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
     _handleClick(ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        this.emitTo('pb-navigate', { direction: this.direction });
+        if (!this.isDisabled()) {
+            this.emitTo('pb-navigate', { direction: this.direction });
+        }
     }
 
     render() {
