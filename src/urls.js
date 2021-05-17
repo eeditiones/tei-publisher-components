@@ -16,9 +16,11 @@ class Registry {
     
     constructor() {
         this.state = {};
+        this.channels = [];
     }
 
-    configure(template, rootPath = '') {
+    configure(template, channels = [], rootPath = '') {
+        this.channels = channels;
         const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         this.urlTemplate = new UriTemplate(`${rootPath}${template}`);
         const initialState = this.urlTemplate.fromUri(absPath);
@@ -28,7 +30,7 @@ class Registry {
             this.state = initialState;
         }
         window.history.replaceState(stateToJson(this.state), '');
-        log('template: %s; initial state: %o', `${rootPath}${template}`, this.state);
+        log('path: %s; template: %s; initial state: %o', absPath, `${rootPath}${template}`, this.state);
 
         window.addEventListener('popstate', (ev) => {
             if (!ev.state) {
@@ -36,18 +38,31 @@ class Registry {
             }
             this.state = JSON.parse(ev.state);
             log('popstate: %o', this.state);
-            document.dispatchEvent(
-              new CustomEvent('pb-popstate', {
-                detail: this.state,
-                composed: true,
-                bubbles: true,
-              })
-            );
+            if (this.channels.length === 0) {
+                document.dispatchEvent(
+                  new CustomEvent('pb-popstate', {
+                    detail: {
+                      state: this.state
+                    },
+                    composed: true,
+                    bubbles: true,
+                  }),
+                );
+            } else {
+                this.channels.forEach((channel) =>
+                    document.dispatchEvent(
+                        new CustomEvent('pb-popstate', {
+                            detail: {
+                                state: this.state,
+                                key: channel
+                            },
+                            composed: true,
+                            bubbles: true,
+                        })
+                    )
+                );
+            }
         });
-    }
-
-    subscribe(handler) {
-        document.addEventListener('pb-popstate', handler);
     }
 
     get(path) {
@@ -79,9 +94,9 @@ class Registry {
         }
     }
 
-    commit(message, replaceState) {
+    commit(message, replaceState, overwrite) {
         if (replaceState) {
-            this.state = replaceState;
+            this.state = overwrite ? replaceState : Object.assign(this.state, replaceState);
         }
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);

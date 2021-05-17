@@ -88,9 +88,7 @@ export class PbLink extends pbMixin(LitElement) {
     _onClick(ev) {
         ev.preventDefault();
 
-        const params = {
-            root: null
-        };
+        const params = {};
         if (this.xmlId) {
             params.id = this.xmlId;
         } else if (this.nodeId) {
@@ -109,7 +107,7 @@ export class PbLink extends pbMixin(LitElement) {
             params.view = this.view;
         }
         if (this.history) {
-            registry.commit('link click', params);
+            registry.commit('link click', params, false);
         }
 
         this.emitTo('pb-refresh', params);

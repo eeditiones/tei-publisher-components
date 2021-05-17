@@ -221,9 +221,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 this.signalReady();
             });
         }
-        registry.subscribe((ev) => {
+        this.subscribeTo('pb-popstate', () => {
             this.checked = registry.get(`toggles.${this.name}.state`);
-            // this.checked = (ev.detail.toggles && ev.detail.toggles[this.name]) ? ev.detail.toggles[this.name].state : null;
             this.shadowRoot.getElementById('checkbox').checked = this.checked;
         });
     }

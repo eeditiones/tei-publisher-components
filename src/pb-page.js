@@ -185,7 +185,7 @@ class PbPage extends pbMixin(LitElement) {
         }
 
         if (this.urlTemplate) {
-            registry.configure(this.urlTemplate, this.appRoot);
+            registry.configure(this.urlTemplate, PbPage.getEmittedChannels(this), this.appRoot);
         }
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
