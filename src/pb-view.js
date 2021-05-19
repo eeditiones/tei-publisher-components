@@ -663,7 +663,7 @@ export class PbView extends pbMixin(pbSelectable(LitElement)) {
                 position: this.nodeId
             };
             this.emitTo('pb-update', eventOptions);
-
+            this.updateAnnotations();
             this._scroll();
         });
 

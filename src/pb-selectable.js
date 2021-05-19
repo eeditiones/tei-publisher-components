@@ -62,6 +62,32 @@ export const pbSelectable = superclass =>
       ];
     }
 
+    updateAnnotations() {
+      const view = this.shadowRoot.getElementById('view');
+      this._ranges.forEach((teiRange) => {
+        const start = view.querySelector(`[data-tei="${teiRange.start.id}"]`);
+        const end = view.querySelector(`[data-tei="${teiRange.end.id}"]`);
+        const range = document.createRange();
+        if (teiRange.start.type === 'include') {
+          range.setStartBefore(start);
+        } else if (teiRange.start.type === 'sibling') {
+          range.setStart(start.nextSibling, teiRange.start.offset);
+        } else {
+          range.setStart(start.firstChild, teiRange.start.offset);
+        }
+        if (teiRange.end.type === 'include') {
+          range.setEndAfter(end);
+        } else if (teiRange.end.type === 'sibling') {
+          range.setEnd(end.nextSibling, teiRange.end.offset);
+        } else {
+          range.setEnd(end.firstChild, teiRange.end.offset);
+        }
+        const span = document.createElement('span');
+        span.style.color = '#FF9977';
+        range.surroundContents(span);
+      });
+    }
+
     connectedCallback() {
       super.connectedCallback();
 
