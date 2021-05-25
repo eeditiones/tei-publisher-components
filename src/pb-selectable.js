@@ -1,3 +1,4 @@
+
 function extendRange(current, ancestor) {
   let parent = current;
   while (parent.parentNode != ancestor) {
@@ -7,6 +8,8 @@ function extendRange(current, ancestor) {
 }
 
 /**
+ * For a given HTML node, compute the number of characters from the start
+ * of the parent element.
  * 
  * @param {Node} node the node for which to compute an absolute offset
  * @param {Number} offset start offset
@@ -14,38 +17,52 @@ function extendRange(current, ancestor) {
  */
 function absoluteOffset(node, offset) {
   let sibling = node.previousSibling;
-  while(sibling) {
+  while (sibling) {
     offset += sibling.textContent.length;
     sibling = sibling.previousSibling;
   }
   return offset;
 }
 
-function toCharacterRange(node, offset) {
+/**
+ * Convert the start or end boundary of a browser range by computing
+ * the number of characters from the start of the parent element.
+ * 
+ * @param {Node} node input node
+ * @param {Number} offset offset relative to the parent element
+ * @returns 
+ */
+function rangeToPoint(node, offset) {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const container = node.closest('[data-tei]');
     if (offset === 0) {
       return {
-        type: 'include',
         parent: container.getAttribute('data-tei'),
-        offset: 0
-      }
+        offset: 0,
+      };
     }
     const child = container.childNodes[offset];
     return {
-      type: 'include',
       parent: container.getAttribute('data-tei'),
-      offset: absoluteOffset(child, 0)
+      offset: absoluteOffset(child, 0),
     };
   }
   const container = node.parentNode.closest('[data-tei]');
   return {
     parent: container.getAttribute('data-tei'),
-    offset: absoluteOffset(node, offset)
+    offset: absoluteOffset(node, offset),
   };
 }
 
-function absoluteOffsetToPoint(container, offset) {
+/**
+ * Convert a point given as number of characters from the start of the container element
+ * to a coordinate relative to a DOM element.
+ * 
+ * @param {Node} container the container element
+ * @param {*} offset absolute offset
+ * @returns 
+ */
+function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
@@ -66,24 +83,25 @@ export const pbSelectable = superclass =>
 
     _updateAnnotation(teiRange) {
       const view = this.shadowRoot.getElementById('view');
-      const start = view.querySelector(`[data-tei="${teiRange.start.parent}"]`);
-      const end = view.querySelector(`[data-tei="${teiRange.end.parent}"]`);
+      const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
+      // const end = view.querySelector(`[data-tei="${teiRange.end.parent}"]`);
 
       const range = document.createRange();
 
-      const startPoint = absoluteOffsetToPoint(start, teiRange.start.offset);
-      const endPoint = absoluteOffsetToPoint(end, teiRange.end.offset);
+      const startPoint = pointToRange(context, teiRange.start);
+      const endPoint = pointToRange(context, teiRange.end);
       console.log('start: %o; end: %o', startPoint, endPoint);
 
       range.setStart(startPoint[0], startPoint[1]);
 
-      if (teiRange.end.type === 'include') {
+      if (startPoint[0] != endPoint[0] && endPoint[0].textContent.length === endPoint[1]) {
         range.setEndAfter(endPoint[0].parentNode);
       } else {
         range.setEnd(endPoint[0], endPoint[1]);
       }
       const span = document.createElement('span');
-      span.style.color = '#FF9977';
+      span.className = 'annotation';
+      span.part = 'annotation';
       range.surroundContents(span);
     }
 
@@ -168,11 +186,12 @@ export const pbSelectable = superclass =>
           this.inHandler = false;
         }, 100);
 
-        const startRange = toCharacterRange(range.startContainer, range.startOffset);
-        const endRange = toCharacterRange(range.endContainer, range.endOffset);
+        const startRange = rangeToPoint(range.startContainer, range.startOffset);
+        const endRange = rangeToPoint(range.endContainer, range.endOffset);
         const adjustedRange = {
-          start: startRange,
-          end: endRange,
+          context: startRange.parent,
+          start: startRange.offset,
+          end: endRange.offset,
         };
         console.log('Range adjusted: %o', adjustedRange);
         this._ranges.push(adjustedRange);
