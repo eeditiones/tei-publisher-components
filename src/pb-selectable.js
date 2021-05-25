@@ -6,86 +6,89 @@ function extendRange(current, ancestor) {
   return parent;
 }
 
-function computeTEIRange(container, offset) {
-  let teiRange;
-  if (container.nodeType === Node.ELEMENT_NODE) {
+/**
+ * 
+ * @param {Node} node the node for which to compute an absolute offset
+ * @param {Number} offset start offset
+ * @returns {Number} absolute offset
+ */
+function absoluteOffset(node, offset) {
+  let sibling = node.previousSibling;
+  while(sibling) {
+    offset += sibling.textContent.length;
+    sibling = sibling.previousSibling;
+  }
+  return offset;
+}
+
+function toCharacterRange(node, offset) {
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const container = node.closest('[data-tei]');
+    if (offset === 0) {
+      return {
+        type: 'include',
+        parent: container.getAttribute('data-tei'),
+        offset: 0
+      }
+    }
     const child = container.childNodes[offset];
     return {
       type: 'include',
-      id: child.getAttribute('data-tei')
-    }
-  }
-
-  let previous = container.previousSibling;
-  while (previous) {
-    if (previous.nodeType === Node.ELEMENT_NODE && previous.hasAttribute('data-tei')) {
-      break;
-    }
-    offset += previous.textContent.length;
-    previous = previous.previousSibling;
-  }
-
-  if (previous) {
-    teiRange = {
-      type: 'sibling',
-      id: previous.getAttribute('data-tei'),
-      offset,
-    };
-  } else {
-    const parent = container.parentElement;
-    teiRange = {
-      type: 'child',
-      id: parent.getAttribute('data-tei'),
-      offset,
+      parent: container.getAttribute('data-tei'),
+      offset: absoluteOffset(child, 0)
     };
   }
+  const container = node.parentNode.closest('[data-tei]');
+  return {
+    parent: container.getAttribute('data-tei'),
+    offset: absoluteOffset(node, offset)
+  };
+}
 
-  return teiRange;
+function absoluteOffsetToPoint(container, offset) {
+  let relOffset = offset;
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    if (relOffset - walker.currentNode.textContent.length <= 0) {
+      return [walker.currentNode, relOffset];
+    }
+    relOffset -= walker.currentNode.textContent.length;
+  }
+  return null;
 }
 
 export const pbSelectable = superclass =>
   class PbSelectable extends superclass {
     constructor() {
       super();
-      this._ranges = [
-        {
-          start: {
-            type: 'include',
-            id: '4.4.2.2.4.6.4.1',
-          },
-          end: {
-            type: 'sibling',
-            id: '4.4.2.2.4.6.4.1',
-            offset: 28,
-          },
-        },
-      ];
+      this._ranges = [];
+    }
+
+    _updateAnnotation(teiRange) {
+      const view = this.shadowRoot.getElementById('view');
+      const start = view.querySelector(`[data-tei="${teiRange.start.parent}"]`);
+      const end = view.querySelector(`[data-tei="${teiRange.end.parent}"]`);
+
+      const range = document.createRange();
+
+      const startPoint = absoluteOffsetToPoint(start, teiRange.start.offset);
+      const endPoint = absoluteOffsetToPoint(end, teiRange.end.offset);
+      console.log('start: %o; end: %o', startPoint, endPoint);
+
+      range.setStart(startPoint[0], startPoint[1]);
+
+      if (teiRange.end.type === 'include') {
+        range.setEndAfter(endPoint[0].parentNode);
+      } else {
+        range.setEnd(endPoint[0], endPoint[1]);
+      }
+      const span = document.createElement('span');
+      span.style.color = '#FF9977';
+      range.surroundContents(span);
     }
 
     updateAnnotations() {
-      const view = this.shadowRoot.getElementById('view');
-      this._ranges.forEach((teiRange) => {
-        const start = view.querySelector(`[data-tei="${teiRange.start.id}"]`);
-        const end = view.querySelector(`[data-tei="${teiRange.end.id}"]`);
-        const range = document.createRange();
-        if (teiRange.start.type === 'include') {
-          range.setStartBefore(start);
-        } else if (teiRange.start.type === 'sibling') {
-          range.setStart(start.nextSibling, teiRange.start.offset);
-        } else {
-          range.setStart(start.firstChild, teiRange.start.offset);
-        }
-        if (teiRange.end.type === 'include') {
-          range.setEndAfter(end);
-        } else if (teiRange.end.type === 'sibling') {
-          range.setEnd(end.nextSibling, teiRange.end.offset);
-        } else {
-          range.setEnd(end.firstChild, teiRange.end.offset);
-        }
-        const span = document.createElement('span');
-        span.style.color = '#FF9977';
-        range.surroundContents(span);
-      });
+      this._ranges.forEach(this._updateAnnotation.bind(this));
     }
 
     connectedCallback() {
@@ -93,7 +96,7 @@ export const pbSelectable = superclass =>
 
       let isMouseDown = false;
 
-      this.inHandler = false;
+      this._inHandler = false;
       this._pendingCallback = null;
 
       const scheduleCallback = (delay = 10) => {
@@ -104,7 +107,7 @@ export const pbSelectable = superclass =>
 
       /** @param {Event} event */
       this._eventHandler = event => {
-        if (event.type === 'selectionchange' && this.inHandler) {
+        if (event.type === 'selectionchange' && this._inHandler) {
           return;
         }
         if (event.type === 'mousedown') {
@@ -158,44 +161,23 @@ export const pbSelectable = superclass =>
             range.setEndAfter(parent);
           }
         }
-        console.log('Range: %o %o', range.cloneContents(), range);
-        this.inHandler = true;
-        selection.removeAllRanges();
-        selection.addRange(range);
+        this._inHandler = true;
         setTimeout(() => {
+          selection.removeAllRanges();
+          selection.addRange(range);
           this.inHandler = false;
         }, 100);
 
-        let startRange = computeTEIRange(range.startContainer, range.startOffset);
-        let endRange = computeTEIRange(range.endContainer, range.endOffset);
-        console.log('start: %o; end: %o', startRange, endRange);
+        const startRange = toCharacterRange(range.startContainer, range.startOffset);
+        const endRange = toCharacterRange(range.endContainer, range.endOffset);
+        const adjustedRange = {
+          start: startRange,
+          end: endRange,
+        };
+        console.log('Range adjusted: %o', adjustedRange);
+        this._ranges.push(adjustedRange);
 
-        // const start = range.startContainer;
-        // let previous = start.previousSibling;
-        // let offset = range.startOffset;
-        // while(previous) {
-        //     if (previous.nodeType === Node.ELEMENT_NODE && previous.hasAttribute('data-tei')) {
-        //         break;
-        //     }
-        //     offset += previous.textContent.length;
-        //     previous = previous.previousSibling;
-        // }
-        // if (previous) {
-        //     const teiRange = {
-        //         type: 'sibling',
-        //         id: previous.getAttribute('data-tei'),
-        //         offset
-        //     }
-        //     console.log(teiRange);
-        // } else {
-        //     const ancestor = start.parentNode.closest('[data-tei]');
-        //     const teiRange = {
-        //         type: "sibling",
-        //         id: ancestor.getAttribute("data-tei"),
-        //         offset: range.startOffset,
-        //     };
-        //     console.log(teiRange);
-        // }
+        this._updateAnnotation(adjustedRange);
       }
     }
 
