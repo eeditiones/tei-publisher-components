@@ -1,3 +1,17 @@
+import { html, css } from 'lit-element';
+import '@polymer/paper-icon-button';
+import { pbMixin } from "./pb-mixin.js";
+
+export function selectionStyles() {
+  return css`
+    #selection-toolbar {
+      position: absolute;
+      background-color: #F0F0F0;
+      box-shadow: 5px -5px 5px 0px #E3E5E3;
+      left: -1000px;
+    }
+  `;
+}
 
 function extendRange(current, ancestor) {
   let parent = current;
@@ -10,7 +24,7 @@ function extendRange(current, ancestor) {
 /**
  * For a given HTML node, compute the number of characters from the start
  * of the parent element.
- * 
+ *
  * @param {Node} node the node for which to compute an absolute offset
  * @param {Number} offset start offset
  * @returns {Number} absolute offset
@@ -27,10 +41,10 @@ function absoluteOffset(node, offset) {
 /**
  * Convert the start or end boundary of a browser range by computing
  * the number of characters from the start of the parent element.
- * 
+ *
  * @param {Node} node input node
  * @param {Number} offset offset relative to the parent element
- * @returns 
+ * @returns
  */
 function rangeToPoint(node, offset) {
   if (node.nodeType === Node.ELEMENT_NODE) {
@@ -57,10 +71,10 @@ function rangeToPoint(node, offset) {
 /**
  * Convert a point given as number of characters from the start of the container element
  * to a coordinate relative to a DOM element.
- * 
+ *
  * @param {Node} container the container element
  * @param {*} offset absolute offset
- * @returns 
+ * @returns
  */
 function pointToRange(container, offset) {
   let relOffset = offset;
@@ -75,7 +89,7 @@ function pointToRange(container, offset) {
 }
 
 export const pbSelectable = superclass =>
-  class PbSelectable extends superclass {
+  class PbSelectable extends pbMixin(superclass) {
     constructor() {
       super();
       this._ranges = [];
@@ -164,40 +178,72 @@ export const pbSelectable = superclass =>
       this.shadowRoot.addEventListener('mouseup', this._eventHandler.bind(this));
     }
 
+    render() {
+      return html`
+        <div id="selection-toolbar">
+          <paper-icon-button icon="icons:add" @click="${this._addAnnotation}"></paper-icon-button>
+        </div>
+      `;
+    }
+
     _selectionChanged() {
       const selection = this.shadowRoot.getSelection();
       const range = this._selectedRange(selection);
       if (range) {
+        let changed = false;
         const ancestor = range.commonAncestorContainer;
         if (ancestor.nodeType === Node.ELEMENT_NODE) {
           if (range.startContainer.parentElement != ancestor) {
             const parent = extendRange(range.startContainer, ancestor);
             range.setStartBefore(parent);
+            changed = true;
           }
           if (range.endContainer.parentElement != ancestor) {
             const parent = extendRange(range.endContainer, ancestor);
             range.setEndAfter(parent);
+            changed = true;
           }
         }
-        this._inHandler = true;
-        setTimeout(() => {
-          selection.removeAllRanges();
-          selection.addRange(range);
-          this.inHandler = false;
-        }, 100);
+        this._currentSelection = range;
 
-        const startRange = rangeToPoint(range.startContainer, range.startOffset);
-        const endRange = rangeToPoint(range.endContainer, range.endOffset);
-        const adjustedRange = {
-          context: startRange.parent,
-          start: startRange.offset,
-          end: endRange.offset,
-        };
-        console.log('Range adjusted: %o', adjustedRange);
-        this._ranges.push(adjustedRange);
+        if (changed) {
+          this._inHandler = true;
+          setTimeout(() => {
+            selection.removeAllRanges();
+            selection.addRange(range);
+            this.inHandler = false;
+          }, 100);
+        }
 
-        this._updateAnnotation(adjustedRange);
+        const clientRect = range.getBoundingClientRect();
+        const toolbar = this.shadowRoot.getElementById('selection-toolbar');
+        toolbar.style.left = `${clientRect.x}px`;
+        toolbar.style.top = `${clientRect.y - toolbar.clientHeight * 2}px`;
+        toolbar.style.visible = true;
+      } else {
+        this._hideToolbar();
       }
+    }
+
+    _hideToolbar() {
+      const toolbar = this.shadowRoot.getElementById('selection-toolbar');
+      toolbar.style.left = '-1000px';
+    }
+
+    _addAnnotation() {
+      this._hideToolbar();
+      const range = this._currentSelection;
+      const startRange = rangeToPoint(range.startContainer, range.startOffset);
+      const endRange = rangeToPoint(range.endContainer, range.endOffset);
+      const adjustedRange = {
+        context: startRange.parent,
+        start: startRange.offset,
+        end: endRange.offset,
+      };
+      console.log('Range adjusted: %o', adjustedRange);
+      this._ranges.push(adjustedRange);
+      this.emitTo('pb-annotations-changed', {ranges: this._ranges});
+      this._updateAnnotation(adjustedRange);
     }
 
     /**

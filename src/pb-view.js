@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
-import { pbSelectable } from "./pb-selectable.js";
+import { pbSelectable, selectionStyles } from "./pb-selectable.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
@@ -57,7 +57,7 @@ import '@polymer/paper-dialog-scrollable';
  * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
  * @fires pb-toggle - When received, toggle content properties
  */
-export class PbView extends pbMixin(pbSelectable(LitElement)) {
+export class PbView extends pbSelectable(LitElement) {
 
     static get properties() {
         return {
@@ -1092,7 +1092,8 @@ export class PbView extends pbMixin(pbSelectable(LitElement)) {
     }
 
     static get styles() {
-        return css`
+        return [
+            css`
             :host {
                 display: block;
                 background: transparent;
@@ -1103,6 +1104,10 @@ export class PbView extends pbMixin(pbSelectable(LitElement)) {
             :host::-webkit-scrollbar { 
                 width: 0 !important;
                 display: none; 
+            }
+
+            #view {
+                position: relative;
             }
 
             .columns {
@@ -1188,44 +1193,49 @@ export class PbView extends pbMixin(pbSelectable(LitElement)) {
                 0% {opacity:0;}
                 100% {opacity:1;}
             }
-        `;
+            `,
+            selectionStyles()
+        ];
     }
 
     render() {
-        return html`
-            <div id="view" part="content">
-                ${this._style}
-                ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
-                <div class="columns">
-                    <div id="column1">${this._column1}</div>
-                    <div id="column2">${this._column2}</div>
+        return [
+            html`
+                <div id="view" part="content">
+                    ${this._style}
+                    ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
+                    <div class="columns">
+                        <div id="column1">${this._column1}</div>
+                        <div id="column2">${this._column2}</div>
+                    </div>
+                    <div id="content">${this._content}</div>
+                    ${
+                this.infiniteScroll ?
+                    html`<div id="bottom-observer" class="observer"></div>` :
+                    null
+                }
+                    <div id="footnotes" part="footnotes">${this._footnotes}</div>
                 </div>
-                <div id="content">${this._content}</div>
-                ${
-            this.infiniteScroll ?
-                html`<div id="bottom-observer" class="observer"></div>` :
-                null
-            }
-                <div id="footnotes" part="footnotes">${this._footnotes}</div>
-            </div>
-            <paper-dialog id="errorDialog">
-                <h2>${translate('dialogs.error')}</h2>
-                <paper-dialog-scrollable></paper-dialog-scrollable>
-                <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                    ${translate('dialogs.close')}
-                    </paper-button>
-                </div>
-            </paper-dialog>
-            <iron-ajax
-                id="loadContent"
-                verbose
-                handle-as="json"
-                method="get"
-                with-credentials
-                @response="${this._handleContent}"
-                @error="${this._handleError}"></iron-ajax>
-      `;
+                <paper-dialog id="errorDialog">
+                    <h2>${translate('dialogs.error')}</h2>
+                    <paper-dialog-scrollable></paper-dialog-scrollable>
+                    <div class="buttons">
+                        <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                        ${translate('dialogs.close')}
+                        </paper-button>
+                    </div>
+                </paper-dialog>
+                <iron-ajax
+                    id="loadContent"
+                    verbose
+                    handle-as="json"
+                    method="get"
+                    with-credentials
+                    @response="${this._handleContent}"
+                    @error="${this._handleError}"></iron-ajax>
+            `,
+            super.render()
+        ]
     }
 }
 
