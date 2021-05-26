@@ -205,6 +205,7 @@ export const pbSelectable = superclass =>
           }
         }
         this._currentSelection = range;
+        console.log('<pb-selectable> selection: %o', range);
 
         if (changed) {
           this._inHandler = true;
@@ -239,6 +240,7 @@ export const pbSelectable = superclass =>
         context: startRange.parent,
         start: startRange.offset,
         end: endRange.offset,
+        text: range.cloneContents().textContent
       };
       console.log('Range adjusted: %o', adjustedRange);
       this._ranges.push(adjustedRange);
