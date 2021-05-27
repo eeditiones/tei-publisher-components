@@ -51,3 +51,4 @@ import './pb-autocomplete.js';
 import './pb-select.js';
 import './pb-clipboard.js';
 import './pb-formula.js';
+import './pb-kwic-results.js';

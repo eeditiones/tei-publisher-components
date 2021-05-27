@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-link Demo</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+<!--    <script type="module" src="../src/pb-page.js"></script>-->
+<!--    <script type="module" src="../src/pb-document.js"></script>-->
+<!--    <script type="module" src="../src/pb-view.js"></script>-->
+    <script type="module" src="../src/pb-kwic-results.js"></script>
+
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            main {
+                display: flex;
+            }
+
+            ul {
+                flex: 1 0;
+                display: block;
+                margin-right: 10px;
+                padding-right: 10px;
+                border-right: 1px solid #333333;
+            }
+
+            pb-view {
+                height: 70vh;
+                overflow: auto;
+                flex: 3 0;
+            }
+
+            pb-link a {
+                color: #333333;
+                text-decoration: none;
+            }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+<!--                <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>-->
+                <main>
+                    <pb-kwic-results></pb-kwic-results>
+<!--                    <pb-view src="document1" view="div"></pb-view>-->
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

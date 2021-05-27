@@ -147,5 +147,8 @@
   },
   "pb-formula": {
     "demo/pb-formula.html": "Demo"
+  },
+  "pb-kwic-results": {
+    "demo/pb-kwic-results.html": "Demo"
   }
 }
