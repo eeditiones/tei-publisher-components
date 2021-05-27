@@ -16,6 +16,7 @@
         <script type="module" src="../src/pb-navigation.js"></script>
         <script type="module" src="../src/pb-progress.js"></script>
         <script type="module" src="../src/pb-events.js"></script>
+        <script type="module" src="../src/pb-code-highlight.js"></script>
         <!--/scripts-->
     </head>
 
@@ -29,20 +30,20 @@
 
                 main {
                     display: grid;
-                    grid-template-columns: 20% 1fr;
+                    grid-template-columns: 50% 50%;
+                    gap: 10px;
+                    height: 70vh;
                 }
 
-                pre {
-                    height: 100%;
-                    width: 40em;
-                }
-                #view1 {
-                    height: 70vh;
+                #output {
+                    width: 100%;
                     overflow: auto;
-                    display: flex;
-                    justify-content: center;
-                    margin-left: auto;
-                    margin-right: auto;
+                    font-size: .75em;
+                    --pb-code-highlight-white-space: pre-wrap;
+                }
+                .text {
+                    grid-column: 2;
+                    overflow: auto;
                 }
 
                 #view1::part(annotation) {
@@ -60,10 +61,8 @@
 
                     <pb-progress subscribe="transcription"></pb-progress>
                     <main>
-                        <aside>
-                            <pre id="output"></pre>
-                        </aside>
-                        <div>
+                        <pb-code-highlight id="output" language="xml" theme="coy"></pb-code-highlight>
+                        <div class="text">
                             <!-- Output the document title -->
                             <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
                                 subscribe="transcription">
@@ -77,8 +76,22 @@
                         /* eslint-disable prefer-arrow-callback */
                         window.addEventListener('WebComponentsReady', function() {
                             pbEvents.subscribe('pb-annotations-changed', 'transcription', function(ev) {
-                                console.log(ev);
-                                document.getElementById('output').innerText = JSON.stringify(ev.detail.ranges, null, 2);
+                                const annotations = ev.detail.ranges;
+                                const endpoint = document.querySelector('pb-page').getEndpoint();
+                                document.getElementById('output').code = '';
+                                fetch(`${endpoint}/api/annotations/merge/test%2Fannotations.xml`, {
+                                    method: 'POST',
+                                    mode: 'cors',
+                                    credentials: 'same-origin',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(annotations)
+                                })
+                                .then((response) => response.text())
+                                .then(text => { 
+                                    document.getElementById('output').code = text;
+                                });
                             });
                         });
                     </script>
