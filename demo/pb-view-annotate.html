@@ -9,6 +9,7 @@
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-tab/paper-tab.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
@@ -17,6 +18,8 @@
         <script type="module" src="../src/pb-progress.js"></script>
         <script type="module" src="../src/pb-events.js"></script>
         <script type="module" src="../src/pb-code-highlight.js"></script>
+        <script type="module" src="../src/pb-tabs.js"></script>
+        <script type="module" src="../src/pb-tab.js"></script>
         <!--/scripts-->
     </head>
 
@@ -35,12 +38,20 @@
                     height: 70vh;
                 }
 
-                #output {
-                    width: 100%;
+                pb-tabs {
+                    height: inherit;
+                }
+
+                pb-tabs div {
+                    max-height: calc(100% - 60px);
                     overflow: auto;
+                }
+
+                #output {
                     font-size: .75em;
                     --pb-code-highlight-white-space: pre-wrap;
                 }
+
                 .text {
                     grid-column: 2;
                     overflow: auto;
@@ -61,7 +72,16 @@
 
                     <pb-progress subscribe="transcription"></pb-progress>
                     <main>
-                        <pb-code-highlight id="output" language="xml" theme="coy"></pb-code-highlight>
+                        <pb-tabs>
+                            <paper-tab slot="tab">TEI</paper-tab>
+                            <paper-tab slot="tab">JSON</paper-tab>
+                            <div slot="page">
+                                <pb-code-highlight id="output" language="xml" theme="coy"></pb-code-highlight>
+                            </div>
+                            <div slot="page">
+                                <pre id="json"></pre>
+                            </div>
+                        </pb-tabs>
                         <div class="text">
                             <!-- Output the document title -->
                             <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
@@ -73,11 +93,11 @@
                         </div>
                     </main>
                     <script>
-                        /* eslint-disable prefer-arrow-callback */
-                        window.addEventListener('WebComponentsReady', function() {
-                            pbEvents.subscribe('pb-annotations-changed', 'transcription', function(ev) {
+                        window.addEventListener('WebComponentsReady', () => {
+                            pbEvents.subscribe('pb-annotations-changed', 'transcription', (ev) => {
                                 const annotations = ev.detail.ranges;
                                 const endpoint = document.querySelector('pb-page').getEndpoint();
+                                document.getElementById('json').innerText = JSON.stringify(annotations, null, 2);
                                 document.getElementById('output').code = '';
                                 fetch(`${endpoint}/api/annotations/merge/test%2Fannotations.xml`, {
                                     method: 'POST',
@@ -89,7 +109,7 @@
                                     body: JSON.stringify(annotations)
                                 })
                                 .then((response) => response.text())
-                                .then(text => { 
+                                .then(text => {
                                     document.getElementById('output').code = text;
                                 });
                             });
