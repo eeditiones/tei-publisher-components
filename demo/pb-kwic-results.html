@@ -8,10 +8,11 @@
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-<!--    <script type="module" src="../src/pb-page.js"></script>-->
-<!--    <script type="module" src="../src/pb-document.js"></script>-->
-<!--    <script type="module" src="../src/pb-view.js"></script>-->
+    <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-kwic-results.js"></script>
+    <script type="module" src="../src/pb-paginate.js"></script>
+    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+
 
     <!--/scripts-->
 </head>
@@ -43,10 +44,10 @@
                 text-decoration: none;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/blacklab">
 <!--                <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>-->
                 <main>
-                    <pb-kwic-results></pb-kwic-results>
+                    <pb-kwic-results per-page="5" pattern='[word="love"][word="by"]'></pb-kwic-results>
 <!--                    <pb-view src="document1" view="div"></pb-view>-->
                 </main>
             </pb-page>

@@ -178,6 +178,7 @@ export class PbPaginate extends pbMixin(LitElement) {
     }
 
     _handleFirst(ev) {
+        console.log('_handleFirst')
         this.start = 1;
         this.emitTo('pb-load', {
             "params": {
