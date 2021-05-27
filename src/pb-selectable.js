@@ -32,7 +32,9 @@ function extendRange(current, ancestor) {
 function absoluteOffset(node, offset) {
   let sibling = node.previousSibling;
   while (sibling) {
-    offset += sibling.textContent.length;
+    if (!(sibling.nodeType === Node.ELEMENT_NODE && sibling.hasAttribute('href') && /^#fn_.*$/.test(sibling.getAttribute('href')))) {
+      offset += sibling.textContent.length;
+    }
     sibling = sibling.previousSibling;
   }
   return offset;
@@ -210,8 +212,12 @@ export const pbSelectable = superclass =>
         if (changed) {
           this._inHandler = true;
           setTimeout(() => {
-            selection.removeAllRanges();
-            selection.addRange(range);
+            try {
+              selection.removeAllRanges();
+              selection.addRange(range);
+            } catch (e) {
+              console.error(e);
+            }
             this.inHandler = false;
           }, 100);
         }
