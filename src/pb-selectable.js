@@ -48,7 +48,7 @@ function absoluteOffset(node, offset) {
  * @param {Number} offset offset relative to the parent element
  * @returns
  */
-function rangeToPoint(node, offset) {
+function rangeToPoint(node, offset, position = 'start') {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const container = node.closest('[data-tei]');
     if (offset === 0) {
@@ -60,7 +60,7 @@ function rangeToPoint(node, offset) {
     const child = container.childNodes[offset];
     return {
       parent: container.getAttribute('data-tei'),
-      offset: absoluteOffset(child, 0),
+      offset: position === 'end' ? absoluteOffset(child, 0) - 1 : absoluteOffset(child, 0),
     };
   }
   const container = node.parentNode.closest('[data-tei]');
@@ -108,9 +108,13 @@ export const pbSelectable = superclass =>
       const endPoint = pointToRange(context, teiRange.end);
       console.log('start: %o; end: %o', startPoint, endPoint);
 
-      range.setStart(startPoint[0], startPoint[1]);
+      if (startPoint[0] != endPoint[0] && startPoint[1] === 0) {
+        range.setStartBefore(startPoint[0].parentNode);
+      } else {
+        range.setStart(startPoint[0], startPoint[1]);
+      }
 
-      if (startPoint[0] != endPoint[0] && endPoint[0].textContent.length === endPoint[1]) {
+      if (startPoint[0] != endPoint[0] && endPoint[0].textContent.length - 1 === endPoint[1]) {
         range.setEndAfter(endPoint[0].parentNode);
       } else {
         range.setEnd(endPoint[0], endPoint[1]);
@@ -212,12 +216,8 @@ export const pbSelectable = superclass =>
         if (changed) {
           this._inHandler = true;
           setTimeout(() => {
-            try {
-              selection.removeAllRanges();
-              selection.addRange(range);
-            } catch (e) {
-              console.error(e);
-            }
+            selection.removeAllRanges();
+            selection.addRange(range);
             this.inHandler = false;
           }, 100);
         }
@@ -241,7 +241,7 @@ export const pbSelectable = superclass =>
       this._hideToolbar();
       const range = this._currentSelection;
       const startRange = rangeToPoint(range.startContainer, range.startOffset);
-      const endRange = rangeToPoint(range.endContainer, range.endOffset);
+      const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
       const adjustedRange = {
         context: startRange.parent,
         start: startRange.offset,
