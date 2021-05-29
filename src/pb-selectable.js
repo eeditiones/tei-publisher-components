@@ -1,6 +1,12 @@
 import '@polymer/paper-icon-button';
 import { pbMixin } from "./pb-mixin.js";
 
+const colors = {
+  persName: '#ffac41',
+  placeName: '#aa41ff',
+  term: '#41ffbd'
+};
+
 function extendRange(current, ancestor) {
   let parent = current;
   while (parent.parentNode !== ancestor) {
@@ -25,14 +31,15 @@ function isSkippedNode(nodeToCheck) {
  * @param {Number} offset start offset
  * @returns {Number} absolute offset
  */
-function absoluteOffset(node, offset) {
-  let sibling = node.previousSibling;
-  while (sibling) {
-    if (!(sibling.nodeType === Node.ELEMENT_NODE && isSkippedNode(sibling))) {
+function absoluteOffset(container, node, offset) {
+  const walker = document.createTreeWalker(container);
+  walker.currentNode = node;
+  while (walker.previousNode()) {
+    const sibling = walker.currentNode;
+    if (!(sibling.nodeType === Node.ELEMENT_NODE || isSkippedNode(sibling))) {
       // eslint-disable-next-line no-param-reassign
       offset += sibling.textContent.length;
     }
-    sibling = sibling.previousSibling;
   }
   return offset;
 }
@@ -57,14 +64,26 @@ function rangeToPoint(node, offset, position = 'start') {
     const child = container.childNodes[offset];
     return {
       parent: container.getAttribute('data-tei'),
-      offset: position === 'end' ? absoluteOffset(child, 0) - 1 : absoluteOffset(child, 0),
+      offset: position === 'end' ? absoluteOffset(container, child, 0) - 1 : absoluteOffset(container, child, 0),
     };
   }
   const container = /** @type {Element} */ (node.parentNode).closest('[data-tei]');
   return {
     parent: container.getAttribute('data-tei'),
-    offset: absoluteOffset(node, offset),
+    offset: absoluteOffset(container, node, offset),
   };
+}
+
+function ancestors(node, selector) {
+  const result = [];
+  let parent = node.parentNode;
+  while (parent && parent !== node.getRootNode()) {
+    if (parent.classList.contains(selector)) {
+      result.push(parent);
+    }
+    parent = parent.parentNode;
+  }
+  return result;
 }
 
 /**
@@ -87,6 +106,18 @@ function pointToRange(container, offset) {
     }
   }
   return null;
+}
+
+function insertMarker(parent, type) {
+  const markerOffset = ancestors(parent, 'annotation').length + parent.querySelectorAll('.annotation').length;
+  const marker = document.createElement('span');
+  marker.className = type;
+  marker.style.position = 'absolute';
+  marker.style.left = '0px';
+  marker.style.width = '100%';
+  marker.style.bottom = `-${markerOffset * 5 + 3}px`;
+  marker.style.borderBottom = `3px solid ${colors[type]}`;
+  parent.appendChild(marker);
 }
 
 export const pbSelectable = superclass =>
@@ -120,12 +151,22 @@ export const pbSelectable = superclass =>
       }
       const span = document.createElement('span');
       span.className = 'annotation';
-      span.part = 'annotation';
-      range.surroundContents(span);
+      span.style.position = 'relative';
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+
+      insertMarker(span, teiRange.type);
     }
 
     updateAnnotations() {
       this._ranges.forEach(this._updateAnnotation.bind(this));
+      this.shadowRoot.querySelectorAll('[data-annotation]').forEach((span) => {
+        span.className = 'annotation';
+        span.style.position = 'relative';
+
+        const type = span.getAttribute('data-annotation');
+        insertMarker(span, type);
+      });
     }
 
     connectedCallback() {
@@ -222,12 +263,6 @@ export const pbSelectable = superclass =>
         }
 
         this.emitTo('pb-selection-changed', { hasContent: true });
-
-        // const clientRect = range.getBoundingClientRect();
-        // const toolbar = this.shadowRoot.getElementById('selection-toolbar');
-        // toolbar.style.left = `${clientRect.x}px`;
-        // toolbar.style.top = `${clientRect.y - toolbar.clientHeight * 2}px`;
-        // toolbar.style.visible = true;
       } else {
         this.emitTo('pb-selection-changed', { hasContent: false });
       }

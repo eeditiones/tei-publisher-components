@@ -9,6 +9,7 @@
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/maps-icons.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-icons/social-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-tab/paper-tab.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
@@ -70,10 +71,6 @@
                     height: 100%;
                 }
 
-                #view1::part(annotation) {
-                    text-decoration: #ffac41 underline solid 3px;
-                }
-
                 @media (min-width: 769px) {
                     #view1 {
                         max-width: 60vw;
@@ -99,8 +96,9 @@
                         </pb-tabs>
                         <div class="toolbar">
                             <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
-                            <paper-icon-button class="annotation-action" id="add-person" data-type="persName" icon="icons:add" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" id="add-person" data-type="persName" icon="social:person" disabled></paper-icon-button>
                             <paper-icon-button class="annotation-action" id="add-place" data-type="placeName" icon="maps:place" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" id="add-term" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
                         </div>
                         <!-- Output the document title -->
                         <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
