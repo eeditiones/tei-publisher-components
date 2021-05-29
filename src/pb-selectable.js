@@ -1,21 +1,9 @@
-import { html, css } from 'lit-element';
 import '@polymer/paper-icon-button';
 import { pbMixin } from "./pb-mixin.js";
 
-export function selectionStyles() {
-  return css`
-    #selection-toolbar {
-      position: absolute;
-      background-color: #F0F0F0;
-      box-shadow: 5px -5px 5px 0px #E3E5E3;
-      left: -1000px;
-    }
-  `;
-}
-
 function extendRange(current, ancestor) {
   let parent = current;
-  while (parent.parentNode != ancestor) {
+  while (parent.parentNode !== ancestor) {
     parent = parent.parentElement;
   }
   return parent;
@@ -41,6 +29,7 @@ function absoluteOffset(node, offset) {
   let sibling = node.previousSibling;
   while (sibling) {
     if (!(sibling.nodeType === Node.ELEMENT_NODE && isSkippedNode(sibling))) {
+      // eslint-disable-next-line no-param-reassign
       offset += sibling.textContent.length;
     }
     sibling = sibling.previousSibling;
@@ -58,7 +47,7 @@ function absoluteOffset(node, offset) {
  */
 function rangeToPoint(node, offset, position = 'start') {
   if (node.nodeType === Node.ELEMENT_NODE) {
-    const container = node.closest('[data-tei]');
+    const container = /** @type {Element} */ (node).closest('[data-tei]');
     if (offset === 0) {
       return {
         parent: container.getAttribute('data-tei'),
@@ -71,7 +60,7 @@ function rangeToPoint(node, offset, position = 'start') {
       offset: position === 'end' ? absoluteOffset(child, 0) - 1 : absoluteOffset(child, 0),
     };
   }
-  const container = node.parentNode.closest('[data-tei]');
+  const container = /** @type {Element} */ (node.parentNode).closest('[data-tei]');
   return {
     parent: container.getAttribute('data-tei'),
     offset: absoluteOffset(node, offset),
@@ -118,13 +107,13 @@ export const pbSelectable = superclass =>
       const endPoint = pointToRange(context, teiRange.end);
       console.log('start: %o; end: %o', startPoint, endPoint);
 
-      if (startPoint[0] != endPoint[0] && startPoint[1] === 0) {
+      if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
         range.setStartBefore(startPoint[0].parentNode);
       } else {
         range.setStart(startPoint[0], startPoint[1]);
       }
 
-      if (startPoint[0] != endPoint[0] && endPoint[0].textContent.length - 1 === endPoint[1]) {
+      if (startPoint[0] !== endPoint[0] && endPoint[0].textContent.length - 1 === endPoint[1]) {
         range.setEndAfter(endPoint[0].parentNode);
       } else {
         range.setEnd(endPoint[0], endPoint[1]);
@@ -192,14 +181,14 @@ export const pbSelectable = superclass =>
       document.addEventListener('selectionchange', this._eventHandler.bind(this));
       this.shadowRoot.addEventListener('mousedown', this._eventHandler.bind(this));
       this.shadowRoot.addEventListener('mouseup', this._eventHandler.bind(this));
-    }
 
-    render() {
-      return html`
-        <div id="selection-toolbar">
-          <paper-icon-button icon="icons:add" @click="${this._addAnnotation}"></paper-icon-button>
-        </div>
-      `;
+      this.subscribeTo('pb-refresh', () => {
+        this._ranges = [];
+        this._currentSelection = null;
+        this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      });
+
+      this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
     }
 
     _selectionChanged() {
@@ -209,12 +198,12 @@ export const pbSelectable = superclass =>
         let changed = false;
         const ancestor = range.commonAncestorContainer;
         if (ancestor.nodeType === Node.ELEMENT_NODE) {
-          if (range.startContainer.parentElement != ancestor) {
+          if (range.startContainer.parentElement !== ancestor) {
             const parent = extendRange(range.startContainer, ancestor);
             range.setStartBefore(parent);
             changed = true;
           }
-          if (range.endContainer.parentElement != ancestor) {
+          if (range.endContainer.parentElement !== ancestor) {
             const parent = extendRange(range.endContainer, ancestor);
             range.setEndAfter(parent);
             changed = true;
@@ -232,23 +221,19 @@ export const pbSelectable = superclass =>
           }, 100);
         }
 
-        const clientRect = range.getBoundingClientRect();
-        const toolbar = this.shadowRoot.getElementById('selection-toolbar');
-        toolbar.style.left = `${clientRect.x}px`;
-        toolbar.style.top = `${clientRect.y - toolbar.clientHeight * 2}px`;
-        toolbar.style.visible = true;
+        this.emitTo('pb-selection-changed', { hasContent: true });
+
+        // const clientRect = range.getBoundingClientRect();
+        // const toolbar = this.shadowRoot.getElementById('selection-toolbar');
+        // toolbar.style.left = `${clientRect.x}px`;
+        // toolbar.style.top = `${clientRect.y - toolbar.clientHeight * 2}px`;
+        // toolbar.style.visible = true;
       } else {
-        this._hideToolbar();
+        this.emitTo('pb-selection-changed', { hasContent: false });
       }
     }
 
-    _hideToolbar() {
-      const toolbar = this.shadowRoot.getElementById('selection-toolbar');
-      toolbar.style.left = '-1000px';
-    }
-
-    _addAnnotation() {
-      this._hideToolbar();
+    _addAnnotation(ev) {
       const range = this._currentSelection;
       const startRange = rangeToPoint(range.startContainer, range.startOffset);
       const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
@@ -258,6 +243,9 @@ export const pbSelectable = superclass =>
         end: endRange.offset,
         text: range.cloneContents().textContent
       };
+      if (ev.detail.type) {
+        adjustedRange.type = ev.detail.type;
+      }
       console.log('Range adjusted: %o', adjustedRange);
       this._ranges.push(adjustedRange);
       this.emitTo('pb-annotations-changed', {ranges: this._ranges});
@@ -272,7 +260,7 @@ export const pbSelectable = superclass =>
       if (!selection || selection.rangeCount === 0) {
         return null;
       }
-      if (selection.anchorNode.getRootNode() != this.shadowRoot) {
+      if (selection.anchorNode.getRootNode() !== this.shadowRoot) {
         return null;
       }
       const range = selection.getRangeAt(0);
@@ -288,4 +276,5 @@ export const pbSelectable = superclass =>
         this._pendingCallback = null;
       }
     }
+
   };

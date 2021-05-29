@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbMixin } from './pb-mixin.js';
-import { pbSelectable, selectionStyles } from "./pb-selectable.js";
+import { pbSelectable } from "./pb-selectable.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
@@ -1092,8 +1091,7 @@ export class PbView extends pbSelectable(LitElement) {
     }
 
     static get styles() {
-        return [
-            css`
+        return css`
             :host {
                 display: block;
                 background: transparent;
@@ -1193,9 +1191,7 @@ export class PbView extends pbSelectable(LitElement) {
                 0% {opacity:0;}
                 100% {opacity:1;}
             }
-            `,
-            selectionStyles()
-        ];
+        `;
     }
 
     render() {
@@ -1233,8 +1229,7 @@ export class PbView extends pbSelectable(LitElement) {
                     with-credentials
                     @response="${this._handleContent}"
                     @error="${this._handleError}"></iron-ajax>
-            `,
-            super.render()
+            `
         ]
     }
 }
