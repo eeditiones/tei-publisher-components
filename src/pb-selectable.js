@@ -21,6 +21,14 @@ function extendRange(current, ancestor) {
   return parent;
 }
 
+function isSkippedNode(nodeToCheck) {
+  let node = nodeToCheck;
+  if (node.nodeType === Node.TEXT_NODE) {
+    node = node.parentNode;
+  }
+  return node.hasAttribute('href') && /^#fn_.*$/.test(node.getAttribute('href'));
+}
+
 /**
  * For a given HTML node, compute the number of characters from the start
  * of the parent element.
@@ -32,7 +40,7 @@ function extendRange(current, ancestor) {
 function absoluteOffset(node, offset) {
   let sibling = node.previousSibling;
   while (sibling) {
-    if (!(sibling.nodeType === Node.ELEMENT_NODE && sibling.hasAttribute('href') && /^#fn_.*$/.test(sibling.getAttribute('href')))) {
+    if (!(sibling.nodeType === Node.ELEMENT_NODE && isSkippedNode(sibling))) {
       offset += sibling.textContent.length;
     }
     sibling = sibling.previousSibling;
@@ -85,7 +93,9 @@ function pointToRange(container, offset) {
     if (relOffset - walker.currentNode.textContent.length <= 0) {
       return [walker.currentNode, relOffset];
     }
-    relOffset -= walker.currentNode.textContent.length;
+    if (!isSkippedNode(walker.currentNode)) {
+      relOffset -= walker.currentNode.textContent.length;
+    }
   }
   return null;
 }
