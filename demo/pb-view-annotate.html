@@ -11,7 +11,6 @@
         <script type="module" src="../node_modules/@polymer/iron-icons/maps-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/social-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-tab/paper-tab.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
@@ -21,7 +20,7 @@
         <script type="module" src="../src/pb-events.js"></script>
         <script type="module" src="../src/pb-code-highlight.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
-        <script type="module" src="../src/pb-tab.js"></script>
+        <script type="module" src="../src/pb-drawer.js"></script>
         <!--/scripts-->
     </head>
 
@@ -42,6 +41,7 @@
                 }
 
                 pb-tabs {
+                    grid-column: 2;
                     grid-row: 1 / 4;
                     height: inherit;
                 }
@@ -69,9 +69,16 @@
                 #view1 {
                     overflow: auto;
                     height: 100%;
-                    --pb-annotation-persName: #ffac41;
-                    --pb-annotation-placeName: #aa41ff;
-                    --pb-annotation-term: #41ffbd;
+                    --pb-annotation-persName: #fb5607;
+                    --pb-annotation-orgName: #ffbe0b;
+                    --pb-annotation-placeName: #8338ec;
+                    --pb-annotation-term: #3a86ff;
+                    --pb-annotation-date: #ff006e;
+                }
+
+                #view1::part(content) {
+                    line-height: 2;
+                    font-size: 18px;
                 }
 
                 @media (min-width: 769px) {
@@ -79,42 +86,49 @@
                         max-width: 60vw;
                     }
                 }
+
+                #drawer {
+                    --pb-drawer-width: 448px;
+                    background-color: white;
+                }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                    <pb-document id="document1" path="test/annotations.xml" odd="annotations"></pb-document>
+                    <pb-document id="document1" path="test/graves20.xml" odd="annotations"></pb-document>
 
                     <pb-progress subscribe="transcription"></pb-progress>
                     <main>
+                        <div class="toolbar">
+                            <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
+                            <paper-icon-button class="annotation-action" data-type="persName" icon="social:person" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" data-type="orgName" icon="social:people" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" data-type="placeName" icon="maps:place" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
+                            <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
+                        </div>
+                        <!-- Output the document title -->
+                        <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
+                            <pb-param name="header" value="short"/>
+                        </pb-view>
+                        <pb-view id="view1" src="document1" view="single" append-footnotes
+                            subscribe="transcription" emit="transcription"></pb-view>
                         <pb-tabs>
                             <paper-tab slot="tab">HTML</paper-tab>
                             <paper-tab slot="tab">TEI</paper-tab>
                             <paper-tab slot="tab">JSON</paper-tab>
                             <iframe slot="page" id="html" src="about:blank"></iframe>
                             <div slot="page">
-                                <pb-code-highlight id="output" language="xml" theme="coy"></pb-code-highlight>
+                                <pb-code-highlight id="output" language="xml" theme="default"></pb-code-highlight>
                             </div>
                             <div slot="page">
                                 <pre id="json"></pre>
                             </div>
                         </pb-tabs>
-                        <div class="toolbar">
-                            <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
-                            <paper-icon-button class="annotation-action" id="add-person" data-type="persName" icon="social:person" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" id="add-place" data-type="placeName" icon="maps:place" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" id="add-term" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
-                        </div>
-                        <!-- Output the document title -->
-                        <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
-                            <pb-param name="header" value="short"/>
-                        </pb-view>
-                        <pb-view id="view1" src="document1" view="single" append-footnotes animation
-                            subscribe="transcription" emit="transcription"></pb-view>
                     </main>
                     <script>
                         function disableButtons(disable) {
                             document.querySelectorAll('.annotation-action').forEach((button) => {
-                                    button.disabled = disable;
-                                });
+                                button.disabled = disable;
+                            });
                         }
 
                         window.addEventListener('WebComponentsReady', () => {

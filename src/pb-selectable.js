@@ -108,7 +108,7 @@ function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    if (relOffset - walker.currentNode.textContent.length <= 0) {
+    if (relOffset - walker.currentNode.textContent.length < 0) {
       return [walker.currentNode, relOffset];
     }
     if (!isSkippedNode(walker.currentNode)) {
@@ -162,7 +162,7 @@ function clearMarkers(root) {
  */
 function showMarkers(root) {
   clearMarkers(root);
-  root.querySelectorAll('.annotation').forEach((span) => {
+  Array.from(root.querySelectorAll('.annotation')).reverse().forEach((span) => {
     showMarker(span, root, ancestors(span, 'annotation') * 5);
   });
 }
@@ -231,6 +231,7 @@ export const pbSelectable = superclass =>
       this.subscribeTo('pb-refresh', () => {
         this._ranges = [];
         this._currentSelection = null;
+        clearMarkers(this.shadowRoot.getElementById('view'));
         this.emitTo('pb-annotations-changed', { ranges: this._ranges });
       });
 
@@ -245,7 +246,7 @@ export const pbSelectable = superclass =>
 
       const startPoint = pointToRange(context, teiRange.start);
       const endPoint = pointToRange(context, teiRange.end);
-
+      console.log('<pb-selectable> Range before adjust: %o %o', startPoint, endPoint);
       if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
         range.setStartBefore(extendRange(startPoint[0], context));
       } else {
