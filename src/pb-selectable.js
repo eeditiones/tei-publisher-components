@@ -1,12 +1,14 @@
 import '@polymer/paper-icon-button';
 import { pbMixin } from "./pb-mixin.js";
 
-const colors = {
-  persName: '#ffac41',
-  placeName: '#aa41ff',
-  term: '#41ffbd'
-};
-
+/**
+ * Return the first child of ancestor which contains current.
+ * Used to adjust nested anchor points.
+ * 
+ * @param {Node} current the anchor node
+ * @param {Node} ancestor the context ancestor node
+ * @returns {Node} first child of ancestor containing current
+ */
 function extendRange(current, ancestor) {
   let parent = current;
   while (parent.parentNode !== ancestor) {
@@ -15,12 +17,20 @@ function extendRange(current, ancestor) {
   return parent;
 }
 
+/**
+ * Check if the nodeToCheck should be ignored when computing offsets.
+ * Applies e.g. to footnote markers.
+ * 
+ * @param {Node} nodeToCheck the node to check
+ * @returns true if node should be ignored
+ */
 function isSkippedNode(nodeToCheck) {
   let node = nodeToCheck;
   if (node.nodeType === Node.TEXT_NODE) {
     node = node.parentNode;
   }
-  return node.hasAttribute('href') && /^#fn_.*$/.test(node.getAttribute('href'));
+  const href = /** @type {Element} */ (node).getAttribute('href');
+  return href && /^#fn_.*$/.test(href);
 }
 
 /**
@@ -75,15 +85,15 @@ function rangeToPoint(node, offset, position = 'start') {
 }
 
 function ancestors(node, selector) {
-  const result = [];
+  let count = 0;
   let parent = node.parentNode;
   while (parent && parent !== node.getRootNode()) {
     if (parent.classList.contains(selector)) {
-      result.push(parent);
+      count += 1;
     }
     parent = parent.parentNode;
   }
-  return result;
+  return count;
 }
 
 /**
@@ -108,16 +118,53 @@ function pointToRange(container, offset) {
   return null;
 }
 
-function insertMarker(parent, type) {
-  const markerOffset = ancestors(parent, 'annotation').length + parent.querySelectorAll('.annotation').length;
-  const marker = document.createElement('span');
-  marker.className = type;
-  marker.style.position = 'absolute';
-  marker.style.left = '0px';
-  marker.style.width = '100%';
-  marker.style.bottom = `-${markerOffset * 5 + 3}px`;
-  marker.style.borderBottom = `3px solid ${colors[type]}`;
-  parent.appendChild(marker);
+/**
+ * Create a marker for an annotation. Position it absolute next to the annotation.
+ * 
+ * @param {Element} span the span for which to display the marker
+ * @param {Element} root element with relative position
+ * @param {Number} margin additional margin to avoid overlapping markers
+ */
+function showMarker(span, root, margin = 0) {
+  const rootRect = root.getBoundingClientRect();
+  const rects = span.getClientRects();
+  const type = Array.from(span.classList.values()).filter(cl => /^annotation-.*$/.test(cl)).join('');
+  for (let i = 0; i < rects.length; i++) {
+    const rect = rects[i];
+    const marker = document.createElement('div');
+    marker.className = `marker ${type}`;
+    marker.style.position = 'absolute';
+    marker.style.left = `${rect.left - rootRect.left}px`;
+    marker.style.top = `${(rect.top - rootRect.top) + rect.height}px`;
+    marker.style.marginTop = `${margin}px`;
+    marker.style.width = `${rect.width}px`;
+    marker.style.height = `3px`;
+    marker.style.backgroundColor = `var(--pb-${type})`;
+    marker.part = 'annotation';
+    root.appendChild(marker);
+  }
+}
+
+/**
+ * Clear all markers
+ * 
+ * @param {HTMLElement} root 
+ */
+function clearMarkers(root) {
+  root.querySelectorAll('.marker').forEach(marker => marker.parentNode.removeChild(marker));
+}
+
+/**
+ * For all annotations currently shown, create a marker element and position
+ * it absolute next to the annotation
+ * 
+ * @param {HTMLElement} root element containing the markers
+ */
+function showMarkers(root) {
+  clearMarkers(root);
+  root.querySelectorAll('.annotation').forEach((span) => {
+    showMarker(span, root, ancestors(span, 'annotation') * 5);
+  });
 }
 
 export const pbSelectable = superclass =>
@@ -125,48 +172,6 @@ export const pbSelectable = superclass =>
     constructor() {
       super();
       this._ranges = [];
-    }
-
-    _updateAnnotation(teiRange) {
-      const view = this.shadowRoot.getElementById('view');
-      const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
-      // const end = view.querySelector(`[data-tei="${teiRange.end.parent}"]`);
-
-      const range = document.createRange();
-
-      const startPoint = pointToRange(context, teiRange.start);
-      const endPoint = pointToRange(context, teiRange.end);
-      console.log('start: %o; end: %o', startPoint, endPoint);
-
-      if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
-        range.setStartBefore(startPoint[0].parentNode);
-      } else {
-        range.setStart(startPoint[0], startPoint[1]);
-      }
-
-      if (startPoint[0] !== endPoint[0] && endPoint[0].textContent.length - 1 === endPoint[1]) {
-        range.setEndAfter(endPoint[0].parentNode);
-      } else {
-        range.setEnd(endPoint[0], endPoint[1]);
-      }
-      const span = document.createElement('span');
-      span.className = 'annotation';
-      span.style.position = 'relative';
-      span.appendChild(range.extractContents());
-      range.insertNode(span);
-
-      insertMarker(span, teiRange.type);
-    }
-
-    updateAnnotations() {
-      this._ranges.forEach(this._updateAnnotation.bind(this));
-      this.shadowRoot.querySelectorAll('[data-annotation]').forEach((span) => {
-        span.className = 'annotation';
-        span.style.position = 'relative';
-
-        const type = span.getAttribute('data-annotation');
-        insertMarker(span, type);
-      });
     }
 
     connectedCallback() {
@@ -232,6 +237,43 @@ export const pbSelectable = superclass =>
       this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
     }
 
+    _updateAnnotation(teiRange) {
+      const view = this.shadowRoot.getElementById('view');
+      const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
+
+      const range = document.createRange();
+
+      const startPoint = pointToRange(context, teiRange.start);
+      const endPoint = pointToRange(context, teiRange.end);
+
+      if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
+        range.setStartBefore(extendRange(startPoint[0], context));
+      } else {
+        range.setStart(startPoint[0], startPoint[1]);
+      }
+
+      if (startPoint[0] !== endPoint[0] && endPoint[0].textContent.length - 1 === endPoint[1]) {
+        range.setEndAfter(extendRange(endPoint[0], context));
+      } else {
+        range.setEnd(endPoint[0], endPoint[1]);
+      }
+
+      console.log('<pb-selectable> Range: %o', range);
+      const span = document.createElement('span');
+      span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
+      // span.appendChild(range.extractContents());
+
+      range.surroundContents(span);
+      // range.insertNode(span);
+
+      showMarkers(this.shadowRoot.getElementById('view'));
+    }
+
+    updateAnnotations() {
+      this._ranges.forEach(this._updateAnnotation.bind(this));
+      showMarkers(this.shadowRoot.getElementById('view'));
+    }
+
     _selectionChanged() {
       const selection = this.shadowRoot.getSelection();
       const range = this._selectedRange(selection);
@@ -276,14 +318,14 @@ export const pbSelectable = superclass =>
         context: startRange.parent,
         start: startRange.offset,
         end: endRange.offset,
-        text: range.cloneContents().textContent
+        text: range.cloneContents().textContent,
       };
       if (ev.detail.type) {
         adjustedRange.type = ev.detail.type;
       }
-      console.log('Range adjusted: %o', adjustedRange);
+      console.log('<pb-selectable> range adjusted: %o', adjustedRange);
       this._ranges.push(adjustedRange);
-      this.emitTo('pb-annotations-changed', {ranges: this._ranges});
+      this.emitTo('pb-annotations-changed', { ranges: this._ranges });
       this._updateAnnotation(adjustedRange);
     }
 
@@ -311,5 +353,4 @@ export const pbSelectable = superclass =>
         this._pendingCallback = null;
       }
     }
-
   };
