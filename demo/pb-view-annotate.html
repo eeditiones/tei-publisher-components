@@ -123,7 +123,21 @@
                                 <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
                                 <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
                             </div>
-                            <pb-authority-lookup subscribe="transcription" emit="transcription"></pb-authority-lookup>
+                            <pb-authority-lookup subscribe="transcription" emit="transcription">
+                                <pb-authority connector="GeoNames" name="place"
+                                    user="existdb" tag="placeName">
+                                    <pb-property name="ref" value="geo:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="GND" name="term" tag="term">
+                                    <pb-property name="ref" value="gnd:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="Metagrid" name="person" tag="persName">
+                                    <pb-property name="ref" value="${provider}:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="Metagrid" name="organisation" tag="orgName">
+                                    <pb-property name="ref" value="${provider}:${id}"/>
+                                </pb-authority>
+                            </pb-authority-lookup>
                         </aside>
                         <div class="text">
                             <!-- Output the document title -->

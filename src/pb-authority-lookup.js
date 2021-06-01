@@ -7,38 +7,6 @@ import { GND } from "./authority/gnd.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
-const authorities = [
-  new GND({
-    name: 'person',
-    tag: 'persName',
-    properties: {
-      ref: 'gnd:${id}'
-    },
-  }),
-  new Metagrid({
-    name: 'organisation',
-    tag: 'orgName',
-    properties: {
-      ref: '${provider}:${id}',
-    },
-  }),
-  new GeoNames({
-    name: 'place',
-    user: 'existdb',
-    tag: 'placeName',
-    properties: {
-      ref: 'geo:${id}',
-    },
-  }),
-  new GND({
-    name: 'term',
-    tag: 'term',
-    properties: {
-      ref: 'gnd:${id}'
-    }
-  }),
-];
-
 /**
  *
  *
@@ -67,9 +35,6 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.type = null;
     this._results = [];
     this._authorities = {};
-    authorities.forEach((authority) => {
-        this._authorities[authority.register] = authority;
-    });
   }
 
   connectedCallback() {
@@ -80,6 +45,24 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         this.type = ev.detail.type;
         this._query();
     });
+
+    this.querySelectorAll('pb-authority').forEach((configElem) => {
+        const connector = configElem.getAttribute('connector');
+        let instance;
+        switch (connector) {
+            case 'GND':
+                instance = new GND(configElem);
+                break;
+            case 'GeoNames':
+                instance = new GeoNames(configElem);
+                break;
+            default:
+                instance = new Metagrid(configElem);
+                break;
+        }
+        this._authorities[instance.register] = instance;
+    });
+    console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
   }
 
   render() {

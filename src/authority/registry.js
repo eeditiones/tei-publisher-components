@@ -3,9 +3,16 @@
  * Abstract base class to be implemented by all connectors.
  */
 export class Registry {
-  constructor(config) {
-    this._config = config;
-    this._register = config.name;
+  constructor(configElem) {
+    this._config = {
+        name: configElem.getAttribute('name'),
+        tag: configElem.getAttribute('tag'),
+        properties: {}
+    };
+    configElem.querySelectorAll('pb-property').forEach((prop) => {
+        this._config.properties[prop.getAttribute('name')] = prop.getAttribute('value');
+    })
+    this._register = this._config.name;
   }
 
   get register() {

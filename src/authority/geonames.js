@@ -6,9 +6,9 @@ export class GeoNames extends Registry {
         return 'geonames.org';
     }
     
-    constructor(config) {
-        super(config);
-        this.user = config.user;
+    constructor(configElem) {
+        super(configElem);
+        this.user = configElem.getAttribute('user');
     }
 
     async query(key) {
