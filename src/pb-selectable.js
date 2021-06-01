@@ -261,7 +261,7 @@ export const pbSelectable = superclass =>
 
       console.log('<pb-selectable> Range: %o', range);
       const span = document.createElement('span');
-      span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
+      span.className = `annotation annotation-${teiRange.tag} ${teiRange.tag}`;
       // span.appendChild(range.extractContents());
 
       range.surroundContents(span);
@@ -305,7 +305,7 @@ export const pbSelectable = superclass =>
           }, 100);
         }
 
-        this.emitTo('pb-selection-changed', { hasContent: true });
+        this.emitTo('pb-selection-changed', { hasContent: true, range });
       } else {
         this.emitTo('pb-selection-changed', { hasContent: false });
       }
@@ -321,12 +321,19 @@ export const pbSelectable = superclass =>
         end: endRange.offset,
         text: range.cloneContents().textContent,
       };
-      if (ev.detail.type) {
-        adjustedRange.type = ev.detail.type;
+      if (ev.detail.tag) {
+        adjustedRange.tag = ev.detail.tag;
+      }
+      if (ev.detail.properties) {
+        adjustedRange.properties = ev.detail.properties;
       }
       console.log('<pb-selectable> range adjusted: %o', adjustedRange);
       this._ranges.push(adjustedRange);
-      this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      this.emitTo('pb-annotations-changed', { 
+        type: adjustedRange.tag,
+        text: adjustedRange.text,
+        ranges: this._ranges 
+      });
       this._updateAnnotation(adjustedRange);
     }
 

@@ -20,7 +20,7 @@
         <script type="module" src="../src/pb-events.js"></script>
         <script type="module" src="../src/pb-code-highlight.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
-        <script type="module" src="../src/pb-drawer.js"></script>
+        <script type="module" src="../src/pb-authority-lookup.js"></script>
         <!--/scripts-->
     </head>
 
@@ -34,16 +34,38 @@
 
                 main {
                     display: grid;
-                    grid-template-columns: 50% 50%;
-                    grid-template-rows: auto auto 1fr;
+                    grid-template-columns: 256px 1fr 33%;
+                    grid-template-rows: 100%;
                     gap: 0 10px;
-                    height: 70vh;
+                    height: 95vh;
+                }
+
+                aside {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                    border-right: 1px solid #e5edf2;
+                    padding: 0 8px 0 0;
+                }
+
+                pb-authority-lookup {
+                    height: calc(100% - 40px);
+                }
+
+                pb-authority-lookup::part(output) {
+                    font-size: 13px;
+                }
+
+                .text {
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 pb-tabs {
-                    grid-column: 2;
-                    grid-row: 1 / 4;
+                    grid-column: 3;
                     height: inherit;
+                    border-left: 1px solid #e5edf2;
                 }
 
                 pb-tabs div {
@@ -86,31 +108,31 @@
                         max-width: 60vw;
                     }
                 }
-
-                #drawer {
-                    --pb-drawer-width: 448px;
-                    background-color: white;
-                }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="test/graves20.xml" odd="annotations"></pb-document>
 
                     <pb-progress subscribe="transcription"></pb-progress>
                     <main>
-                        <div class="toolbar">
-                            <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
-                            <paper-icon-button class="annotation-action" data-type="persName" icon="social:person" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" data-type="orgName" icon="social:people" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" data-type="placeName" icon="maps:place" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
-                            <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
+                        <aside>
+                            <div class="toolbar">
+                                <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="person" icon="social:person" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="organisation" icon="social:people" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="place" icon="maps:place" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
+                            </div>
+                            <pb-authority-lookup subscribe="transcription" emit="transcription"></pb-authority-lookup>
+                        </aside>
+                        <div class="text">
+                            <!-- Output the document title -->
+                            <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
+                                <pb-param name="header" value="short"/>
+                            </pb-view>
+                            <pb-view id="view1" src="document1" view="single" append-footnotes
+                                subscribe="transcription" emit="transcription"></pb-view>
                         </div>
-                        <!-- Output the document title -->
-                        <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
-                            <pb-param name="header" value="short"/>
-                        </pb-view>
-                        <pb-view id="view1" src="document1" view="single" append-footnotes
-                            subscribe="transcription" emit="transcription"></pb-view>
                         <pb-tabs>
                             <paper-tab slot="tab">HTML</paper-tab>
                             <paper-tab slot="tab">TEI</paper-tab>
@@ -131,15 +153,25 @@
                             });
                         }
 
+                        let selection = null;
+
                         window.addEventListener('WebComponentsReady', () => {
                             document.querySelectorAll('.annotation-action').forEach((button) => {
                                 button.addEventListener('click', () => {
-                                    window.pbEvents.emit('pb-add-annotation', 'transcription', { type: button.getAttribute('data-type') });
+                                    if (selection) {
+                                        window.pbEvents.emit('pb-authority-lookup', 'transcription', {
+                                            type: button.getAttribute('data-type'),
+                                            query: selection
+                                        });
+                                    }
                                     disableButtons(true);
                                 });
                             });
                             window.pbEvents.subscribe('pb-selection-changed', 'transcription', (ev) => {
                                 disableButtons(!ev.detail.hasContent);
+                                if (ev.detail.hasContent) {
+                                    selection = ev.detail.range.cloneContents().textContent;
+                                }
                             });
                             window.pbEvents.subscribe('pb-annotations-changed', 'transcription', (ev) => {
                                 const annotations = ev.detail.ranges;
