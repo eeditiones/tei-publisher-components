@@ -1,3 +1,12 @@
+## [1.23.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.0...v1.23.1) (2021-06-03)
+
+
+### Bug Fixes
+
+* **pb-code-highlight:** do not show message while parsing code ([7ebc4fc](https://github.com/eeditiones/tei-publisher-components/commit/7ebc4fcf981590576aeb8c5fc6732c1c7a6e3b73))
+* **pb-load:** improve error reporting ([1c35fe4](https://github.com/eeditiones/tei-publisher-components/commit/1c35fe42b99f6adaac1005ce1f2be1c5efc7c573))
+* **pb-restricted:** hide disabled element if there's no fallback ([4067bc7](https://github.com/eeditiones/tei-publisher-components/commit/4067bc7c3a8a2a013eeed8beac1d969c2eefb15f))
+
 # [1.23.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.22.0...v1.23.0) (2021-05-15)
 
 
