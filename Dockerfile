@@ -32,12 +32,18 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 
 FROM builder as tei
 
+ARG TEMPLATING_VERSION=v1.0.0
 ARG PUBLISHER_LIB_VERSION=v2.8.11
 ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
 
 # add key
 RUN  mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+RUN git clone https://github.com/eXist-db/templating.git \
+    && cd templating \
+    && git checkout ${TEMPLATING_VERSION} \
+    && npm start
 
 # Build tei-publisher-lib
 RUN  git clone https://github.com/eeditiones/tei-publisher-lib.git \
@@ -68,6 +74,7 @@ RUN ant
 
 FROM existdb/existdb:${EXIST_VERSION}
 
+COPY --from=tei /tmp/templating/templating-*.xar /exist/autodeploy
 COPY --from=tei /tmp/tei-publisher-lib/build/*.xar /exist/autodeploy
 COPY --from=tei /tmp/roaster/build/*.xar /exist/autodeploy
 COPY --from=tei /tmp/tei-publisher-app/build/*.xar /exist/autodeploy
