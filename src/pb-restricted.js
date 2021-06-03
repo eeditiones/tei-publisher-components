@@ -42,6 +42,13 @@ export class PbRestricted extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        const fallback = this.shadowRoot.querySelector('slot[name=fallback]');
+        const hasFallback = fallback.assignedNodes().length > 0;
+        if (hasFallback) {
+            console.log(this);
+            this.classList.add('fallback');
+        }
+
         const login = document.getElementById(this.login);
         if (!login) {
             console.error('<pb-restricted> connected pb-login element not found!');
@@ -62,6 +69,10 @@ export class PbRestricted extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
+                display: none;
+            }
+
+            :host(.fallback), :host([show]) {
                 display: block;
             }
         `;
