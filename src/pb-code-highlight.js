@@ -106,7 +106,7 @@ export class PbCodeHighlight extends LitElement {
                 <pre class="${this.lineNumbers ? 'line-numbers' : ''} language-${this.language}"><code>${this.code}</code></pre>
             `;
         }
-        return html`<pre class="line-numbers"><code>Formatting ...<code></pre>`;
+        return html`<pre class="line-numbers"><code><code></pre>`;
     }
 
     static async loadTheme(theme) {
