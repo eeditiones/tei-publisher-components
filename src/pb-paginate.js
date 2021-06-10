@@ -161,16 +161,17 @@ export class PbPaginate extends pbMixin(LitElement) {
     }
 
     _refresh(ev) {
-        this.start = ev.detail.start;
+        this.start = Number(ev.detail.start);
         this.total = ev.detail.count;
         this._update(this.start, this.total);
     }
 
     _handleClick(item, index) {
-        this.start = (this.pages[index].label - 1) * this.perPage + 1;
+        // this.start = (this.pages[index].label - 1) * this.perPage + 1;
+        this.start += this.perPage;
         this.emitTo('pb-load', {
             "params": {
-                "start": this.start,
+                "start": this.start-1,
                 "per-page": this.perPage,
                 "page": index
             }

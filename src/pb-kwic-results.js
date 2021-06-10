@@ -1,6 +1,6 @@
 import {LitElement, html, css} from 'lit-element';
 import responseData from '../demo/sample-results.js';
-import { pbMixin } from './pb-mixin.js';
+import {pbMixin} from './pb-mixin.js';
 import './pb-paginate.js';
 
 /**
@@ -12,8 +12,17 @@ export class PbKwicResults extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
-            data:{
+            /**
+             * results from a kwic search
+             */
+            data: {
                 type: Object
+            },
+            /**
+             * document id
+             */
+            doc: {
+                type: String
             },
             perPage: {
                 type: Number,
@@ -22,8 +31,11 @@ export class PbKwicResults extends pbMixin(LitElement) {
             pattern: {
                 type: String
             },
-            first:{
-                type:Number
+            first: {
+                type: Number
+            },
+            path: {
+                type: String
             }
         };
     }
@@ -32,8 +44,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
         super();
         // this.data = responseData;
         console.log('data ', this.data);
-        this.data={documents:[]};
-        this.first=0;
+        this.data = {documents: []};
+        this.first = 0;
+        this.path = '';
+        this.doc = null;
     }
 
 
@@ -82,18 +96,15 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
             // this.url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.start}&per-page=${this.perPage}`;
             // console.log('endpoint ', url);
-            this._load();
+            this.load();
 
         });
 
 
         this.subscribeTo('pb-load', (event) => {
-            console.log('pb-load ', event);
-            console.log('pb-load start', event.detail.params.start);
-            console.log('pb-load perpage', event.detail.params["per-page"]);
             this.first = event.detail.params["start"];
             this.perPage = event.detail.params["per-page"];
-            this._load();
+            this.load();
         });
     }
 
@@ -107,11 +118,11 @@ export class PbKwicResults extends pbMixin(LitElement) {
             <pb-paginate per-page="${this.perPage}" start="${this.first}" @pb-load="${this._handlePagination}"></pb-paginate>
             ${this.data.documents.map(document => html`
                 <section>
-                    <div class="docref">${document.id}</div>
+                    <div class="docref"><a href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}">${document.id}</a></div>
                     <div class="grid">
                         ${document.matches.map(match => html`
                             <div class="left">${match.left}</div>
-                            <div class="hit">${match.match.display}</div>
+                            <div class="hit"><a href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}&match=${match.match.words[0]}&page=${match.page[0]}">${match.match.display}</a></div>
                             <div class="right">${match.right}</div>
                         `)}
                     </div>
@@ -127,13 +138,16 @@ export class PbKwicResults extends pbMixin(LitElement) {
         console.log('per-page ', this.perPage);
 
 
-
     }
 
-   // async _load(url){
-   async _load(){
-       const url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
-       await fetch(url, {
+    // async _load(url){
+    async load() {
+        let url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
+        if (this.doc) {
+            url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}&doc=${this.doc}`;
+        }
+        // const url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
+        await fetch(url, {
             method: 'GET',
             mode: 'cors',
             credentials: 'same-origin'
@@ -154,7 +168,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     }
 
-    _handlePagination(){
+    _handlePagination() {
         console.log('_handlePagination')
     }
 
