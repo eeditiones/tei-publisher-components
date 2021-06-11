@@ -200,6 +200,12 @@ export const pbSelectable = superclass =>
       });
 
       this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
+      this.subscribeTo('pb-edit-annotation', (ev) => {
+        const span = ev.detail.target;
+        const json = JSON.parse(span.dataset.annotation);
+        json.properties = ev.detail.properties;
+        span.dataset.annotation = JSON.stringify(json);
+      });
     }
 
     firstUpdated() {
@@ -312,12 +318,6 @@ export const pbSelectable = superclass =>
       this._updateAnnotation(adjustedRange);
     }
 
-    _editAnnotation(span) {
-      const json = span.dataset.annotation;
-      const data = JSON.parse(json);
-      this.emitTo('pb-annotation-edit', Object.assign({}, data, {target: span}));
-    }
-
     _deleteAnnotation(span) {
       const teiRange = this._rangesMap.get(span);
       this._rangesMap.delete(span);
@@ -372,7 +372,9 @@ export const pbSelectable = superclass =>
           const editBtn = document.createElement('paper-icon-button');
           editBtn.setAttribute('icon', 'icons:create');
           editBtn.addEventListener('click', () => {
-            this._editAnnotation(span);
+            const json = span.dataset.annotation;
+            const data = JSON.parse(json);
+            this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
           });
           div.appendChild(editBtn);
 

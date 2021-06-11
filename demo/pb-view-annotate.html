@@ -205,10 +205,18 @@
                                 const data = form.serializeForm();
                                 form.reset();
                                 refInput.value = '';
-                                window.pbEvents.emit('pb-add-annotation', 'transcription', {
-                                    type,
-                                    properties: data
-                                });
+                                if (activeSpan) {
+                                    window.pbEvents.emit('pb-edit-annotation', 'transcription', {
+                                        target: activeSpan,
+                                        properties: data
+                                    });
+                                    activeSpan = null;
+                                } else {
+                                    window.pbEvents.emit('pb-add-annotation', 'transcription', {
+                                        type,
+                                        properties: data
+                                    });
+                                }
                             });
                             document.querySelector('#form-ref [slot="prefix"]').addEventListener('click', () => {
                                 window.pbEvents.emit('pb-authority-lookup', 'transcription', {
@@ -225,6 +233,7 @@
                                     if (selection) {
                                         type = button.getAttribute('data-type');
                                         text = selection;
+                                        activeSpan = null;
                                         window.pbEvents.emit('pb-authority-lookup', 'transcription', {
                                             type,
                                             query: selection

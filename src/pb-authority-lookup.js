@@ -123,6 +123,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   }
 
   _queryChanged() {
+    this._results = [];
       this.query = this.shadowRoot.getElementById('query').value;
       this._query();
   }
