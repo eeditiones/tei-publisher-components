@@ -3,6 +3,30 @@ import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
 import * as themes from './pb-popover-themes.js';
 
+function _injectStylesheet(root, name, cssCode) {
+  const style = root.querySelector(`#pb-popover-${name}`);
+  if (!style) {
+      const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
+      console.log('Loading tippy styles for theme %s into %o', name, container);
+    const elem = document.createElement('style');
+    elem.type = 'text/css';
+    elem.id = `pb-popover-${name}`;
+    elem.innerHTML = cssCode;
+    container.appendChild(elem);
+  }
+}
+
+export function loadTippyStyles(root, theme) {
+    _injectStylesheet(root, 'base', themes.base);
+    if (theme && theme !== 'none') {
+      const name = themes.camelize(theme);
+      const themeCSS = themes[name];
+      if (themeCSS) {
+        _injectStylesheet(root, name, themeCSS);
+      }
+    }
+}
+
 /**
  * Show a popover. It may either 
  * 
@@ -166,27 +190,7 @@ export class PbPopover extends pbMixin(LitElement) {
     _injectStyles() {
         this._checkCSSProperties();
 
-        this._injectStylesheet('base', themes.base);
-        if (this.theme && this.theme !== 'none') {
-            const name = themes.camelize(this.theme);
-            const theme = themes[name];
-            if (theme) {
-                this._injectStylesheet(name, theme);
-            }
-        }
-    }
-
-    _injectStylesheet(name, css) {
-        const root = this.getRootNode();
-        const style = root.querySelector(`#pb-popover-${name}`);
-        if (!style) {
-            const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
-            const elem = document.createElement('style');
-            elem.type = 'text/css';
-            elem.id = `pb-popover-${name}`;
-            elem.innerHTML = css;
-            container.appendChild(elem);
-        }
+        loadTippyStyles(this.getRootNode(), this.theme);
     }
 
     _getContent() {

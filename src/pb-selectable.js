@@ -1,5 +1,7 @@
 import '@polymer/paper-icon-button';
+import tippy from 'tippy.js';
 import { pbMixin } from "./pb-mixin.js";
+import { loadTippyStyles } from "./pb-popover.js";
 
 /**
  * Return the first child of ancestor which contains current.
@@ -119,33 +121,6 @@ function pointToRange(container, offset) {
 }
 
 /**
- * Create a marker for an annotation. Position it absolute next to the annotation.
- * 
- * @param {Element} span the span for which to display the marker
- * @param {Element} root element with relative position
- * @param {Number} margin additional margin to avoid overlapping markers
- */
-function showMarker(span, root, margin = 0) {
-  const rootRect = root.getBoundingClientRect();
-  const rects = span.getClientRects();
-  const type = Array.from(span.classList.values()).filter(cl => /^annotation-.*$/.test(cl)).join('');
-  for (let i = 0; i < rects.length; i++) {
-    const rect = rects[i];
-    const marker = document.createElement('div');
-    marker.className = `marker ${type}`;
-    marker.style.position = 'absolute';
-    marker.style.left = `${rect.left - rootRect.left}px`;
-    marker.style.top = `${(rect.top - rootRect.top) + rect.height}px`;
-    marker.style.marginTop = `${margin}px`;
-    marker.style.width = `${rect.width}px`;
-    marker.style.height = `3px`;
-    marker.style.backgroundColor = `var(--pb-${type})`;
-    marker.part = 'annotation';
-    root.appendChild(marker);
-  }
-}
-
-/**
  * Clear all markers
  * 
  * @param {HTMLElement} root 
@@ -154,24 +129,12 @@ function clearMarkers(root) {
   root.querySelectorAll('.marker').forEach(marker => marker.parentNode.removeChild(marker));
 }
 
-/**
- * For all annotations currently shown, create a marker element and position
- * it absolute next to the annotation
- * 
- * @param {HTMLElement} root element containing the markers
- */
-function showMarkers(root) {
-  clearMarkers(root);
-  Array.from(root.querySelectorAll('.annotation')).reverse().forEach((span) => {
-    showMarker(span, root, ancestors(span, 'annotation') * 5);
-  });
-}
-
 export const pbSelectable = superclass =>
   class PbSelectable extends pbMixin(superclass) {
     constructor() {
       super();
       this._ranges = [];
+      this._rangesMap = new Map();
     }
 
     connectedCallback() {
@@ -230,12 +193,19 @@ export const pbSelectable = superclass =>
 
       this.subscribeTo('pb-refresh', () => {
         this._ranges = [];
+        this._rangesMap.clear();
         this._currentSelection = null;
         clearMarkers(this.shadowRoot.getElementById('view'));
         this.emitTo('pb-annotations-changed', { ranges: this._ranges });
       });
 
       this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
+    }
+
+    firstUpdated() {
+      super.firstUpdated();
+
+      loadTippyStyles(this.shadowRoot, 'light-border');
     }
 
     _updateAnnotation(teiRange) {
@@ -261,18 +231,23 @@ export const pbSelectable = superclass =>
 
       console.log('<pb-selectable> Range: %o', range);
       const span = document.createElement('span');
-      span.className = `annotation annotation-${teiRange.tag} ${teiRange.tag}`;
+      span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
+      span.dataset.annotation = JSON.stringify({
+        type: teiRange.type,
+        properties: teiRange.properties
+      });
       // span.appendChild(range.extractContents());
 
       range.surroundContents(span);
+      this._rangesMap.set(span, teiRange);
       // range.insertNode(span);
 
-      showMarkers(this.shadowRoot.getElementById('view'));
+      this._showMarkers();
     }
 
     updateAnnotations() {
       this._ranges.forEach(this._updateAnnotation.bind(this));
-      showMarkers(this.shadowRoot.getElementById('view'));
+      this._showMarkers();
     }
 
     _selectionChanged() {
@@ -321,8 +296,8 @@ export const pbSelectable = superclass =>
         end: endRange.offset,
         text: range.cloneContents().textContent,
       };
-      if (ev.detail.tag) {
-        adjustedRange.tag = ev.detail.tag;
+      if (ev.detail.type) {
+        adjustedRange.type = ev.detail.type;
       }
       if (ev.detail.properties) {
         adjustedRange.properties = ev.detail.properties;
@@ -330,11 +305,37 @@ export const pbSelectable = superclass =>
       console.log('<pb-selectable> range adjusted: %o', adjustedRange);
       this._ranges.push(adjustedRange);
       this.emitTo('pb-annotations-changed', { 
-        type: adjustedRange.tag,
+        type: adjustedRange.type,
         text: adjustedRange.text,
         ranges: this._ranges 
       });
       this._updateAnnotation(adjustedRange);
+    }
+
+    _editAnnotation(span) {
+      const json = span.dataset.annotation;
+      const data = JSON.parse(json);
+      this.emitTo('pb-annotation-edit', Object.assign({}, data, {target: span}));
+    }
+
+    _deleteAnnotation(span) {
+      const teiRange = this._rangesMap.get(span);
+      this._rangesMap.delete(span);
+      const pos = this._ranges.indexOf(teiRange);
+
+      console.log('<pb-selectable> deleting annotation %o', teiRange);
+      
+      this._ranges.splice(pos, 1);
+
+      for (let i = 0; i < span.childNodes.length; i++) {
+        const copy = span.childNodes[i].cloneNode();
+        span.parentNode.insertBefore(copy, span);
+      }
+      span.parentNode.removeChild(span);
+
+      this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      
+      this._showMarkers();
     }
 
     /**
@@ -360,5 +361,77 @@ export const pbSelectable = superclass =>
         clearTimeout(this._pendingCallback);
         this._pendingCallback = null;
       }
+    }
+
+    _createTooltip(root, span) {
+      tippy(span, {
+        content: () => {
+          const div = document.createElement('div');
+          div.className = 'toolbar';
+
+          const editBtn = document.createElement('paper-icon-button');
+          editBtn.setAttribute('icon', 'icons:create');
+          editBtn.addEventListener('click', () => {
+            this._editAnnotation(span);
+          });
+          div.appendChild(editBtn);
+
+          const delBtn = document.createElement('paper-icon-button');
+          delBtn.setAttribute('icon', 'icons:delete');
+          delBtn.addEventListener('click', () => {
+            this._deleteAnnotation(span);
+          });
+          div.appendChild(delBtn);
+          return div;
+        },
+        allowHTML: true,
+        interactive: true,
+        appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
+        theme: 'light-border',
+        hideOnClick: false,
+      });
+    }
+
+    /**
+     * Create a marker for an annotation. Position it absolute next to the annotation.
+     * 
+     * @param {Element} span the span for which to display the marker
+     * @param {Element} root element with relative position
+     * @param {Number} margin additional margin to avoid overlapping markers
+     */
+    _showMarker(span, root, margin = 0) {
+      const rootRect = root.getBoundingClientRect();
+      const rects = span.getClientRects();
+      const type = Array.from(span.classList.values()).filter(cl => /^annotation-.*$/.test(cl)).join('');
+      for (let i = 0; i < rects.length; i++) {
+        const rect = rects[i];
+        const marker = document.createElement('div');
+        marker.className = `marker ${type}`;
+        marker.style.position = 'absolute';
+        marker.style.left = `${rect.left - rootRect.left}px`;
+        marker.style.top = `${(rect.top - rootRect.top) + rect.height}px`;
+        marker.style.marginTop = `${margin}px`;
+        marker.style.width = `${rect.width}px`;
+        marker.style.height = `3px`;
+        marker.style.backgroundColor = `var(--pb-${type})`;
+        marker.part = 'annotation';
+        root.appendChild(marker);
+      }
+
+      this._createTooltip(root, span);
+    }
+
+    /**
+     * For all annotations currently shown, create a marker element and position
+     * it absolute next to the annotation
+     * 
+     * @param {HTMLElement} root element containing the markers
+     */
+    _showMarkers() {
+      const root = this.shadowRoot.getElementById('view');
+      clearMarkers(root);
+      Array.from(root.querySelectorAll('.annotation')).reverse().forEach((span) => {
+        this._showMarker(span, root, ancestors(span, 'annotation') * 5);
+      });
     }
   };

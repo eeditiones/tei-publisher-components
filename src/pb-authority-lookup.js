@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { render } from "lit-html";
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { Metagrid } from "./authority/metagrid.js";
@@ -43,6 +44,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.subscribeTo('pb-authority-lookup', ev => {
         this.query = ev.detail.query;
         this.type = ev.detail.type;
+        this._results = [];
         this._query();
     });
 
@@ -84,6 +86,17 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     `;
   }
 
+  lookup(register, id, container) {
+    if (id === '') {
+      console.log('<pb-authority-lookup> Key is empty');
+      render(html`<span></span>`, container);
+      return;
+    }
+    const authority = this._authorities[register];
+    console.log('<pb-authority-lookup> Retrieving info for %s from %s', id, register);
+    authority.info(id, container);
+  }
+
   _formatItem(item) {
     return html`
       <tr>
@@ -106,7 +119,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   _select(item) {
         const authority = this._authorities[item.register];
         const options = authority.format(item);
-        this.emitTo('pb-add-annotation', options);
+        this.emitTo('pb-authority-select', options);
   }
 
   _queryChanged() {

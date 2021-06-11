@@ -1,3 +1,6 @@
+/* eslint-disable class-methods-use-this */
+import { html } from 'lit-element';
+import { render } from 'lit-html';
 import { Registry } from './registry.js';
 
 export class Metagrid extends Registry {
@@ -19,7 +22,7 @@ export class Metagrid extends Registry {
               const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
               const result = {
                 register: this._register,
-                id: item.concordance.id,
+                id: item.identifier,
                 label: name,
                 details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
                 link: item.link.uri,
@@ -33,5 +36,23 @@ export class Metagrid extends Registry {
             });
         });
     })
+  }
+
+  info(key, container) {
+    const [slug, id] = key.split(':');
+    fetch(`https://api.metagrid.ch/search?slug=${slug}&query=${id}`)
+      .then(response => response.json())
+      .then(json => {
+        const item = json.resources[0];
+        const output = html`
+          <h3 class="label">
+            <a href="https://${item.link.uri}" target="_blank">
+              ${item.metadata.first_name} ${item.metadata.last_name}
+            </a>
+          </h3>
+          <p>${item.metadata.birth_date} - ${item.metadata.death_date}</p>
+        `;
+        render(output, container);
+      });
   }
 }

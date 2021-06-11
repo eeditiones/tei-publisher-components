@@ -393,6 +393,7 @@ export class PbView extends pbSelectable(LitElement) {
     }
 
     firstUpdated() {
+        super.firstUpdated();
         if (this.infiniteScroll) {
             this._topObserver = this.shadowRoot.getElementById('top-observer');
             this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
@@ -662,11 +663,14 @@ export class PbView extends pbSelectable(LitElement) {
                 position: this.nodeId
             };
             this.emitTo('pb-update', eventOptions);
-            this.updateAnnotations();
             this._scroll();
         });
 
         this.emitTo('pb-end-update', null);
+
+        this.updateComplete.then(() => {
+            this.updateAnnotations();
+        });
     }
 
     _replaceContent(resp, direction) {

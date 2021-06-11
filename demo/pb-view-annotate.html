@@ -8,9 +8,11 @@
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/maps-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/social-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
@@ -20,6 +22,7 @@
         <script type="module" src="../src/pb-events.js"></script>
         <script type="module" src="../src/pb-code-highlight.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
+        <script type="module" src="../src/pb-leaflet-map.js"></script>
         <script type="module" src="../src/pb-authority-lookup.js"></script>
         <!--/scripts-->
     </head>
@@ -41,15 +44,18 @@
                 }
 
                 aside {
-                    display: flex;
-                    flex-direction: column;
-                    height: 100%;
+                    display: grid;
+                    grid-template-rows: auto auto 1fr;
                     border-right: 1px solid #e5edf2;
                     padding: 0 8px 0 0;
                 }
 
+                #authority-dialog {
+                    width: 33vw;
+                }
+
                 pb-authority-lookup {
-                    height: calc(100% - 40px);
+                    min-height: 60vw;
                 }
 
                 pb-authority-lookup::part(output) {
@@ -91,9 +97,9 @@
                 #view1 {
                     overflow: auto;
                     height: 100%;
-                    --pb-annotation-persName: #fb5607;
-                    --pb-annotation-orgName: #ffbe0b;
-                    --pb-annotation-placeName: #8338ec;
+                    --pb-annotation-person: #fb5607;
+                    --pb-annotation-organisation: #ffbe0b;
+                    --pb-annotation-place: #8338ec;
                     --pb-annotation-term: #3a86ff;
                     --pb-annotation-date: #ff006e;
                 }
@@ -123,29 +129,25 @@
                                 <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
                                 <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
                             </div>
-                            <pb-authority-lookup subscribe="transcription" emit="transcription">
-                                <pb-authority connector="GeoNames" name="place"
-                                    user="existdb" tag="placeName">
-                                    <pb-property name="ref" value="geo:${id}"/>
-                                </pb-authority>
-                                <pb-authority connector="GND" name="term" tag="term">
-                                    <pb-property name="ref" value="gnd:${id}"/>
-                                </pb-authority>
-                                <pb-authority connector="Metagrid" name="person" tag="persName">
-                                    <pb-property name="ref" value="${provider}:${id}"/>
-                                </pb-authority>
-                                <pb-authority connector="Metagrid" name="organisation" tag="orgName">
-                                    <pb-property name="ref" value="${provider}:${id}"/>
-                                </pb-authority>
-                            </pb-authority-lookup>
+                            <iron-form id="edit-form">
+                                <form action="">
+                                    <paper-input id="form-ref" name="ref" label="Reference">
+                                        <paper-icon-button slot="prefix" icon="search"></paper-icon-button>
+                                    </paper-input>
+                                    <div id="authority-info"></div>
+                                    <paper-icon-button id="form-save" icon="icons:save"></paper-icon-button>
+                                </form>
+                            </iron-form>
                         </aside>
                         <div class="text">
                             <!-- Output the document title -->
                             <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
                                 <pb-param name="header" value="short"/>
                             </pb-view>
-                            <pb-view id="view1" src="document1" view="single" append-footnotes
-                                subscribe="transcription" emit="transcription"></pb-view>
+                            <pb-view id="view1" src="document1" xpath="//text/body" view="single" append-footnotes
+                                subscribe="transcription" emit="transcription">
+                                <pb-param name="track-ids" value="true"/>
+                            </pb-view>
                         </div>
                         <pb-tabs>
                             <paper-tab slot="tab">HTML</paper-tab>
@@ -160,6 +162,29 @@
                             </div>
                         </pb-tabs>
                     </main>
+                    <paper-dialog id="authority-dialog">
+                        <paper-dialog-scrollable>
+                            <pb-authority-lookup subscribe="transcription" emit="transcription">
+                                <pb-authority connector="GeoNames" name="place" user="existdb">
+                                    <pb-property name="ref" value="geo:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="GND" name="term">
+                                    <pb-property name="ref" value="gnd:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="Metagrid" name="person">
+                                    <pb-property name="ref" value="${provider}:${id}"/>
+                                </pb-authority>
+                                <pb-authority connector="Metagrid" name="organisation">
+                                    <pb-property name="ref" value="${provider}:${id}"/>
+                                </pb-authority>
+                            </pb-authority-lookup>
+                        </paper-dialog-scrollable>
+                        <div class="buttons">
+                            <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                                <pb-i18n key="dialogs.close">Close</pb-i18n>
+                            </paper-button>
+                        </div>
+                    </paper-dialog>
                     <script>
                         function disableButtons(disable) {
                             document.querySelectorAll('.annotation-action').forEach((button) => {
@@ -167,19 +192,51 @@
                             });
                         }
 
-                        let selection = null;
-
                         window.addEventListener('WebComponentsReady', () => {
+                            let selection = null;
+                            let activeSpan = null;
+                            const refInput = document.getElementById('form-ref');
+                            const authorityInfo = document.getElementById('authority-info');
+                            const authorityDialog = document.getElementById('authority-dialog');
+                            const form = document.getElementById('edit-form');
+                            let type = '';
+                            let text = '';
+                            document.getElementById('form-save').addEventListener('click', () => {
+                                const data = form.serializeForm();
+                                form.reset();
+                                refInput.value = '';
+                                window.pbEvents.emit('pb-add-annotation', 'transcription', {
+                                    type,
+                                    properties: data
+                                });
+                            });
+                            document.querySelector('#form-ref [slot="prefix"]').addEventListener('click', () => {
+                                window.pbEvents.emit('pb-authority-lookup', 'transcription', {
+                                    type,
+                                    query: text
+                                });
+                                authorityDialog.open();
+                            });
+                            refInput.addEventListener('value-changed', () => {
+                                document.querySelector('pb-authority-lookup').lookup(type, refInput.value, authorityInfo);
+                            });
                             document.querySelectorAll('.annotation-action').forEach((button) => {
                                 button.addEventListener('click', () => {
                                     if (selection) {
+                                        type = button.getAttribute('data-type');
+                                        text = selection;
                                         window.pbEvents.emit('pb-authority-lookup', 'transcription', {
-                                            type: button.getAttribute('data-type'),
+                                            type,
                                             query: selection
                                         });
+                                        authorityDialog.open();
                                     }
                                     disableButtons(true);
                                 });
+                            });
+                            window.pbEvents.subscribe('pb-authority-select', 'transcription', (ev) => {
+                                authorityDialog.close();
+                                refInput.value = ev.detail.properties.ref;
                             });
                             window.pbEvents.subscribe('pb-selection-changed', 'transcription', (ev) => {
                                 disableButtons(!ev.detail.hasContent);
@@ -220,6 +277,11 @@
                                         iframe.srcdoc = html;
                                     });
                                 });
+                            });
+                            window.pbEvents.subscribe('pb-annotation-edit', 'transcription', (ev) => {
+                                activeSpan = ev.detail.target;
+                                type = ev.detail.type;
+                                refInput.value = ev.detail.properties.ref;
                             });
                             const clearAll = document.getElementById('clear-all');
                             clearAll.addEventListener('click', () => window.pbEvents.emit('pb-refresh', 'transcription'));

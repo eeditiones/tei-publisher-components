@@ -1,3 +1,6 @@
+/* eslint-disable class-methods-use-this */
+import { html } from 'lit-element';
+import { render } from 'lit-html';
 import { Registry } from './registry.js';
 
 function _details(item) {
@@ -64,5 +67,37 @@ export class GND extends Registry {
             });
         })
     })
+  }
+
+  info(key, container) {
+    const id = key.replace(/^[^:]+:?(.*)$/, '$1');
+    fetch(`https://lobid.org/gnd/${id}.json`)
+    .then((response) => response.json())
+    .then((json) => {
+      let info;
+      if (json.type.indexOf('SubjectHeading') > -1) {
+        info = this.infoSubject(json);
+      } else if (json.type.indexOf('AuthorityResource') > -1) {
+        info = this.infoPerson(json);
+      }
+      const output = html`
+        <h3 class="label">
+          <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
+        </h3>
+        ${info}
+      `;
+      render(output, container);
+    })
+  }
+
+  infoPerson(json) {
+    const professions = json.professionOrOccupation.map((prof) => prof.label);
+    return html`<p>${json.dateOfBirth} - ${json.dateOfDeath}</p>
+      <p>${professions}</p>`;
+  }
+
+  infoSubject(json) {
+    const terms = json.broaderTermGeneral.map((term) => term.label);
+    return html`<p>${terms.join(', ')}</p>`;
   }
 }

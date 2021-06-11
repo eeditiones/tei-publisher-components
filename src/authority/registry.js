@@ -37,6 +37,10 @@ export class Registry {
     throw new Error('Method query not implemented');
   }
 
+  info(id, container) {
+      container.innerHTML('not implemented');
+  }
+
     /**
      * Return an XML fragment for the specified item to be inserted
      * into the document.
