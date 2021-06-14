@@ -9,6 +9,9 @@ import { resolveURL } from './utils.js';
  * @fires pb-start-update - When received, resets the facsimile viewer
  * @fires pb-update - Checks the contents received for pb-facs-links
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
+ * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
+ * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
+ * `fail` - image could not be loaded.
  * 
  * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
@@ -138,6 +141,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     set facsimiles(facs) {
         this._facsimiles = facs || [];
         this.loaded = this._facsimiles.length > 0;
+        this.emitTo('pb-facsimile-status', { status: 'loading' });
     }
 
     connectedCallback() {
@@ -209,10 +213,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
             constrainDuringPan: true
         });
 
-        this.viewer.addHandler('open', this.resetZoom.bind(this));
+        this.viewer.addHandler('open', () => {
+            this.resetZoom();
+            this.emitTo('pb-facsimile-status', { status: 'loaded' });
+        });
         this.viewer.addHandler('open-failed', (ev) => {
             console.error('<pb-facsimile> open failed: %s', ev.message);
             this.loaded = false;
+            this.emitTo('pb-facsimile-status', { status: 'fail' });
         });
         this._facsimileObserver();
 
