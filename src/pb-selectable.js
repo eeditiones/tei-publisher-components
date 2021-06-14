@@ -200,12 +200,7 @@ export const pbSelectable = superclass =>
       });
 
       this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
-      this.subscribeTo('pb-edit-annotation', (ev) => {
-        const span = ev.detail.target;
-        const json = JSON.parse(span.dataset.annotation);
-        json.properties = ev.detail.properties;
-        span.dataset.annotation = JSON.stringify(json);
-      });
+      this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
     }
 
     firstUpdated() {
@@ -319,13 +314,30 @@ export const pbSelectable = superclass =>
     }
 
     _deleteAnnotation(span) {
-      const teiRange = this._rangesMap.get(span);
-      this._rangesMap.delete(span);
-      const pos = this._ranges.indexOf(teiRange);
+      // delete an existing annotation element in the TEI source
+      if (span.dataset.tei) {
+        // first check if we have pending modifications and remove them
+        const idx = this._ranges.findIndex(r => r.type === 'modify' && r.node === span.dataset.tei);
+        if (idx > -1) {
+          this._ranges.splice(idx, 1);
+        }
 
-      console.log('<pb-selectable> deleting annotation %o', teiRange);
-      
-      this._ranges.splice(pos, 1);
+        const context = span.parentNode.closest('[data-tei]');
+        const range = {
+          type: 'delete',
+          node: span.dataset.tei,
+          context: context.dataset.tei
+        };
+        this._ranges.push(range);
+      } else {
+        const teiRange = this._rangesMap.get(span);
+        this._rangesMap.delete(span);
+        const pos = this._ranges.indexOf(teiRange);
+
+        console.log('<pb-selectable> deleting annotation %o', teiRange);
+        
+        this._ranges.splice(pos, 1);
+      }
 
       for (let i = 0; i < span.childNodes.length; i++) {
         const copy = span.childNodes[i].cloneNode();
@@ -336,6 +348,30 @@ export const pbSelectable = superclass =>
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
       
       this._showMarkers();
+    }
+
+    _editAnnotation(ev) {
+      const span = ev.detail.target;
+      if (span.dataset.tei) {
+        // TODO: check in _ranges if it has already been modified
+        const context = span.closest('[data-tei]');
+        let range = this._ranges.find(r => r.type === 'modify' && r.node === span.dataset.tei);
+        if (!range) {
+          range = {
+            type: 'modify',
+            node: span.dataset.tei,
+            context: context.dataset.tei
+          };
+          this._ranges.push(range);
+        }
+        range.properties = ev.detail.properties;
+
+        this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      }
+
+      const json = JSON.parse(span.dataset.annotation);
+      json.properties = ev.detail.properties;
+      span.dataset.annotation = JSON.stringify(json);
     }
 
     /**
