@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbSelectable } from "./pb-selectable.js";
+import { pbMixin } from "./pb-mixin.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
@@ -56,7 +56,7 @@ import '@polymer/paper-dialog-scrollable';
  * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
  * @fires pb-toggle - When received, toggle content properties
  */
-export class PbView extends pbSelectable(LitElement) {
+export class PbView extends pbMixin(LitElement) {
 
     static get properties() {
         return {
@@ -667,10 +667,6 @@ export class PbView extends pbSelectable(LitElement) {
         });
 
         this.emitTo('pb-end-update', null);
-
-        this.updateComplete.then(() => {
-            this.updateAnnotations();
-        });
     }
 
     _replaceContent(resp, direction) {

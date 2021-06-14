@@ -1,5 +1,4 @@
 import './pb-mixin.js';
-import './pb-selectable.js';
 import './pb-events.js';
 import './pb-version.js';
 import './pb-i18n.js';
@@ -19,6 +18,7 @@ import './pb-search.js';
 import './pb-toggle-feature.js';
 import './pb-select-feature.js';
 import './pb-view.js';
+import './pb-view-annotate.js';
 import './pb-zoom.js';
 import './pb-drawer.js';
 import './pb-media-query.js';

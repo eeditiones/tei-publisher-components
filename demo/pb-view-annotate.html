@@ -16,6 +16,7 @@
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
+        <script type="module" src="../src/pb-view-annotate.js"></script>
         <script type="module" src="../src/pb-popover.js"></script>
         <script type="module" src="../src/pb-navigation.js"></script>
         <script type="module" src="../src/pb-progress.js"></script>
@@ -144,10 +145,10 @@
                             <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title">
                                 <pb-param name="header" value="short"/>
                             </pb-view>
-                            <pb-view id="view1" src="document1" xpath="//text/body" view="single" append-footnotes
+                            <pb-view-annotate id="view1" src="document1" xpath="//text/body" view="single" append-footnotes
                                 subscribe="transcription" emit="transcription">
                                 <pb-param name="track-ids" value="true"/>
-                            </pb-view>
+                            </pb-view-annotate>
                         </div>
                         <pb-tabs>
                             <paper-tab slot="tab">HTML</paper-tab>
@@ -289,6 +290,7 @@
                             });
                             window.pbEvents.subscribe('pb-annotation-edit', 'transcription', (ev) => {
                                 activeSpan = ev.detail.target;
+                                text = activeSpan.textContent;
                                 type = ev.detail.type;
                                 refInput.value = ev.detail.properties.ref;
                             });
