@@ -70,6 +70,9 @@ export class GND extends Registry {
   }
 
   info(key, container) {
+    if (!key) {
+      return;
+    }
     const id = key.replace(/^[^:]+:?(.*)$/, '$1');
     fetch(`https://lobid.org/gnd/${id}.json`)
     .then((response) => response.json())
@@ -97,7 +100,10 @@ export class GND extends Registry {
   }
 
   infoSubject(json) {
-    const terms = json.broaderTermGeneral.map((term) => term.label);
-    return html`<p>${terms.join(', ')}</p>`;
+    if (json.broaderTermGeneral) {
+      const terms = json.broaderTermGeneral.map((term) => term.label);
+      return html`<p>${terms.join(', ')}</p>`;
+    }
+    return null;
   }
 }

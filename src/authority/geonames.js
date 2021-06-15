@@ -41,6 +41,9 @@ export class GeoNames extends Registry {
     }
 
     info(key, container) {
+      if (!key) {
+        return;
+      }
       const id = key.replace(/^[^:]+:?(.*)$/, "$1");
       fetch(`http://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`)
       .then(response => response.json())

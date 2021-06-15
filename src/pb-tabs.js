@@ -9,6 +9,7 @@ import { pbMixin } from './pb-mixin.js';
  * 
  * @slot tab - tab area
  * @slot page - page area
+ * @csspart pages - wrapper around the tab pages
  */
 export class PbTabs extends pbMixin(LitElement) {
     static get properties() {
@@ -44,7 +45,7 @@ export class PbTabs extends pbMixin(LitElement) {
             <paper-tabs id="tabs" selected="${this._initial}" @selected-changed="${this._switchTab}">
                 <slot name="tab"></slot>
             </paper-tabs>
-            <iron-pages selected="${this.selected}">
+            <iron-pages part="pages" selected="${this.selected}">
                 <slot name="page"></slot>
             </iron-pages>
         `;

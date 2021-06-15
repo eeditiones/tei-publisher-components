@@ -210,14 +210,16 @@ class PbViewAnnotate extends PbView {
 
   _handleContent() {
     super._handleContent();
-    this.updateComplete.then(() => {
-      this.updateAnnotations();
-    });
+    this.updateComplete.then(() => setTimeout(() => this.updateAnnotations(), 300));
   }
 
   _updateAnnotation(teiRange) {
     const view = this.shadowRoot.getElementById('view');
     const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
+
+    if (!context) {
+      return;
+    }
 
     const range = document.createRange();
 
@@ -411,15 +413,16 @@ class PbViewAnnotate extends PbView {
         const div = document.createElement('div');
         div.className = 'toolbar';
 
-        const editBtn = document.createElement('paper-icon-button');
-        editBtn.setAttribute('icon', 'icons:create');
-        editBtn.addEventListener('click', () => {
-          const json = span.dataset.annotation;
-          const data = JSON.parse(json);
-          this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
-        });
-        div.appendChild(editBtn);
-
+        if (span.dataset.annotation) {
+          const editBtn = document.createElement('paper-icon-button');
+          editBtn.setAttribute('icon', 'icons:create');
+          editBtn.addEventListener('click', () => {
+            const json = span.dataset.annotation;
+            const data = JSON.parse(json);
+            this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
+          });
+          div.appendChild(editBtn);
+        }
         const delBtn = document.createElement('paper-icon-button');
         delBtn.setAttribute('icon', 'icons:delete');
         delBtn.addEventListener('click', () => {

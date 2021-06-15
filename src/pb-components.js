@@ -52,3 +52,9 @@ import './pb-autocomplete.js';
 import './pb-select.js';
 import './pb-clipboard.js';
 import './pb-formula.js';
+import './pb-authority-lookup.js';
+
+import '@polymer/iron-icons/editor-icons';
+import '@polymer/iron-icons/social-icons';
+import '@polymer/iron-icons/maps-icons';
+import '@polymer/paper-input/paper-textarea';
