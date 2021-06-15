@@ -91,7 +91,7 @@ export class GND extends Registry {
   }
 
   infoPerson(json) {
-    const professions = json.professionOrOccupation.map((prof) => prof.label);
+    const professions = json.professionOrOccuption ? json.professionOrOccupation.map((prof) => prof.label) : null;
     return html`<p>${json.dateOfBirth} - ${json.dateOfDeath}</p>
       <p>${professions}</p>`;
   }

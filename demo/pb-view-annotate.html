@@ -11,8 +11,10 @@
         <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/maps-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-icons/social-icons.js"></script>
+        <script type="module" src="../node_modules/@polymer/iron-icons/editor-icons.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-input/paper-textarea.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
         <script type="module" src="../src/pb-view.js"></script>
@@ -103,6 +105,7 @@
                     --pb-annotation-place: #8338ec;
                     --pb-annotation-term: #3a86ff;
                     --pb-annotation-date: #ff006e;
+                    --pb-annotation-note: #175014;
                 }
 
                 #view1::part(content) {
@@ -124,18 +127,23 @@
                         <aside>
                             <div class="toolbar">
                                 <paper-icon-button id="clear-all" icon="icons:refresh"></paper-icon-button>
-                                <paper-icon-button class="annotation-action" data-type="person" icon="social:person" disabled></paper-icon-button>
-                                <paper-icon-button class="annotation-action" data-type="organisation" icon="social:people" disabled></paper-icon-button>
-                                <paper-icon-button class="annotation-action" data-type="place" icon="maps:place" disabled></paper-icon-button>
-                                <paper-icon-button class="annotation-action" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
-                                <paper-icon-button class="annotation-action" data-type="date" icon="icons:today" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action authority" data-type="person" icon="social:person" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action authority" data-type="organisation" icon="social:people" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action authority" data-type="place" icon="maps:place" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action authority" data-type="term" icon="icons:bookmark" disabled></paper-icon-button>
+                                <paper-icon-button class="annotation-action" data-type="note" icon="editor:insert-comment" disabled></paper-icon-button>
                             </div>
                             <iron-form id="edit-form">
                                 <form action="">
-                                    <paper-input id="form-ref" name="ref" label="Reference">
-                                        <paper-icon-button slot="prefix" icon="search"></paper-icon-button>
-                                    </paper-input>
-                                    <div id="authority-info"></div>
+                                    <div class="annotation-form person organisation place term">
+                                        <paper-input id="form-ref" name="ref" label="Reference">
+                                            <paper-icon-button slot="prefix" icon="search"></paper-icon-button>
+                                        </paper-input>
+                                        <div id="authority-info"></div>
+                                    </div>
+                                    <div class="annotation-form note">
+                                        <paper-textarea label="Note" name="note" height="10" rows="6"></paper-textarea>
+                                    </div>
                                     <paper-icon-button id="form-save" icon="icons:save"></paper-icon-button>
                                 </form>
                             </iron-form>
@@ -172,8 +180,8 @@
                                 <pb-authority connector="GND" name="term">
                                     <pb-property name="ref" value="gnd:${id}"/>
                                 </pb-authority>
-                                <pb-authority connector="Metagrid" name="person">
-                                    <pb-property name="ref" value="${provider}:${id}"/>
+                                <pb-authority connector="GND" name="person">
+                                    <pb-property name="ref" value="gnd:${id}"/>
                                 </pb-authority>
                                 <pb-authority connector="Metagrid" name="organisation">
                                     <pb-property name="ref" value="${provider}:${id}"/>
@@ -187,11 +195,25 @@
                         </div>
                     </paper-dialog>
                     <script>
+                        const form = document.getElementById('edit-form');
+
                         function disableButtons(disable) {
                             document.querySelectorAll('.annotation-action').forEach((button) => {
                                 button.disabled = disable;
                             });
                         }
+
+                        function showForm(type) {
+                            form.style.display = '';
+                            form.querySelectorAll(`.annotation-form:not(.${type})`).forEach((elem) => { elem.style.display = 'none' });
+                            form.querySelectorAll(`.annotation-form.${type}`).forEach((elem) => { elem.style.display = '' });
+                        }
+
+                        function hideForm() {
+                            form.style.display = 'none';
+                        }
+
+                        hideForm();
 
                         window.addEventListener('WebComponentsReady', () => {
                             let selection = null;
@@ -199,13 +221,13 @@
                             const refInput = document.getElementById('form-ref');
                             const authorityInfo = document.getElementById('authority-info');
                             const authorityDialog = document.getElementById('authority-dialog');
-                            const form = document.getElementById('edit-form');
                             let type = '';
                             let text = '';
                             document.getElementById('form-save').addEventListener('click', () => {
                                 const data = form.serializeForm();
                                 form.reset();
                                 refInput.value = '';
+                                hideForm();
                                 if (activeSpan) {
                                     window.pbEvents.emit('pb-edit-annotation', 'transcription', {
                                         target: activeSpan,
@@ -233,13 +255,16 @@
                                 button.addEventListener('click', () => {
                                     if (selection) {
                                         type = button.getAttribute('data-type');
+                                        showForm(type);
                                         text = selection;
                                         activeSpan = null;
-                                        window.pbEvents.emit('pb-authority-lookup', 'transcription', {
-                                            type,
-                                            query: selection
-                                        });
-                                        authorityDialog.open();
+                                        if (button.classList.contains('authority')) {
+                                            window.pbEvents.emit('pb-authority-lookup', 'transcription', {
+                                                type,
+                                                query: selection
+                                            });
+                                            authorityDialog.open();
+                                        }
                                     }
                                     disableButtons(true);
                                 });
@@ -292,6 +317,7 @@
                                 activeSpan = ev.detail.target;
                                 text = activeSpan.textContent;
                                 type = ev.detail.type;
+                                showForm(type);
                                 refInput.value = ev.detail.properties.ref;
                             });
                             const clearAll = document.getElementById('clear-all');
