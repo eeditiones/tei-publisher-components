@@ -4,6 +4,7 @@ import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { Metagrid } from "./authority/metagrid.js";
 import { GeoNames } from './authority/geonames.js';
+import { Airtable } from './authority/airtable.js';
 import { GND } from "./authority/gnd.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
@@ -57,6 +58,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
                 break;
             case 'GeoNames':
                 instance = new GeoNames(configElem);
+                break;
+            case 'Airtable':
+                instance = new Airtable(configElem);
                 break;
             default:
                 instance = new Metagrid(configElem);
@@ -129,8 +133,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   }
 
   _query() {
+    this.emitTo('pb-start-update');
     this._authorities[this.type].query(this.query).then(results => {
       this._results = results.items;
+      this.emitTo('pb-end-update');
     });
   }
 
