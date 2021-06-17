@@ -199,6 +199,7 @@ export class PbPopover extends pbMixin(LitElement) {
             slot.assignedNodes().forEach((node) => {
                 content.appendChild(node.content ? node.content.cloneNode(true) : node.cloneNode(true));
             });
+            this._content = content;
             return content;
         }
         return null;
@@ -219,6 +220,7 @@ export class PbPopover extends pbMixin(LitElement) {
         const slot = this._getSlot();
         this._observer = new MutationObserver(() => {
             this.alternate = this._getContent();
+            console.log('alternate changed');
             this.emitTo('pb-popover-changed', this.alternate);
         });
         this._observer.observe(this, {subtree: true, childList: true, characterData: true})
