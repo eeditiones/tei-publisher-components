@@ -15,6 +15,13 @@
 
 
     <!--/scripts-->
+    <style>
+        @import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap);
+
+        html {
+            font-family: Montserrat, Verdana, sans-serif;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,6 +30,29 @@
         <style>
             main {
                 display: flex;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            header {
+                border-bottom: thin solid;
+                padding-bottom: 2rem;
+                background: #efefef;
+            }
+
+            .inputs {
+                margin: 0 auto;
+                border: thin solid;
+                width: 400px;
+                padding: 0.3rem;
+            }
+
+            .formRow {
+                display: grid;
+                grid-template-columns: 40% 60%;
+                width: 100%;
             }
 
             ul {
@@ -43,31 +73,96 @@
                 color: #333333;
                 text-decoration: none;
             }
-            section.inputs{
-                margin-bottom: 2rem;
-                display: grid;
-                grid-template-columns:30% auto;
-                width: 40vw;
-                grid-column-gap: 1rem;
-            }
-            section.inputs label{
+
+            section.inputs label {
                 white-space: nowrap;
             }
-            #perpage, #doc{
+
+            #perpage, #doc {
                 width: 4rem;
             }
+
+            .formRow {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            #pattern {
+                width: 400px;
+                margin: 0 auto;
+                font-size: 1.2rem;
+                padding: 0.3rem 0.6rem;
+                border-radius: 1.2rem;
+                border: thin solid #5c6065;
+
+            }
+
+            .search, .search input {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .searchwrapper {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 1rem;
+
+            }
+
+            .searchwrapper input {
+                width: 400px;
+            }
+
+            .perpage, #perpage {
+                font-size: 0.9rem;
+            }
+
+            #perpage {
+                text-align: center;
+                width: 3rem;
+            }
         </style>
-        <h1>Blacklab KWIC search</h1>
-        <section class="inputs">
-            <label for="pattern">Search Pattern:</label>
-            <input id="pattern" name="pattern">
 
-            <label for="perpage">Results per Page:</label>
-            <input id="perpage" name="perpage" type="number" value="5">
+        <header>
+            <h1>Blacklab KWIC search</h1>
 
-            <label for="doc">limit to Document Id:</label>
-            <input id="doc" name="doc">
-        </section>
+            <div class="searchwrapper">
+                <input id="pattern" name="pattern" type="search">
+            </div>
+
+            <div class="formRow perpage">
+                <label for="perpage">Results per Page:</label>
+                <input id="perpage" name="perpage" type="number" value="5">
+            </div>
+        </header>
+        <!--
+                <section class="inputs">
+
+                    <div class="formRow search">
+                    </div>
+
+                    <div class="formRow">
+                        <label for="sort">Sort by</label>
+                        <select name="sort" id="sort" size="1">
+                            <option>title</option>
+                            <option>author</option>
+                            <option>numHits</option>
+                        </select>
+                    </div>
+
+                    <div class="formRow">
+                        <label for="doc">filter:</label>
+                        <input id="doc" name="doc">
+                    </div>
+
+                    <div class="formRow">
+                        <label for="perpage">Results per Page:</label>
+                        <input id="perpage" name="perpage" type="number" value="5">
+                    </div>
+
+                </section>
+        -->
 
 
         <pb-page endpoint="http://localhost:8080/exist/apps/blacklab">
@@ -87,23 +182,38 @@
     (function () {
         document.addEventListener('pb-page-ready', () => {
             const kwic = document.querySelector('pb-kwic-results');
-
-            const storedPattern = localStorage.getItem('kwic-pattern');
-            if(storedPattern){
-                kwic.pattern = storedPattern;
-                kwic.load();
-            }
-
-            document.querySelector('#doc').addEventListener('blur', (e) => {
-                kwic.doc = e.target.value;
-                kwic.load();
-            });
+            const pat = '[word="love"][word="by"]';
+            kwic.pattern = pat;
 
             const pattern = document.querySelector('#pattern');
             pattern.value = kwic.pattern;
 
+
+            // const storedPattern = localStorage.getItem('kwic-pattern');
+            /*
+                        if(storedPattern){
+                            kwic.pattern = storedPattern;
+                            kwic.load();
+                        }
+            */
+
+/*
+            document.querySelector('#doc').addEventListener('blur', (e) => {
+                kwic.doc = e.target.value;
+                kwic.load();
+            });
+*/
+
+
+            document.querySelector('#pattern').addEventListener('keyup', (e) => {
+                if(e.keyCode === 13){
+                    localStorage.setItem('kwic-pattern', e.target.value);
+                    kwic.pattern = e.target.value;
+                    kwic.load();
+                }
+            });
             document.querySelector('#pattern').addEventListener('blur', (e) => {
-                localStorage.setItem('kwic-pattern',e.target.value);
+                localStorage.setItem('kwic-pattern', e.target.value);
                 kwic.pattern = e.target.value;
                 kwic.load();
             });

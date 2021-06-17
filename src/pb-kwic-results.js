@@ -59,7 +59,16 @@ export class PbKwicResults extends pbMixin(LitElement) {
             }
             table{
                 width:100%;
-                margin-top:1rem;
+            }
+            .docName{
+                text-align:left;
+            }
+            pb-paginate{
+                justify-content:center;
+                padding:1rem 0;
+            }
+            th, td{
+                padding:0.3rem;
             }
             th:nth-child(1),td:nth-child(1){
                 width:35%;
@@ -77,6 +86,13 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 text-align:center;
                 white-space:nowrap;
             }
+            table{
+                cell-spacing:0;
+            }
+            .t-head th{
+                border-bottom:thin solid #999;
+            }
+
         `;
     }
 
@@ -106,8 +122,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
         return html`
             <pb-paginate per-page="${this.perPage}" start="${this.first}" @pb-load="${this._handlePagination}"></pb-paginate>
             <table>
-                <tr>
-                    <th>Doc Id</th>
+                <tr class="t-head">
+                    <th class="docName">Doc Id</th>
                     <th class="left">before</th>
                     <th>hit</th>
                     <th class="right">after</th>
@@ -116,8 +132,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 ${this.data.documents.map(document => html`
 
                     <tr>
-                        <td colspan="4">
-                            <a class="docName" href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}">${document.id}</a>
+                        <td colspan="4" class="docName">
+                            <a href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}">${document.id}</a>
                         </td>
                         <td class="hit-count">
                             <span class="hit-count">${document.hits}</span>
