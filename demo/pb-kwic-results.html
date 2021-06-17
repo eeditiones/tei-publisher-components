@@ -43,14 +43,14 @@
                 color: #333333;
                 text-decoration: none;
             }
-            section{
+            section.inputs{
                 margin-bottom: 2rem;
                 display: grid;
                 grid-template-columns:30% auto;
                 width: 40vw;
                 grid-column-gap: 1rem;
             }
-            section label{
+            section.inputs label{
                 white-space: nowrap;
             }
             #perpage, #doc{
@@ -58,7 +58,7 @@
             }
         </style>
         <h1>Blacklab KWIC search</h1>
-        <section>
+        <section class="inputs">
             <label for="pattern">Search Pattern:</label>
             <input id="pattern" name="pattern">
 
@@ -88,6 +88,11 @@
         document.addEventListener('pb-page-ready', () => {
             const kwic = document.querySelector('pb-kwic-results');
 
+            const storedPattern = localStorage.getItem('kwic-pattern');
+            if(storedPattern){
+                kwic.pattern = storedPattern;
+                kwic.load();
+            }
 
             document.querySelector('#doc').addEventListener('blur', (e) => {
                 kwic.doc = e.target.value;
@@ -98,6 +103,7 @@
             pattern.value = kwic.pattern;
 
             document.querySelector('#pattern').addEventListener('blur', (e) => {
+                localStorage.setItem('kwic-pattern',e.target.value);
                 kwic.pattern = e.target.value;
                 kwic.load();
             });
