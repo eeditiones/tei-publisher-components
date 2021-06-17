@@ -88,6 +88,11 @@ export class PbKwicResults extends pbMixin(LitElement) {
             }
             table{
                 cell-spacing:0;
+                cell-padding:0;
+            }
+            tr{
+                cell-spacing:0;
+                cell-padding:0;
             }
             .t-head th{
                 border-bottom:thin solid #999;
@@ -133,7 +138,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
                     <tr>
                         <td colspan="4" class="docName">
-                            <a href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}">${document.id}</a>
+                            <a @click="${ (e) => this._handleDocView(e)}"
+                                href="#"
+                                data-doc="${document.id}"
+                            >${document.id}</a>
                         </td>
                         <td class="hit-count">
                             <span class="hit-count">${document.hits}</span>
@@ -190,8 +198,43 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     }
 
+    async _loadDocResults(doc){
+        console.log('endpoint ', this.getEndpoint());
+        if(!this.getEndpoint()) return;
+
+        const d = this.data.documents.find(doc => doc === doc);
+        const firstMatch = d.matches[0].match;
+        const firstWord = firstMatch.words[0];
+        const firstPage = d.matches[0].page[0];
+
+        const url = `${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${doc}&match=${firstWord}&page=${firstPage}&format=json`;
+        await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('response ', data);
+                //todo: put into session storage
+                localStorage.setItem('pb-kwic-doc-matches',JSON.stringify(data));
+
+            })
+            .catch((error) => {
+                console.error('Error retrieving remote content: ', error);
+            });
+    }
+
     _handlePagination() {
         console.log('_handlePagination')
+    }
+
+    _handleDocView(e){
+        console.log('_handleDocView',e);
+        const doc = e.target.dataset.doc;
+        console.log('_handleDocView doc',doc);
+        this._loadDocResults(doc);
+
     }
 
 }

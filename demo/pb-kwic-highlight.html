@@ -15,6 +15,7 @@
     <script type="module" src="../src/pb-popover.js"></script>
     <script type="module" src="../src/pb-navigation.js"></script>
     <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-kwic-highlight.js"></script>
     <!--/scripts-->
 </head>
 
@@ -61,10 +62,10 @@
         </style>
         <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
             <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
-
+            <pb-kwic-highlight view="view"></pb-kwic-highlight>
             <pb-progress subscribe="transcription"></pb-progress>
             <!-- Output the document title -->
-            <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
+            <pb-view id="view" src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
                      subscribe="transcription">
                 <pb-param name="header" value="short"/>
             </pb-view>
