@@ -71,6 +71,7 @@ export class Registry {
         });
         return {
             tag: this._config.tag,
+            strings: item.strings,
             properties: options
         };
     }

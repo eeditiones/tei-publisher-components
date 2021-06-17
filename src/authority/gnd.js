@@ -58,6 +58,7 @@ export class GND extends Registry {
                 label: item.preferredName,
                 link: item.id,
                 details: _details(item),
+                strings: [item.preferredName].concat(item.variantName)
             };
             results.push(result);
             });

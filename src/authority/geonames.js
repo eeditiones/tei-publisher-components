@@ -29,6 +29,7 @@ export class GeoNames extends Registry {
                     label: item.toponymName,
                     details: `${item.fcodeName} - ${item.adminName1}, ${item.countryName}`,
                     link: `https://www.geonames.org/${item.geonameId}`,
+                    strings: [item.toponymName]
                   };
                   results.push(result);
                 });

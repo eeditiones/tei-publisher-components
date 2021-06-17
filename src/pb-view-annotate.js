@@ -129,6 +129,32 @@ function clearMarkers(root) {
   root.querySelectorAll('.marker').forEach(marker => marker.parentNode.removeChild(marker));
 }
 
+function kwicText(str, start, end, words = 3) {
+  let p0 = start - 1;
+  let count = 0;
+  while (p0 >= 0) {
+    if (/[\p{P}\s]/.test(str.charAt(p0))) {
+      count += 1;
+      if (count === words) {
+        break;
+      }
+    }
+    p0 -= 1;
+  }
+  let p1 = end + 1;
+  count = 0;
+  while (p1 < str.length) {
+    if (/[\p{P}\s]/.test(str.charAt(p1))) {
+      count += 1;
+      if (count === words) {
+        break;
+      }
+    }
+    p1 += 1;
+  }
+  return `... ${str.substring(p0, p1 + 1)} ...`;
+}
+
 class PbViewAnnotate extends PbView {
   constructor() {
     super();
@@ -480,6 +506,57 @@ class PbViewAnnotate extends PbView {
     Array.from(root.querySelectorAll('.annotation')).reverse().forEach((span) => {
       this._showMarker(span, root, ancestors(span, 'annotation') * 5);
     });
+  }
+
+  search(tokens) {
+    const result = [];
+    if (!tokens || tokens.length === 0) {
+      return result;
+    }
+    const expr = tokens.map(token => `\\b${token}\\b`).join('|');
+    console.log('Search other occurrences in text using %s', expr);
+    const regex = new RegExp(expr, 'g');
+    const walker = document.createTreeWalker(
+      this.shadowRoot.getElementById('view'),
+      NodeFilter.SHOW_TEXT,
+    );
+    while (walker.nextNode()) {
+
+      const matches = walker.currentNode.textContent.matchAll(regex)
+      for (const match of matches) {
+        const end = match.index + match[0].length;
+        if (match.index !== this._currentSelection.startOffset && end !== this._currentSelection.endOffset) {
+          console.log(`Found ${match[0]} start=${match.index} end=${end}.`);
+          result.push({
+            node: walker.currentNode,
+            start: match.index,
+            end: match.index + match[0].length,
+            kwic: kwicText(walker.currentNode.textContent, match.index, match.index + match[0].length)
+          });
+        }
+      }
+    }
+    return result;
+  }
+
+  scrollTo(range) {
+    const root = this.shadowRoot.getElementById('view');
+    const rootRect = root.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
+    let marker = root.querySelector('[part=highlight]');
+    if (!marker) {
+      marker = document.createElement('div');
+      marker.part = 'highlight';
+      marker.style.position = 'absolute';
+      root.appendChild(marker);
+    }
+  
+    marker.style.left = `${rect.left - rootRect.left}px`;
+    marker.style.top = `${rect.top - rootRect.top - 4}px`;
+    marker.style.width = `${rect.width}px`;
+    marker.style.height = `${rect.height}px`;
+
+    range.startContainer.parentNode.scrollIntoView(true);
   }
 };
 

@@ -118,6 +118,21 @@
                         max-width: 60vw;
                     }
                 }
+
+                #view1::part(highlight) {
+                    background-color: #ff8800;
+                    opacity: 0.3;
+                }
+
+                #occurrences {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                #occurrences li {
+                    margin-bottom: 4px;
+                }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <pb-document id="document1" path="annotate/graves20.xml" odd="annotations"></pb-document>
@@ -147,6 +162,7 @@
                                     <paper-icon-button id="form-save" icon="icons:save"></paper-icon-button>
                                 </form>
                             </iron-form>
+                            <ul id="occurrences"></ul>
                         </aside>
                         <div class="text">
                             <!-- Output the document title -->
@@ -196,6 +212,7 @@
                     </paper-dialog>
                     <script>
                         const form = document.getElementById('edit-form');
+                        const list = document.getElementById('occurrences');
 
                         function disableButtons(disable) {
                             document.querySelectorAll('.annotation-action').forEach((button) => {
@@ -204,12 +221,14 @@
                         }
 
                         function showForm(type) {
+                            list.innerHTML = '';
                             form.style.display = '';
                             form.querySelectorAll(`.annotation-form:not(.${type})`).forEach((elem) => { elem.style.display = 'none' });
                             form.querySelectorAll(`.annotation-form.${type}`).forEach((elem) => { elem.style.display = '' });
                         }
 
                         function hideForm() {
+                            list.innerHTML = '';
                             form.style.display = 'none';
                         }
 
@@ -221,6 +240,7 @@
                             const refInput = document.getElementById('form-ref');
                             const authorityInfo = document.getElementById('authority-info');
                             const authorityDialog = document.getElementById('authority-dialog');
+                            const view = document.getElementById('view1');
                             let type = '';
                             let text = '';
                             document.getElementById('form-save').addEventListener('click', () => {
@@ -272,6 +292,18 @@
                             window.pbEvents.subscribe('pb-authority-select', 'transcription', (ev) => {
                                 authorityDialog.close();
                                 refInput.value = ev.detail.properties.ref;
+                                const occur = view.search(ev.detail.strings);
+                                occur.forEach((o) => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = o.kwic;
+                                    list.appendChild(li);
+                                    li.addEventListener('mouseover', () => {
+                                        const range = document.createRange();
+                                        range.setStart(o.node, o.start);
+                                        range.setEnd(o.node, o.end);
+                                        view.scrollTo(range);
+                                    });
+                                });
                             });
                             window.pbEvents.subscribe('pb-selection-changed', 'transcription', (ev) => {
                                 disableButtons(!ev.detail.hasContent);
