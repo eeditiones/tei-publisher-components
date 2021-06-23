@@ -28,7 +28,6 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        this.method = 'get';
     }
 
     connectedCallback() {
@@ -47,6 +46,10 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
 
             if(kwicData){
                 this.viewElement = document.getElementById(this.view);
+                if(!this.viewElement){
+                    console.error(`${this}: view element with id ${this.view} does not exist`);
+                    return;
+                }
                 const shadow = this.viewElement.shadowRoot;
                 console.log('shadow ', shadow);
             }

@@ -1,4 +1,5 @@
 import {LitElement, html, css} from 'lit-element';
+import anime from 'animejs';
 import responseData from '../demo/sample-results.js';
 import {pbMixin} from './pb-mixin.js';
 import './pb-paginate.js';
@@ -6,6 +7,8 @@ import './pb-paginate.js';
 /**
  * Displays KWIC results
  *
+ * @csspart paginator - the pb-paginate component
+ * @csspart label - the pb-paginate label
  */
 export class PbKwicResults extends pbMixin(LitElement) {
 
@@ -36,6 +39,9 @@ export class PbKwicResults extends pbMixin(LitElement) {
             },
             path: {
                 type: String
+            },
+            sort:{
+                type: String
             }
         };
     }
@@ -48,6 +54,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
         this.first = 1;
         this.path = '';
         this.doc = null;
+        this.sort = null;
     }
 
 
@@ -55,7 +62,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
         return css`
             :host {
                 display: block;
-                width:100%;
+                max-width:100%;
             }
             table{
                 width:100%;
@@ -65,7 +72,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
             }
             pb-paginate{
                 justify-content:center;
-                padding:1rem 0;
+                padding-bottom:3rem;
             }
             th, td{
                 padding:0.3rem;
@@ -125,7 +132,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <pb-paginate per-page="${this.perPage}" start="${this.first}" @pb-load="${this._handlePagination}"></pb-paginate>
+            <pb-paginate part="paginator" per-page="${this.perPage}" start="${this.first}" @pb-load="${this._handlePagination}"></pb-paginate>
             <table>
                 <tr class="t-head">
                     <th class="docName">Doc Id</th>
@@ -170,11 +177,16 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     // async _load(url){
     async load() {
+
         console.log('endpoint ', this.getEndpoint());
         if(!this.getEndpoint()) return;
         let url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
         if (this.doc) {
-            url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}&doc=${this.doc}`;
+            // url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}&doc=${this.doc}`;
+            url += `&doc=${this.doc}`;
+        }
+        if(this.sort){
+            url += `&sort=${this.sort}`;
         }
         await fetch(url, {
             method: 'GET',
@@ -218,7 +230,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 console.log('response ', data);
                 //todo: put into session storage
                 localStorage.setItem('pb-kwic-doc-matches',JSON.stringify(data));
-
             })
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
@@ -236,6 +247,31 @@ export class PbKwicResults extends pbMixin(LitElement) {
         this._loadDocResults(doc);
 
     }
+
+    updated(){
+        this._animate();
+    }
+
+    _animate(){
+        anime({
+            targets: this.shadowRoot.querySelectorAll('tr'),
+            opacity: [0,1],
+            duration:200,
+            delay:200,
+            easing: 'linear'
+        });
+
+    }
+
+/*
+    createRenderRoot() {
+        /!**
+         * Render template without shadow DOM. Note that shadow DOM features like
+         * encapsulated CSS and slots are unavailable.
+         *!/
+        return this;
+    }
+*/
 
 }
 

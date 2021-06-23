@@ -97,7 +97,7 @@ export class PbPaginate extends pbMixin(LitElement) {
             ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}">${item.label}</span>`)}
             <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
 
-            <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
+            <span part="label" class="found">${translate(this.foundLabel, { count: this.total })}</span>
         `;
     }
 
