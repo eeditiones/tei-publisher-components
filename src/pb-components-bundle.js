@@ -4,4 +4,7 @@ import '@polymer/paper-tooltip/paper-tooltip.js';
 import '@polymer/paper-fab';
 import '@polymer/paper-card';
 import './docs/pb-demo-snippet.js';
+import '@jinntec/fore/dist/fore.js';
+
+
 import './pb-components.js';

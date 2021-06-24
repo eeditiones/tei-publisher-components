@@ -4,6 +4,13 @@ module.exports = {
     appIndex: 'api.html',
     open: true,
     cors: true,
+    plugins: [
+        {
+            transform(context) {
+                context.response.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+            }
+        }
+    ],
     responseTransformers: [
         function rewriteBasePath({ url, status, contentType, body }) {
             if (body) {
