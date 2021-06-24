@@ -77,10 +77,6 @@ export class PbDrawer extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        const width = getComputedStyle(this).getPropertyValue('width');
-        // calculate the negative width to be used when the drawer is hidden
-        this.style.setProperty('--pb-drawer-offset', `-${width}`);
-
         if (!this.maxWidth) {
             this.classList.add('overlay');
             return;
@@ -156,10 +152,10 @@ export class PbDrawer extends pbMixin(LitElement) {
                 transition: var(--pb-drawer-transition, .5s);
             }
             :host(.overlay[position="left"]) {
-                left: var(--pb-drawer-offset);
+                left: calc(0px - var(--pb-drawer-width, 448px));
             }
             :host(.overlay[position="right"]) {
-                right: var(--pb-drawer-offset);
+                right: calc(0px - var(--pb-drawer-width, 448px));
             }
 
             :host([opened][position="left"]) {
