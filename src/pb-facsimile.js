@@ -13,8 +13,9 @@ import { resolveURL } from './utils.js';
  * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
  * `fail` - image could not be loaded.
  * 
- * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
+ * @cssprop --pb-facsimile-height=auto - Height of the image viewer
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
+ * @csspart image - exposes the inner div hosting the image viewer
  * 
  * @slot before - use for content which should be shown above the facsimile viewer
  * @slot after - use for content which should be shown below the facsimile viewer
@@ -164,18 +165,18 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <div class="content">
-                <slot name="before"></slot>
-                <!-- Openseadragon -->
-                <div id="viewer"></div>
-                <slot name="after"></slot>
-            </div>
+            <slot name="before"></slot>
+            <!-- Openseadragon -->
+            <div id="viewer" part="image"></div>
+            <slot name="after"></slot>
         `;
     }
 
     static get styles() {
         return css`
             :host {
+                display: grid;
+                grid-template-rows: auto 1fr auto;
                 position: relative;
                 background: transparent;
             }
@@ -186,7 +187,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
             #viewer {
                 position: relative;
-                height: var(--pb-facsimile-height, 500px);
+                height: var(--pb-facsimile-height, auto);
                 width: 100%;
             }
         `;
