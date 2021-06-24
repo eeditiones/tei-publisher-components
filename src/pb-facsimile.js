@@ -13,7 +13,7 @@ import { resolveURL } from './utils.js';
  * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
  * `fail` - image could not be loaded.
  * 
- * @cssprop --pb-facsimile-height=auto - Height of the image viewer
+ * @cssprop --pb-facsimile-height=auto - Max. height of the image viewer
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
  * @csspart image - exposes the inner div hosting the image viewer
  * 
@@ -175,8 +175,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display: grid;
-                grid-template-rows: auto 1fr auto;
+                display: flex;
+                flex-direction: column;
                 position: relative;
                 background: transparent;
             }
@@ -186,8 +186,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }
 
             #viewer {
+                flex: 1;
                 position: relative;
-                height: var(--pb-facsimile-height, auto);
+                max-height: var(--pb-facsimile-height, auto);
                 width: 100%;
             }
         `;
