@@ -37,8 +37,17 @@ export class Registry {
     throw new Error('Method query not implemented');
   }
 
+  /**
+   * Retrieve information about a registry entry and display it
+   * using the given container.
+   * 
+   * @param {String} id the id to look up
+   * @param {HTMLElement} container reference to an element which should be used as container for displaying the information
+   * @returns {Promise} a promise
+   */
   info(id, container) {
       container.innerHTML('not implemented');
+      return Promise.resolve();
   }
 
     /**

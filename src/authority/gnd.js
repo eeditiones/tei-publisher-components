@@ -72,26 +72,32 @@ export class GND extends Registry {
 
   info(key, container) {
     if (!key) {
-      return;
+      return Promise.resolve();
     }
     const id = key.replace(/^[^:]+:?(.*)$/, '$1');
-    fetch(`https://lobid.org/gnd/${id}.json`)
-    .then((response) => response.json())
-    .then((json) => {
-      let info;
-      if (json.type.indexOf('SubjectHeading') > -1) {
-        info = this.infoSubject(json);
-      } else if (json.type.indexOf('AuthorityResource') > -1) {
-        info = this.infoPerson(json);
-      }
-      const output = html`
-        <h3 class="label">
-          <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
-        </h3>
-        ${info}
-      `;
-      render(output, container);
-    })
+    return new Promise((resolve) => {
+      fetch(`https://lobid.org/gnd/${id}.json`)
+      .then((response) => response.json())
+      .then((json) => {
+        let info;
+        if (json.type.indexOf('SubjectHeading') > -1) {
+          info = this.infoSubject(json);
+        } else if (json.type.indexOf('AuthorityResource') > -1) {
+          info = this.infoPerson(json);
+        }
+        const output = html`
+          <h3 class="label">
+            <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
+          </h3>
+          ${info}
+        `;
+        render(output, container);
+        resolve({
+          id: json.gndIdentifier,
+          strings: [json.preferredName].concat(json.variantName)
+        });
+      });
+    });
   }
 
   infoPerson(json) {
