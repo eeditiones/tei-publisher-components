@@ -134,6 +134,9 @@ function kwicText(str, start, end, words = 3) {
   let count = 0;
   while (p0 >= 0) {
     if (/[\p{P}\s]/.test(str.charAt(p0))) {
+      while (p0 > 1 && /[\p{P}\s]/.test(str.charAt(p0 - 1))) {
+        p0 -= 1;
+      }
       count += 1;
       if (count === words) {
         break;
@@ -145,6 +148,9 @@ function kwicText(str, start, end, words = 3) {
   count = 0;
   while (p1 < str.length) {
     if (/[\p{P}\s]/.test(str.charAt(p1))) {
+      while (p1 < str.length - 1 && /[\p{P}\s]/.test(str.charAt(p1 + 1))) {
+        p1 += 1;
+      }
       count += 1;
       if (count === words) {
         break;
@@ -152,7 +158,26 @@ function kwicText(str, start, end, words = 3) {
     }
     p1 += 1;
   }
-  return `... ${str.substring(p0, p1 + 1)} ...`;
+  return `... ${str.substring(p0, start)}<mark>${str.substring(start, end)}</mark>${str.substring(end, p1 + 1)} ...`;
+}
+
+function collectText(node) {
+  let parent = node.parentElement;
+  if (parent.textContent.length < 40) {
+    parent = parent.parentNode;
+  }
+  const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT);
+  let offset = 0;
+  let start = 0;
+  const str = [];
+  while (walker.nextNode()) {
+    if (walker.currentNode === node) {
+      start = offset;
+    }
+    offset += walker.currentNode.textContent.length;
+    str.push(walker.currentNode.textContent);
+  }
+  return [str.join(''), start];
 }
 
 class PbViewAnnotate extends PbView {
@@ -224,7 +249,7 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     });
 
-    this.subscribeTo('pb-add-annotation', this._addAnnotation.bind(this));
+    this.subscribeTo('pb-add-annotation', (ev) => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
   }
 
@@ -244,7 +269,7 @@ class PbViewAnnotate extends PbView {
     const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
 
     if (!context) {
-      return;
+      return null;
     }
 
     const range = document.createRange();
@@ -278,6 +303,8 @@ class PbViewAnnotate extends PbView {
     // range.insertNode(span);
 
     this._showMarkers();
+
+    return span;
   }
 
   updateAnnotations() {
@@ -321,8 +348,8 @@ class PbViewAnnotate extends PbView {
     }
   }
 
-  _addAnnotation(ev) {
-    const range = this._currentSelection;
+  addAnnotation(info) {
+    const range = info.range || this._currentSelection;
     const startRange = rangeToPoint(range.startContainer, range.startOffset);
     const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
     const adjustedRange = {
@@ -331,11 +358,11 @@ class PbViewAnnotate extends PbView {
       end: endRange.offset,
       text: range.cloneContents().textContent,
     };
-    if (ev.detail.type) {
-      adjustedRange.type = ev.detail.type;
+    if (info.type) {
+      adjustedRange.type = info.type;
     }
-    if (ev.detail.properties) {
-      adjustedRange.properties = ev.detail.properties;
+    if (info.properties) {
+      adjustedRange.properties = info.properties;
     }
     console.log('<pb-selectable> range adjusted: %o', adjustedRange);
     this._ranges.push(adjustedRange);
@@ -344,7 +371,7 @@ class PbViewAnnotate extends PbView {
       text: adjustedRange.text,
       ranges: this._ranges 
     });
-    this._updateAnnotation(adjustedRange);
+    return this._updateAnnotation(adjustedRange);
   }
 
   _deleteAnnotation(span) {
@@ -508,32 +535,39 @@ class PbViewAnnotate extends PbView {
     });
   }
 
-  search(tokens) {
+  search(type, tokens) {
     const result = [];
     if (!tokens || tokens.length === 0) {
       return result;
     }
     const expr = tokens.map(token => `\\b${token}\\b`).join('|');
-    console.log('Search other occurrences in text using %s', expr);
     const regex = new RegExp(expr, 'g');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
       NodeFilter.SHOW_TEXT,
     );
     while (walker.nextNode()) {
-
       const matches = walker.currentNode.textContent.matchAll(regex)
       for (const match of matches) {
         const end = match.index + match[0].length;
-        if (match.index !== this._currentSelection.startOffset && end !== this._currentSelection.endOffset) {
-          console.log(`Found ${match[0]} start=${match.index} end=${end}.`);
+        // if (match.index !== this._currentSelection.startOffset && end !== this._currentSelection.endOffset) {
+          let isAnnotated = false;
+          const annoData = walker.currentNode.parentNode.dataset.annotation;
+          if (annoData) {
+            const parsed = JSON.parse(annoData);
+            isAnnotated = parsed.type === type;
+          }
+          console.log(`<pb-view-annotate> Found ${match[0]} start=${match.index} end=${end}. Annotated: ${isAnnotated}.`);
+          const [str, start] = collectText(walker.currentNode);
           result.push({
+            annotated: isAnnotated,
             node: walker.currentNode,
             start: match.index,
             end: match.index + match[0].length,
-            kwic: kwicText(walker.currentNode.textContent, match.index, match.index + match[0].length)
+            kwic: kwicText(str, start + match.index, start + match.index + match[0].length)
+            // kwic: kwicText(walker.currentNode.textContent, match.index, match.index + match[0].length)
           });
-        }
+        // }
       }
     }
     return result;
@@ -557,6 +591,14 @@ class PbViewAnnotate extends PbView {
     marker.style.height = `${rect.height}px`;
 
     range.startContainer.parentNode.scrollIntoView(true);
+  }
+
+  hideMarker() {
+    const root = this.shadowRoot.getElementById('view');
+    const marker = root.querySelector('[part=highlight]');
+    if (marker) {
+      marker.style.top = '-1000px';
+    }
   }
 };
 
