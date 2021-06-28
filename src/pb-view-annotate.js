@@ -253,6 +253,10 @@ class PbViewAnnotate extends PbView {
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
   }
 
+  get annotations() {
+    return this._ranges;
+  }
+
   firstUpdated() {
     super.firstUpdated();
 
@@ -266,7 +270,8 @@ class PbViewAnnotate extends PbView {
 
   _updateAnnotation(teiRange) {
     const view = this.shadowRoot.getElementById('view');
-    const context = view.querySelector(`[data-tei="${teiRange.context}"]`);
+    const context = Array.from(view.querySelectorAll(`[data-tei="${teiRange.context}"]`))
+      .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
 
     if (!context) {
       return null;
@@ -276,6 +281,11 @@ class PbViewAnnotate extends PbView {
 
     const startPoint = pointToRange(context, teiRange.start);
     const endPoint = pointToRange(context, teiRange.end);
+    if (!(startPoint && endPoint)) {
+      console.error('<pb-view-annotate> Invalid range for %o', context);
+      return null;
+    }
+
     console.log('<pb-selectable> Range before adjust: %o %o', startPoint, endPoint);
     if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
       range.setStartBefore(extendRange(startPoint[0], context));
@@ -348,6 +358,19 @@ class PbViewAnnotate extends PbView {
     }
   }
 
+  updateAnnotation(teiRange) {
+    const result = this._updateAnnotation(teiRange);
+    if (result) {
+      this._ranges.push(teiRange);
+      this.emitTo('pb-annotations-changed', { 
+        type: teiRange.type,
+        text: teiRange.text,
+        ranges: this._ranges 
+      });
+    }
+    return result;
+  }
+
   addAnnotation(info) {
     const range = info.range || this._currentSelection;
     const startRange = rangeToPoint(range.startContainer, range.startOffset);
@@ -374,7 +397,7 @@ class PbViewAnnotate extends PbView {
     return this._updateAnnotation(adjustedRange);
   }
 
-  _deleteAnnotation(span) {
+  deleteAnnotation(span) {
     // delete an existing annotation element in the TEI source
     if (span.dataset.tei) {
       // first check if we have pending modifications and remove them
@@ -479,7 +502,7 @@ class PbViewAnnotate extends PbView {
         const delBtn = document.createElement('paper-icon-button');
         delBtn.setAttribute('icon', 'icons:delete');
         delBtn.addEventListener('click', () => {
-          this._deleteAnnotation(span);
+          this.deleteAnnotation(span);
         });
         div.appendChild(delBtn);
         return div;
@@ -541,7 +564,7 @@ class PbViewAnnotate extends PbView {
       return result;
     }
     const expr = tokens.map(token => `\\b${token}\\b`).join('|');
-    const regex = new RegExp(expr, 'g');
+    const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
       NodeFilter.SHOW_TEXT,
@@ -550,31 +573,40 @@ class PbViewAnnotate extends PbView {
       const matches = walker.currentNode.textContent.matchAll(regex)
       for (const match of matches) {
         const end = match.index + match[0].length;
-        // if (match.index !== this._currentSelection.startOffset && end !== this._currentSelection.endOffset) {
-          let isAnnotated = false;
-          const annoData = walker.currentNode.parentNode.dataset.annotation;
-          if (annoData) {
-            const parsed = JSON.parse(annoData);
-            isAnnotated = parsed.type === type;
-          }
-          console.log(`<pb-view-annotate> Found ${match[0]} start=${match.index} end=${end}. Annotated: ${isAnnotated}.`);
-          const [str, start] = collectText(walker.currentNode);
-          result.push({
-            annotated: isAnnotated,
-            node: walker.currentNode,
-            start: match.index,
-            end: match.index + match[0].length,
-            kwic: kwicText(str, start + match.index, start + match.index + match[0].length)
-            // kwic: kwicText(walker.currentNode.textContent, match.index, match.index + match[0].length)
-          });
-        // }
+        let isAnnotated = false;
+        const annoData = walker.currentNode.parentNode.dataset.annotation;
+        if (annoData) {
+          const parsed = JSON.parse(annoData);
+          isAnnotated = parsed.type === type;
+        }
+        
+        const startRange = rangeToPoint(walker.currentNode, match.index);
+        const endRange = rangeToPoint(walker.currentNode, end, 'end');
+
+        const [str, start] = collectText(walker.currentNode);
+        result.push({
+          annotated: isAnnotated,
+          context: startRange.parent,
+          start: startRange.offset,
+          end: endRange.offset,
+          textNode: walker.currentNode,
+          kwic: kwicText(str, start + match.index, start + end)
+        });
       }
     }
     return result;
   }
 
-  scrollTo(range) {
+  scrollTo(teiRange) {
     const root = this.shadowRoot.getElementById('view');
+    const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`))
+      .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
+    const startPoint = pointToRange(context, teiRange.start);
+    const endPoint = pointToRange(context, teiRange.end);
+    const range = document.createRange();
+    range.setStart(startPoint[0], startPoint[1]);
+    range.setEnd(endPoint[0], endPoint[1]);
+
     const rootRect = root.getBoundingClientRect();
     const rect = range.getBoundingClientRect();
     let marker = root.querySelector('[part=highlight]');

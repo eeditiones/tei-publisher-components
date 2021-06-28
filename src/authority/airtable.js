@@ -2,7 +2,7 @@ import '@lrnwebcomponents/es-global-bridge';
 import { Registry } from './registry.js';
 import { resolveURL } from '../utils.js';
 
-function expandTemplate(template, options) {
+function expandTemplate(template = '', options) {
   return template.replace(/\${([^}]+)}/g, (match, p) => {
       let replacement;
       if (options[p]) {
@@ -22,6 +22,7 @@ export class Airtable extends Registry {
     this.filterExpr = configElem.getAttribute('filter');
     this.labelExpr = configElem.getAttribute('label');
     this.detailExpr = configElem.getAttribute('detail');
+    this.infoExpr = configElem.getAttribute('info');
     const fieldsDef = configElem.getAttribute('fields');
     if (fieldsDef) {
       this.fields = fieldsDef.split(/\s*,\s*/);
@@ -51,26 +52,30 @@ export class Airtable extends Registry {
   async query(key) {
     key = key.toLowerCase();
     const results = [];
-    const filter = expandTemplate(this.filterExpr, { key });
+    const filter = this.filterExpr ? expandTemplate(this.filterExpr, { key }) : null;
+    const options = {
+      // Selecting the first 3 records in Grid view:
+      maxRecords: 100,
+      view: 'Grid view'
+    };
+    if (filter) {
+      options.filterByFormula = filter;
+    }
     return new Promise((resolve, reject) => {
       this.base(this.table)
-        .select({
-          // Selecting the first 3 records in Grid view:
-          maxRecords: 100,
-          view: 'Grid view',
-          filterByFormula: filter
-        })
+        .select(options)
         .firstPage((err, records) => {
           if (err) {
             console.error(err);
             reject(err);
+            return;
           }
           records.forEach(record => {
             const data = {};
             this.fields.forEach((field) => { data[field] = record.get(field); });
             const result = {
               register: this._register,
-              id: data.ID,
+              id: record.id,
               label: expandTemplate(this.labelExpr, data),
               details: expandTemplate(this.detailExpr, data)
             };
@@ -85,6 +90,16 @@ export class Airtable extends Registry {
   }
 
   info(key, container) {
-    container.innerHTML = 'Not implemented';
+    return new Promise((resolve) => {
+      this.base(this.table).find(key, (err, record) => {
+        const data = {};
+        this.fields.forEach((field) => { data[field] = record.get(field); });
+        container.innerHTML = expandTemplate(this.infoExpr, data);
+        resolve({
+          id: record.id,
+          strings: [data.Name]
+        });
+      });
+    })
   }
 }
