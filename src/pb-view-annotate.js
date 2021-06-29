@@ -497,47 +497,48 @@ class PbViewAnnotate extends PbView {
   }
 
   _createTooltip(root, span) {
+    if (span._tippy) {
+      return;
+    }
+    const wrapper = document.createElement('div');
+    const info = document.createElement('div');
+    info.className = 'info';
+    wrapper.appendChild(info);
+
+    const div = document.createElement('div');
+    div.className = 'toolbar';
+
+    if (span.dataset.annotation) {
+      const editBtn = document.createElement('paper-icon-button');
+      editBtn.setAttribute('icon', 'icons:create');
+      editBtn.addEventListener('click', () => {
+        const json = span.dataset.annotation;
+        const data = JSON.parse(json);
+        this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
+      });
+      div.appendChild(editBtn);
+    }
+    const delBtn = document.createElement('paper-icon-button');
+    delBtn.setAttribute('icon', 'icons:delete');
+    delBtn.addEventListener('click', () => {
+      this.deleteAnnotation(span);
+    });
+    div.appendChild(delBtn);
+    wrapper.appendChild(div);
+
     tippy(span, {
-      content: () => {
-        const wrapper = document.createElement('div');
-        const info = document.createElement('div');
-        info.className = 'info';
-        wrapper.appendChild(info);
-
-        const div = document.createElement('div');
-        div.className = 'toolbar';
-
-        if (span.dataset.annotation) {
-          const editBtn = document.createElement('paper-icon-button');
-          editBtn.setAttribute('icon', 'icons:create');
-          editBtn.addEventListener('click', () => {
-            const json = span.dataset.annotation;
-            const data = JSON.parse(json);
-            this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
-          });
-          div.appendChild(editBtn);
-        }
-        const delBtn = document.createElement('paper-icon-button');
-        delBtn.setAttribute('icon', 'icons:delete');
-        delBtn.addEventListener('click', () => {
-          this.deleteAnnotation(span);
-        });
-        div.appendChild(delBtn);
-        wrapper.appendChild(div);
-        return wrapper;
-      },
+      content: wrapper,
       allowHTML: true,
       interactive: true,
       appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
       theme: 'light-border',
       hideOnClick: false,
-      onShow: (instance) => {
+      onShow: () => {
         if (!span.dataset.annotation) {
           return;
         }
-        const info = instance.props.content.querySelector('.info');
         const data = JSON.parse(span.dataset.annotation);
-        this.emitTo('pb-annotation-detail', { type: data.type, id: data.properties.ref, container: info });
+        this.emitTo('pb-annotation-detail', { type: data.type, id: data.properties.ref, container: info, span });
       }
     });
   }
