@@ -180,6 +180,19 @@ function collectText(node) {
   return [str.join(''), start];
 }
 
+/**
+ * An extended `PbView`, which supports annotations to be added
+ * and edited by the user. Handles mouse selection and keeps track
+ * of the annotations made.
+ * 
+ * Interaction with the actual editing form is entirely done via events.
+ * The class itself does not provide any editing facility, except for
+ * handling deletions.
+ * 
+ * @fires pb-selection-changed - fired when user selects text
+ * @fires pb-annotations-changed - fired when an annotation was added or changed
+ * @fires pb-annotation-detail - fired to request additional details about an annotation
+ */
 class PbViewAnnotate extends PbView {
   constructor() {
     super();
@@ -286,7 +299,7 @@ class PbViewAnnotate extends PbView {
       return null;
     }
 
-    console.log('<pb-selectable> Range before adjust: %o %o', startPoint, endPoint);
+    console.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
     if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
       range.setStartBefore(extendRange(startPoint[0], context));
     } else {
@@ -299,7 +312,7 @@ class PbViewAnnotate extends PbView {
       range.setEnd(endPoint[0], endPoint[1]);
     }
 
-    console.log('<pb-selectable> Range: %o', range);
+    console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
     span.dataset.annotation = JSON.stringify({
@@ -341,7 +354,7 @@ class PbViewAnnotate extends PbView {
         }
       }
       this._currentSelection = range;
-      console.log('<pb-selectable> selection: %o', range);
+      console.log('<pb-view-annotate> selection: %o', range);
 
       if (changed) {
         this._inHandler = true;
@@ -387,7 +400,7 @@ class PbViewAnnotate extends PbView {
     if (info.properties) {
       adjustedRange.properties = info.properties;
     }
-    console.log('<pb-selectable> range adjusted: %o', adjustedRange);
+    console.log('<pb-view-annotate> range adjusted: %o', adjustedRange);
     this._ranges.push(adjustedRange);
     this.emitTo('pb-annotations-changed', { 
       type: adjustedRange.type,
@@ -418,7 +431,7 @@ class PbViewAnnotate extends PbView {
       this._rangesMap.delete(span);
       const pos = this._ranges.indexOf(teiRange);
 
-      console.log('<pb-selectable> deleting annotation %o', teiRange);
+      console.log('<pb-view-annotate> deleting annotation %o', teiRange);
       
       this._ranges.splice(pos, 1);
     }
@@ -486,6 +499,11 @@ class PbViewAnnotate extends PbView {
   _createTooltip(root, span) {
     tippy(span, {
       content: () => {
+        const wrapper = document.createElement('div');
+        const info = document.createElement('div');
+        info.className = 'info';
+        wrapper.appendChild(info);
+
         const div = document.createElement('div');
         div.className = 'toolbar';
 
@@ -505,13 +523,22 @@ class PbViewAnnotate extends PbView {
           this.deleteAnnotation(span);
         });
         div.appendChild(delBtn);
-        return div;
+        wrapper.appendChild(div);
+        return wrapper;
       },
       allowHTML: true,
       interactive: true,
       appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
       theme: 'light-border',
       hideOnClick: false,
+      onShow: (instance) => {
+        if (!span.dataset.annotation) {
+          return;
+        }
+        const info = instance.props.content.querySelector('.info');
+        const data = JSON.parse(span.dataset.annotation);
+        this.emitTo('pb-annotation-detail', { type: data.type, id: data.properties.ref, container: info });
+      }
     });
   }
 
