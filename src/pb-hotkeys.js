@@ -49,3 +49,13 @@ export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
         return '';
     }
 }
+
+export function registerHotkey(name, callback, target) {
+    if (target) {
+        hotkeys(name, { element: target }, callback);
+    } else {
+        hotkeys(name, callback);
+    }
+}
+
+window.pbKeyboard = registerHotkey;
