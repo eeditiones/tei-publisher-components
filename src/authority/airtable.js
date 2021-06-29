@@ -90,8 +90,12 @@ export class Airtable extends Registry {
   }
 
   info(key, container) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.base(this.table).find(key, (err, record) => {
+        if (err) {
+          reject(err.statusCode);
+          return;
+        }
         const data = {};
         this.fields.forEach((field) => { data[field] = record.get(field); });
         container.innerHTML = expandTemplate(this.infoExpr, data);
