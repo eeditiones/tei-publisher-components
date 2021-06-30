@@ -52,3 +52,4 @@ import './pb-select.js';
 import './pb-clipboard.js';
 import './pb-formula.js';
 import './pb-kwic-results.js';
+import './pb-kwic-highlight.js';

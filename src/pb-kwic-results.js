@@ -127,6 +127,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
             this.load();
         });
 
+        this.subscribeTo('force-load', (event) =>{
+            this.load();
+        });
+
 
     }
 
@@ -145,9 +149,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
                     <tr>
                         <td colspan="4" class="docName">
-                            <a @click="${ (e) => this._handleDocView(e)}"
-                                href="#"
+                            <a
+                                href="${this._endpoint}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${document.matches[0].match.words[0]}&id=${document.matches[0].page[0]}"
                                 data-doc="${document.id}"
+                                data-id="${document.matches[0].page[0]}"
                             >${document.id}</a>
                         </td>
                         <td class="hit-count">
@@ -158,7 +163,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                         <tr>
                             <td class="left" colspan="2">${match.left}</td>
                             <td class="hit">
-                                <a href="${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${document.id}&match=${match.match.words[0]}&page=${match.page[0]}">${match.match.display}</a>
+                                <a href="${this.getEndpoint()}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${match.match.words[0]}&id=${match.page[0]}">${match.match.display}</a>
                             </td>
                             <td class="right" colspan="2">${match.right}</td>
                         </tr>
@@ -180,6 +185,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
         console.log('endpoint ', this.getEndpoint());
         if(!this.getEndpoint()) return;
+        if(!this.pattern) return;
         let url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
         if (this.doc) {
             // url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}&doc=${this.doc}`;
@@ -198,6 +204,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 console.log('response ', data);
                 this.data = data;
                 this.first = data.start;
+                localStorage.setItem('pb-kwic-results',JSON.stringify(this.data));
                 this.emitTo('pb-results-received', {
                     "count": data.docs ? parseInt(data.docs, 10) : 0,
                     "start": data.start,
@@ -210,11 +217,12 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     }
 
+/*
     async _loadDocResults(doc){
         console.log('endpoint ', this.getEndpoint());
         if(!this.getEndpoint()) return;
 
-        const d = this.data.documents.find(doc => doc === doc);
+        const d = this.data.documents.find(id => id == doc);
         const firstMatch = d.matches[0].match;
         const firstWord = firstMatch.words[0];
         const firstPage = d.matches[0].page[0];
@@ -227,14 +235,15 @@ export class PbKwicResults extends pbMixin(LitElement) {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log('response ', data);
-                //todo: put into session storage
                 localStorage.setItem('pb-kwic-doc-matches',JSON.stringify(data));
+                console.log('opening ',`${this.getEndpoint()}/${doc}.xml?id=${firstPage}`);
+                // window.location.href = `${this.getEndpoint()}/${doc}.xml?id=${firstPage}`;
             })
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
             });
     }
+*/
 
     _handlePagination() {
         console.log('_handlePagination')
