@@ -137,6 +137,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this._authorities[this.type].query(this.query).then(results => {
       this._results = results.items;
       this.emitTo('pb-end-update');
+      this.shadowRoot.getElementById('query').focus();
     });
   }
 
