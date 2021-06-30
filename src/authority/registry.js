@@ -4,14 +4,11 @@
  */
 export class Registry {
   constructor(configElem) {
+    this._prefix = configElem.getAttribute('prefix');
     this._config = {
         name: configElem.getAttribute('name'),
-        tag: configElem.getAttribute('tag'),
         properties: {}
     };
-    configElem.querySelectorAll('pb-property').forEach((prop) => {
-        this._config.properties[prop.getAttribute('name')] = prop.getAttribute('value');
-    })
     this._register = this._config.name;
   }
 
@@ -57,31 +54,11 @@ export class Registry {
      * @param item the item to output
      */
     format(item) {
-        const options = {};
-        Object.keys(this._config.properties).forEach((property) => {
-            const template = this._config.properties[property];
-            const value = template.replace(/\${(\w+)}/g, (match, p) => {
-                let replacement;
-                if (item[p]) {
-                    replacement = item[p];
-                } else {
-                    switch (p) {
-                        case 'register':
-                            replacement = this._register;
-                            break;
-                        default:
-                            replacement = this.name;
-                            break;
-                    }
-                }
-                return replacement || match;
-            });
-            options[property] = value;
-        });
         return {
-            tag: this._config.tag,
             strings: item.strings,
-            properties: options
+            properties: {
+                ref: item.id
+            }
         };
     }
 }

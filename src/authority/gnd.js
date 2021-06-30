@@ -1,6 +1,4 @@
 /* eslint-disable class-methods-use-this */
-import { html } from 'lit-element';
-import { render } from 'lit-html';
 import { Registry } from './registry.js';
 
 function _details(item) {
@@ -54,7 +52,7 @@ export class GND extends Registry {
             json.member.forEach((item) => {
             const result = {
                 register: this._register,
-                id: item.gndIdentifier,
+                id: (this._prefix ? `${this._prefix}:${item.gndIdentifier}` : item.gndIdentifier),
                 label: item.preferredName,
                 link: item.id,
                 details: _details(item),
@@ -74,7 +72,7 @@ export class GND extends Registry {
     if (!key) {
       return Promise.resolve();
     }
-    const id = key.replace(/^[^:]+:?(.*)$/, '$1');
+    const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
     return new Promise((resolve) => {
       fetch(`https://lobid.org/gnd/${id}.json`)
       .then((response) => response.json())
@@ -85,15 +83,15 @@ export class GND extends Registry {
         } else if (json.type.indexOf('AuthorityResource') > -1) {
           info = this.infoPerson(json);
         }
-        const output = html`
+        const output = `
           <h3 class="label">
             <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
           </h3>
           ${info}
         `;
-        render(output, container);
+        container.innerHTML = output;
         resolve({
-          id: json.gndIdentifier,
+          id: this._prefix ? `${this._prefix}:${json.gndIdentifier}` : json.gndIdentifier,
           strings: [json.preferredName].concat(json.variantName)
         });
       });
@@ -101,16 +99,16 @@ export class GND extends Registry {
   }
 
   infoPerson(json) {
-    const professions = json.professionOrOccuption ? json.professionOrOccupation.map((prof) => prof.label) : null;
-    return html`<p>${json.dateOfBirth} - ${json.dateOfDeath}</p>
-      <p>${professions}</p>`;
+    const professions = json.professionOrOccuption ? json.professionOrOccupation.map((prof) => prof.label) : [];
+    return `<p>${json.dateOfBirth} - ${json.dateOfDeath}</p>
+      <p>${professions.join(' ')}</p>`;
   }
 
   infoSubject(json) {
     if (json.broaderTermGeneral) {
       const terms = json.broaderTermGeneral.map((term) => term.label);
-      return html`<p>${terms.join(', ')}</p>`;
+      return `<p>${terms.join(', ')}</p>`;
     }
-    return null;
+    return '';
   }
 }

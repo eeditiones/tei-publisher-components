@@ -1,6 +1,4 @@
 /* eslint-disable class-methods-use-this */
-import { html } from 'lit-element';
-import { render } from 'lit-html';
 import { Registry } from './registry.js';
 
 export class Metagrid extends Registry {
@@ -22,7 +20,7 @@ export class Metagrid extends Registry {
               const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
               const result = {
                 register: this._register,
-                id: item.identifier,
+                id: `${item.provider.slug}:${item.identifier}`,
                 label: name,
                 details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
                 link: item.link.uri,
@@ -45,7 +43,7 @@ export class Metagrid extends Registry {
       .then(response => response.json())
       .then(json => {
         const item = json.resources[0];
-        const output = html`
+        const output = `
           <h3 class="label">
             <a href="https://${item.link.uri}" target="_blank">
               ${item.metadata.first_name} ${item.metadata.last_name}
@@ -53,9 +51,9 @@ export class Metagrid extends Registry {
           </h3>
           <p>${item.metadata.birth_date} - ${item.metadata.death_date}</p>
         `;
-        render(output, container);
+        container.innerHTML = output;
         resolve({
-          id: item.identifier,
+          id: `${slug}:${item.identifier}`,
           strings: [`${item.metadata.first_name} ${item.metadata.last_name}`]
         })
       });

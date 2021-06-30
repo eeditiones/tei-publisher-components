@@ -1,5 +1,3 @@
-import { html } from "lit-element";
-import { render } from "lit-html";
 import { Registry } from "./registry.js";
 
 export class GeoNames extends Registry {
@@ -25,7 +23,7 @@ export class GeoNames extends Registry {
                 json.geonames.forEach(item => {
                   const result = {
                     register: this._register,
-                    id: item.geonameId,
+                    id: (this._prefix ? `${this._prefix}:${item.geonameId}` : item.geonameId),
                     label: item.toponymName,
                     details: `${item.fcodeName} - ${item.adminName1}, ${item.countryName}`,
                     link: `https://www.geonames.org/${item.geonameId}`,
@@ -45,20 +43,20 @@ export class GeoNames extends Registry {
       if (!key) {
         return Promise.resolve({});
       }
-      const id = key.replace(/^[^:]+:?(.*)$/, "$1");
+      const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
       return new Promise((resolve) => {
         fetch(`http://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`)
         .then(response => response.json())
         .then(json => {
-          const output = html`
+          const output = `
             <h3 class="label">
               <a href="https://${json.wikipediaURL}" target="_blank">${json.toponymName}</a>
             </h3>
             <p class="fcode">${json.fcodeName} - ${json.adminName1}, ${json.countryName}</p>
           `;
-          render(output, container);
+          container.innerHTML = output;
           resolve({
-            id: json.geonameId,
+            id: this._prefix ? `${this._prefix}:${json.geonameId}` : json.geonameId,
             strings: [json.toponymName]
           });
         });
