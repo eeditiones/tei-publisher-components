@@ -80,10 +80,14 @@ function rangeToPoint(node, offset, position = 'start') {
     };
   }
   const container = /** @type {Element} */ (node.parentNode).closest('[data-tei]');
-  return {
-    parent: container.getAttribute('data-tei'),
-    offset: absoluteOffset(container, node, offset),
-  };
+  if (container) {
+    return {
+      parent: container.getAttribute('data-tei'),
+      offset: absoluteOffset(container, node, offset),
+    };
+  } else {
+    console.error('No container with data-tei found for %o', node.parentNode);
+  }
 }
 
 function ancestors(node, selector) {
@@ -447,8 +451,7 @@ class PbViewAnnotate extends PbView {
     this._showMarkers();
   }
 
-  _editAnnotation(ev) {
-    const span = ev.detail.target;
+  editAnnotation(span, properties) {
     if (span.dataset.tei) {
       // TODO: check in _ranges if it has already been modified
       const context = span.closest('[data-tei]');
@@ -461,14 +464,18 @@ class PbViewAnnotate extends PbView {
         };
         this._ranges.push(range);
       }
-      range.properties = ev.detail.properties;
+      range.properties = properties;
 
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     }
 
     const json = JSON.parse(span.dataset.annotation);
-    json.properties = ev.detail.properties;
+    json.properties = properties;
     span.dataset.annotation = JSON.stringify(json);
+  }
+
+  _editAnnotation(ev) {
+    this.editAnnotation(ev.detail.target, ev.detail.properties);
   }
 
   /**
@@ -501,6 +508,7 @@ class PbViewAnnotate extends PbView {
       return;
     }
     const wrapper = document.createElement('div');
+    wrapper.className = 'annotation-popup';
     const info = document.createElement('div');
     info.className = 'info';
     wrapper.appendChild(info);
@@ -587,6 +595,16 @@ class PbViewAnnotate extends PbView {
   }
 
   search(type, tokens) {
+    function filter(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return NodeFilter.FILTER_ACCEPT;
+      }
+      if (node.classList.contains('annotation-popup')) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_SKIP;
+    }
+    filter.acceptNode = filter;
     const result = [];
     if (!tokens || tokens.length === 0) {
       return result;
@@ -595,17 +613,20 @@ class PbViewAnnotate extends PbView {
     const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
-      NodeFilter.SHOW_TEXT,
+      ( NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT ),
+      filter
     );
     while (walker.nextNode()) {
-      const matches = walker.currentNode.textContent.matchAll(regex)
+      const matches = walker.currentNode.textContent.matchAll(regex);
       for (const match of matches) {
         const end = match.index + match[0].length;
         let isAnnotated = false;
+        let ref = null;
         const annoData = walker.currentNode.parentNode.dataset.annotation;
         if (annoData) {
           const parsed = JSON.parse(annoData);
           isAnnotated = parsed.type === type;
+          ref = parsed.properties.ref;
         }
         
         const startRange = rangeToPoint(walker.currentNode, match.index);
@@ -614,6 +635,7 @@ class PbViewAnnotate extends PbView {
         const [str, start] = collectText(walker.currentNode);
         result.push({
           annotated: isAnnotated,
+          ref,
           context: startRange.parent,
           start: startRange.offset,
           end: endRange.offset,
