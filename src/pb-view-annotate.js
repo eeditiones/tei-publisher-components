@@ -605,6 +605,7 @@ class PbViewAnnotate extends PbView {
       return NodeFilter.FILTER_SKIP;
     }
     filter.acceptNode = filter;
+
     const result = [];
     if (!tokens || tokens.length === 0) {
       return result;
@@ -617,29 +618,30 @@ class PbViewAnnotate extends PbView {
       filter
     );
     while (walker.nextNode()) {
-      const matches = walker.currentNode.textContent.matchAll(regex);
+      let node = walker.currentNode;
+      const matches = node.textContent.matchAll(regex);
       for (const match of matches) {
         const end = match.index + match[0].length;
         let isAnnotated = false;
         let ref = null;
-        const annoData = walker.currentNode.parentNode.dataset.annotation;
+        const annoData = node.parentNode.dataset.annotation;
         if (annoData) {
           const parsed = JSON.parse(annoData);
           isAnnotated = parsed.type === type;
           ref = parsed.properties.ref;
         }
         
-        const startRange = rangeToPoint(walker.currentNode, match.index);
-        const endRange = rangeToPoint(walker.currentNode, end, 'end');
+        const startRange = rangeToPoint(node, match.index);
+        const endRange = rangeToPoint(node, end, 'end');
 
-        const [str, start] = collectText(walker.currentNode);
+        const [str, start] = collectText(node);
         result.push({
           annotated: isAnnotated,
           ref,
           context: startRange.parent,
           start: startRange.offset,
           end: endRange.offset,
-          textNode: walker.currentNode,
+          textNode: node,
           kwic: kwicText(str, start + match.index, start + end)
         });
       }
@@ -649,13 +651,17 @@ class PbViewAnnotate extends PbView {
 
   scrollTo(teiRange) {
     const root = this.shadowRoot.getElementById('view');
-    const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`))
-      .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
-    const startPoint = pointToRange(context, teiRange.start);
-    const endPoint = pointToRange(context, teiRange.end);
     const range = document.createRange();
-    range.setStart(startPoint[0], startPoint[1]);
-    range.setEnd(endPoint[0], endPoint[1]);
+    if (teiRange.annotated) {
+      range.selectNode(teiRange.textNode);
+    } else {
+      const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`))
+        .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
+      const startPoint = pointToRange(context, teiRange.start);
+      const endPoint = pointToRange(context, teiRange.end);
+      range.setStart(startPoint[0], startPoint[1]);
+      range.setEnd(endPoint[0], endPoint[1]);
+    }
 
     const rootRect = root.getBoundingClientRect();
     const rect = range.getBoundingClientRect();
