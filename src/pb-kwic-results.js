@@ -112,7 +112,13 @@ export class PbKwicResults extends pbMixin(LitElement) {
         super.connectedCallback();
         PbKwicResults.waitOnce('pb-page-ready', () => {
             console.log('page-ready');
-            this.load();
+            // this.load();
+/*
+            const storedData = localStorage.getItem('pb-kwic-results');
+            if(storedData){
+                this.data = JSON.parse(storedData);
+            }
+*/
         });
 
         this.subscribeTo('pb-load', (event) => {
@@ -131,6 +137,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
             this.load();
         });
 
+        this.subscribeTo('pb-results-received', (event) =>{
+            this._animate();
+            this.requestUpdate();
+        });
 
     }
 
@@ -205,11 +215,15 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 this.data = data;
                 this.first = data.start;
                 localStorage.setItem('pb-kwic-results',JSON.stringify(this.data));
+                this.dispatchEvent(
+                    new CustomEvent('kwic-data-loaded', { composed: true, bubbles: true, detail: {key:'pb-kwic-results'} }),
+                );
+
                 this.emitTo('pb-results-received', {
                     "count": data.docs ? parseInt(data.docs, 10) : 0,
                     "start": data.start,
                     "params": data.params
-                });
+                },[]);
             })
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
@@ -257,13 +271,9 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     }
 
-    updated(){
-        this._animate();
-    }
-
     _animate(){
         anime({
-            targets: this.shadowRoot.querySelectorAll('tr'),
+            targets: this.shadowRoot.querySelector('table'),
             opacity: [0,1],
             duration:200,
             delay:200,
@@ -271,16 +281,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
         });
 
     }
-
-/*
-    createRenderRoot() {
-        /!**
-         * Render template without shadow DOM. Note that shadow DOM features like
-         * encapsulated CSS and slots are unavailable.
-         *!/
-        return this;
-    }
-*/
 
 }
 
