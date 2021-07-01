@@ -8,7 +8,7 @@ export class KBGA extends Registry {
     
     constructor(configElem) {
         super(configElem);
-        this.user = configElem.getAttribute('user');
+        this._api = configElem.getAttribute('api');
     }
 
     async query(key) {
@@ -92,6 +92,9 @@ export class KBGA extends Registry {
     }
 
     getRegister() {
+      if (this._api) {
+        return this._api;
+      }
       let register;
       switch(this._register) {
         case 'person':
