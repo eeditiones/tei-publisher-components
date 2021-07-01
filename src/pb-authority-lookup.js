@@ -6,6 +6,7 @@ import { Metagrid } from "./authority/metagrid.js";
 import { GeoNames } from './authority/geonames.js';
 import { Airtable } from './authority/airtable.js';
 import { GND } from "./authority/gnd.js";
+import { KBGA } from "./authority/kbga.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
@@ -61,6 +62,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
                 break;
             case 'Airtable':
                 instance = new Airtable(configElem);
+                break;
+            case 'KBGA':
+                instance = new KBGA(configElem);
                 break;
             default:
                 instance = new Metagrid(configElem);
@@ -149,6 +153,13 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       }
       #output {
         overflow: auto;
+      }
+
+      #output table {
+        width: 100%;
+      }
+      #output td:nth-child(3) {
+        text-align: right;
       }
     `;
   }
