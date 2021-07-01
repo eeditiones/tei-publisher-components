@@ -186,10 +186,10 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
     }
 
     _resetCurrentMarker(){
-        const old = this.shadow.querySelector('.kwic-current');
-        if(old){
-            old.classList.remove('kwic-current');
-        }
+        const old = this.shadow.querySelectorAll('.kwic-current');
+        Array.from(old).forEach(elem => {
+           elem.classList.remove('kwic-current');
+        });
     }
 
     _addMarkerClasses(startId, endId){

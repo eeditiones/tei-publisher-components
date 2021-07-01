@@ -163,7 +163,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                                 href="${this._endpoint}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${document.matches[0].match.words[0]}&id=${document.matches[0].page[0]}"
                                 data-doc="${document.id}"
                                 data-id="${document.matches[0].page[0]}"
-                            >${document.id}</a>
+                                target="_blank">${document.id}</a>
                         </td>
                         <td class="hit-count">
                             <span class="hit-count">${document.hits}</span>
@@ -173,7 +173,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                         <tr>
                             <td class="left" colspan="2">${match.left}</td>
                             <td class="hit">
-                                <a href="${this.getEndpoint()}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${match.match.words[0]}&id=${match.page[0]}">${match.match.display}</a>
+                                <a href="${this.getEndpoint()}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${match.match.words[0]}&id=${match.page[0]}" target="_blank">${match.match.display}</a>
                             </td>
                             <td class="right" colspan="2">${match.right}</td>
                         </tr>
