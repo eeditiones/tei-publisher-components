@@ -516,6 +516,10 @@ class PbViewAnnotate extends PbView {
     const div = document.createElement('div');
     div.className = 'toolbar';
 
+    const typeInd = document.createElement('span');
+    typeInd.className = 'annotation-type';
+    div.appendChild(typeInd);
+
     if (span.dataset.annotation) {
       const editBtn = document.createElement('paper-icon-button');
       editBtn.setAttribute('icon', 'icons:create');
@@ -546,6 +550,7 @@ class PbViewAnnotate extends PbView {
           return;
         }
         const data = JSON.parse(span.dataset.annotation);
+        typeInd.innerHTML = data.type;
         this.emitTo('pb-annotation-detail', { type: data.type, id: data.properties.ref, container: info, span });
       }
     });
