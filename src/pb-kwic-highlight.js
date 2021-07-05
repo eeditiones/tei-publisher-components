@@ -174,7 +174,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
                 endElem.parentNode.classList.add('kwic-current');
             }
         }else{
-            console.log(`element with id: ${ id }not found`);
+            console.log(`element with id: ${ id } not found on this page`);
             // todo: request/show correct page
             const pageOfCurrentHit = Array.isArray(this.hits)?this.hits[this.current - 1].page[0]:this.hits.page[0];
             if(this.pageId !== pageOfCurrentHit){

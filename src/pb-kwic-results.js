@@ -27,19 +27,28 @@ export class PbKwicResults extends pbMixin(LitElement) {
             doc: {
                 type: String
             },
+            /**
+             * how many hits per page. will be passed down to pb-paginate
+             */
             perPage: {
                 type: Number,
                 attribute: 'per-page'
             },
+            /**
+             * must be a valid CQL query as a string
+             */
             pattern: {
                 type: String
             },
+            /**
+             * first document number to be displayed
+             */
             first: {
                 type: Number
             },
-            path: {
-                type: String
-            },
+            /**
+             * sort order of query results
+             */
             sort:{
                 type: String
             }
@@ -52,7 +61,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
         console.log('data ', this.data);
         this.data = {documents: []};
         this.first = 1;
-        this.path = '';
         this.doc = null;
         this.sort = null;
     }
@@ -110,26 +118,10 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        PbKwicResults.waitOnce('pb-page-ready', () => {
-            console.log('page-ready');
-            // this.load();
-/*
-            const storedData = localStorage.getItem('pb-kwic-results');
-            if(storedData){
-                this.data = JSON.parse(storedData);
-            }
-*/
-        });
 
         this.subscribeTo('pb-load', (event) => {
-            const index = Number(event.detail.params.page) + 1;
-            const perPage = Number(event.detail.params["per-page"]);
-
-            if(index === 1){
-                this.first = 1;
-            }else{
-                this.first = (index-1) * perPage+1;
-            }
+            // ### handle pb-load received from pb-paginate to set number of first displayed document
+            this.first = Number(event.detail.params.start);
             this.load();
         });
 
@@ -146,7 +138,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <pb-paginate part="paginator" per-page="${this.perPage}" start="${this.first}" @pb-load="${this._handlePagination}"></pb-paginate>
+            <pb-paginate part="paginator" per-page="${this.perPage}" range="5"></pb-paginate>
             <table>
                 <tr class="t-head">
                     <th class="docName">Doc Id</th>
@@ -190,15 +182,11 @@ export class PbKwicResults extends pbMixin(LitElement) {
         console.log('per-page ', this.perPage);
     }
 
-    // async _load(url){
     async load() {
-
-        console.log('endpoint ', this.getEndpoint());
         if(!this.getEndpoint()) return;
         if(!this.pattern) return;
         let url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}`;
         if (this.doc) {
-            // url = `${this.getEndpoint()}/api/blacklab/search?pattern=${this.pattern}&start=${this.first}&per-page=${this.perPage}&doc=${this.doc}`;
             url += `&doc=${this.doc}`;
         }
         if(this.sort){
@@ -213,7 +201,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
             .then((data) => {
                 console.log('response ', data);
                 this.data = data;
-                this.first = data.start;
                 localStorage.setItem('pb-kwic-results',JSON.stringify(this.data));
                 this.dispatchEvent(
                     new CustomEvent('kwic-data-loaded', { composed: true, bubbles: true, detail: {key:'pb-kwic-results'} }),
@@ -228,46 +215,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
             });
-
-    }
-
-/*
-    async _loadDocResults(doc){
-        console.log('endpoint ', this.getEndpoint());
-        if(!this.getEndpoint()) return;
-
-        const d = this.data.documents.find(id => id == doc);
-        const firstMatch = d.matches[0].match;
-        const firstWord = firstMatch.words[0];
-        const firstPage = d.matches[0].page[0];
-
-        const url = `${this.getEndpoint()}/api/blacklab/view?pattern=${this.pattern}&doc=${doc}&match=${firstWord}&page=${firstPage}&format=json`;
-        await fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'same-origin'
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                localStorage.setItem('pb-kwic-doc-matches',JSON.stringify(data));
-                console.log('opening ',`${this.getEndpoint()}/${doc}.xml?id=${firstPage}`);
-                // window.location.href = `${this.getEndpoint()}/${doc}.xml?id=${firstPage}`;
-            })
-            .catch((error) => {
-                console.error('Error retrieving remote content: ', error);
-            });
-    }
-*/
-
-    _handlePagination() {
-        console.log('_handlePagination')
-    }
-
-    _handleDocView(e){
-        console.log('_handleDocView',e);
-        const doc = e.target.dataset.doc;
-        console.log('_handleDocView doc',doc);
-        this._loadDocResults(doc);
 
     }
 
