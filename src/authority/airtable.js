@@ -12,6 +12,16 @@ function expandTemplate(template = '', options) {
   });
 }
 
+function getTemplate(configElem, selector) {
+  const template = configElem.querySelector(selector);
+  if (template instanceof HTMLTemplateElement) {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(template.content.cloneNode(true));
+    return wrapper.innerHTML;
+  }
+  return '';
+}
+
 export class Airtable extends Registry {
 
   constructor(configElem) {
@@ -19,16 +29,18 @@ export class Airtable extends Registry {
     this.apiKey = configElem.getAttribute('api-key');
     this.baseKey = configElem.getAttribute('base');
     this.table = configElem.getAttribute('table');
+    this.view = configElem.getAttribute('view');
     this.filterExpr = configElem.getAttribute('filter');
     this.labelExpr = configElem.getAttribute('label');
-    this.detailExpr = configElem.getAttribute('detail');
-    this.infoExpr = configElem.getAttribute('info');
     const fieldsDef = configElem.getAttribute('fields');
     if (fieldsDef) {
       this.fields = fieldsDef.split(/\s*,\s*/);
     } else {
       this.fields = ['ID'];
     }
+    
+    this.infoExpr = getTemplate(configElem, '.info');
+    this.detailExpr = getTemplate(configElem, '.detail');
 
     this._init();
   }
@@ -55,9 +67,11 @@ export class Airtable extends Registry {
     const filter = this.filterExpr ? expandTemplate(this.filterExpr, { key }) : null;
     const options = {
       // Selecting the first 3 records in Grid view:
-      maxRecords: 100,
-      view: 'Grid view'
+      maxRecords: 100
     };
+    if (this.view) {
+      options.view = this.view;
+    }
     if (filter) {
       options.filterByFormula = filter;
     }

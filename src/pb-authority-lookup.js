@@ -117,7 +117,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
               ? html`<a target="_blank" href="${item.link}">${item.label}</a>`
               : item.label}
           </div>
-          ${item.details ? html`<div class="details">${item.details}</div>` : null}
+          ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
         </td>
         <td>${item.register}</td>
       </tr>
@@ -157,6 +157,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
       #output table {
         width: 100%;
+      }
+      #output td {
+        vertical-align: top;
       }
       #output td:nth-child(3) {
         text-align: right;
