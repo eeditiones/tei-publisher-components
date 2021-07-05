@@ -198,8 +198,18 @@ function collectText(node) {
  * @fires pb-annotation-detail - fired to request additional details about an annotation
  */
 class PbViewAnnotate extends PbView {
+  static get properties() {
+    return {
+      key: {
+        type: String
+      },
+      ...super.properties,
+    };
+  }
+
   constructor() {
     super();
+    this.key = 'ref';
     this._ranges = [];
     this._rangesMap = new Map();
   }
@@ -266,7 +276,7 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     });
 
-    this.subscribeTo('pb-add-annotation', (ev) => this.addAnnotation(ev.detail));
+    this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
   }
 
@@ -287,8 +297,9 @@ class PbViewAnnotate extends PbView {
 
   _updateAnnotation(teiRange) {
     const view = this.shadowRoot.getElementById('view');
-    const context = Array.from(view.querySelectorAll(`[data-tei="${teiRange.context}"]`))
-      .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
+    const context = Array.from(view.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
+      node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
+    )[0];
 
     if (!context) {
       return null;
@@ -321,7 +332,7 @@ class PbViewAnnotate extends PbView {
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
     span.dataset.annotation = JSON.stringify({
       type: teiRange.type,
-      properties: teiRange.properties
+      properties: teiRange.properties,
     });
     // span.appendChild(range.extractContents());
 
@@ -379,10 +390,10 @@ class PbViewAnnotate extends PbView {
     const result = this._updateAnnotation(teiRange);
     if (result) {
       this._ranges.push(teiRange);
-      this.emitTo('pb-annotations-changed', { 
+      this.emitTo('pb-annotations-changed', {
         type: teiRange.type,
         text: teiRange.text,
-        ranges: this._ranges 
+        ranges: this._ranges,
       });
     }
     return result;
@@ -406,10 +417,10 @@ class PbViewAnnotate extends PbView {
     }
     console.log('<pb-view-annotate> range adjusted: %o', adjustedRange);
     this._ranges.push(adjustedRange);
-    this.emitTo('pb-annotations-changed', { 
+    this.emitTo('pb-annotations-changed', {
       type: adjustedRange.type,
       text: adjustedRange.text,
-      ranges: this._ranges 
+      ranges: this._ranges,
     });
     return this._updateAnnotation(adjustedRange);
   }
@@ -427,7 +438,7 @@ class PbViewAnnotate extends PbView {
       const range = {
         type: 'delete',
         node: span.dataset.tei,
-        context: context.dataset.tei
+        context: context.dataset.tei,
       };
       this._ranges.push(range);
     } else {
@@ -436,7 +447,7 @@ class PbViewAnnotate extends PbView {
       const pos = this._ranges.indexOf(teiRange);
 
       console.log('<pb-view-annotate> deleting annotation %o', teiRange);
-      
+
       this._ranges.splice(pos, 1);
     }
 
@@ -447,7 +458,7 @@ class PbViewAnnotate extends PbView {
     span.parentNode.removeChild(span);
 
     this.emitTo('pb-annotations-changed', { ranges: this._ranges });
-    
+
     this._showMarkers();
   }
 
@@ -460,7 +471,7 @@ class PbViewAnnotate extends PbView {
         range = {
           type: 'modify',
           node: span.dataset.tei,
-          context: context.dataset.tei
+          context: context.dataset.tei,
         };
         this._ranges.push(range);
       }
@@ -551,14 +562,19 @@ class PbViewAnnotate extends PbView {
         }
         const data = JSON.parse(span.dataset.annotation);
         typeInd.innerHTML = data.type;
-        this.emitTo('pb-annotation-detail', { type: data.type, id: data.properties.ref, container: info, span });
-      }
+        this.emitTo('pb-annotation-detail', {
+          type: data.type,
+          id: data.properties[this.key],
+          container: info,
+          span,
+        });
+      },
     });
   }
 
   /**
    * Create a marker for an annotation. Position it absolute next to the annotation.
-   * 
+   *
    * @param {Element} span the span for which to display the marker
    * @param {Element} root element with relative position
    * @param {Number} margin additional margin to avoid overlapping markers
@@ -566,14 +582,16 @@ class PbViewAnnotate extends PbView {
   _showMarker(span, root, margin = 0) {
     const rootRect = root.getBoundingClientRect();
     const rects = span.getClientRects();
-    const type = Array.from(span.classList.values()).filter(cl => /^annotation-.*$/.test(cl)).join('');
+    const type = Array.from(span.classList.values())
+      .filter(cl => /^annotation-.*$/.test(cl))
+      .join('');
     for (let i = 0; i < rects.length; i++) {
       const rect = rects[i];
       const marker = document.createElement('div');
       marker.className = `marker ${type}`;
       marker.style.position = 'absolute';
       marker.style.left = `${rect.left - rootRect.left}px`;
-      marker.style.top = `${(rect.top - rootRect.top) + rect.height}px`;
+      marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
       marker.style.marginTop = `${margin}px`;
       marker.style.width = `${rect.width}px`;
       marker.style.height = `3px`;
@@ -588,15 +606,17 @@ class PbViewAnnotate extends PbView {
   /**
    * For all annotations currently shown, create a marker element and position
    * it absolute next to the annotation
-   * 
+   *
    * @param {HTMLElement} root element containing the markers
    */
   _showMarkers() {
     const root = this.shadowRoot.getElementById('view');
     clearMarkers(root);
-    Array.from(root.querySelectorAll('.annotation')).reverse().forEach((span) => {
-      this._showMarker(span, root, ancestors(span, 'annotation') * 5);
-    });
+    Array.from(root.querySelectorAll('.annotation'))
+      .reverse()
+      .forEach(span => {
+        this._showMarker(span, root, ancestors(span, 'annotation') * 5);
+      });
   }
 
   search(type, tokens) {
@@ -619,8 +639,8 @@ class PbViewAnnotate extends PbView {
     const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
-      ( NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT ),
-      filter
+      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+      filter,
     );
     while (walker.nextNode()) {
       let node = walker.currentNode;
@@ -633,22 +653,23 @@ class PbViewAnnotate extends PbView {
         if (annoData) {
           const parsed = JSON.parse(annoData);
           isAnnotated = parsed.type === type;
-          ref = parsed.properties.ref;
+          ref = parsed.properties[this.key];
         }
-        
+
         const startRange = rangeToPoint(node, match.index);
         const endRange = rangeToPoint(node, end, 'end');
 
         const [str, start] = collectText(node);
-        result.push({
+        const entry = {
           annotated: isAnnotated,
-          ref,
           context: startRange.parent,
           start: startRange.offset,
           end: endRange.offset,
           textNode: node,
-          kwic: kwicText(str, start + match.index, start + end)
-        });
+          kwic: kwicText(str, start + match.index, start + end),
+        };
+        entry[this.key] = ref;
+        result.push(entry);
       }
     }
     return result;
@@ -660,8 +681,9 @@ class PbViewAnnotate extends PbView {
     if (teiRange.annotated) {
       range.selectNode(teiRange.textNode);
     } else {
-      const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`))
-        .filter(node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote')[0];
+      const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
+        node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
+      )[0];
       const startPoint = pointToRange(context, teiRange.start);
       const endPoint = pointToRange(context, teiRange.end);
       range.setStart(startPoint[0], startPoint[1]);
@@ -677,7 +699,7 @@ class PbViewAnnotate extends PbView {
       marker.style.position = 'absolute';
       root.appendChild(marker);
     }
-  
+
     marker.style.left = `${rect.left - rootRect.left}px`;
     marker.style.top = `${rect.top - rootRect.top - 4}px`;
     marker.style.width = `${rect.width}px`;
