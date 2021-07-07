@@ -145,7 +145,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       this._occurrences(results.items)
         .then((merged) => {
           this._results = merged;
-        })
+      });
       this.emitTo('pb-end-update');
       this.shadowRoot.getElementById('query').focus();
     });
@@ -153,6 +153,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   _occurrences(items) {
     const params = new FormData();
+    params.append('register', this.type);
     items.forEach((item) => {
       params.append('id', item.id);
     });
