@@ -60,12 +60,15 @@
                 float: right;
             }
         </style>
-        <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
-            <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
+        <pb-page endpoint="http://localhost:8080/exist/apps/blacklab">
+            <pb-document id="document1" path="A01775.xml"></pb-document>
             <pb-kwic-highlight view="view1"></pb-kwic-highlight>
-            <pb-progress subscribe="transcription"></pb-progress>
+<!--            <pb-progress subscribe="transcription"></pb-progress>-->
+<!--
             <pb-view id="view1" src="document1" view="page" append-footnotes animation
                      subscribe="transcription" emit="transcription"></pb-view>
+-->
+            <pb-view id="view1" src="document1" view="page" append-footnotes animation></pb-view>
             <footer>
                 <!-- Navigate to next page -->
                 <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">

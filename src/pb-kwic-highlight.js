@@ -82,7 +82,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
     render() {
         return html`
             <section class="kwic-display">
-                ${this.pageId} / ${Array.isArray(this.hits)?this.hits[this.current -1].page[0]:''}
+                PageId:${this.pageId} / ${Array.isArray(this.hits)?this.hits[this.current -1].page[0]:''}
                 <paper-icon-button icon="icons:arrow-back" @click="${this._handlePrev}" ?disabled="${this.current === 1}"></paper-icon-button>
                 <span class="current">${this.current}</span>/<span class="counter">${this.count}</span>
                 <paper-icon-button icon="icons:arrow-forward" @click="${this._handleNext}" ?disabled="${this.current === this.hits.length}"></paper-icon-button>
@@ -178,9 +178,14 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             // todo: request/show correct page
             const pageOfCurrentHit = Array.isArray(this.hits)?this.hits[this.current - 1].page[0]:this.hits.page[0];
             if(this.pageId !== pageOfCurrentHit){
-                // console.log('hit on another page ->', this.hits[this.current - 1].page[0]);
+                console.log('hit on another page ->', this.hits[this.current - 1].page[0]);
                 // this.viewElement.xmlId = pageOfCurrentHit;
                 this.emitTo('pb-refresh',{id:pageOfCurrentHit});
+                console.log('pb-refresh');
+
+            }else{
+                // ### real trouble - the id cannot be found at all
+                this.emitTo('pb-error',{message:`id is not found: ${id}`})
             }
         }
     }
