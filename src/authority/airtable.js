@@ -106,8 +106,8 @@ export class Airtable extends Registry {
   info(key, container) {
     return new Promise((resolve, reject) => {
       this.base(this.table).find(key, (err, record) => {
-        if (err) {
-          reject(err.statusCode);
+        if (err || Object.keys(record.fields).length === 0) {
+          reject();
           return;
         }
         const data = {};
@@ -115,7 +115,7 @@ export class Airtable extends Registry {
         container.innerHTML = expandTemplate(this.infoExpr, data);
         resolve({
           id: record.id,
-          strings: [data.Name]
+          strings: data[this.fields[0]] ? [data[this.fields[0]]].concat(data[this.fields[0]].split(/[\s,]+/)) : []
         });
       });
     })
