@@ -452,7 +452,7 @@ class PbViewAnnotate extends PbView {
     }
 
     for (let i = 0; i < span.childNodes.length; i++) {
-      const copy = span.childNodes[i].cloneNode();
+      const copy = span.childNodes[i].cloneNode(true);
       span.parentNode.insertBefore(copy, span);
     }
     span.parentNode.removeChild(span);
