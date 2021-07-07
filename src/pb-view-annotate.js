@@ -1,5 +1,5 @@
 import '@polymer/paper-icon-button';
-import tippy from 'tippy.js';
+import tippy, { inlinePositioning } from 'tippy.js';
 import { PbView } from "./pb-view.js";
 import { loadTippyStyles } from "./pb-popover.js";
 
@@ -514,7 +514,7 @@ class PbViewAnnotate extends PbView {
     }
   }
 
-  _createTooltip(root, span) {
+  _createTooltip(span) {
     if (span._tippy) {
       return;
     }
@@ -549,6 +549,7 @@ class PbViewAnnotate extends PbView {
     div.appendChild(delBtn);
     wrapper.appendChild(div);
 
+    const root = this.shadowRoot.getElementById('view');
     tippy(span, {
       content: wrapper,
       allowHTML: true,
@@ -556,6 +557,18 @@ class PbViewAnnotate extends PbView {
       appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
       theme: 'light-border',
       hideOnClick: false,
+      inlinePositioning: true,
+      plugins: [inlinePositioning],
+      popperOptions: {
+        modifiers: [
+          {
+            name: 'flip',
+            options: {
+              fallbackPlacements: 'auto',
+            },
+          },
+        ],
+      },
       onShow: () => {
         if (!span.dataset.annotation) {
           return;
@@ -600,7 +613,7 @@ class PbViewAnnotate extends PbView {
       root.appendChild(marker);
     }
 
-    this._createTooltip(root, span);
+    this._createTooltip(span);
   }
 
   /**
