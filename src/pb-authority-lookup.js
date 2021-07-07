@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import { render } from "lit-html";
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { Metagrid } from "./authority/metagrid.js";
@@ -109,7 +108,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     return html`
       <tr>
         <td>
-          <paper-icon-button icon="icons:add" @click="${() => this._select(item)}"></paper-icon-button>
+          <paper-icon-button
+            icon="icons:add"
+            @click="${() => this._select(item)}"
+          ></paper-icon-button>
         </td>
         <td>
           <div>
@@ -119,6 +121,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           </div>
           ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
         </td>
+        <td>${item.occurrences > 0 ? html`<span part="occurrences">${item.occurrences}</span>` : null}</td>
         <td>${item.register}</td>
       </tr>
     `;
@@ -139,10 +142,42 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   _query() {
     this.emitTo('pb-start-update');
     this._authorities[this.type].query(this.query).then(results => {
-      this._results = results.items;
+      this._occurrences(results.items)
+        .then((merged) => {
+          this._results = merged;
+        })
       this.emitTo('pb-end-update');
       this.shadowRoot.getElementById('query').focus();
     });
+  }
+
+  _occurrences(items) {
+    const params = new FormData();
+    items.forEach((item) => {
+      params.append('id', item.id);
+    });
+    return new Promise((resolve) => {
+      fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
+        method: 'POST',
+        body: params
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+        })
+        .then(json => {
+          items.forEach((item) => {
+            if (json[item.id]) {
+              item.occurrences = json[item.id];
+            } else {
+              item.occurrences = 0;
+            }
+          });
+          items.sort((i1, i2)=>  i2.occurrences - i1.occurrences);
+          resolve(items);
+        });
+      });
   }
 
   static get styles() {
@@ -162,6 +197,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         vertical-align: top;
       }
       #output td:nth-child(3) {
+        text-align: center;
+      }
+      #output td:nth-child(4) {
         text-align: right;
       }
     `;
