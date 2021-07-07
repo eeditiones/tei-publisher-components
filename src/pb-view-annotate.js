@@ -114,7 +114,7 @@ function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    if (relOffset - walker.currentNode.textContent.length < 0) {
+    if (relOffset - walker.currentNode.textContent.length <= 0) {
       return [walker.currentNode, relOffset];
     }
     if (!isSkippedNode(walker.currentNode)) {
@@ -635,7 +635,7 @@ class PbViewAnnotate extends PbView {
     if (!tokens || tokens.length === 0) {
       return result;
     }
-    const expr = tokens.map(token => `\\b${token}\\b`).join('|');
+    const expr = tokens.map(token => `\\b${token.replace(/[\s\n\t]+/g, '\\s+')}\\b`).join('|');
     const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
@@ -644,7 +644,7 @@ class PbViewAnnotate extends PbView {
     );
     while (walker.nextNode()) {
       let node = walker.currentNode;
-      const matches = node.textContent.matchAll(regex);
+      const matches = Array.from(node.textContent.matchAll(regex));
       for (const match of matches) {
         const end = match.index + match[0].length;
         let isAnnotated = false;
