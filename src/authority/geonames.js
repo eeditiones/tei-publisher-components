@@ -44,10 +44,19 @@ export class GeoNames extends Registry {
         return Promise.resolve({});
       }
       const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         fetch(`http://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`)
-        .then(response => response.json())
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          return reject(response.status);
+        })
         .then(json => {
+          if (json.status) {
+            reject(json.status.message);
+            return;
+          }
           const output = `
             <h3 class="label">
               <a href="https://${json.wikipediaURL}" target="_blank">${json.toponymName}</a>
