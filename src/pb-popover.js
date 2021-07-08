@@ -87,7 +87,9 @@ export function loadTippyStyles(root, theme) {
  * @cssprop [--pb-popover-theme=none] - popup theme to use. One of 'material', 'light', 'translucent' or 'light-border'
  * @cssprop [--pb-popover-link-decoration=inherit] - text decoration for the trigger
  * @cssprop [--pb-popover-max-height=calc(100vh - 60px)] - limit the maximum height of the popup
+ * @cssprop --pb-popover-min-height - set the minimum height of the popup
  * @cssprop --pb-popover-max-width - limit the max width of the popup
+ * @cssprop --pb-popover-min-width - set the minimum width of the popup
  * @cssprop --pb-popover-color - Color of the popup text
  * @cssprop [--pb-popover-placement=auto] - Preferred popup placement, see property `placement`
  * @cssprop --pb-popover-fallback-placement - Fallback placements separated by space
