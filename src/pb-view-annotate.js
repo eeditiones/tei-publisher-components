@@ -350,8 +350,14 @@ class PbViewAnnotate extends PbView {
     this._showMarkers();
   }
 
+  _getSelection() {
+    return this.shadowRoot.getSelection
+      ? this.shadowRoot.getSelection()
+      : window.getSelection();
+  }
+
   _selectionChanged() {
-    const selection = this.shadowRoot.getSelection();
+    const selection = this._getSelection();
     const range = this._selectedRange(selection);
     if (range) {
       let changed = false;
@@ -451,15 +457,26 @@ class PbViewAnnotate extends PbView {
       this._ranges.splice(pos, 1);
     }
 
+    const newRange = document.createRange();
     for (let i = 0; i < span.childNodes.length; i++) {
       const copy = span.childNodes[i].cloneNode(true);
       span.parentNode.insertBefore(copy, span);
+      if (i === 0) {
+        newRange.setStartBefore(copy);
+      }
+      if (i === span.childNodes.length - 1) {
+        newRange.setEndAfter(copy);
+      }
     }
     span.parentNode.removeChild(span);
 
     this.emitTo('pb-annotations-changed', { ranges: this._ranges });
 
     this._showMarkers();
+
+    const selection = this._getSelection();
+    selection.removeAllRanges();
+    selection.addRange(newRange);
   }
 
   editAnnotation(span, properties) {
