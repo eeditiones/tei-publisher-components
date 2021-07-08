@@ -559,12 +559,13 @@ class PbViewAnnotate extends PbView {
       hideOnClick: false,
       inlinePositioning: true,
       plugins: [inlinePositioning],
+      placement: 'left',
       popperOptions: {
         modifiers: [
           {
             name: 'flip',
             options: {
-              fallbackPlacements: 'auto',
+              fallbackPlacements: ['right', 'top', 'bottom'],
             },
           },
         ],
