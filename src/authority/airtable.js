@@ -38,6 +38,12 @@ export class Airtable extends Registry {
     } else {
       this.fields = ['ID'];
     }
+    const searchDef = configElem.getAttribute('search');
+    if (searchDef) {
+      this.search = searchDef.split(/\s*,\s*/);
+    } else {
+      this.search = [this.fields[0]];
+    }
     
     this.infoExpr = getTemplate(configElem, '.info');
     this.detailExpr = getTemplate(configElem, '.detail');
@@ -110,12 +116,21 @@ export class Airtable extends Registry {
           reject();
           return;
         }
+        let strings = [];
         const data = {};
-        this.fields.forEach((field) => { data[field] = record.get(field); });
+        this.search.forEach((field) => { 
+          const value = record.get(field);
+          data[field] = value;
+          strings.push(value);
+        });
+        Object.values(data).forEach((value) => {
+          strings = strings.concat(value.split(/[\s,]+/));
+        });
         container.innerHTML = expandTemplate(this.infoExpr, data);
+
         resolve({
           id: record.id,
-          strings: data[this.fields[0]] ? [data[this.fields[0]]].concat(data[this.fields[0]].split(/[\s,]+/)) : []
+          strings
         });
       });
     })

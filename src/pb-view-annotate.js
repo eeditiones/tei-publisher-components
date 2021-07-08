@@ -667,6 +667,7 @@ class PbViewAnnotate extends PbView {
       return result;
     }
     const expr = tokens.map(token => `\\b${token.replace(/[\s\n\t]+/g, '\\s+')}\\b`).join('|');
+    console.log(`<pb-view-annotate> Searching content for ${expr}...`);
     const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
