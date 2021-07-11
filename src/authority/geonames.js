@@ -1,74 +1,88 @@
-import { Registry } from "./registry.js";
+import { Registry } from './registry.js';
 
 export class GeoNames extends Registry {
+  get name() {
+    return 'geonames.org';
+  }
 
-    get name() {
-        return 'geonames.org';
-    }
-    
-    constructor(configElem) {
-        super(configElem);
-        this.user = configElem.getAttribute('user');
-    }
+  constructor(configElem) {
+    super(configElem);
+    this.user = configElem.getAttribute('user');
+  }
 
-    async query(key) {
-        const results = [];
-     
-        return new Promise((resolve) => {
-            fetch(
-              `http://api.geonames.org/searchJSON?formatted=true&q=${encodeURIComponent(key)}&maxRows=100&&username=${this.user}&style=full`
-            )
-              .then(response => response.json())
-              .then(json => {
-                json.geonames.forEach(item => {
-                  const result = {
-                    register: this._register,
-                    id: (this._prefix ? `${this._prefix}:${item.geonameId}` : item.geonameId),
-                    label: item.toponymName,
-                    details: `${item.fcodeName} - ${item.adminName1}, ${item.countryName}`,
-                    link: `https://www.geonames.org/${item.geonameId}`,
-                    strings: [item.toponymName]
-                  };
-                  results.push(result);
-                });
-                resolve({
-                  totalItems: json.totalResultsCount,
-                  items: results,
-                });
-              });
-        })
-    }
+  async query(key) {
+    const results = [];
 
-    info(key, container) {
-      if (!key) {
-        return Promise.resolve({});
-      }
-      const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-      return new Promise((resolve, reject) => {
-        fetch(`http://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          }
-          return reject(response.status);
-        })
+    return new Promise(resolve => {
+      fetch(
+        `http://api.geonames.org/searchJSON?formatted=true&q=${encodeURIComponent(
+          key,
+        )}&maxRows=100&&username=${this.user}&style=full`,
+      )
+        .then(response => response.json())
         .then(json => {
-          if (json.status) {
-            reject(json.status.message);
-            return;
-          }
-          const output = `
+          json.geonames.forEach(item => {
+            const result = {
+              register: this._register,
+              id: this._prefix ? `${this._prefix}-${item.geonameId}` : item.geonameId,
+              label: item.toponymName,
+              details: `${item.fcodeName} - ${item.adminName1}, ${item.countryName}`,
+              link: `https://www.geonames.org/${item.geonameId}`,
+              strings: [item.toponymName],
+              provider: this.name
+            };
+            results.push(result);
+          });
+          resolve({
+            totalItems: json.totalResultsCount,
+            items: results,
+          });
+        });
+    });
+  }
+
+  info(key, container) {
+    if (!key) {
+      return Promise.resolve({});
+    }
+    return new Promise((resolve, reject) => {
+      this.getRecord(key).then(json => {
+        if (json.status) {
+          reject(json.status.message);
+          return;
+        }
+        const output = `
             <h3 class="label">
               <a href="https://${json.wikipediaURL}" target="_blank">${json.toponymName}</a>
             </h3>
             <p class="fcode">${json.fcodeName} - ${json.adminName1}, ${json.countryName}</p>
           `;
-          container.innerHTML = output;
-          resolve({
-            id: this._prefix ? `${this._prefix}:${json.geonameId}` : json.geonameId,
-            strings: [json.toponymName]
-          });
+        container.innerHTML = output;
+        resolve({
+          id: this._prefix ? `${this._prefix}-${json.geonameId}` : json.geonameId,
+          strings: [json.toponymName],
         });
-      });
-    }
+      })
+      .catch(() => reject());
+    });
+  }
+
+  /**
+   * Retrieve a raw JSON record for the given key as returned by the endpoint.
+   *
+   * @param {string} key the key to look up
+   * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
+   */
+  async getRecord(key) {
+    const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
+    return fetch(
+      `http://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`,
+    ).then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      return Promise.reject(response.status);
+    })
+    .catch(() => Promise.reject());
+  }
 }

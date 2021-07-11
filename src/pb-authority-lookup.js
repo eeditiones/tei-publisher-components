@@ -1,11 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
-import { Metagrid } from "./authority/metagrid.js";
-import { GeoNames } from './authority/geonames.js';
-import { Airtable } from './authority/airtable.js';
-import { GND } from "./authority/gnd.js";
-import { KBGA } from "./authority/kbga.js";
+import { createConnectors } from "./authority/connectors.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
@@ -49,28 +45,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         this._query();
     });
 
-    this.querySelectorAll('pb-authority').forEach((configElem) => {
-        const connector = configElem.getAttribute('connector');
-        let instance;
-        switch (connector) {
-            case 'GND':
-                instance = new GND(configElem);
-                break;
-            case 'GeoNames':
-                instance = new GeoNames(configElem);
-                break;
-            case 'Airtable':
-                instance = new Airtable(configElem);
-                break;
-            case 'KBGA':
-                instance = new KBGA(configElem);
-                break;
-            default:
-                instance = new Metagrid(configElem);
-                break;
-        }
-        this._authorities[instance.register] = instance;
+    PbAuthorityLookup.waitOnce('pb-page-ready', () => {
+      this._authorities = createConnectors(this.getEndpoint(), this);
     });
+
     console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
   }
 
@@ -121,16 +99,25 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           </div>
           ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
         </td>
-        <td>${item.occurrences > 0 ? html`<span part="occurrences">${item.occurrences}</span>` : null}</td>
-        <td>${item.register}</td>
+        <td>${item.occurrences > 0 ? html`<span class="occurrences" part="occurrences">${item.occurrences}</span>` : null}</td>
+        <td>${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` : null}</td>
+        <td><span class="register" part="register">${item.register}</span></td>
       </tr>
     `;
   }
 
   _select(item) {
-        const authority = this._authorities[item.register];
-        const options = authority.format(item);
-        this.emitTo('pb-authority-select', options);
+    const connector = this._authorities[item.register];
+    if (connector) {
+      connector.select(item);
+    }
+    const options = {
+      strings: item.strings,
+      properties: {
+        ref: item.id,
+      }
+    };
+    this.emitTo('pb-authority-select', options);
   }
 
   _queryChanged() {
@@ -196,12 +183,31 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       }
       #output td {
         vertical-align: top;
+        padding-bottom: 8px;
       }
-      #output td:nth-child(3) {
-        text-align: center;
-      }
-      #output td:nth-child(4) {
+      #output td:nth-child(3), #output td:nth-child(4), #output td:nth-child(5) {
         text-align: right;
+        vertical-align: middle;
+      }
+
+      .details, .source, .register, .occurrences {
+        font-size: .85rem;
+      }
+
+      .source, .register, .occurrences {
+        border-radius: 4px;
+        padding: 4px;
+        color: var(--pb-color-inverse);
+      }
+
+      .source {
+        background-color: #637b8c;
+      }
+      .register {
+        background-color: var(--pb-color-lighter);
+      }
+      .occurrences {
+        background-color: var(--pb-color-focus);
       }
     `;
   }

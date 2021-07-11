@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+
 /**
  * Abstract base class to be implemented by all connectors.
  */
@@ -6,19 +7,19 @@ export class Registry {
   constructor(configElem) {
     this._prefix = configElem.getAttribute('prefix');
     this._config = {
-        name: configElem.getAttribute('name'),
-        properties: {}
+      name: configElem.getAttribute('name'),
+      properties: {},
     };
     this._register = this._config.name;
   }
 
   get register() {
-      return this._register;
+    return this._register;
   }
 
   /**
    * Return a descriptive name for the registry
-   * 
+   *
    * @returns {String} registry name
    */
   get name() {
@@ -37,28 +38,33 @@ export class Registry {
   /**
    * Retrieve information about a registry entry and display it
    * using the given container.
-   * 
+   *
    * @param {String} id the id to look up
    * @param {HTMLElement} container reference to an element which should be used as container for displaying the information
    * @returns {Promise} a promise
    */
   info(id, container) {
-      container.innerHTML('not implemented');
-      return Promise.resolve();
+    container.innerHTML = 'not implemented';
+    return Promise.resolve();
   }
 
-    /**
-     * Return an XML fragment for the specified item to be inserted
-     * into the document.
-     *
-     * @param item the item to output
-     */
-    format(item) {
-        return {
-            strings: item.strings,
-            properties: {
-                ref: item.id
-            }
-        };
-    }
+  /**
+   * Return an XML fragment for the specified item to be inserted
+   * into the document.
+   *
+   * @param item the item to output
+   */
+  select(item) {
+    /* do nothing by default */
+  }
+
+  /**
+   * Retrieve a raw JSON record for the given key as returned by the endpoint.
+   * 
+   * @param {string} key the key to look up
+   * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
+   */
+  async getRecord(key) {
+      return Promise.reject();
+  }
 }

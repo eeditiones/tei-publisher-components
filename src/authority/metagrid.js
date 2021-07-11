@@ -20,7 +20,7 @@ export class Metagrid extends Registry {
               const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
               const result = {
                 register: this._register,
-                id: `${item.provider.slug}:${item.identifier}`,
+                id: `${item.provider.slug}-${item.identifier}`,
                 label: name,
                 details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
                 link: item.link.uri,
@@ -37,7 +37,9 @@ export class Metagrid extends Registry {
   }
 
   info(key, container) {
-    const [slug, id] = key.split(':');
+    const p = key.indexOf('-');
+    const slug = key.substring(0, p);
+    const id = key.substring(p);
     return new Promise((resolve) => {
       fetch(`https://api.metagrid.ch/search?slug=${slug}&query=${id}`)
       .then(response => response.json())
@@ -53,7 +55,7 @@ export class Metagrid extends Registry {
         `;
         container.innerHTML = output;
         resolve({
-          id: `${slug}:${item.identifier}`,
+          id: `${slug}-${item.identifier}`,
           strings: [`${item.metadata.first_name} ${item.metadata.last_name}`]
         })
       });

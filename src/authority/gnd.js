@@ -52,11 +52,12 @@ export class GND extends Registry {
             json.member.forEach((item) => {
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}:${item.gndIdentifier}` : item.gndIdentifier),
+                id: (this._prefix ? `${this._prefix}-${item.gndIdentifier}` : item.gndIdentifier),
                 label: item.preferredName,
                 link: item.id,
                 details: _details(item),
-                strings: [item.preferredName].concat(item.variantName)
+                strings: [item.preferredName].concat(item.variantName),
+                provider: 'GND'
             };
             results.push(result);
             });
@@ -73,9 +74,14 @@ export class GND extends Registry {
       return Promise.resolve();
     }
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       fetch(`https://lobid.org/gnd/${id}.json`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        return Promise.reject();
+      })
       .then((json) => {
         let info;
         if (json.type.indexOf('SubjectHeading') > -1) {
@@ -91,10 +97,11 @@ export class GND extends Registry {
         `;
         container.innerHTML = output;
         resolve({
-          id: this._prefix ? `${this._prefix}:${json.gndIdentifier}` : json.gndIdentifier,
+          id: this._prefix ? `${this._prefix}-${json.gndIdentifier}` : json.gndIdentifier,
           strings: [json.preferredName].concat(json.variantName)
         });
-      });
+      })
+      .catch(() => reject());
     });
   }
 
