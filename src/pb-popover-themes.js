@@ -105,7 +105,7 @@ export const base = `
         overflow: auto;
         max-height: var(--pb-popover-max-height, calc(100vh - 60px));
         min-height: var(--pb-popover-min-height, auto);
-        max-width: var(--pb-popover-max-width, 640px);
+        max-width: var(--pb-popover-max-width, auto);
         min-width: var(--pb-popover-min-width, auto);
         color: var(--pb-popover-color);
     }

@@ -576,6 +576,7 @@ class PbViewAnnotate extends PbView {
       hideOnClick: false,
       inlinePositioning: true,
       plugins: [inlinePositioning],
+      maxWidth: 'auto',
       placement: 'left',
       popperOptions: {
         modifiers: [
@@ -666,7 +667,7 @@ class PbViewAnnotate extends PbView {
     if (!tokens || tokens.length === 0) {
       return result;
     }
-    const expr = tokens.map(token => `\\b${token.replace(/[\s\n\t]+/g, '\\s+')}\\b`).join('|');
+    const expr = tokens.filter(token => token && token.length > 0).map(token => `\\b${token.replace(/[\s\n\t]+/g, '\\s+')}\\b`).join('|');
     console.log(`<pb-view-annotate> Searching content for ${expr}...`);
     const regex = new RegExp(expr, 'gi');
     const walker = document.createTreeWalker(
