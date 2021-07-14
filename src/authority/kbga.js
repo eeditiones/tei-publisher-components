@@ -1,10 +1,6 @@
 import { Registry } from "./registry.js";
 
 export class KBGA extends Registry {
-
-    get name() {
-        return 'Karl Barth Gesamtausgabe';
-    }
     
     constructor(configElem) {
         super(configElem);
@@ -33,7 +29,8 @@ export class KBGA extends Registry {
                       label: item[label],
                       details: `${item['full-id']}`,
                       link: `https://meta.karl-barth.ch/${register}/${item.id}`,
-                      strings: [item[label]]
+                      strings: [item[label]],
+                      provider: 'KBGA'
                     };
                     results.push(result);
                 });
@@ -49,11 +46,9 @@ export class KBGA extends Registry {
       if (!key) {
         return Promise.resolve({});
       }
-      const id = key.replace(/^.*-([^-]+)$/, '$1')
       const label = this.getLabelField();
       return new Promise((resolve) => {
-        fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`)
-        .then(response => response.json())
+        this.getRecord(key)
         .then(json => {
           const died = json.data.death ? `† ${json.data.death}` : '';
           const dates = json.data.birth ? `<p>* ${json.data.birth} ${died}</p>` : '';
@@ -71,6 +66,40 @@ export class KBGA extends Registry {
         });
       });
     }
+
+    /**
+   * Retrieve a raw JSON record for the given key as returned by the endpoint.
+   * 
+   * @param {string} key the key to look up
+   * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
+   */
+  async getRecord(key) {
+    const id = key.replace(/^.*-([^-]+)$/, '$1')
+    return fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`)
+    .then(response => response.json())
+    .then(json => {
+      const output = Object.assign({}, json);
+      console.log(output);
+      output.name = json.data[this.getLabelField()];
+      switch (this._register) {
+        case 'place':
+          output.country = json.data.country;
+          output.location = json.data.location.coordinates;
+          output.links = json.data.links.map((link) => link.url);
+          break;
+        case 'person':
+          output.birth = json.data.birth;
+          output.death = json.data.death;
+          output.note = json.data.note_bio;
+          output.links = [`https://${json.wikipediaURL}`];
+          break;
+        default:
+          break;
+      }
+      return output;
+    })
+    .catch((reason) => Promise.reject(reason));
+  }
 
     getLabelField() {
       let label;

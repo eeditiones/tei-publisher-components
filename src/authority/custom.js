@@ -3,14 +3,14 @@ import { Registry } from './registry.js';
 import { createConnectors } from './connectors.js';
 
 export class Custom extends Registry {
-  get name() {
-    return 'custom registry';
-  }
 
   constructor(endpoint, configElem) {
     super(configElem);
     this._endpoint = endpoint;
     this._connectors = createConnectors(endpoint, configElem);
+    Object.values(this._connectors).forEach((connector) => {
+      connector.name = this.name;
+    });
     console.log(
       'custom connector: endpoint: %s; using authorities: %o',
       this._endpoint,

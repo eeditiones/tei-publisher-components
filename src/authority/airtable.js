@@ -97,7 +97,8 @@ export class Airtable extends Registry {
               register: this._register,
               id: record.id,
               label: expandTemplate(this.labelExpr, data),
-              details: expandTemplate(this.detailExpr, data)
+              details: expandTemplate(this.detailExpr, data),
+              provider: 'airtable'
             };
             results.push(result);
           });

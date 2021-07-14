@@ -74,7 +74,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   lookup(register, id, container) {
     if (!id || id === '') {
       console.log('<pb-authority-lookup> Key is empty');
-      container.innerHTML = '<span>Key missing</span>';
+      container.innerHTML = '';
       return Promise.resolve();
     }
     const authority = this._authorities[register];

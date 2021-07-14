@@ -26,6 +26,10 @@ export class Registry {
     return this._register;
   }
 
+  set name(name) {
+    this._register = name;
+  }
+  
   /**
    * Query the authority and return a RegistryResult.
    *

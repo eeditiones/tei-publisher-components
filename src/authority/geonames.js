@@ -1,9 +1,6 @@
 import { Registry } from './registry.js';
 
 export class GeoNames extends Registry {
-  get name() {
-    return 'geonames.org';
-  }
 
   constructor(configElem) {
     super(configElem);
@@ -29,7 +26,7 @@ export class GeoNames extends Registry {
               details: `${item.fcodeName} - ${item.adminName1}, ${item.countryName}`,
               link: `https://www.geonames.org/${item.geonameId}`,
               strings: [item.toponymName],
-              provider: this.name
+              provider: 'geonames.org'
             };
             results.push(result);
           });
@@ -53,14 +50,14 @@ export class GeoNames extends Registry {
         }
         const output = `
             <h3 class="label">
-              <a href="https://${json.wikipediaURL}" target="_blank">${json.toponymName}</a>
+              <a href="${json.link}" target="_blank">${json.name}</a>
             </h3>
-            <p class="fcode">${json.fcodeName} - ${json.adminName1}, ${json.countryName}</p>
+            <p class="fcode">${json.note} - ${json.region}, ${json.country}</p>
           `;
         container.innerHTML = output;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.geonameId}` : json.geonameId,
-          strings: [json.toponymName],
+          strings: [json.name],
         });
       })
       .catch(() => reject());
@@ -82,6 +79,15 @@ export class GeoNames extends Registry {
         return response.json();
       }
       return Promise.reject(response.status);
+    })
+    .then((json) => {
+      const output = Object.assign({}, json);
+      output.name = json.toponymName;
+      output.country = json.countryName;
+      output.region = json.adminName1;
+      output.note = json.fcodeName;
+      output.links = [`https://www.geonames.org/${json.geonameId}`, `https://${json.wikipediaURL}`];
+      return output;
     })
     .catch(() => Promise.reject());
   }

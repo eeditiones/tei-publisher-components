@@ -69,19 +69,48 @@ export class GND extends Registry {
     })
   }
 
-  info(key, container) {
-    if (!key) {
-      return Promise.resolve();
-    }
+  /**
+   * Retrieve a raw JSON record for the given key as returned by the endpoint.
+   *
+   * @param {string} key the key to look up
+   * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
+   */
+  async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return new Promise((resolve, reject) => {
-      fetch(`https://lobid.org/gnd/${id}.json`)
+    return fetch(`https://lobid.org/gnd/${id}.json`)
       .then((response) => {
         if (response.ok) {
           return response.json();
         }
         return Promise.reject();
       })
+      .then((json) => {
+        const output = Object.assign({}, json);
+        output.name = json.preferredName;
+        output.link = json.id;
+        if (json.dateOfBirth && json.dateOfBirth.length > 0) {
+          output.birth = json.dateOfBirth[0];
+        }
+        if (json.dateOfDeath && json.dateOfDeath.length > 0) {
+          output.death = json.dateOfDeath[0];
+        }
+        if (json.biographicalOrHistoricalInformation) {
+          output.note = json.biographicalOrHistoricalInformation.join('; ');
+        }
+        if (json.professionOrOccupation && json.professionOrOccupation.length > 0) {
+          output.profession = json.professionOrOccupation.map((prof) => prof.label);
+        }
+        return output;
+      })
+      .catch(() => Promise.reject());
+  }
+
+  info(key, container) {
+    if (!key) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      this.getRecord(key)
       .then((json) => {
         let info;
         if (json.type.indexOf('SubjectHeading') > -1) {
