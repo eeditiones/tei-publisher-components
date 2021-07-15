@@ -3,6 +3,9 @@ import anime from 'animejs';
 import responseData from '../demo/sample-results.js';
 import {pbMixin} from './pb-mixin.js';
 import './pb-paginate.js';
+import '@polymer/iron-icons';
+import '@polymer/paper-icon-button';
+
 
 /**
  * Displays KWIC results
@@ -112,6 +115,20 @@ export class PbKwicResults extends pbMixin(LitElement) {
             .t-head th{
                 border-bottom:thin solid #999;
             }
+            td.hit{
+                position:relative;
+                padding:0 1rem;
+            }
+            [icon=create]{
+                display:none;
+                position:absolute;
+                top:-8px;
+                right:-8px;
+                color:blue;
+            }
+            td.hit:hover [icon=create]{
+                display:inline-block;
+            }
 
         `;
     }
@@ -152,9 +169,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                     <tr>
                         <td colspan="4" class="docName">
                             <a
-                                href="${this._endpoint}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${document.matches[0].match.words[0]}&id=${document.matches[0].page[0]}"
-                                data-doc="${document.id}"
-                                data-id="${document.matches[0].page[0]}"
+                                href="${this._endpoint}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&id=${document.matches[0].page[0]}"
                                 target="_blank">${document.id}</a>
                         </td>
                         <td class="hit-count">
@@ -166,6 +181,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                             <td class="left" colspan="2">${match.left}</td>
                             <td class="hit">
                                 <a href="${this.getEndpoint()}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${match.match.words[0]}&id=${match.page[0]}" target="_blank">${match.match.display}</a>
+                                <paper-icon-button icon="create"></paper-icon-button>
                             </td>
                             <td class="right" colspan="2">${match.right}</td>
                         </tr>

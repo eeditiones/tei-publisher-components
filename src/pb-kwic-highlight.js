@@ -1,10 +1,10 @@
-import { LitElement, html, css } from 'lit-element';
+import {LitElement, html, css} from 'lit-element';
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { pbMixin } from './pb-mixin.js';
-import { translate } from "./pb-i18n.js";
+import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
+import {pbMixin} from './pb-mixin.js';
+import {translate} from "./pb-i18n.js";
 
 /**
  * Looks for KWIC results as produced by pb-kwic-results in sessionStorage.
@@ -17,7 +17,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
-            current:{
+            current: {
                 type: Number
             },
             /**
@@ -26,26 +26,46 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             view: {
                 type: String
             },
-            pattern:{
+            /**
+             * CQL search pattern send to Blacklab
+             */
+            pattern: {
                 type: String
             },
+            /**
+             * optional match parameter on the URL. If present page will display appropriate hit
+             */
             match: {
                 type: String
             },
-            docid:{
+            /**
+             * the document id
+             */
+            docid: {
                 type: String
             },
-            kwicData:{
+            /**
+             * holds the results of querying the 'api/blacklab/doc' endpoint
+             */
+            hits: {
+                type: Array
+            },
+            kwicData: {
                 type: Object
             },
-            perDocument:{
-                type: Number,
-                attribute:'per-document'
+            /**
+             * optional: may hold id of match element to be highlighted
+             */
+            matchParam: {
+                type: String
             },
-            hits:{
-                type:Array
+            pageId: {
+                type: String
+            },
+            perDocument: {
+                type: Number,
+                attribute: 'per-document'
             }
-
         };
     }
 
@@ -60,48 +80,60 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
         this.hits = [];
         this.kwicData = {};
 
+        /*
+         * waiting for the page to be ready before storing a reference to the shadowDOM of the view element this
+         * component is attached to via the 'view' attribute.
+         */
         PbKwicHighlight.waitOnce('pb-page-ready', () => {
-            console.log('page-ready');
-
             this.viewElement = document.getElementById(this.view);
-            if(!this.viewElement){
+            if (!this.viewElement) {
                 console.error(`${this}: view element with id ${this.view} does not exist`);
                 return;
             }
             this.shadow = this.viewElement.shadowRoot;
-            console.log('shadow ', this.shadow);
         });
 
-        this.subscribeTo('pb-update',(ev) => {
+        this.subscribeTo('pb-update', (ev) => {
             console.log('do it noow!');
-            // this._doKwic();
             this._loadDocResults();
+        });
+        this.subscribeTo('pb-refresh', (ev) => {
+            console.log('pb-refresh', ev.detail);
+            this.dynMatch = ev.detail.match;
+            // this._loadDocResults();
         });
     }
 
     render() {
         return html`
-            <section class="kwic-display">
-                PageId:${this.pageId} / ${Array.isArray(this.hits)?this.hits[this.current -1].page[0]:''}
-                <paper-icon-button icon="icons:arrow-back" @click="${this._handlePrev}" ?disabled="${this.current === 1}"></paper-icon-button>
-                <span class="current">${this.current}</span>/<span class="counter">${this.count}</span>
-                <paper-icon-button icon="icons:arrow-forward" @click="${this._handleNext}" ?disabled="${this.current === this.hits.length}"></paper-icon-button>
-            </section>
+            ${this.hits.length != 0
+            ? html`
+                    <section class="kwic-display">
+                        PageId:${this.pageId} / ${Array.isArray(this.hits) ? this.hits[this.current - 1].page[0] : ''}
+                        <paper-icon-button icon="icons:arrow-back" @click="${this._handlePrev}" ?disabled="${this.current === 1}"></paper-icon-button>
+                        <span class="current">${this.current}</span>/<span class="counter">${this.count}</span>
+                        <paper-icon-button icon="icons:arrow-forward" @click="${this._handleNext}" ?disabled="${this.current === this.hits.length}"></paper-icon-button>
+                    </section>` : ''
+        }
         `;
     }
 
-    async _loadDocResults(){
+    async _loadDocResults() {
         console.log('endpoint ', this.getEndpoint());
-        if(!this.getEndpoint()) return;
+        if (!this.getEndpoint()) return;
 
         const params = new URLSearchParams(window.location.search);
-        const pattern = params.get('pattern');
-        const matchParam = params.get('match');
-        const pageId = params.get('id');
-        this.pageId = pageId;
-        const docId = params.get('doc');
+        this.pattern = params.get('pattern');
 
-        const url = `${this.getEndpoint()}/api/blacklab/doc?pattern=${pattern}&doc=${docId}&per-document=${this.perDocument}&format=json`;
+        if(this.dynMatch){
+            this.matchParam = this.dynMatch;
+        }else{
+            this.matchParam = params.get('match');
+        }
+        this.pageId = params.get('id');
+        this.docId = params.get('doc');
+
+        const url = `${this.getEndpoint()}/api/blacklab/doc?pattern=${this.pattern}&doc=${this.docId}&per-document=${this.perDocument}&format=json`;
         await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -116,118 +148,137 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
                 // console.log('opening ',`${this.getEndpoint()}/${doc}.xml?id=${firstPage}`);
                 // window.location.href = `${this.getEndpoint()}/${doc}.xml?id=${firstPage}`;
             })
-            .then(()=> {
-                this._doKwic(pageId);
+            .then(() => {
+                this._markAllMatches();
+                this._showMatch(this.matchParam);
             })
+
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
             });
     }
 
-    _doKwic(pageId){
+    _markAllMatches() {
         const docs = this.kwicData.documents;
         this.count = this.kwicData.hits;
         this.hits = docs[Object.keys(docs)[0]].hits; // 'jump over' docPid
-        console.log('hits',this.hits);
-
-        if(Array.isArray(this.hits)){
+        console.log('hits', this.hits);
+        console.log('matchParam', this.matchParam);
+        if (Array.isArray(this.hits)) {
             console.log('hits', this.hits);
             this.hits.forEach((hit) => {
                 // console.log('match ', hit);
                 // console.log('match words ', hit.match.words);
                 const startId = hit.match.words[0];
                 const endId = hit.match.words[1];
-                this._addMarkerClasses(startId,endId);
+                this._addMarkerClasses(startId, endId);
             });
 
-            // find hit with page id matching the one passed on querystring
-            const targetHit = this.hits.find(hit => hit.page[0] === pageId);
-            console.log('targetHit ',targetHit);
-            if(targetHit){
-                const index = this.hits.findIndex(hit => hit === targetHit);
-                this.current = index + 1;
-                const startElementId = targetHit.match.words[0];
-                const endElementId = targetHit.match.words[1];
-                this._scrollTo(startElementId,endElementId);
-            }
-
-        } else {
+        }else{
             // ### it's just a single hit and we get object instead of array
             const startId = this.hits.match.words[0];
             const endId = this.hits.match.words[1];
-            this._addMarkerClasses(startId,endId);
-            this._scrollTo(startId,endId);
+            this._addMarkerClasses(startId, endId);
+            // this._scrollTo(startId, endId);
         }
         this.requestUpdate();
     }
 
-    _scrollTo(id, end){
-        this._resetCurrentMarker();
 
-        const startElem = this.shadow.querySelector(`#${id}`);
-        if(startElem){
-            startElem.parentNode.classList.add('kwic-current');
-            startElem.scrollIntoView({ block: "center", inline: "nearest" });
+    _showMatch(matchId){
+        // console.log('finding match.... ', this.matchParam);
+        // console.log('finding match in page ', this.pageId);
 
-            const endElem = this.shadow.querySelector(`#${end}`);
-            if(endElem){
-                endElem.parentNode.classList.add('kwic-current');
+        const matchObj = this._getMatchObject(matchId);
+        this._navigateToMatch(matchObj);
+    }
+
+    _getMatchObject(match){
+
+        // ### if there's not match param passed in from url return the appropriate object representing current match
+        if(!match){
+            if(Array.isArray(this.hits)){
+                // return this.hits[0];
+                return this.hits[this.current - 1];
             }
+            return this.hits;
+        }
+
+        if(Array.isArray(this.hits)){
+            const targetHit = this.hits.find(hit => hit.match.words[0] === match);
+            this.current = this.hits.findIndex(hit => hit === targetHit) + 1 ;
+            return targetHit;
+        }
+        this.current=1;
+        return this.hits;
+    }
+
+    _navigateToMatch(matchObj){
+        console.log('_navigateToMatch', matchObj);
+        const matchPage = matchObj.page[0];
+
+        console.log('this.pageId ', this.pageId);
+        console.log('matchPage ', matchPage);
+        const matchId = matchObj.match.words[0];
+        const newUrl = `${this._endpoint}/${this.docId}.xml?doc=${this.docId}&pattern=${this.pattern}&match=${matchObj.match.words[0]}&id=${matchPage}`;
+        if(this.pageId !== matchPage){
+            this.emitTo('pb-refresh', {id: matchPage, match:matchId});
         }else{
-            console.log(`element with id: ${ id } not found on this page`);
-            // todo: request/show correct page
-            const pageOfCurrentHit = Array.isArray(this.hits)?this.hits[this.current - 1].page[0]:this.hits.page[0];
-            if(this.pageId !== pageOfCurrentHit){
-                console.log('hit on another page ->', this.hits[this.current - 1].page[0]);
-                // this.viewElement.xmlId = pageOfCurrentHit;
-                this.emitTo('pb-refresh',{id:pageOfCurrentHit});
-                console.log('pb-refresh');
-
-            }else{
-                // ### real trouble - the id cannot be found at all
-                this.emitTo('pb-error',{message:`id is not found: ${id}`})
-            }
+            this._highlight(matchObj);
+            window.history.replaceState({},'',newUrl);
         }
     }
 
-    _resetCurrentMarker(){
+    _highlight(matchObj){
+        this._resetCurrentMarker();
+
+        const startid = matchObj.match.words[0];
+        const endid = matchObj.match.words[1];
+        const startElem = this.shadow.querySelector(`#${startid}`);
+        if (startElem) {
+            startElem.parentNode.classList.add('kwic-current');
+        }
+        const endElem = this.shadow.querySelector(`#${endid}`);
+        if (endElem) {
+            endElem.parentNode.classList.add('kwic-current');
+        }
+        startElem.scrollIntoView({block: "center", inline: "nearest"});
+
+    }
+
+
+    _resetCurrentMarker() {
         const old = this.shadow.querySelectorAll('.kwic-current');
         Array.from(old).forEach(elem => {
-           elem.classList.remove('kwic-current');
+            elem.classList.remove('kwic-current');
         });
     }
 
-    _addMarkerClasses(startId, endId){
+    _addMarkerClasses(startId, endId) {
         const start = this.shadow.querySelector(`#${startId}`);
-        if(!start){
-            // console.error('start element not found ', startId);
+        if (!start) {
             return;
         }
         start.parentNode.classList.add('kwic-start');
 
-
-
         const end = this.shadow.getElementById(endId);
-        if(end){
+        if (end) {
             end.parentNode.classList.add('kwic-end');
         }
     }
 
-    _handlePrev(){
+    _handlePrev() {
         this.current -= 1;
-        const m = this.hits[this.current-1];
-        const startid = m.match.words[0];
-        const endid = m.match.words[1];
-        this._scrollTo(startid,endid);
+        const prevMatchObj = this.hits[this.current - 1];
+        this._navigateToMatch(prevMatchObj);
     }
 
-    _handleNext(){
-        const m = this.hits[this.current];
-        const startid = m.match.words[0];
-        const endid = m.match.words[1];
+    _handleNext() {
+        const nextMatchObj = this.hits[this.current];
+        this._navigateToMatch(nextMatchObj);
         this.current += 1;
-        this._scrollTo(startid,endid);
     }
+
 
     static get styles() {
         return css`
@@ -241,12 +292,13 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
         `;
     }
 
-/*
-    _handleClear(ev) {
-        ev.preventDefault();
-        localStorage.removeItem('pb-kwic-doc-matches');
-    }
-*/
+    /*
+        _handleClear(ev) {
+            ev.preventDefault();
+            localStorage.removeItem('pb-kwic-doc-matches');
+        }
+    */
 
 }
+
 customElements.define('pb-kwic-highlight', PbKwicHighlight);
