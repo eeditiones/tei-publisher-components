@@ -359,7 +359,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 readyEventsFired.add('__default__');
             }
             if (options) {
-                options._source = this;
+                options = Object.assign({ _source: this }, options);
             } else {
                 options = { _source: this };
             }
