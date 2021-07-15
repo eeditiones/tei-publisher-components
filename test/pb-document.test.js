@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
+import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
+import { PbEvents } from '../src/pb-events.js';
 
 import '../src/pb-document.js';
 
@@ -16,13 +17,12 @@ describe('create document', () => {
   });
   it('fires event on property change', async () => {
     const el = (
-        await fixture('<pb-document path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>')
+        await fixture('<pb-document path="doc/documentation.xml" odd="dta"></pb-document>')
     );
 
-    setTimeout(() => el.odd = 'docbook');
-
-    const { detail } = await oneEvent(document, 'pb-document');
-
-    expect(detail.odd).to.be.equal('docbook');
+    PbEvents.subscribeOnce('pb-document').then((ev) => {
+      expect(ev.detail.odd).to.be.equal('docbook');
+    })
+    setTimeout(() => { el.odd = 'docbook' });
   });
 });
