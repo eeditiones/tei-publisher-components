@@ -1,3 +1,10 @@
+## [1.23.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.5...v1.23.6) (2021-07-15)
+
+
+### Bug Fixes
+
+* **pb-mixin:** copy event details before modifying them; avoid useless _source parameter being sent to server ([4493fd2](https://github.com/eeditiones/tei-publisher-components/commit/4493fd27da309919c2a9e020501c30b8c774c90e))
+
 ## [1.23.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.4...v1.23.5) (2021-06-24)
 
 
