@@ -315,7 +315,9 @@ class PbViewAnnotate extends PbView {
     }
 
     console.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
-    if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
+    if (startPoint[1] === startPoint[0].textContent.length) {
+      range.setStart(endPoint[0], 0);
+    } else if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
       range.setStartBefore(extendRange(startPoint[0], context));
     } else {
       range.setStart(startPoint[0], startPoint[1]);
