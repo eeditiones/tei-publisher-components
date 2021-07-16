@@ -538,7 +538,6 @@ class PbViewAnnotate extends PbView {
     if (span._tippy || !span.dataset.annotation) {
       return;
     }
-    const data = JSON.parse(span.dataset.annotation);
     const wrapper = document.createElement('div');
     wrapper.className = 'annotation-popup';
     const info = document.createElement('div');
@@ -550,13 +549,13 @@ class PbViewAnnotate extends PbView {
 
     const typeInd = document.createElement('span');
     typeInd.className = 'annotation-type';
-    typeInd.innerHTML = data.type;
     div.appendChild(typeInd);
 
     if (span.dataset.annotation) {
       const editBtn = document.createElement('paper-icon-button');
       editBtn.setAttribute('icon', 'icons:create');
       editBtn.addEventListener('click', () => {
+        const data = JSON.parse(span.dataset.annotation);
         this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
       });
       div.appendChild(editBtn);
@@ -592,6 +591,8 @@ class PbViewAnnotate extends PbView {
       },
       onTrigger: (instance, ev) => {
         ev.stopPropagation();
+        const data = JSON.parse(span.dataset.annotation);
+        typeInd.innerHTML = data.type;
         this.emitTo('pb-annotation-detail', {
           type: data.type,
           id: data.properties[this.key],
