@@ -119,7 +119,7 @@ export class Airtable extends Registry {
         }
         let strings = [];
         const data = {};
-        this.search.forEach((field) => { 
+        this.fields.forEach((field) => { 
           const value = record.get(field);
           data[field] = value;
           strings.push(value);
