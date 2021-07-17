@@ -1,5 +1,6 @@
 import '@polymer/paper-icon-button';
 import tippy from 'tippy.js';
+import uniqolor from "uniqolor/src/index";
 import { PbView } from "./pb-view.js";
 import { loadTippyStyles } from "./pb-popover.js";
 
@@ -292,7 +293,11 @@ class PbViewAnnotate extends PbView {
 
   _handleContent() {
     super._handleContent();
-    this.updateComplete.then(() => setTimeout(() => this.updateAnnotations(), 300));
+    this.updateComplete.then(() => setTimeout(() => {
+      this._initAnnotationColors();
+      this._annotationStyles();
+      this.updateAnnotations();
+    }, 300));
   }
 
   _updateAnnotation(teiRange) {
@@ -431,6 +436,7 @@ class PbViewAnnotate extends PbView {
       text: adjustedRange.text,
       ranges: this._ranges,
     });
+    this._checkAnnotationColor(adjustedRange.type);
     return this._updateAnnotation(adjustedRange);
   }
 
@@ -593,6 +599,7 @@ class PbViewAnnotate extends PbView {
         ev.stopPropagation();
         const data = JSON.parse(span.dataset.annotation);
         typeInd.innerHTML = data.type;
+        typeInd.style.backgroundColor = `var(--pb-annotation-${data.type})`;
         this.emitTo('pb-annotation-detail', {
           type: data.type,
           id: data.properties[this.key],
@@ -752,6 +759,64 @@ class PbViewAnnotate extends PbView {
     if (marker) {
       marker.style.top = '-1000px';
     }
+  }
+
+  _initAnnotationColors() {
+    this._annotationColors = new Map();
+    const types = new Set();
+    const elem = this.shadowRoot.getElementById('view')
+    elem.querySelectorAll('.annotation').forEach((annotation) => {
+        types.add(annotation.dataset.type);
+    });
+    types.forEach((type) => {
+      this._annotationColors.set(type, uniqolor(`annotation-${type}-${type}`, {
+        saturation: 70,
+        lightness: [30, 60]
+      }));
+    });
+  }
+
+  _checkAnnotationColor(type) {
+    if (this._annotationColors.has(type)) {
+      return;
+    }
+
+    this._annotationColors.set(type, uniqolor(`annotation-${type}-${type}`, {
+      saturation: 70,
+      lightness: [30, 60]
+    }));
+    this._annotationStyles();
+  }
+
+  _annotationStyles() {
+    const view = this.shadowRoot.getElementById('view')
+    let styles = view.querySelector('_annotation-styles');
+    if (styles) {
+      styles.parentNode.removeChild(styles);
+    }
+    const colorDefs = [];
+    const classes = [];
+    this._annotationColors.forEach((color, type) => {
+      colorDefs.push(`--pb-annotation-${type}: ${color.color};`);
+      colorDefs.push(`--pb-annotation-${type}-border: 2px solid var(--pb-annotation-${type});`);
+      classes.push(`
+        .annotation-${type}::after {
+          background-color: var(--pb-annotation-${type});
+          color: ${color.isLight ? 'var(--pb-color-primary)' : 'var(--pb-color-inverse)'};
+        }
+      `);
+    });
+    const css = `
+      :host {
+        ${colorDefs.join('\n')}
+      }
+
+      ${classes.join('\n')}
+    `;
+    styles = document.createElement('style');
+    styles.className = '_annotation-styles';
+    styles.innerHTML = css;
+    view.appendChild(styles);
   }
 };
 
