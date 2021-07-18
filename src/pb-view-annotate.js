@@ -1,4 +1,5 @@
 import '@polymer/paper-icon-button';
+import { css } from "lit-element";
 import tippy from 'tippy.js';
 import uniqolor from "uniqolor/src/index";
 import { PbView } from "./pb-view.js";
@@ -595,8 +596,10 @@ class PbViewAnnotate extends PbView {
         ev.stopPropagation();
         const type = span.dataset.type;
         const data = JSON.parse(span.dataset.annotation);
+        const color = this._annotationColors.get(type);
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
+        typeInd.style.color = `var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
         this.emitTo('pb-annotation-detail', {
           type,
           id: data[this.key],
@@ -800,7 +803,7 @@ class PbViewAnnotate extends PbView {
       classes.push(`
         .annotation-${type}::after {
           background-color: var(--pb-annotation-${type});
-          color: ${color.isLight ? 'var(--pb-color-primary)' : 'var(--pb-color-inverse)'};
+          color: var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'});
         }
       `);
     });
@@ -815,6 +818,40 @@ class PbViewAnnotate extends PbView {
     styles.className = '_annotation-styles';
     styles.innerHTML = css;
     view.appendChild(styles);
+  }
+
+  static get styles() {
+    return [
+      super.styles,
+      css`
+        .annotation-type {
+            display: inline-block;
+            text-align: right;
+            padding: 4px;
+        }
+
+        .annotation-popup .toolbar {
+            margin-top: 1em;
+        }
+
+        .annotation {
+            pointer-events: none;
+            cursor: pointer;
+        }
+
+        .annotation::after {
+            content: attr(data-type);
+            margin-left: 4px;
+            pointer-events: all;
+            font-family: var(--pb-base-font-family);
+            font-size: .8rem;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: none;
+            font-variant: normal;
+            padding: 2px;
+        }`
+    ];
   }
 };
 
