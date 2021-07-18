@@ -338,10 +338,7 @@ class PbViewAnnotate extends PbView {
     const span = document.createElement('span');
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
     span.dataset.type = teiRange.type;
-    span.dataset.annotation = JSON.stringify({
-      type: teiRange.type,
-      properties: teiRange.properties,
-    });
+    span.dataset.annotation = JSON.stringify(teiRange.properties);
     // span.appendChild(range.extractContents());
 
     range.surroundContents(span);
@@ -506,8 +503,7 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     }
 
-    const json = JSON.parse(span.dataset.annotation);
-    json.properties = properties;
+    const json = Object.assign(JSON.parse(span.dataset.annotation), properties);
     span.dataset.annotation = JSON.stringify(json);
   }
 
@@ -562,7 +558,7 @@ class PbViewAnnotate extends PbView {
       editBtn.setAttribute('icon', 'icons:create');
       editBtn.addEventListener('click', () => {
         const data = JSON.parse(span.dataset.annotation);
-        this.emitTo('pb-annotation-edit', Object.assign({}, data, { target: span }));
+        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data }));
       });
       div.appendChild(editBtn);
     }
@@ -597,12 +593,13 @@ class PbViewAnnotate extends PbView {
       },
       onTrigger: (instance, ev) => {
         ev.stopPropagation();
+        const type = span.dataset.type;
         const data = JSON.parse(span.dataset.annotation);
-        typeInd.innerHTML = data.type;
-        typeInd.style.backgroundColor = `var(--pb-annotation-${data.type})`;
+        typeInd.innerHTML = type;
+        typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         this.emitTo('pb-annotation-detail', {
-          type: data.type,
-          id: data.properties[this.key],
+          type,
+          id: data[this.key],
           container: info,
           span,
         });
@@ -695,10 +692,11 @@ class PbViewAnnotate extends PbView {
         let isAnnotated = false;
         let ref = null;
         const annoData = node.parentNode.dataset.annotation;
-        if (annoData) {
+        const annoType = node.parentNode.dataset.type;
+        if (annoData && annoType) {
           const parsed = JSON.parse(annoData);
-          isAnnotated = parsed.type === type;
-          ref = parsed.properties[this.key];
+          isAnnotated = annoType === type;
+          ref = parsed[this.key];
         }
 
         const startRange = rangeToPoint(node, match.index);
