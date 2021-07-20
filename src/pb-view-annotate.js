@@ -612,6 +612,7 @@ class PbViewAnnotate extends PbView {
         ],
       },
       onTrigger: (instance, ev) => {
+        ev.preventDefault();
         ev.stopPropagation();
         const type = span.dataset.type;
         const data = JSON.parse(span.dataset.annotation);
@@ -619,12 +620,29 @@ class PbViewAnnotate extends PbView {
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         typeInd.style.color = `var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
-        this.emitTo('pb-annotation-detail', {
-          type,
-          id: data[this.key],
-          container: info,
-          span,
-        });
+        if (data[this.key]) {
+          this.emitTo('pb-annotation-detail', {
+            type,
+            id: data[this.key],
+            container: info,
+            span,
+          });
+        } else {
+          // show properties as key/value table
+					const table = document.createElement('table');
+					Object.keys(data).forEach((key) => {
+						const tr = document.createElement('tr');
+						const tdKey = document.createElement('td');
+						tdKey.innerHTML = key;
+						tr.appendChild(tdKey);
+						const tdValue = document.createElement('td');
+						tdValue.innerHTML = JSON.stringify(data[key], null, 2);
+						tr.appendChild(tdValue);
+						table.appendChild(tr);
+					})
+					info.innerHTML = '';
+					info.appendChild(table);
+        }
       },
       onClickOutside: (instance, ev) => {
         instance.hideWithInteractivity(ev);
@@ -855,6 +873,18 @@ class PbViewAnnotate extends PbView {
 
         .annotation-popup .toolbar {
             margin-top: 1em;
+        }
+
+        .annotation-popup table {
+          width: 100%;
+        }
+
+        .annotation-popup td:nth-child(1) {
+          font-weight: bold;
+        }
+
+        .annotation-popup td:nth-child(1)::after {
+          content: ': ';
         }
 
         .annotation {
