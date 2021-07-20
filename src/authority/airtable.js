@@ -113,16 +113,21 @@ export class Airtable extends Registry {
   info(key, container) {
     return new Promise((resolve, reject) => {
       this.base(this.table).find(key, (err, record) => {
-        if (err || Object.keys(record.fields).length === 0) {
+        if (err) {
           reject();
+          return;
+        }
+        if (Object.keys(record.fields).length === 0) {
           return;
         }
         let strings = [];
         const data = {};
         this.fields.forEach((field) => { 
           const value = record.get(field);
-          data[field] = value;
-          strings.push(value);
+          if (value) {
+            data[field] = value;
+            strings.push(value);
+          }
         });
         Object.values(data).forEach((value) => {
           strings = strings.concat(value.split(/[\s,]+/));
