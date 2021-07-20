@@ -629,19 +629,26 @@ class PbViewAnnotate extends PbView {
           });
         } else {
           // show properties as key/value table
-					const table = document.createElement('table');
-					Object.keys(data).forEach((key) => {
-						const tr = document.createElement('tr');
-						const tdKey = document.createElement('td');
-						tdKey.innerHTML = key;
-						tr.appendChild(tdKey);
-						const tdValue = document.createElement('td');
-						tdValue.innerHTML = JSON.stringify(data[key], null, 2);
-						tr.appendChild(tdValue);
-						table.appendChild(tr);
-					})
-					info.innerHTML = '';
-					info.appendChild(table);
+          info.innerHTML = '';
+          const keys = Object.keys(data);
+          if (keys.length === 0) {
+            const p = document.createElement('p');
+            p.innerHTML = 'No properties defined.';
+            info.appendChild(p);
+          } else {
+            const table = document.createElement('table');
+            keys.forEach((key) => {
+              const tr = document.createElement('tr');
+              const tdKey = document.createElement('td');
+              tdKey.innerHTML = key;
+              tr.appendChild(tdKey);
+              const tdValue = document.createElement('td');
+              tdValue.innerHTML = JSON.stringify(data[key], null, 2);
+              tr.appendChild(tdValue);
+              table.appendChild(tr);
+            });
+            info.appendChild(table);
+          }
         }
       },
       onClickOutside: (instance, ev) => {
