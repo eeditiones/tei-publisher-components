@@ -1,5 +1,5 @@
 import '@polymer/paper-icon-button';
-import { css } from "lit-element";
+import { css, html } from "lit-element";
 import tippy from 'tippy.js';
 import uniqolor from "uniqolor/src/index";
 import { PbView } from "./pb-view.js";
@@ -124,15 +124,6 @@ function pointToRange(container, offset) {
     }
   }
   return null;
-}
-
-/**
- * Clear all markers
- * 
- * @param {HTMLElement} root 
- */
-function clearMarkers(root) {
-  root.querySelectorAll('.marker').forEach(marker => marker.parentNode.removeChild(marker));
 }
 
 function kwicText(str, start, end, words = 3) {
@@ -274,12 +265,14 @@ class PbViewAnnotate extends PbView {
       this._ranges = [];
       this._rangesMap.clear();
       this._currentSelection = null;
-      clearMarkers(this.shadowRoot.getElementById('view'));
+      this._clearMarkers();
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     });
 
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
+
+    this._resizeHandler();
   }
 
   get annotations() {
@@ -290,6 +283,30 @@ class PbViewAnnotate extends PbView {
     super.firstUpdated();
 
     loadTippyStyles(this.shadowRoot, 'light-border');
+  }
+
+  render() {
+    return [...super.render(), html`<div id="marker-layer"></div>`];
+  }
+
+  _resizeHandler() {
+    let _pendingCallback = null;
+
+    const scheduleCallback = () => {
+      _pendingCallback = setTimeout(() => {
+        _pendingCallback = null;
+        this.refreshMarkers();
+      }, 200);
+    };
+    window.addEventListener('resize', () => {
+      if (!_pendingCallback) {
+        this._clearMarkers();
+      }
+      if (_pendingCallback) {
+        clearTimeout(_pendingCallback);
+      }
+      scheduleCallback();
+    });
   }
 
   _handleContent() {
@@ -643,6 +660,10 @@ class PbViewAnnotate extends PbView {
     this._createTooltip(span);
   }
 
+  _clearMarkers() {
+    this.shadowRoot.getElementById('marker-layer').innerHTML = '';
+  }
+
   /**
    * For all annotations currently shown, create a marker element and position
    * it absolute next to the annotation
@@ -652,15 +673,17 @@ class PbViewAnnotate extends PbView {
   refreshMarkers() {
     const root = this.shadowRoot.getElementById('view');
     const rootRect = root.getBoundingClientRect();
-    clearMarkers(root);
-    Array.from(root.querySelectorAll('.annotation'))
-      .reverse()
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    markerLayer.style.display = 'none';
+    this._clearMarkers();
+    root.querySelectorAll('.annotation')
       .forEach(span => {
         if (span._tippy) {
           span._tippy.destroy();
         }
-        this._showMarker(span, root, rootRect, ancestors(span, 'annotation') * 5);
+        this._showMarker(span, markerLayer, rootRect, ancestors(span, 'annotation') * 5);
       });
+      markerLayer.style.display = 'block';
   }
 
   search(type, tokens) {
