@@ -114,7 +114,14 @@ export class Airtable extends Registry {
     return new Promise((resolve, reject) => {
       this.base(this.table).find(key, (err, record) => {
         if (err) {
-          reject();
+          switch (err.statusCode) {
+            case 404:
+              reject(`No record found for ${key} in table ${this.table}`);
+              break;
+            default:
+              reject(`${err.statusCode}: ${err.message}`);
+              break;
+          }
           return;
         }
         if (Object.keys(record.fields).length === 0) {
