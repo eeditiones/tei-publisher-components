@@ -301,7 +301,7 @@ class PbViewAnnotate extends PbView {
     }, 300));
   }
 
-  _updateAnnotation(teiRange) {
+  _updateAnnotation(teiRange, batch = false) {
     const view = this.shadowRoot.getElementById('view');
     const context = Array.from(view.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
       node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
@@ -346,14 +346,16 @@ class PbViewAnnotate extends PbView {
     this._rangesMap.set(span, teiRange);
     // range.insertNode(span);
 
-    this._showMarkers();
+    if (!batch) {
+      this.refreshMarkers();
+    }
 
     return span;
   }
 
   updateAnnotations() {
     this._ranges.forEach(this._updateAnnotation.bind(this));
-    this._showMarkers();
+    this.refreshMarkers();
   }
 
   _getSelection() {
@@ -398,8 +400,8 @@ class PbViewAnnotate extends PbView {
     }
   }
 
-  updateAnnotation(teiRange) {
-    const result = this._updateAnnotation(teiRange);
+  updateAnnotation(teiRange, batch = false) {
+    const result = this._updateAnnotation(teiRange, batch);
     if (result) {
       this._ranges.push(teiRange);
       this.emitTo('pb-annotations-changed', {
@@ -479,7 +481,7 @@ class PbViewAnnotate extends PbView {
 
     this.emitTo('pb-annotations-changed', { ranges: this._ranges });
 
-    this._showMarkers();
+    this.refreshMarkers();
 
     const selection = this._getSelection();
     selection.removeAllRanges();
@@ -647,7 +649,7 @@ class PbViewAnnotate extends PbView {
    *
    * @param {HTMLElement} root element containing the markers
    */
-  _showMarkers() {
+  refreshMarkers() {
     const root = this.shadowRoot.getElementById('view');
     const rootRect = root.getBoundingClientRect();
     clearMarkers(root);
