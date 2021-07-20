@@ -616,27 +616,24 @@ class PbViewAnnotate extends PbView {
   /**
    * Create a marker for an annotation. Position it absolute next to the annotation.
    *
-   * @param {Element} span the span for which to display the marker
-   * @param {Element} root element with relative position
+   * @param {HTMLElement} span the span for which to display the marker
+   * @param {DOMRectList} rootRect element with relative position
    * @param {Number} margin additional margin to avoid overlapping markers
    */
-  _showMarker(span, root, margin = 0) {
-    const rootRect = root.getBoundingClientRect();
+  _showMarker(span, root, rootRect, margin = 0) {
     const rects = span.getClientRects();
-    const type = Array.from(span.classList.values())
-      .filter(cl => /^annotation-.*$/.test(cl))
-      .join('');
+    const type = span.dataset.type;
     for (let i = 0; i < rects.length; i++) {
       const rect = rects[i];
       const marker = document.createElement('div');
-      marker.className = `marker ${type}`;
+      marker.className = `marker annotation-${type}`;
       marker.style.position = 'absolute';
       marker.style.left = `${rect.left - rootRect.left}px`;
       marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
       marker.style.marginTop = `${margin}px`;
       marker.style.width = `${rect.width}px`;
       marker.style.height = `3px`;
-      marker.style.backgroundColor = `var(--pb-${type})`;
+      marker.style.backgroundColor = `var(--pb-annotation-${type})`;
       marker.part = 'annotation';
       root.appendChild(marker);
     }
@@ -652,6 +649,7 @@ class PbViewAnnotate extends PbView {
    */
   _showMarkers() {
     const root = this.shadowRoot.getElementById('view');
+    const rootRect = root.getBoundingClientRect();
     clearMarkers(root);
     Array.from(root.querySelectorAll('.annotation'))
       .reverse()
@@ -659,7 +657,7 @@ class PbViewAnnotate extends PbView {
         if (span._tippy) {
           span._tippy.destroy();
         }
-        this._showMarker(span, root, ancestors(span, 'annotation') * 5);
+        this._showMarker(span, root, rootRect, ancestors(span, 'annotation') * 5);
       });
   }
 
