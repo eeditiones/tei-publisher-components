@@ -279,6 +279,11 @@ class PbViewAnnotate extends PbView {
     return this._ranges;
   }
 
+  set annotations(annoData) {
+    this._ranges = annoData;
+    this.updateAnnotations();
+  }
+  
   firstUpdated() {
     super.firstUpdated();
 
