@@ -295,6 +295,11 @@ class PbViewAnnotate extends PbView {
     return [...super.render(), html`<div id="marker-layer"></div>`];
   }
 
+  zoom(direction) {
+    super.zoom(direction);
+    this.refreshMarkers();
+  }
+  
   _resizeHandler() {
     let _pendingCallback = null;
 
