@@ -6,12 +6,7 @@ import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
 /**
- *
- *
- * @customElement  pb-authority-lookup
- * @polymer
- * @demo demo/pb-authority-lookup.html
- * @appliesMixin pbMixin
+ * Performs authority lookups via configurable connectors.
  */
 export class PbAuthorityLookup extends pbMixin(LitElement) {
   static get properties() {

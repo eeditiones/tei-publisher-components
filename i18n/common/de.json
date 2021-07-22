@@ -210,5 +210,24 @@
     },
     "open": "Öffnen",
     "success": "Deine App wurde erfolgreich generiert!"
+  },
+  "annotations": {
+    "abbreviation": "Abkürzung",
+    "delete": "Annotation löschen",
+    "edit": "Annotation ändern",
+    "no-properties": "Keine Eigenschaften vorhanden.",
+    "occurrences": "Vorkommen im Text",
+    "organisation": "Organisation",
+    "person": "Person",
+    "place": "Ort",
+    "term": "Term",
+    "date": "Datum",
+    "apply": "Anwenden",
+    "correction": "Korrektur",
+    "reference": "Referenz",
+    "expansion": "Erweiterung",
+    "changes": "Änderungen",
+    "reg": "Regularisierung",
+    "hi": "Hervorhebung"
   }
 }

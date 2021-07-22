@@ -4,6 +4,7 @@ import tippy from 'tippy.js';
 import uniqolor from "uniqolor/src/index";
 import { PbView } from "./pb-view.js";
 import { loadTippyStyles } from "./pb-popover.js";
+import { get as i18n } from './pb-i18n.js';
 
 /**
  * Return the first child of ancestor which contains current.
@@ -283,7 +284,7 @@ class PbViewAnnotate extends PbView {
     this._ranges = annoData;
     this.updateAnnotations();
   }
-  
+
   firstUpdated() {
     super.firstUpdated();
 
@@ -581,6 +582,7 @@ class PbViewAnnotate extends PbView {
     if (span.dataset.annotation) {
       const editBtn = document.createElement('paper-icon-button');
       editBtn.setAttribute('icon', 'icons:create');
+      editBtn.setAttribute('title', i18n('annotations.edit'));
       editBtn.addEventListener('click', () => {
         const data = JSON.parse(span.dataset.annotation);
         this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data }));
@@ -589,6 +591,7 @@ class PbViewAnnotate extends PbView {
     }
     const delBtn = document.createElement('paper-icon-button');
     delBtn.setAttribute('icon', 'icons:delete');
+    delBtn.setAttribute('title', i18n('annotations.delete'));
     delBtn.addEventListener('click', () => {
       this.deleteAnnotation(span);
     });
@@ -638,7 +641,7 @@ class PbViewAnnotate extends PbView {
           const keys = Object.keys(data);
           if (keys.length === 0) {
             const p = document.createElement('p');
-            p.innerHTML = 'No properties defined.';
+            p.innerHTML = i18n('annotations.no-properties');
             info.appendChild(p);
           } else {
             const table = document.createElement('table');

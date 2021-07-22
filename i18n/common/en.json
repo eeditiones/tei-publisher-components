@@ -210,5 +210,24 @@
     },
     "open": "Open",
     "success": "Your app has been successfully generated!"
+  },
+  "annotations": {
+    "edit": "Edit annotation",
+    "delete": "Delete annotation",
+    "no-properties": "No properties defined.",
+    "person": "Person",
+    "organisation": "Organisation",
+    "place": "Place",
+    "term": "Term",
+    "date": "Date",
+    "reg": "Regularization",
+    "hi": "Highlight",
+    "abbreviation": "Abbreviation",
+    "occurrences": "Occurrences in text",
+    "correction": "Correction",
+    "expansion": "Expansion",
+    "reference": "Reference",
+    "apply": "Apply annotation",
+    "changes": "Changes"
   }
 }

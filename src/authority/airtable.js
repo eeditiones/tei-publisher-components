@@ -125,6 +125,7 @@ export class Airtable extends Registry {
           return;
         }
         if (Object.keys(record.fields).length === 0) {
+          console.warn(`Retrieved an empty record for %s from table %s`, key, this.table);
           return;
         }
         let strings = [];
