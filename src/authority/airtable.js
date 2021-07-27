@@ -145,9 +145,8 @@ export class Airtable extends Registry {
             strings.push(value);
           }
         });
-        Object.values(data).forEach((value) => {
-          strings = strings.concat(value.split(/[\s,]+/));
-        });
+        strings = strings.concat(data[this.fields[0]].split(/[\s,]+/));
+        strings = strings.filter(tok => !/^\d+$/.test(tok));
         container.innerHTML = expandTemplate(this.infoExpr, data);
 
         resolve({

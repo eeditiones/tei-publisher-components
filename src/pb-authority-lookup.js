@@ -11,9 +11,20 @@ import '@polymer/paper-icon-button';
 export class PbAuthorityLookup extends pbMixin(LitElement) {
   static get properties() {
     return {
+      /**
+       * The query string to be sent to the authority
+       */
       query: {
         type: String,
         reflect: true,
+      },
+      /**
+       * A list of comma-separated stopwords which should be excluded
+       * when searching for other occurrences of an authority in the
+       * HTML text
+       */
+      stopwords: {
+        type: String
       },
       _results: {
         type: Array,
@@ -32,6 +43,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
+
+    this._stopwordSet = new Set();
+    if (this.stopwords) {
+      this.stopwords.split(/\s*,\s*/).forEach((sw) => this._stopwordSet.add(sw.toLowerCase()));
+    }
 
     this.subscribeTo('pb-authority-lookup', ev => {
         this.query = ev.detail.query;
@@ -66,7 +82,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     `;
   }
 
-  lookup(register, id, container) {
+  async lookup(register, id, container) {
     if (!id || id === '') {
       console.log('<pb-authority-lookup> Key is empty');
       container.innerHTML = '';
@@ -74,7 +90,14 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     }
     const authority = this._authorities[register];
     console.log('<pb-authority-lookup> Retrieving info for %s from %s', id, register);
-    return authority.info(id, container);
+    let info = await authority.info(id, container);
+    if (info.strings) {
+      info = Object.assign(info, {
+        strings: info.strings.filter((s) => !this._stopwordSet.has(s.toLowerCase()))
+      });
+    }
+    console.log(info);
+    return info;
   }
 
   _formatItem(item) {
