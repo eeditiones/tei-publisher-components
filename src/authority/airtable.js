@@ -72,6 +72,7 @@ export class Airtable extends Registry {
     const results = [];
     const filter = this.filterExpr ? expandTemplate(this.filterExpr, { key }) : null;
     const options = {
+      fields: this.fields,
       // Selecting the first 3 records in Grid view:
       maxRecords: 100
     };
@@ -112,7 +113,13 @@ export class Airtable extends Registry {
 
   info(key, container) {
     return new Promise((resolve, reject) => {
-      this.base(this.table).find(key, (err, record) => {
+      const options = {
+        fields: this.fields,
+        filterByFormula: `RECORD_ID()='${key}'`
+      };
+      this.base(this.table)
+      .select(options)
+      .firstPage((err, records) => {
         if (err) {
           switch (err.statusCode) {
             case 404:
@@ -124,6 +131,7 @@ export class Airtable extends Registry {
           }
           return;
         }
+        const record = records[0];
         if (Object.keys(record.fields).length === 0) {
           console.warn(`Retrieved an empty record for %s from table %s`, key, this.table);
           return;
