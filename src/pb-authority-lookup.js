@@ -183,6 +183,12 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           items.sort((i1, i2) => {
             const d = i2.occurrences - i1.occurrences;
             if (d === 0) {
+              if (i1.provider === 'local' && i2.provider !== 'local') {
+                return -1;
+              }
+              if (i2.provider === 'local' && i1.provider !== 'local') {
+                return 1;
+              }
               return i1.label.localeCompare(i2.label);
             }
             return d;
