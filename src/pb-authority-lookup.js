@@ -157,7 +157,13 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
               item.occurrences = 0;
             }
           });
-          items.sort((i1, i2)=>  i2.occurrences - i1.occurrences);
+          items.sort((i1, i2) => {
+            const d = i2.occurrences - i1.occurrences;
+            if (d === 0) {
+              return i1.label.localeCompare(i2.label);
+            }
+            return d;
+          });
           resolve(items);
         });
       });
