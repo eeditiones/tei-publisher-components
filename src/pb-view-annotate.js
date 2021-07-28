@@ -428,14 +428,19 @@ class PbViewAnnotate extends PbView {
 
   updateAnnotations() {
     this._ranges.forEach((teiRange) => { 
+      let span;
       switch (teiRange.type) {
         case 'delete':
-          const span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
+          span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
           if (span) {
             this._deleteAnnotation(span);
           } else {
             console.error('Annotation %s not found', teiRange.context);
           }
+          break;
+        case 'modify':
+          span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
+          span.dataset.annotation = JSON.stringify(teiRange.properties);
           break;
         default:
           this._updateAnnotation(teiRange, true);
