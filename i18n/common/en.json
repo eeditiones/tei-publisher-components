@@ -221,6 +221,7 @@
     "term": "Term",
     "date": "Date",
     "reg": "Regularization",
+    "app": "Apparatus Entry",
     "hi": "Highlight",
     "abbreviation": "Abbreviation",
     "occurrences": "Occurrences in text",
@@ -228,6 +229,8 @@
     "expansion": "Expansion",
     "reference": "Reference",
     "apply": "Apply annotation",
-    "changes": "Changes"
+    "changes": "Changes",
+    "undo": "Undo last change",
+    "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?"
   }
 }

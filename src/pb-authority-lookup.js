@@ -96,7 +96,6 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         strings: info.strings.filter((s) => !this._stopwordSet.has(s.toLowerCase()))
       });
     }
-    console.log(info);
     return info;
   }
 

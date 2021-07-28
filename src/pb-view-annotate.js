@@ -178,6 +178,17 @@ function collectText(node) {
   return [str.join(''), start];
 }
 
+function clearProperties(teiRange) {
+  const cleaned = {};
+  Object.keys(teiRange.properties).forEach((key) => {
+    const val = teiRange.properties[key];
+    if (val && val.length > 0) {
+      cleaned[key] = val;
+    }
+  });
+  return Object.assign(teiRange, { properties: cleaned });
+}
+
 /**
  * An extended `PbView`, which supports annotations to be added
  * and edited by the user. Handles mouse selection and keeps track
@@ -206,6 +217,7 @@ class PbViewAnnotate extends PbView {
     this.key = 'ref';
     this._ranges = [];
     this._rangesMap = new Map();
+    this._history = [];
   }
 
   connectedCallback() {
@@ -285,6 +297,35 @@ class PbViewAnnotate extends PbView {
     this.updateAnnotations();
   }
 
+  saveHistory() {
+    this._history.push(JSON.stringify(this._ranges));
+    this.emitTo('pb-annotations-history', this._history);
+  }
+
+  getHistory() {
+    return this._history;
+  }
+
+  popHistory() {
+    if (this._history.length === 0) {
+      console.warn('<pb-view-annotate> history is empty');
+      return;
+    }
+    this._scrollTop = this.scrollTop;
+    const lastEntry = this._history.pop();
+    this._clearMarkers();
+    this._ranges = JSON.parse(lastEntry);
+    this._rangesMap.clear();
+
+    this._refresh();
+    this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+    this.emitTo('pb-annotations-history', this._history);
+  }
+
+  clearHistory(data) {
+    this._history = data || [];
+  }
+
   firstUpdated() {
     super.firstUpdated();
 
@@ -326,6 +367,10 @@ class PbViewAnnotate extends PbView {
       this._initAnnotationColors();
       this._annotationStyles();
       this.updateAnnotations();
+      if (this._scrollTop) {
+        this.scrollTop = this._scrollTop;
+        this._scrollTop = undefined;
+      }
     }, 300));
   }
 
@@ -382,7 +427,21 @@ class PbViewAnnotate extends PbView {
   }
 
   updateAnnotations() {
-    this._ranges.forEach(this._updateAnnotation.bind(this));
+    this._ranges.forEach((teiRange) => { 
+      switch (teiRange.type) {
+        case 'delete':
+          const span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
+          if (span) {
+            this._deleteAnnotation(span);
+          } else {
+            console.error('Annotation %s not found', teiRange.context);
+          }
+          break;
+        default:
+          this._updateAnnotation(teiRange, true);
+          break;   
+      }
+    });
     this.refreshMarkers();
   }
 
@@ -429,6 +488,7 @@ class PbViewAnnotate extends PbView {
   }
 
   updateAnnotation(teiRange, batch = false) {
+    teiRange = clearProperties(teiRange);
     const result = this._updateAnnotation(teiRange, batch);
     if (result) {
       this._ranges.push(teiRange);
@@ -458,7 +518,7 @@ class PbViewAnnotate extends PbView {
       adjustedRange.properties = info.properties;
     }
     console.log('<pb-view-annotate> range adjusted: %o', adjustedRange);
-    this._ranges.push(adjustedRange);
+    this._ranges.push(clearProperties(adjustedRange));
     this.emitTo('pb-annotations-changed', {
       type: adjustedRange.type,
       text: adjustedRange.text,
@@ -494,6 +554,10 @@ class PbViewAnnotate extends PbView {
       this._ranges.splice(pos, 1);
     }
 
+    this._deleteAnnotation(span);
+  }
+
+  _deleteAnnotation(span) {
     const newRange = document.createRange();
     for (let i = 0; i < span.childNodes.length; i++) {
       const copy = span.childNodes[i].cloneNode(true);
@@ -530,7 +594,7 @@ class PbViewAnnotate extends PbView {
         this._ranges.push(range);
       }
       range.properties = properties;
-
+      range = clearProperties(range);
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     }
 
@@ -598,6 +662,7 @@ class PbViewAnnotate extends PbView {
     delBtn.setAttribute('icon', 'icons:delete');
     delBtn.setAttribute('title', i18n('annotations.delete'));
     delBtn.addEventListener('click', () => {
+      this.saveHistory();
       this.deleteAnnotation(span);
     });
     div.appendChild(delBtn);
