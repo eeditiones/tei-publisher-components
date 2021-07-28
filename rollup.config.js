@@ -34,7 +34,14 @@ export default [
                 'process.env.NODE_ENV': JSON.stringify('production'),
                 'const PB_COMPONENTS_VERSION = null': `const PB_COMPONENTS_VERSION = '${pkg.version}'`
             }),
-            babel(),
+            babel({
+                "assumptions": {
+                    "setSpreadProperties": true
+                },
+                "plugins": [
+                    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }]
+                ]
+            }),
             resolve(),
             production && terser({
                 compress: {
