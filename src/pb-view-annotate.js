@@ -295,6 +295,8 @@ class PbViewAnnotate extends PbView {
   set annotations(annoData) {
     this._ranges = annoData;
     this.updateAnnotations();
+    this._initAnnotationColors();
+    this._annotationStyles();
   }
 
   saveHistory() {
@@ -901,7 +903,7 @@ class PbViewAnnotate extends PbView {
         types.add(annotation.dataset.type);
     });
     types.forEach((type) => {
-      this._annotationColors.set(type, uniqolor(`annotation-${type}-${type}`, {
+      this._annotationColors.set(type, uniqolor(`annotation-${type.repeat(4)}`, {
         saturation: 70,
         lightness: [30, 60]
       }));
@@ -913,7 +915,7 @@ class PbViewAnnotate extends PbView {
       return;
     }
 
-    this._annotationColors.set(type, uniqolor(`annotation-${type}-${type}`, {
+    this._annotationColors.set(type, uniqolor(`annotation-${type.repeat(4)}`, {
       saturation: 70,
       lightness: [30, 60]
     }));
