@@ -32,7 +32,7 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 FROM builder as tei
 
 ARG TEMPLATING_VERSION=v1.0.0
-ARG PUBLISHER_LIB_VERSION=v2.8.11
+ARG PUBLISHER_LIB_VERSION=v2.9.0
 ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
 
