@@ -9,7 +9,8 @@ describe('recompile ODD', () => {
     afterEach(() => {
       fixtureCleanup();
     });
-    it('recompiles and shows message', async () => {
+    it('recompiles and shows message', async function() {
+        this.timeout(30000);
         const el = (
             await fixture(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
