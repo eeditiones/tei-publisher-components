@@ -93,7 +93,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     let info = await authority.info(id, container);
     if (info.strings) {
       info = Object.assign(info, {
-        strings: info.strings.filter((s) => !this._stopwordSet.has(s.toLowerCase()))
+        strings: info.strings.filter((s) => s && !this._stopwordSet.has(s.toLowerCase()))
       });
     }
     return info;
