@@ -38,12 +38,14 @@ export class Airtable extends Registry {
     } else {
       this.fields = ['ID'];
     }
-    const searchDef = configElem.getAttribute('search');
-    if (searchDef) {
-      this.search = searchDef.split(/\s*,\s*/);
+    const tokenizeDef = configElem.getAttribute('tokenize');
+    if (tokenizeDef) {
+      this.tokenize = tokenizeDef.split(/\s*,\s*/);
     } else {
-      this.search = [this.fields[0]];
+      this.tokenize = [this.fields[0]];
     }
+
+    this.tokenizeChars = configElem.getAttribute('tokenize-regex') || "\\W";
     
     this.infoExpr = getTemplate(configElem, '.info');
     this.detailExpr = getTemplate(configElem, '.detail');
@@ -145,8 +147,13 @@ export class Airtable extends Registry {
             strings.push(value);
           }
         });
-        strings = strings.concat(data[this.fields[0]].split(/[\s,]+/));
+        const regex = new RegExp(this.tokenizeChars);
+        this.tokenize.forEach((key) => {
+          strings = strings.concat(data[key].split(regex));
+        });
         strings = strings.filter(tok => !/^\d+$/.test(tok));
+        strings.sort((s1, s2) => s2.length - s1.length);
+        console.log(strings);
         container.innerHTML = expandTemplate(this.infoExpr, data);
 
         resolve({
