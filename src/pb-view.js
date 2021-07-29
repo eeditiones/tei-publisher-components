@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin } from "./pb-mixin.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
@@ -393,6 +393,7 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+        super.firstUpdated();
         if (this.infiniteScroll) {
             this._topObserver = this.shadowRoot.getElementById('top-observer');
             this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
@@ -662,7 +663,6 @@ export class PbView extends pbMixin(LitElement) {
                 position: this.nodeId
             };
             this.emitTo('pb-update', eventOptions);
-
             this._scroll();
         });
 
@@ -1104,6 +1104,10 @@ export class PbView extends pbMixin(LitElement) {
                 display: none; 
             }
 
+            #view {
+                position: relative;
+            }
+
             .columns {
                 display: grid;
                 grid-template-columns: calc(50% - var(--pb-view-column-gap, 10px) / 2) calc(50% - var(--pb-view-column-gap, 10px) / 2);
@@ -1191,40 +1195,42 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     render() {
-        return html`
-            <div id="view" part="content">
-                ${this._style}
-                ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
-                <div class="columns">
-                    <div id="column1">${this._column1}</div>
-                    <div id="column2">${this._column2}</div>
+        return [
+            html`
+                <div id="view" part="content">
+                    ${this._style}
+                    ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
+                    <div class="columns">
+                        <div id="column1">${this._column1}</div>
+                        <div id="column2">${this._column2}</div>
+                    </div>
+                    <div id="content">${this._content}</div>
+                    ${
+                this.infiniteScroll ?
+                    html`<div id="bottom-observer" class="observer"></div>` :
+                    null
+                }
+                    <div id="footnotes" part="footnotes">${this._footnotes}</div>
                 </div>
-                <div id="content">${this._content}</div>
-                ${
-            this.infiniteScroll ?
-                html`<div id="bottom-observer" class="observer"></div>` :
-                null
-            }
-                <div id="footnotes" part="footnotes">${this._footnotes}</div>
-            </div>
-            <paper-dialog id="errorDialog">
-                <h2>${translate('dialogs.error')}</h2>
-                <paper-dialog-scrollable></paper-dialog-scrollable>
-                <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                    ${translate('dialogs.close')}
-                    </paper-button>
-                </div>
-            </paper-dialog>
-            <iron-ajax
-                id="loadContent"
-                verbose
-                handle-as="json"
-                method="get"
-                with-credentials
-                @response="${this._handleContent}"
-                @error="${this._handleError}"></iron-ajax>
-      `;
+                <paper-dialog id="errorDialog">
+                    <h2>${translate('dialogs.error')}</h2>
+                    <paper-dialog-scrollable></paper-dialog-scrollable>
+                    <div class="buttons">
+                        <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                        ${translate('dialogs.close')}
+                        </paper-button>
+                    </div>
+                </paper-dialog>
+                <iron-ajax
+                    id="loadContent"
+                    verbose
+                    handle-as="json"
+                    method="get"
+                    with-credentials
+                    @response="${this._handleContent}"
+                    @error="${this._handleError}"></iron-ajax>
+            `
+        ]
     }
 }
 

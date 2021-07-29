@@ -11,11 +11,10 @@ ENV ANT_HOME /etc/ant-${ANT_VERSION}
 WORKDIR /tmp
 
 RUN apt-get update && apt-get install -y \
-    wget \
     git \
     curl
 
-RUN wget http://www-us.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
+RUN curl -L -o apache-ant-${ANT_VERSION}-bin.tar.gz http://www.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
     && mkdir ant-${ANT_VERSION} \
     && tar -zxvf apache-ant-${ANT_VERSION}-bin.tar.gz \
     && mv apache-ant-${ANT_VERSION} ${ANT_HOME} \
@@ -33,7 +32,7 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 FROM builder as tei
 
 ARG TEMPLATING_VERSION=v1.0.0
-ARG PUBLISHER_LIB_VERSION=v2.8.11
+ARG PUBLISHER_LIB_VERSION=v2.9.0
 ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
 

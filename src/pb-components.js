@@ -18,6 +18,7 @@ import './pb-search.js';
 import './pb-toggle-feature.js';
 import './pb-select-feature.js';
 import './pb-view.js';
+import './pb-view-annotate.js';
 import './pb-zoom.js';
 import './pb-drawer.js';
 import './pb-media-query.js';
@@ -51,3 +52,10 @@ import './pb-autocomplete.js';
 import './pb-select.js';
 import './pb-clipboard.js';
 import './pb-formula.js';
+import './pb-authority-lookup.js';
+
+import '@polymer/iron-icons/editor-icons';
+import '@polymer/iron-icons/social-icons';
+import '@polymer/iron-icons/maps-icons';
+import '@polymer/iron-icons/image-icons';
+import '@polymer/paper-input/paper-textarea';

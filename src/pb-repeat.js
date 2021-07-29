@@ -43,6 +43,15 @@ export class PbRepeat extends pbMixin(LitElement) {
         this.template = this.querySelector('template');
 
         const params = this.getParameters();
+        this._computeInitial(params);
+        if (this._instances.length === 0) {
+            for (let i = 0; i < this.initial; i++) {
+                this._add(params);
+            }
+        }
+    }
+
+    _computeInitial(params) {
         const sortedParams =
             Object.keys(params)
                 .filter((key) => /\[\d+\]$/.test(key))
@@ -51,12 +60,15 @@ export class PbRepeat extends pbMixin(LitElement) {
             const max = sortedParams[sortedParams.length - 1].replace(/^.*\[(\d+)\]$/, '$1');
             this.initial = parseInt(max, 10);
         }
+    }
 
-        if (this._instances.length === 0) {
-            for (let i = 0; i < this.initial; i++) {
-                this._add(params);
-            }
+    setData(params) {
+        this._instances = [];
+        this._computeInitial(params);
+        for (let i = 0; i < this.initial; i++) {
+            this._add(params);
         }
+        this.requestUpdate();
     }
 
     add() {
