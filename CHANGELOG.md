@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.0...v1.24.1) (2021-07-29)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup, airtable:** add an attribute "tokenize" to the connector to configure which fields should be tokenized when constructing the search expression for other occurrences ([4a751aa](https://github.com/eeditiones/tei-publisher-components/commit/4a751aa01ad4c218f51861613d93c40c0ca7b447))
+
 # [1.24.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.6...v1.24.0) (2021-07-29)
 
 
