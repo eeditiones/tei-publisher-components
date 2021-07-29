@@ -1,3 +1,47 @@
+# [1.24.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.6...v1.24.0) (2021-07-29)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add a property to define stopwords ([d465a76](https://github.com/eeditiones/tei-publisher-components/commit/d465a7623adf66ddb1e5ce23ccde468399b18633))
+* **pb-authority-lookup:** airtable: using wrong fields for retrieving info ([5b0d339](https://github.com/eeditiones/tei-publisher-components/commit/5b0d339147148abc8c3f38c2342f05b40feee792))
+* **pb-authority-lookup, airtable:** limit number of fields retrieved to those needed ([1d06aea](https://github.com/eeditiones/tei-publisher-components/commit/1d06aea8c75c529fff764250ec8b75f9c802ac82))
+* **pb-authority-lookup, airtable:** provide feedback for non-existant keys ([ce845d5](https://github.com/eeditiones/tei-publisher-components/commit/ce845d579f813236c7244ee829a0b9cdd5a32830))
+* **pb-authority-lookup, airtable:** report error message if lookup fails ([3d77e81](https://github.com/eeditiones/tei-publisher-components/commit/3d77e817ab4dcbf8aeace472fcd3fd883f46e3b4))
+* **pb-authority-lookup, airtable:** work around airtable reporting an additional empty record ([3fd1852](https://github.com/eeditiones/tei-publisher-components/commit/3fd1852685a4acf3798b135cec992c17842bcd4b))
+* **pb-authority-lookup, geonames:** handle errors and not found entries ([e730afe](https://github.com/eeditiones/tei-publisher-components/commit/e730afece4f1e01253f650600d069291ae3f2a08))
+* **pb-popover:** add CSS variables for min-width and min-height ([34dab6d](https://github.com/eeditiones/tei-publisher-components/commit/34dab6debdcef53558a8b34b408384a82c6fe6f1))
+* **pb-view-annotate:**  re-read annotation data each time popup is shown ([4e1f438](https://github.com/eeditiones/tei-publisher-components/commit/4e1f4388182ef823a5f660f19d6829dbf80ac53e))
+* **pb-view-annotate:** add i18n labels ([db0d2fd](https://github.com/eeditiones/tei-publisher-components/commit/db0d2fdb20bf6f25740224efc11a91f7cbd5ff4c))
+* **pb-view-annotate:** annotation popup should only appear on click ([488e7f5](https://github.com/eeditiones/tei-publisher-components/commit/488e7f52b712bd60d8dd413abc5bb32bec99ab60))
+* **pb-view-annotate:** creating a nested annotation fails in the browser; closes https://github.com/eeditiones/tei-publisher-app/issues/61 ([531e171](https://github.com/eeditiones/tei-publisher-components/commit/531e17167d76daad166a72c7ab59523ff84fb4be))
+* **pb-view-annotate:** fix annotation marker display performance ([f1f1c6c](https://github.com/eeditiones/tei-publisher-components/commit/f1f1c6c7e27eb16747637c3562b7f8a9034eee2a))
+* **pb-view-annotate:** fix deletion of annotation with nested elements ([e62def9](https://github.com/eeditiones/tei-publisher-components/commit/e62def976c20e6c772abca5141c1cea0487586d2))
+* **pb-view-annotate:** fix popover positioning ([486e9c7](https://github.com/eeditiones/tei-publisher-components/commit/486e9c7ba12466d6af4adaaf67c815fe1e0c05bc))
+* **pb-view-annotate:** fix popover positioning ([60622d2](https://github.com/eeditiones/tei-publisher-components/commit/60622d27c21cc13411197d027a8d691ef3709e1f))
+* **pb-view-annotate:** fix popover width ([9163ff8](https://github.com/eeditiones/tei-publisher-components/commit/9163ff8a0f2425601781ae7de185887e4c5d6490))
+* **pb-view-annotate:** fix search regexp ([d146abd](https://github.com/eeditiones/tei-publisher-components/commit/d146abdbffaccf9c75c7b9555c29474da8797bcd))
+* **pb-view-annotate:** fix undo for modifications ([4d02ee4](https://github.com/eeditiones/tei-publisher-components/commit/4d02ee47857c2303777b5dcd9c7d7df72c8075d0))
+* **pb-view-annotate:** handle selection in firefox and safari; select previously wrapped content after deleting an annotation to make it easier for user to reassign an annotation ([417ba83](https://github.com/eeditiones/tei-publisher-components/commit/417ba83598b733f3cf743db0f372e6dbc7f7d4cd))
+* **pb-view-annotate:** optimize code for creating annotation markers ([dc73f34](https://github.com/eeditiones/tei-publisher-components/commit/dc73f344c77a4bc4d91a0aadeb17231d13118d1f))
+* **pb-view-annotate:** output properties as table if annotation is not connected to an authority ([45f807c](https://github.com/eeditiones/tei-publisher-components/commit/45f807c262e3a7224df572e6c41a02138ed627da))
+* **pb-view-annotate:** refresh markers on zoom in/out ([4eed943](https://github.com/eeditiones/tei-publisher-components/commit/4eed94322428bf988d55fd26d3310346b02c26c9))
+* **pb-view-annotate:** reinitialize colors after restoring annotations from local storage ([574b17e](https://github.com/eeditiones/tei-publisher-components/commit/574b17eb7603aaf1cafdebd02b031b966262381d))
+* **pb-view-annotate:** show note if no properties are defined for an annotation rather than just an empty table ([231e7c1](https://github.com/eeditiones/tei-publisher-components/commit/231e7c13a2c437fa6c780198920d95d681454468))
+* **pb-view-annotate:** to avoid blocking browser, do not redraw annotation markers after every change in batch operation mode ([08aa614](https://github.com/eeditiones/tei-publisher-components/commit/08aa614501fb644fd25c9a149d914d113b2178ac))
+* **pb-view-annotate:** when searching the text, try to match full names first ([3e1ad8f](https://github.com/eeditiones/tei-publisher-components/commit/3e1ad8f53219a322e532113476797cca71fc1840))
+
+
+### Features
+
+* **pb-authority-lookup:** add "local" connector, which combines one or more connectors and saves a copy of any selected entry to a local TEI file where it can be edited ([624ceea](https://github.com/eeditiones/tei-publisher-components/commit/624ceea6ea6dd6da11392131e9c5e23435db08b2))
+* **pb-authority-lookup:** show database occurrence count for each authority entry ([291cc0a](https://github.com/eeditiones/tei-publisher-components/commit/291cc0a3592c2a854b5b5fc5d3eb9060fa697d37))
+* **pb-hotkeys:** expose window.pbKeyboard function to be used by custom code for extra keybindings ([d137df2](https://github.com/eeditiones/tei-publisher-components/commit/d137df2a684c8c9561dc3d4176958b8b5e74fa7b))
+* **pb-repeat:** allow data to be set programmatically ([efc4ad7](https://github.com/eeditiones/tei-publisher-components/commit/efc4ad7fd2dcdfd39f684fc8415579dd991a8b7c))
+* **pb-selectable:** create mixin PbSelectable to handle browser selection ([0f16d96](https://github.com/eeditiones/tei-publisher-components/commit/0f16d9696ddd81f905aab67e0594b553b456cb59))
+* **pb-view-annotate:** auto-generate colors to be used ([b1b3b0f](https://github.com/eeditiones/tei-publisher-components/commit/b1b3b0f7e416e93ffbb43c40ec68044f2388ab33))
+* **pb-view-annotation:** implement undo feature ([4c987e0](https://github.com/eeditiones/tei-publisher-components/commit/4c987e0fffcecee49ac52b439becf35298a1ac2d))
+
 ## [1.23.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.23.5...v1.23.6) (2021-07-15)
 
 
