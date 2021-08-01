@@ -1,3 +1,10 @@
+## [1.24.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.1...v1.24.2) (2021-08-01)
+
+
+### Bug Fixes
+
+* **pb-search:** remove unused hidden doc parameter; fix parameter serialization ([5d8e13f](https://github.com/eeditiones/tei-publisher-components/commit/5d8e13ffcc3d91d651d8a54cb9304eb08e918707))
+
 ## [1.24.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.0...v1.24.1) (2021-07-29)
 
 
