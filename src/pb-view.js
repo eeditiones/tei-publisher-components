@@ -172,8 +172,9 @@ export class PbView extends pbMixin(LitElement) {
             /**
             * Should matches be highlighted if a search has been executed?
             */
-            highlight: {
+            suppressHighlight: {
                 type: Boolean,
+                attribute: 'suppress-highlight',
                 reflect: true
             },
             /**
@@ -307,6 +308,7 @@ export class PbView extends pbMixin(LitElement) {
         this.notFound = "the server did not return any content";
         this.animation = false;
         this.direction = 'ltr';
+        this.suppressHighlight = false;
         this.highlight = false;
         this.infiniteScrollMax = 10;
         this.disableHistory = false;
@@ -879,7 +881,7 @@ export class PbView extends pbMixin(LitElement) {
         if (this.xmlId) {
             params.id = this.xmlId;
         }
-        if (this.highlight) {
+        if (!this.suppressHighlight && this.highlight) {
             params.highlight = "yes";
         }
         if (this.map) {
