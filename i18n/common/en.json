@@ -214,6 +214,7 @@
   "annotations": {
     "edit": "Edit annotation",
     "delete": "Delete annotation",
+    "save": "Merge and save annotations to TEI",
     "no-properties": "No properties defined.",
     "person": "Person",
     "organisation": "Organisation",
@@ -223,14 +224,17 @@
     "reg": "Regularization",
     "app": "Apparatus Entry",
     "hi": "Highlight",
+    "ref": "Link (ref)",
     "abbreviation": "Abbreviation",
     "occurrences": "Occurrences in text",
     "correction": "Correction",
     "expansion": "Expansion",
     "reference": "Reference",
+    "lookup": "Search entity",
     "apply": "Apply annotation",
     "changes": "Changes",
     "undo": "Undo last change",
+    "preview": "Preview merge results",
     "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?"
   }
 }

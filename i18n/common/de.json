@@ -231,6 +231,9 @@
     "hi": "Hervorhebung",
     "app": "Apparatus",
     "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
-    "undo": "Letzten Arbeitsschritt rückgängig machen"
+    "undo": "Letzten Arbeitsschritt rückgängig machen",
+    "lookup": "Entität suchen",
+    "preview": "Voransicht erneuern",
+    "save": "Änderungen ins TEI speichern"
   }
 }
