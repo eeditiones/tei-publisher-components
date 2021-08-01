@@ -1,3 +1,10 @@
+## [1.24.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.3...v1.24.4) (2021-08-01)
+
+
+### Bug Fixes
+
+* **pb-search:** remove 'start' parameter from URL: it serves no purpose ([da93a16](https://github.com/eeditiones/tei-publisher-components/commit/da93a16a642a1db14f00501ab2a566409d849a8c))
+
 ## [1.24.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.2...v1.24.3) (2021-08-01)
 
 
