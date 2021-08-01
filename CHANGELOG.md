@@ -1,3 +1,11 @@
+## [1.24.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.2...v1.24.3) (2021-08-01)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add property sort-by-label to control if the search results returned by an authority should be reordered by label or not ([2fa7357](https://github.com/eeditiones/tei-publisher-components/commit/2fa7357b00202ce4514574bc607b23997106d1d3))
+* **pb-view:** the 'highlight' property was useless as it would be set to true automatically; rename it to suppressHighlight ([a36bbad](https://github.com/eeditiones/tei-publisher-components/commit/a36bbade5c6068944a364e91d234d3323615bf52))
+
 ## [1.24.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.1...v1.24.2) (2021-08-01)
 
 
