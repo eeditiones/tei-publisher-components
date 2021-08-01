@@ -169,10 +169,10 @@ export class PbSearch extends pbMixin(LitElement) {
         if (this.redirect) {
             window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
-            // always start on first result after submitting new search
-            json.start = 1;
             this.setParameters(json);
             this.pushHistory('search');
+            // always start on first result after submitting new search
+            json.start = 1;
             this.emitTo('pb-load', {
                 "url": this.action,
                 "params": json
