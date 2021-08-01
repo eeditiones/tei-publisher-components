@@ -19,6 +19,14 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         reflect: true,
       },
       /**
+       * Enable to alphabetically reorder authority search results by label.
+       * Otherwise results are shown as returned by the authority.
+       */
+      sortByLabel: {
+        type: Boolean,
+        attribute: 'sort-by-label'
+      },
+      /**
        * A list of comma-separated stopwords which should be excluded
        * when searching for other occurrences of an authority in the
        * HTML text
@@ -37,6 +45,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     super();
     this.query = '';
     this.type = null;
+    this.sortByLabel = false;
     this._results = [];
     this._authorities = {};
   }
@@ -188,7 +197,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
               if (i2.provider === 'local' && i1.provider !== 'local') {
                 return 1;
               }
-              return i1.label.localeCompare(i2.label);
+              return this.sortByLabel ? i1.label.localeCompare(i2.label) : 0;
             }
             return d;
           });
