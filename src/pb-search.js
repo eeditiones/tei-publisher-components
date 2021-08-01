@@ -130,7 +130,6 @@ export class PbSearch extends pbMixin(LitElement) {
                     </paper-input>
                     <paper-autocomplete-suggestions id="autocomplete" for="search" source="${this._suggestions}" remote-source></paper-autocomplete-suggestions>
                     <slot></slot>
-                    <input type="hidden" name="doc">
                     
                     <slot name="searchButton"></slot>
                     <slot name="resetButton"></slot>
@@ -166,17 +165,17 @@ export class PbSearch extends pbMixin(LitElement) {
 
     _doSearch() {
         let json = this.shadowRoot.getElementById('ironform').serializeForm();
-        // always start on first result after submitting new search
-        json.start = 1;
         json = this._paramsFromSubforms(json);
-        this.setParameters(json);
         if (this.redirect) {
-            window.location.href = this.action + TeiPublisher.url.search;
+            window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
+            // always start on first result after submitting new search
+            json.start = 1;
+            this.setParameters(json);
             this.pushHistory('search');
             this.emitTo('pb-load', {
                 "url": this.action,
-                "params": this.getParameters()
+                "params": json
             });
         }
     }
