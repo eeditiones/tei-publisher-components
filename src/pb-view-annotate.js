@@ -274,14 +274,6 @@ class PbViewAnnotate extends PbView {
     this.shadowRoot.addEventListener('mousedown', this._eventHandler.bind(this));
     this.shadowRoot.addEventListener('mouseup', this._eventHandler.bind(this));
 
-    this.subscribeTo('pb-refresh', () => {
-      this._ranges = [];
-      this._rangesMap.clear();
-      this._currentSelection = null;
-      this._clearMarkers();
-      this.emitTo('pb-annotations-changed', { ranges: this._ranges });
-    });
-
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
 
@@ -361,6 +353,18 @@ class PbViewAnnotate extends PbView {
       }
       scheduleCallback();
     });
+  }
+
+  _refresh(ev) {
+    super._refresh(ev);
+    if (ev && ev.detail && ev.detail.preserveScroll) {
+      this._scrollTop = this.scrollTop;
+    }
+    this._ranges = [];
+    this._rangesMap.clear();
+    this._currentSelection = null;
+    this._clearMarkers();
+    this.emitTo('pb-annotations-changed', { ranges: this._ranges });
   }
 
   _handleContent() {
