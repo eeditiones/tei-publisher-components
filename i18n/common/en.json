@@ -234,7 +234,11 @@
     "apply": "Apply annotation",
     "changes": "Changes",
     "undo": "Undo last change",
+    "reload": "Reload source TEI",
     "preview": "Preview merge results",
-    "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?"
+    "confirm-restore-title": "Confirm Restore",
+    "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?",
+    "confirm-reload-title": "Confirm Reload",
+    "confirm-reload": "Discard current annotations and reload the source?"
   }
 }

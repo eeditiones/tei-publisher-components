@@ -234,6 +234,11 @@
     "undo": "Letzten Arbeitsschritt rückgängig machen",
     "lookup": "Entität suchen",
     "preview": "Voransicht erneuern",
-    "save": "Änderungen ins TEI speichern"
+    "save": "Änderungen ins TEI speichern",
+    "confirm-reload": "Annotationen verwerfen und Quelle neu laden?",
+    "confirm-reload-title": "Quelle neu laden?",
+    "confirm-restore-title": "Annotationen wiederherstellen?",
+    "ref": "Link (ref)",
+    "reload": "Quelle neu laden"
   }
 }
