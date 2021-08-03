@@ -82,6 +82,12 @@ export class PbMessage extends LitElement {
 
     }
 
+    updated() {
+        if (this.modal) {
+            this.modal.notifyResize();
+        }
+    }
+
     /**
      * Open a modal dialog to display a message to the user.
      * 
@@ -120,9 +126,15 @@ export class PbMessage extends LitElement {
     }
 
     set(title, message) {
-        this.title = title;
-        this.message = message;
-        this.modal.notifyResize();
+        if (title || message) {
+            if (title) {
+                this.title = title;
+            }
+            if (message) {
+                this.message = message;
+            }
+            this.modal.notifyResize();
+        }
     }
 
     isMessage() {
