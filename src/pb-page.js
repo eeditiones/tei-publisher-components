@@ -310,7 +310,7 @@ class PbPage extends pbMixin(LitElement) {
     _updateI18n(t) {
         this.querySelectorAll('[data-i18n]').forEach(elem => {
             const targets = elem.getAttribute('data-i18n');
-            const regex = /(?:\[(.*)\])?([^;]+)/g;
+            const regex = /(?:\[([^\]]+)\])?([^;]+)/g;
             let m = regex.exec(targets);
             while (m) {
                 const translated = t(m[2]);
