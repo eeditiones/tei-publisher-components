@@ -1,3 +1,12 @@
+## [1.24.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.4...v1.24.5) (2021-08-03)
+
+
+### Bug Fixes
+
+* **pb-message:** do not overwrite initial title and message unless requested; resize dialog on property update ([bae975e](https://github.com/eeditiones/tei-publisher-components/commit/bae975ec4ee88833a32b67a6647599df169e958d))
+* **pb-page:** allow multiple attributes separated by ; in data-i18n ([2d4df1b](https://github.com/eeditiones/tei-publisher-components/commit/2d4df1bb11ea7b5747e0d5b245f40a0bd318ede8))
+* **pb-view-annotate:** optionally preserve scroll position on pb-refresh ([a6e1a13](https://github.com/eeditiones/tei-publisher-components/commit/a6e1a1348ac126989c8b8589ff911bb1c4c1f621))
+
 ## [1.24.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.3...v1.24.4) (2021-08-01)
 
 
