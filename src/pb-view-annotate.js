@@ -117,10 +117,10 @@ function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    if (relOffset - walker.currentNode.textContent.length <= 0) {
-      return [walker.currentNode, relOffset];
-    }
     if (!isSkippedNode(walker.currentNode)) {
+      if (relOffset - walker.currentNode.textContent.length <= 0) {
+        return [walker.currentNode, relOffset];
+      }
       relOffset -= walker.currentNode.textContent.length;
     }
   }
