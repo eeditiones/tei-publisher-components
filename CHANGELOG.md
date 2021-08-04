@@ -1,3 +1,11 @@
+## [1.24.8](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.7...v1.24.8) (2021-08-04)
+
+
+### Bug Fixes
+
+* **pb-hotkeys:** disable hotkeys for form elements ([8129473](https://github.com/eeditiones/tei-publisher-components/commit/812947356a9aebfbcf7649a7ef1cff9a930d9ed4))
+* **pb-view-annotate:** wrong offset used if annotation follows footnote ([6c5e284](https://github.com/eeditiones/tei-publisher-components/commit/6c5e2841b01bd797563aff6d6c96202fb46bd334))
+
 ## [1.24.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.6...v1.24.7) (2021-08-04)
 
 
