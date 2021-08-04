@@ -234,11 +234,14 @@
     "apply": "Apply annotation",
     "changes": "Changes",
     "undo": "Undo last change",
+    "download": "Save merged TEI to local file",
     "reload": "Reload source TEI",
     "preview": "Preview merge results",
     "confirm-restore-title": "Confirm Restore",
     "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?",
     "confirm-reload-title": "Confirm Reload",
-    "confirm-reload": "Discard current annotations and reload the source?"
+    "confirm-reload": "Discard current annotations and reload the source?",
+    "modify": "Apply an edit to the base text",
+    "modify-info": "Note: this is not an annotation, but will modify the base text when merged."
   }
 }

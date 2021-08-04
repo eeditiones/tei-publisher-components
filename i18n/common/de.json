@@ -230,6 +230,7 @@
     "reg": "Regularisierung",
     "hi": "Hervorhebung",
     "app": "Apparatus",
+    "download": "Ergebnis als lokale Datei speichern",
     "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
     "undo": "Letzten Arbeitsschritt rückgängig machen",
     "lookup": "Entität suchen",
@@ -239,6 +240,8 @@
     "confirm-reload-title": "Quelle neu laden?",
     "confirm-restore-title": "Annotationen wiederherstellen?",
     "ref": "Link (ref)",
-    "reload": "Quelle neu laden"
+    "reload": "Quelle neu laden",
+    "modify": "Änderung am Text vornehmen",
+    "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt."
   }
 }
