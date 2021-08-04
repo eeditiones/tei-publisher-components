@@ -1,3 +1,10 @@
+## [1.24.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.6...v1.24.7) (2021-08-04)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** changing an already applied edit annotation failed ([efbcfbd](https://github.com/eeditiones/tei-publisher-components/commit/efbcfbded913e80f5e147b55f2ba9058b0a3b265))
+
 ## [1.24.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.5...v1.24.6) (2021-08-04)
 
 
