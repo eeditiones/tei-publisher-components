@@ -455,7 +455,7 @@ class PbViewAnnotate extends PbView {
           break;   
       }
     });
-    this.refreshMarkers();
+    setTimeout(() => this.refreshMarkers(), 100);
   }
 
   _getSelection() {
@@ -594,7 +594,16 @@ class PbViewAnnotate extends PbView {
   }
 
   editAnnotation(span, properties) {
-    if (span.dataset.tei) {
+    if (span.dataset.type === 'edit') {
+      let range = this._rangesMap.get(span);
+      if (range) {
+        range.properties = properties;
+        range = clearProperties(range);
+        this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      } else {
+        console.error('no range found for edit span %o', span);
+      }
+    } else if (span.dataset.tei) {
       // TODO: check in _ranges if it has already been modified
       const context = span.closest('[data-tei]');
       let range = this._ranges.find(r => r.type === 'modify' && r.node === span.dataset.tei);
@@ -710,7 +719,7 @@ class PbViewAnnotate extends PbView {
         const color = this._annotationColors.get(type);
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
-        typeInd.style.color = `var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
+        typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
         if (data[this.key]) {
           this.emitTo('pb-annotation-detail', {
             type,
