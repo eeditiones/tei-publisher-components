@@ -1,3 +1,10 @@
+## [1.24.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.5...v1.24.6) (2021-08-04)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** annotation markers need to be cleared upon pb-refresh event, not after every refresh as this breaks undo ([1f34d2f](https://github.com/eeditiones/tei-publisher-components/commit/1f34d2f20da0269c31116f83837659c8c76e6221))
+
 ## [1.24.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.4...v1.24.5) (2021-08-03)
 
 
