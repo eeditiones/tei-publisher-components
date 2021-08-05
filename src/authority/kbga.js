@@ -79,7 +79,6 @@ export class KBGA extends Registry {
     .then(response => response.json())
     .then(json => {
       const output = Object.assign({}, json);
-      console.log(output);
       output.name = json.data[this.getLabelField()];
       switch (this._register) {
         case 'place':

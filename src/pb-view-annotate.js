@@ -105,6 +105,14 @@ function ancestors(node, selector) {
   return count;
 }
 
+function nextTextNode(node) {
+  let next = node.nextSibling;
+  while (next.nodeType !== Node.TEXT_NODE) {
+    next = next.firstChild;
+  }
+  return next;
+}
+
 /**
  * Convert a point given as number of characters from the start of the container element
  * to a coordinate relative to a DOM element.
@@ -403,7 +411,13 @@ class PbViewAnnotate extends PbView {
 
     console.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
     if (startPoint[1] === startPoint[0].textContent.length) {
-      range.setStart(endPoint[0], 0);
+      const nextNode = nextTextNode(startPoint[0]);
+      // next text node is the endpoint: start there
+      if (nextNode === endPoint[0]) {
+        range.setStart(nextNode, 0);
+      } else {
+        range.setStartBefore(startPoint[0].nextSibling);
+      }
     } else if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
       range.setStartBefore(extendRange(startPoint[0], context));
     } else {
