@@ -1,3 +1,10 @@
+## [1.24.9](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.8...v1.24.9) (2021-08-05)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** adjust annotation start point when spanning multiple nodes ([aa399a3](https://github.com/eeditiones/tei-publisher-components/commit/aa399a39d125c0ce3cd2ee98973f97b6b8f2aac3))
+
 ## [1.24.8](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.7...v1.24.8) (2021-08-04)
 
 
