@@ -213,8 +213,20 @@ function clearProperties(teiRange) {
 class PbViewAnnotate extends PbView {
   static get properties() {
     return {
+      /**
+       * Configures the annotation property containing the key for authority entries.
+       * Default: 'ref', corresponding to TEI attribute @ref. Change to 'corresp' or 'key' when
+       * using those attributes instead.
+       */
       key: {
         type: String
+      },
+      /**
+       * When searching the displayed text for other potential occurrences of an entity,
+       * should the search be done in case-sensitive manner?
+       */
+      caseSensitive: {
+        type: Boolean
       },
       ...super.properties,
     };
@@ -223,6 +235,7 @@ class PbViewAnnotate extends PbView {
   constructor() {
     super();
     this.key = 'ref';
+    this.caseSensitive = false;
     this._ranges = [];
     this._rangesMap = new Map();
     this._history = [];
@@ -826,6 +839,17 @@ class PbViewAnnotate extends PbView {
   }
 
   search(type, tokens) {
+    function escape(token) {
+      let regex = token.replace(/[/.?+*\\]/g, (m) => `\\${m}`)
+        .replace(/[\s\n\t]+/g, '\\s+');
+      if (/^\w/.test(regex)) {
+        regex = `\\b${regex}`;
+      }
+      if (/\w$/.test(regex)) {
+        regex = `${regex}\\b`;
+      }
+      return regex;
+    }
     function filter(node) {
       if (node.nodeType === Node.TEXT_NODE) {
         return NodeFilter.FILTER_ACCEPT;
@@ -841,9 +865,11 @@ class PbViewAnnotate extends PbView {
     if (!tokens || tokens.length === 0) {
       return result;
     }
-    const expr = tokens.filter(token => token && token.length > 0).map(token => `\\b${token.replace(/[\s\n\t]+/g, '\\s+')}\\b`).join('|');
+    const expr = tokens.filter(token => token && token.length > 0)
+      .map(token => escape(token))
+      .join('|');
     console.log(`<pb-view-annotate> Searching content for ${expr}...`);
-    const regex = new RegExp(expr, 'gi');
+    const regex = new RegExp(expr, this.caseSensitive ? 'g' : 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
       NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
