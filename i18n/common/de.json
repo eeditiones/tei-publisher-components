@@ -242,6 +242,8 @@
     "ref": "Link (ref)",
     "reload": "Quelle neu laden",
     "modify": "Änderung am Text vornehmen",
-    "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt."
+    "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt.",
+    "apply-all": "Alle selektieren und anwenden",
+    "permission": "Zugriff verweigert: keine Berechtigung zum Speichern von Annotationen."
   }
 }

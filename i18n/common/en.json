@@ -232,6 +232,7 @@
     "reference": "Reference",
     "lookup": "Search entity",
     "apply": "Apply annotation",
+    "apply-all": "Select and apply all",
     "changes": "Changes",
     "undo": "Undo last change",
     "download": "Save merged TEI to local file",
@@ -242,6 +243,7 @@
     "confirm-reload-title": "Confirm Reload",
     "confirm-reload": "Discard current annotations and reload the source?",
     "modify": "Apply an edit to the base text",
-    "modify-info": "Note: this is not an annotation, but will modify the base text when merged."
+    "modify-info": "Note: this is not an annotation, but will modify the base text when merged.",
+    "permission": "Permission denied: you are not allowed to save annotations."
   }
 }
