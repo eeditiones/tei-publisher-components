@@ -1,3 +1,10 @@
+## [1.24.10](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.9...v1.24.10) (2021-08-06)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** fix regex used for searching other occurrences to correctly handle non-word characters in the search string; make case-sensitivity configurable ([576484b](https://github.com/eeditiones/tei-publisher-components/commit/576484bd88dc87e15e3042b9e4de21629c570234))
+
 ## [1.24.9](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.8...v1.24.9) (2021-08-05)
 
 
