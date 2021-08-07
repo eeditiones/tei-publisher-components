@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
+import { oneEvent, fixture, expect, fixtureCleanup, waitUntil } from '@open-wc/testing';
 
 import '../src/pb-document.js';
 import '../src/pb-ajax.js';
@@ -10,7 +10,9 @@ describe('recompile ODD', () => {
       fixtureCleanup();
     });
     it('recompiles and shows message', async function() {
-        this.timeout(30000);
+        this.timeout(20000);
+        let loggedIn = false;
+        document.addEventListener('pb-login', () => { loggedIn = true; }, { once: true });
         const el = (
             await fixture(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
@@ -21,7 +23,7 @@ describe('recompile ODD', () => {
                 </pb-page>
             `)
         );
-        await oneEvent(document, 'pb-login');
+        await waitUntil(() => loggedIn, 'waiting for pb-login', { timeout: 15000 });
 
         const ajax = el.querySelector('pb-ajax');
         const btn = ajax.shadowRoot.querySelector('#button');
