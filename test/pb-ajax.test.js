@@ -16,7 +16,7 @@ describe('recompile ODD', () => {
         const el = (
             await fixture(`
                 <pb-page endpoint="${ __karma__.config.endpoint }">
-                    <pb-ajax url="api/odd?odd=graves.odd" dialog="messageDialog" method="post">
+                    <pb-ajax url="api/odd?odd=graves.odd" method="post">
                     Recompile<span slot="title">Recompile ODD</span>
                     </pb-ajax>
                     <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>
@@ -26,9 +26,8 @@ describe('recompile ODD', () => {
         await waitUntil(() => loggedIn, 'waiting for pb-login', { timeout: 15000 });
 
         const ajax = el.querySelector('pb-ajax');
-        const btn = ajax.shadowRoot.querySelector('#button');
 
-        btn.click();
+        ajax.trigger();
 
         await oneEvent(document, 'pb-end-update');
 
