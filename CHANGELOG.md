@@ -1,3 +1,10 @@
+## [1.24.11](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.10...v1.24.11) (2021-08-07)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** chrome sometimes inserts empty text nodes: skip when calculating offsets ([ac79121](https://github.com/eeditiones/tei-publisher-components/commit/ac79121e28f299ce7834325f65bd188ea438fc25))
+
 ## [1.24.10](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.9...v1.24.10) (2021-08-06)
 
 
