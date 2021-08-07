@@ -105,12 +105,19 @@ function ancestors(node, selector) {
   return count;
 }
 
+/**
+ * Find the next text node after the current node.
+ * Descends into elements.
+ * 
+ * @param {Node} node the current node
+ * @returns next text node or the current node if none is found
+ */
 function nextTextNode(node) {
   let next = node.nextSibling;
-  while (next.nodeType !== Node.TEXT_NODE) {
+  while (next.hasChildNodes()) {
     next = next.firstChild;
   }
-  return next;
+  return next.nodeType === Node.TEXT_NODE ? next : node;
 }
 
 /**
@@ -125,7 +132,8 @@ function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    if (!isSkippedNode(walker.currentNode)) {
+    // skip footnote links and empty text nodes (chrome sometimes inserts those)
+    if (!isSkippedNode(walker.currentNode) && walker.currentNode.textContent.length > 0) {
       if (relOffset - walker.currentNode.textContent.length <= 0) {
         return [walker.currentNode, relOffset];
       }
@@ -448,11 +456,13 @@ class PbViewAnnotate extends PbView {
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
-    // span.appendChild(range.extractContents());
 
-    range.surroundContents(span);
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      throw new Error('An error occurred. The annotation may not be displayed. You should consider saving and reloading the document.');
+    }
     this._rangesMap.set(span, teiRange);
-    // range.insertNode(span);
 
     if (!batch) {
       this.refreshMarkers();
