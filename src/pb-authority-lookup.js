@@ -214,6 +214,8 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       }
       #output {
         overflow: auto;
+        /*FireFox*/
+        scrollbar-width: none;
       }
 
       #output table {
