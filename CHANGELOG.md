@@ -1,3 +1,12 @@
+## [1.24.12](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.11...v1.24.12) (2021-08-08)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** hide extra scrollbar on authority entries list ([6ba9642](https://github.com/eeditiones/tei-publisher-components/commit/6ba96423b1111cf903cb418528fa7db88fca95bd))
+* **pb-view-annotate:** add extra 4px margin to occurrence highlight ([69dbcc4](https://github.com/eeditiones/tei-publisher-components/commit/69dbcc4662819b9b93e0f1e3c7f886b95693dde6))
+* **pb-view-annotate:** use requestAnimationFrame instead of delay for repainting markers ([219b184](https://github.com/eeditiones/tei-publisher-components/commit/219b1840f839769e0f2fed3dcdccc1fa0d825459))
+
 ## [1.24.11](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.10...v1.24.11) (2021-08-07)
 
 
