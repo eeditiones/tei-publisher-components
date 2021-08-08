@@ -310,7 +310,7 @@ class PbViewAnnotate extends PbView {
       this._rangesMap.clear();
       this._currentSelection = null;
       this._clearMarkers();
-      this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
     
     this._resizeHandler();
@@ -368,7 +368,7 @@ class PbViewAnnotate extends PbView {
 
   zoom(direction) {
     super.zoom(direction);
-    this.refreshMarkers();
+    window.requestAnimationFrame(() => this.refreshMarkers());
   }
   
   _resizeHandler() {
@@ -492,7 +492,7 @@ class PbViewAnnotate extends PbView {
           break;   
       }
     });
-    setTimeout(() => this.refreshMarkers(), 100);
+    window.requestAnimationFrame(() => this.refreshMarkers());
   }
 
   _getSelection() {
@@ -623,7 +623,7 @@ class PbViewAnnotate extends PbView {
 
     this.emitTo('pb-annotations-changed', { ranges: this._ranges });
 
-    this.refreshMarkers();
+    window.requestAnimationFrame(() => this.refreshMarkers());
 
     const selection = this._getSelection();
     selection.removeAllRanges();
