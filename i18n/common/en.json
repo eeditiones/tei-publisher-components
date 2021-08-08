@@ -217,7 +217,7 @@
     "save": "Merge and save annotations to TEI",
     "no-properties": "No properties defined.",
     "person": "Person",
-    "organisation": "Organisation",
+    "organization": "organization",
     "place": "Place",
     "term": "Term",
     "date": "Date",

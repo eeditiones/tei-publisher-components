@@ -19,7 +19,7 @@ export class KBGA extends Registry {
               .then(json => {
                 json.data.forEach(item => {
                     
-                    if ((this._register === 'organisation' && item.authority_type !== 'organisation') ||
+                    if ((this._register === 'organization' && item.authority_type !== 'organization') ||
                         (this._register === 'person' && item.authority_type !== 'person')) {
                       return;
                     }
@@ -126,7 +126,7 @@ export class KBGA extends Registry {
       let register;
       switch(this._register) {
         case 'person':
-        case 'organisation':
+        case 'organization':
           register = 'actors';
           break;
         case 'place':
