@@ -944,9 +944,9 @@ class PbViewAnnotate extends PbView {
       root.appendChild(marker);
     }
 
-    marker.style.left = `${rect.left - rootRect.left}px`;
+    marker.style.left = `${rect.left - rootRect.left - 4}px`;
     marker.style.top = `${rect.top - rootRect.top - 4}px`;
-    marker.style.width = `${rect.width}px`;
+    marker.style.width = `${rect.width + 4}px`;
     marker.style.height = `${rect.height}px`;
 
     range.startContainer.parentNode.scrollIntoView(true);
@@ -1060,6 +1060,11 @@ class PbViewAnnotate extends PbView {
             text-decoration: none;
             font-variant: normal;
             padding: 2px;
+        }
+        
+        [part=highlight] {
+          border: 3px solid rgb(255, 174, 0);
+          border-radius: 8px;
         }`
     ];
   }
