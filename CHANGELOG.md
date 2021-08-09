@@ -1,3 +1,13 @@
+## [1.24.13](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.12...v1.24.13) (2021-08-09)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** change register name from 'organisation' to 'organization' ([2a4cfba](https://github.com/eeditiones/tei-publisher-components/commit/2a4cfbad0c51c0a6449eb60ebff4334aecb03058))
+* **pb-mei:** define options in element instead of requiring external javascript ([42e046c](https://github.com/eeditiones/tei-publisher-components/commit/42e046c5df68669a90cdc9bf3d41e9ea8a9f7469))
+* **pb-mixin:** toAbsoluteURL failed when embedded in iframe ([15e3213](https://github.com/eeditiones/tei-publisher-components/commit/15e3213e9c04e656cfdaea75d53cc78316498853))
+* **pb-odd-model-editor:** add 'pass-through' behaviour to default list ([38def5a](https://github.com/eeditiones/tei-publisher-components/commit/38def5a62598e78b420d8e0416a5a6f1bb3dfd9d))
+
 ## [1.24.12](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.11...v1.24.12) (2021-08-08)
 
 
