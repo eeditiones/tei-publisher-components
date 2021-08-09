@@ -359,6 +359,7 @@ class PbViewAnnotate extends PbView {
   firstUpdated() {
     super.firstUpdated();
 
+    this.enableScrollbar(false);
     loadTippyStyles(this.shadowRoot, 'light-border');
   }
 

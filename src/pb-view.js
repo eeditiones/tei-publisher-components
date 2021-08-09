@@ -396,6 +396,7 @@ export class PbView extends pbMixin(LitElement) {
 
     firstUpdated() {
         super.firstUpdated();
+        this.enableScrollbar(true);
         if (this.infiniteScroll) {
             this._topObserver = this.shadowRoot.getElementById('top-observer');
             this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
@@ -482,6 +483,14 @@ export class PbView extends pbMixin(LitElement) {
                     easing: 'linear'
                 });
             }
+        }
+    }
+
+    enableScrollbar(enable) {
+        if (enable) {
+            this.classList.add('noscroll');
+        } else {
+            this.classList.remove('noscroll');
         }
     }
 
@@ -1097,11 +1106,14 @@ export class PbView extends pbMixin(LitElement) {
             :host {
                 display: block;
                 background: transparent;
+            }
+
+            :host(.noscroll) {
                 scrollbar-width: none; /* Firefox 64 */
                 -ms-overflow-style: none;
             }
 
-            :host::-webkit-scrollbar { 
+            :host(.noscroll)::-webkit-scrollbar { 
                 width: 0 !important;
                 display: none; 
             }
