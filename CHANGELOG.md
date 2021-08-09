@@ -1,3 +1,10 @@
+## [1.24.15](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.14...v1.24.15) (2021-08-09)
+
+
+### Bug Fixes
+
+* **pb-view:** add method to enable scrollbars ([c1ad3d7](https://github.com/eeditiones/tei-publisher-components/commit/c1ad3d7550598261a900396f626788a55c9499b4))
+
 ## [1.24.14](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.13...v1.24.14) (2021-08-09)
 
 
