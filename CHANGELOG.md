@@ -1,3 +1,10 @@
+## [1.24.14](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.13...v1.24.14) (2021-08-09)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** fix support for multiple sub-connectors in custom connector ([467d71e](https://github.com/eeditiones/tei-publisher-components/commit/467d71e85512e64c2ad9a5fce55a39fd247df4f9))
+
 ## [1.24.13](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.12...v1.24.13) (2021-08-09)
 
 
