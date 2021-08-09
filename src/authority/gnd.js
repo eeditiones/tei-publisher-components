@@ -38,7 +38,7 @@ export class GND extends Registry {
       case 'term':
         filter = 'SubjectHeading';
         break;
-      case 'organisation':
+      case 'organization':
         filter = 'CorporateBody';
         break;
       default:
