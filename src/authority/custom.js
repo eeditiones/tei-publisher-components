@@ -8,7 +8,7 @@ export class Custom extends Registry {
     super(configElem);
     this._endpoint = endpoint;
     this._connectors = createConnectors(endpoint, configElem);
-    Object.values(this._connectors).forEach((connector) => {
+    this._connectors.forEach((connector) => {
       connector.name = this.name;
     });
     console.log(
@@ -40,7 +40,7 @@ export class Custom extends Registry {
           });
           let totalItems = json.length;
 
-          for (const connector of Object.values(this._connectors)) {
+          for (const connector of this._connectors) {
             // eslint-disable-next-line no-await-in-loop
             const dr = await connector.query(key);
             results = results.concat(dr.items.filter((result) => !localResults.has(result.id)));
@@ -72,7 +72,7 @@ export class Custom extends Registry {
             return;
           }
           if (response.status === 404) {
-            for (const connector of Object.values(this._connectors)) {
+            for (const connector of this._connectors) {
               try {
                 // eslint-disable-next-line no-await-in-loop
                 const cr = await connector.info(key, container);
@@ -96,7 +96,7 @@ export class Custom extends Registry {
    */
   async select(item) {
     let entry;
-    for (const connector of Object.values(this._connectors)) {
+    for (const connector of this._connectors) {
       // eslint-disable-next-line no-await-in-loop
       entry = await connector.getRecord(item.id);
       if (entry) {

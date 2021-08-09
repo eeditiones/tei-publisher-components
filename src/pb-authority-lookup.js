@@ -66,7 +66,8 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     });
 
     PbAuthorityLookup.waitOnce('pb-page-ready', () => {
-      this._authorities = createConnectors(this.getEndpoint(), this);
+      const connectors = createConnectors(this.getEndpoint(), this);
+      connectors.forEach(connector => { this._authorities[connector.register] = connector });
     });
 
     console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);

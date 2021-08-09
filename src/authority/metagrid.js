@@ -13,7 +13,7 @@ export class Metagrid extends Registry {
         .then((response) => response.json())
         .then((json) => {
             json.resources.forEach(item => {
-              const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
+              const name = `${item.metadata.last_name}, ${item.metadata.first_name} `;
               const result = {
                 register: this._register,
                 id: `${item.provider.slug}-${item.identifier}`,
@@ -41,7 +41,7 @@ export class Metagrid extends Registry {
         const output = `
           <h3 class="label">
             <a href="https://${json.link.uri}" target="_blank">
-              ${json.metadata.first_name} ${json.metadata.last_name}
+              ${json.metadata.last_name}, ${json.metadata.first_name}
             </a>
           </h3>
           <p>${json.metadata.birth_date} - ${json.metadata.death_date}</p>

@@ -6,7 +6,7 @@ import { KBGA } from './kbga.js';
 import { Custom } from './custom.js';
 
 export function createConnectors(endpoint, root) {
-  const authorities = {};
+  const authorities = [];
   root.querySelectorAll(':scope > pb-authority').forEach(configElem => {
     const connector = configElem.getAttribute('connector');
     let instance;
@@ -30,7 +30,7 @@ export function createConnectors(endpoint, root) {
         instance = new Metagrid(configElem);
         break;
     }
-    authorities[instance.register] = instance;
+    authorities.push(instance);
   });
   return authorities;
 }
