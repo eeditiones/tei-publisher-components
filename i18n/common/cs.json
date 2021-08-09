@@ -75,8 +75,8 @@
       "description": "Dokumentace (pomocí Docbook XML)."
     },
     "markdown": {
-      "title": "Ukázka Markdown",
-      "description": "Příklad použití markdown pro statický obsah."
+      "title": "Ukázka Markdownu",
+      "description": "Příklad použití Markdownu pro statický obsah."
     },
     "up": "O úroveň výš"
   },
@@ -210,5 +210,40 @@
     },
     "open": "Otevřít",
     "success": "Vaše aplikace se úspěšně vytvořila."
+  },
+  "annotations": {
+    "edit": "Upravit anotaci",
+    "delete": "Odstranit anotaci",
+    "save": "Sloučit a uložit anotace do TEI",
+    "no-properties": "Nejsou definovány žádné vlastnosti.",
+    "person": "Osoba",
+    "organisation": "Organizace",
+    "place": "Místo",
+    "term": "Pojem",
+    "date": "Datum",
+    "reg": "Sjednocování",
+    "app": "Položka poznámkového aparátu",
+    "hi": "Zvýraznění",
+    "ref": "Odkaz (ref)",
+    "abbreviation": "Zkratka",
+    "occurrences": "Výskyty v textu",
+    "correction": "Oprava",
+    "expansion": "Rozepsání",
+    "reference": "Odkaz",
+    "lookup": "Hledat entitu",
+    "apply": "Použít anotaci",
+    "apply-all": "Vybrat a použít vše",
+    "changes": "Změny",
+    "undo": "Vrátit poslední změnu",
+    "download": "Uložit sloučené TEI do souboru",
+    "reload": "Znovu načíst zdrojové TEI",
+    "preview": "Náhled výsledku po sloučení",
+    "confirm-restore-title": "Potvrdit obnovení",
+    "restore": "Našly se anotace pro tento dokument vytvořené, ale neuložené v předchozí relaci. Chcete je načíst?",
+    "confirm-reload-title": "Potvrdit načtení",
+    "confirm-reload": "Zrušit aktuální anotace a znovu načíst zdroj?",
+    "modify": "Použít úpravy základního textu",
+    "modify-info": "Upozornění: nejde o anotaci, při sloučení se změní základní text.",
+    "permission": "Oprávnění byla odepřena: nemáte povoleno ukládat anotace."
   }
 }

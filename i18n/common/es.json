@@ -75,8 +75,8 @@
       "description": "Documentación (en Docbook XML)."
     },
     "markdown": {
-      "title": "Markdown Sample",
-      "description": "An example of using markdown for static content."
+      "title": "Muestra en Markdown",
+      "description": "Un ejemplo de uso de Markdown para generar contenido estático."
     },
     "up": "Ir a la carpeta anterior"
   },
@@ -210,5 +210,40 @@
     },
     "open": "Abrir",
     "success": "¡Tu aplicación ha sido generada con éxito!"
+  },
+  "annotations": {
+    "edit": "Editar anotación",
+    "delete": "Eliminar anotación",
+    "save": "Fusionar y guardar anotaciones en TEI",
+    "no-properties": "No hay propiedades definidas.",
+    "person": "Persona",
+    "organisation": "Organización",
+    "place": "Lugar",
+    "term": "Término",
+    "date": "Fecha",
+    "reg": "Regularización",
+    "app": "Entrada de aparato",
+    "hi": "Destacar",
+    "ref": "Enlace (ref)",
+    "abbreviation": "Abreviatura",
+    "occurrences": "Ocurrencias en el texto",
+    "correction": "Corrección",
+    "expansion": "Expansión",
+    "reference": "Referencia",
+    "lookup": "Buscar entidades",
+    "apply": "Actualizar anotación",
+    "apply-all": "Seleccionar y aplicar todo",
+    "changes": "Cambios",
+    "undo": "Deshacer el último cambio",
+    "download": "Fusionar y guardar TEI en local",
+    "reload": "Recargar fuente TEI",
+    "preview": "Vista previa de los resultados de la fusión",
+    "confirm-restore-title": "Confirmar restauración",
+    "restore": "Se han encontrado anotaciones hechas en este documento en una sesión anterior. ¿Quieres recargarlas?",
+    "confirm-reload-title": "Confirmar recarga",
+    "confirm-reload": "¿Descartar las anotaciones actuales y recargar la fuente?",
+    "modify": "Aplicar edición al texto base",
+    "modify-info": "Nota: esto no es una anotación, pero modificará el texto base cuando se fusione.",
+    "permission": "Permiso denegado: no tiene permiso para guardar anotaciones."
   }
 }
