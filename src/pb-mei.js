@@ -4,6 +4,7 @@ import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import '@polymer/paper-icon-button';
+import '@polymer/paper-checkbox';
 import '@polymer/iron-icons';
 import '@polymer/iron-icons/av-icons';
 
@@ -24,6 +25,14 @@ function _import(name, location) {
  * A viewer and player for MEI musical notation based on [Verovio](https://www.verovio.org/).
  * Supports optional MIDI playback using [web-midi-player](https://midi.yvesgurcan.com/).
  * Both libraries are loaded dynamically when the component is used the first time.
+ * 
+ * Viewing options to be selected by the user can be defined via nested `pb-option` elements:
+ * 
+ * ```html
+ * <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
+ *         footer="none">
+ *    <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
+ *  </pb-mei>
  * 
  * @prop {"auto" | "encoded" | "none" | "always"} footer - Control footer layout
  * @prop {"auto" | "encoded" | "none"} header - Control footer layout
@@ -106,6 +115,19 @@ export class PbMei extends pbMixin(LitElement) {
         this.choiceXPath = null;
         this.mdivXPath = null;
         this.substXPath = null;
+        this._options = [];
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.querySelectorAll('pb-option').forEach((option) => {
+            this._options.push({
+                name: option.getAttribute('name'),
+                on: option.getAttribute('on'),
+                off: option.getAttribute('off'),
+                label: option.innerHTML
+            })
+        });
     }
 
     firstUpdated() {
@@ -205,14 +227,14 @@ export class PbMei extends pbMixin(LitElement) {
     render() {
         return html`
             <div id="toolbar">
-                <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"
-                    ?disabled="${this._page === 1}"
-                    class="${this._pages === 1 ? 'hidden' : ''}"></paper-icon-button>
-                <paper-icon-button id="pageRight" icon="icons:chevron-right" @click="${this._nextPage}"
-                    ?disabled="${this._page === this._pages}"
-                    class="${this._pages === 1 ? 'hidden' : ''}"></paper-icon-button>
+                <div class="${this._pages === 1 ? 'hidden' : ''}">
+                    <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"
+                        ?disabled="${this._page === 1}"></paper-icon-button>
+                    <paper-icon-button id="pageRight" icon="icons:chevron-right" @click="${this._nextPage}"
+                        ?disabled="${this._page === this._pages}"></paper-icon-button>
+                </div>
                 ${ this._renderPlayer() }
-                <slot></slot>
+                <div>${ this._renderOptions() }</div>
             </div>
             ${ this._svg ? 
                 html`<div id="output">${unsafeHTML(this._svg)}</div>` :
@@ -231,6 +253,22 @@ export class PbMei extends pbMixin(LitElement) {
             `;
         }
         return null;
+    }
+
+    _renderOptions() {
+        return this._options.map(option =>
+            html`<paper-checkbox @change="${(ev) => this._setOption(option, ev.target.checked)}">${option.label}</paper-checkbox>`
+        );
+    }
+
+    _setOption(option, checked) {
+        let value;
+        if (checked) {
+            value = option.on && option.on.length > 0 ? option.on : null;
+        } else {
+            value = option.off && option.off.length > 0 ? option.off : null;
+        }
+        this[option.name] = value;
     }
 
     _nextPage(ev) {
@@ -259,9 +297,11 @@ export class PbMei extends pbMixin(LitElement) {
           breaks: this.breaks,
           appXPathQuery: [this.appXPath],
           substXPathQuery: [this.substXPath],
-          mdivXPathQuery: this.mdivXPath,
           choiceXPathQuery: [this.choiceXPath]
         };
+        if (this.mdivXPath) {
+            options.mdivXPathQuery = this.mdivXPath;
+        }
         return options;
     }
 
@@ -277,17 +317,17 @@ export class PbMei extends pbMixin(LitElement) {
                 align-items: center;
             }
 
+            #toolbar div {
+                margin-right: 30px;
+            }
+
+            #toolbar div:last-child {
+                margin-right: 0;
+            }
+
             #output {
                 width: 100%;
                 overflow: auto;
-            }
-
-            #player {
-                margin-left: 30px;
-            }
-
-            .hidden ~ #player {
-                margin-left: 0;
             }
 
             .hidden {

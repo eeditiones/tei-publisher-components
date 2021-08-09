@@ -27,30 +27,14 @@
                     border-bottom: 1px solid #919191;
                     border-top: 1px solid #919191;
                 }
-                pb-mei:first-child {
-                    margin-top: 0;
-                }
-
-                #clefs {
-                    margin-left: 32px;
-                }
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <main>
                     <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
-                        footer="none">
-                        <paper-checkbox id="clefs">Original Clefs</paper-checkbox>
+                        footer="always">
+                        <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
                     </pb-mei>
-                    <!--pb-mei player url="test/app-scoreDef.mei" footer="none"
-                        ></pb-mei-->
                 </main>
-                <script>
-                    const mei = document.getElementById('viewer');
-                    const checkbox = document.getElementById('clefs');
-                    checkbox.addEventListener('change', () => {
-                        mei.appXPath = checkbox.checked ? "./rdg[contains(@label, 'original')]" : null;
-                    });
-                </script>
             </pb-page>
         </template>
     </pb-demo-snippet>
