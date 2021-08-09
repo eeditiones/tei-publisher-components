@@ -3,6 +3,30 @@ import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
 import * as themes from './pb-popover-themes.js';
 
+function _injectStylesheet(root, name, cssCode) {
+  const style = root.querySelector(`#pb-popover-${name}`);
+  if (!style) {
+      const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
+      console.log('Loading tippy styles for theme %s into %o', name, container);
+    const elem = document.createElement('style');
+    elem.type = 'text/css';
+    elem.id = `pb-popover-${name}`;
+    elem.innerHTML = cssCode;
+    container.appendChild(elem);
+  }
+}
+
+export function loadTippyStyles(root, theme) {
+    _injectStylesheet(root, 'base', themes.base);
+    if (theme && theme !== 'none') {
+      const name = themes.camelize(theme);
+      const themeCSS = themes[name];
+      if (themeCSS) {
+        _injectStylesheet(root, name, themeCSS);
+      }
+    }
+}
+
 /**
  * Show a popover. It may either 
  * 
@@ -63,7 +87,9 @@ import * as themes from './pb-popover-themes.js';
  * @cssprop [--pb-popover-theme=none] - popup theme to use. One of 'material', 'light', 'translucent' or 'light-border'
  * @cssprop [--pb-popover-link-decoration=inherit] - text decoration for the trigger
  * @cssprop [--pb-popover-max-height=calc(100vh - 60px)] - limit the maximum height of the popup
+ * @cssprop --pb-popover-min-height - set the minimum height of the popup
  * @cssprop --pb-popover-max-width - limit the max width of the popup
+ * @cssprop --pb-popover-min-width - set the minimum width of the popup
  * @cssprop --pb-popover-color - Color of the popup text
  * @cssprop [--pb-popover-placement=auto] - Preferred popup placement, see property `placement`
  * @cssprop --pb-popover-fallback-placement - Fallback placements separated by space
@@ -166,27 +192,7 @@ export class PbPopover extends pbMixin(LitElement) {
     _injectStyles() {
         this._checkCSSProperties();
 
-        this._injectStylesheet('base', themes.base);
-        if (this.theme && this.theme !== 'none') {
-            const name = themes.camelize(this.theme);
-            const theme = themes[name];
-            if (theme) {
-                this._injectStylesheet(name, theme);
-            }
-        }
-    }
-
-    _injectStylesheet(name, css) {
-        const root = this.getRootNode();
-        const style = root.querySelector(`#pb-popover-${name}`);
-        if (!style) {
-            const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
-            const elem = document.createElement('style');
-            elem.type = 'text/css';
-            elem.id = `pb-popover-${name}`;
-            elem.innerHTML = css;
-            container.appendChild(elem);
-        }
+        loadTippyStyles(this.getRootNode(), this.theme);
     }
 
     _getContent() {
@@ -199,6 +205,7 @@ export class PbPopover extends pbMixin(LitElement) {
             slot.assignedNodes().forEach((node) => {
                 content.appendChild(node.content ? node.content.cloneNode(true) : node.cloneNode(true));
             });
+            this._content = content;
             return content;
         }
         return null;
@@ -219,6 +226,7 @@ export class PbPopover extends pbMixin(LitElement) {
         const slot = this._getSlot();
         this._observer = new MutationObserver(() => {
             this.alternate = this._getContent();
+            console.log('alternate changed');
             this.emitTo('pb-popover-changed', this.alternate);
         });
         this._observer.observe(this, {subtree: true, childList: true, characterData: true})

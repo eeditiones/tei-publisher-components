@@ -1,5 +1,20 @@
 import hotkeys from 'hotkeys-js';
 
+const EXCLUDED_TAGS = [
+    'INPUT', 'SELECT', 'TEXTAREA', 'PAPER-INPUT', 'PAPER-TEXTAREA', 'PB-SEARCH'
+];
+const excluded = new Set(EXCLUDED_TAGS);
+
+// disable hotkeys for form elements
+let firstLoad = true;
+if (firstLoad) {
+    hotkeys.filter = (event) => {
+        const tagName = (event.target || event.srcElement).tagName;
+        return !(tagName.isContentEditable || excluded.has(tagName));
+    }
+    firstLoad = false;
+}
+
 /**
  * Mixin to register handlers for keyboard shortcuts. Property `hotkeys` should be an object
  * containing a symbolic name for the action as key and a keyboard shortcut as value. Subclasses
@@ -49,3 +64,13 @@ export const pbHotkeys = (superclass) => class PbHotkeys extends superclass {
         return '';
     }
 }
+
+export function registerHotkey(name, callback, target) {
+    if (target) {
+        hotkeys(name, { element: target }, callback);
+    } else {
+        hotkeys(name, callback);
+    }
+}
+
+window.pbKeyboard = registerHotkey;

@@ -1,21 +1,20 @@
-ARG EXIST_VERSION=5.2.0
+ARG EXIST_VERSION=5.3.0
 
 # START STAGE 1
 FROM openjdk:8-jdk-slim as builder
 
 USER root
 
-ENV ANT_VERSION 1.10.9
+ENV ANT_VERSION 1.10.11
 ENV ANT_HOME /etc/ant-${ANT_VERSION}
 
 WORKDIR /tmp
 
 RUN apt-get update && apt-get install -y \
-    wget \
     git \
     curl
 
-RUN wget http://www-us.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
+RUN curl -L -o apache-ant-${ANT_VERSION}-bin.tar.gz http://www.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
     && mkdir ant-${ANT_VERSION} \
     && tar -zxvf apache-ant-${ANT_VERSION}-bin.tar.gz \
     && mv apache-ant-${ANT_VERSION} ${ANT_HOME} \
@@ -32,12 +31,18 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 
 FROM builder as tei
 
-ARG PUBLISHER_LIB_VERSION=v2.8.11
+ARG TEMPLATING_VERSION=v1.0.2
+ARG PUBLISHER_LIB_VERSION=v2.9.0
 ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
 
 # add key
 RUN  mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+RUN git clone https://github.com/eXist-db/templating.git \
+    && cd templating \
+    && git checkout ${TEMPLATING_VERSION} \
+    && npm start
 
 # Build tei-publisher-lib
 RUN  git clone https://github.com/eeditiones/tei-publisher-lib.git \
@@ -68,6 +73,7 @@ RUN ant
 
 FROM existdb/existdb:${EXIST_VERSION}
 
+COPY --from=tei /tmp/templating/templating-*.xar /exist/autodeploy
 COPY --from=tei /tmp/tei-publisher-lib/build/*.xar /exist/autodeploy
 COPY --from=tei /tmp/roaster/build/*.xar /exist/autodeploy
 COPY --from=tei /tmp/tei-publisher-app/build/*.xar /exist/autodeploy

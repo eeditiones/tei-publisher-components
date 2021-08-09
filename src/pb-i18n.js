@@ -63,6 +63,13 @@ function updateParts(options) {
     });
 }
 
+/**
+ * Translate the given string using i18n.
+ * 
+ * @param {String} key The key to translate
+ * @param {Object} [value] Optional object containing interpolation values
+ * @returns 
+ */
 export function get(key, value) {
     if (_translate) {
         return _translate(key, value);

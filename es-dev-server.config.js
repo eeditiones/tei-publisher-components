@@ -8,15 +8,10 @@ module.exports = {
         {
             transform(context) {
                 context.response.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+                return {
+                    body: context.body.replace(/process.env.NODE_ENV/g, JSON.stringify('production'))
+                };
             }
         }
-    ],
-    responseTransformers: [
-        function rewriteBasePath({ url, status, contentType, body }) {
-            if (body) {
-                const rewritten = body.replace(/process.env.NODE_ENV/g, JSON.stringify('production'));
-                return { body: rewritten };
-            }
-        },
     ]
 };

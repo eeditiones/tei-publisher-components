@@ -359,7 +359,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 readyEventsFired.add('__default__');
             }
             if (options) {
-                options._source = this;
+                options = Object.assign({ _source: this }, options);
             } else {
                 options = { _source: this };
             }
@@ -503,9 +503,15 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
             return relative;
         }
         const endpoint = server || this.getEndpoint();
-        const base = endpoint === '.' ?
-            new URL(window.location.href) :
-            new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);
+        let base;
+        if (endpoint === '.') {
+            base = new URL(window.location.href);
+        // loaded in iframe
+        } else if (window.location.protocol === 'about:') {
+            base = document.baseURI
+        } else {
+            base = new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);
+        }
         return new URL(relative, base).href;
     }
 

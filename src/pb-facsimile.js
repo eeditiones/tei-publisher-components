@@ -9,9 +9,13 @@ import { resolveURL } from './utils.js';
  * @fires pb-start-update - When received, resets the facsimile viewer
  * @fires pb-update - Checks the contents received for pb-facs-links
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
+ * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
+ * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
+ * `fail` - image could not be loaded.
  * 
- * @cssprop --pb-facsimile-height - Height of the `pb-facsimile` component in px
+ * @cssprop --pb-facsimile-height=auto - Max. height of the image viewer
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
+ * @csspart image - exposes the inner div hosting the image viewer
  * 
  * @slot before - use for content which should be shown above the facsimile viewer
  * @slot after - use for content which should be shown below the facsimile viewer
@@ -138,6 +142,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     set facsimiles(facs) {
         this._facsimiles = facs || [];
         this.loaded = this._facsimiles.length > 0;
+        this.emitTo('pb-facsimile-status', { status: 'loading' });
     }
 
     connectedCallback() {
@@ -160,18 +165,18 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <div class="content">
-                <slot name="before"></slot>
-                <!-- Openseadragon -->
-                <div id="viewer"></div>
-                <slot name="after"></slot>
-            </div>
+            <slot name="before"></slot>
+            <!-- Openseadragon -->
+            <div id="viewer" part="image"></div>
+            <slot name="after"></slot>
         `;
     }
 
     static get styles() {
         return css`
             :host {
+                display: flex;
+                flex-direction: column;
                 position: relative;
                 background: transparent;
             }
@@ -181,8 +186,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }
 
             #viewer {
+                flex: 1;
                 position: relative;
-                height: var(--pb-facsimile-height, 500px);
+                max-height: var(--pb-facsimile-height, auto);
                 width: 100%;
             }
         `;
@@ -209,10 +215,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
             constrainDuringPan: true
         });
 
-        this.viewer.addHandler('open', this.resetZoom.bind(this));
+        this.viewer.addHandler('open', () => {
+            this.resetZoom();
+            this.emitTo('pb-facsimile-status', { status: 'loaded' });
+        });
         this.viewer.addHandler('open-failed', (ev) => {
             console.error('<pb-facsimile> open failed: %s', ev.message);
             this.loaded = false;
+            this.emitTo('pb-facsimile-status', { status: 'fail' });
         });
         this._facsimileObserver();
 

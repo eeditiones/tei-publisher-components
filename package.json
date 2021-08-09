@@ -1,6 +1,6 @@
 {
   "name": "@teipublisher/pb-components",
-  "version": "1.22.0",
+  "version": "1.24.13",
   "description": "Collection of webcomponents underlying TEI Publisher",
   "repository": "https://github.com/eeditiones/tei-publisher-components.git",
   "main": "index.html",
@@ -18,8 +18,8 @@
     "start": "npm run build && npm run docs && es-dev-server",
     "test": "karma start",
     "test:watch": "karma start --auto-watch=true --single-run=false",
-    "docker": "npm run build:production && docker build --pull --rm -f 'Dockerfile' -t pbcomponents:master '.'",
-    "docker:run": "docker run --rm -it  -p 8080:8080/tcp -p 8443:8443/tcp pbcomponents:master",
+    "docker": "npm run build:production && docker build --no-cache --pull --rm -f 'Dockerfile' -t pbcomponents:master '.'",
+    "docker:run": "docker run --rm -it -p 8080:8080/tcp -p 8443:8443/tcp pbcomponents:master",
     "docs": "wca src -f json --outFile pb-elements.json",
     "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
     "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
@@ -35,6 +35,7 @@
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@babel/runtime": "7.11.2",
     "@cwmr/paper-autocomplete": "^4.0.0",
     "@jinntec/fore": "0.21.0",
     "@lrnwebcomponents/es-global-bridge": "^2.7.10",
@@ -69,7 +70,7 @@
     "animejs": "^3.2.0",
     "codemirror": "^5.58.1",
     "hotkeys-js": "^3.8.1",
-    "i18next": "^19.8.1",
+    "i18next": "19.8.1",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-chained-backend": "^2.0.1",
     "i18next-xhr-backend": "^3.2.2",
@@ -81,6 +82,7 @@
     "openseadragon": "^2.4.2",
     "prismjs": "^1.21.0",
     "tippy.js": "^6.2.7",
+    "uniqolor": "^1.0.1",
     "web-animations-js": "^2.3.2"
   },
   "devDependencies": {
