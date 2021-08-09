@@ -1,4 +1,4 @@
-ARG EXIST_VERSION=5.2.0
+ARG EXIST_VERSION=5.3.0
 
 # START STAGE 1
 FROM openjdk:8-jdk-slim as builder
@@ -31,7 +31,7 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 
 FROM builder as tei
 
-ARG TEMPLATING_VERSION=v1.0.0
+ARG TEMPLATING_VERSION=v1.0.2
 ARG PUBLISHER_LIB_VERSION=v2.9.0
 ARG ROUTER_VERSION=v0.5.1
 ARG PUBLISHER_VERSION=master
