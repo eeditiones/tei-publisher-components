@@ -368,6 +368,7 @@ export class PbOddModelEditor extends LitElement {
             "note",
             "omit",
             "paragraph",
+            "pass-through",
             "row",
             "section",
             "table",
