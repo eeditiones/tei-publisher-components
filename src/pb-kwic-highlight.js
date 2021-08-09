@@ -264,6 +264,8 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
         const end = this.shadow.getElementById(endId);
         if (end) {
             end.parentNode.classList.add('kwic-end');
+        }else{
+            start.classList.add('kwic-end');
         }
     }
 
