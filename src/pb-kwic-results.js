@@ -54,6 +54,13 @@ export class PbKwicResults extends pbMixin(LitElement) {
              */
             sort:{
                 type: String
+            },
+            /**
+             * target for links
+             */
+            target:{
+                type: String,
+                attribute: 'target'
             }
         };
     }
@@ -169,7 +176,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                     <tr>
                         <td colspan="4" class="docName">
                             <a
-                                href="${this._endpoint}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&id=${document.matches[0].page[0]}"
+                                href="${this.target}/${document.id}.xml?pattern=${this.pattern}&page=${document.matches[0].page[0]}"
                                 target="_blank">${document.id}</a>
                         </td>
                         <td class="hit-count">
@@ -180,8 +187,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
                         <tr>
                             <td class="left" colspan="2">${match.left}</td>
                             <td class="hit">
-                                <a href="${this.getEndpoint()}/${document.id}.xml?doc=${document.id}&pattern=${this.pattern}&match=${match.match.words[0]}&id=${match.page[0]}" target="_blank">${match.match.display}</a>
-                                <paper-icon-button icon="create"></paper-icon-button>
+                                <a href="${this.target}/${document.id}.xml?pattern=${this.pattern}&match=${match.match.words[0]}&page=${match.page[0]}" target="_blank">${match.match.display}</a>
+                                <!--<paper-icon-button icon="create"></paper-icon-button>-->
                             </td>
                             <td class="right" colspan="2">${match.right}</td>
                         </tr>
