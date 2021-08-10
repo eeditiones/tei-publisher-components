@@ -12,7 +12,7 @@ export class GeoNames extends Registry {
 
     return new Promise(resolve => {
       fetch(
-        `https://api.geonames.org/searchJSON?formatted=true&q=${encodeURIComponent(
+        `https://secure.geonames.org/searchJSON?formatted=true&q=${encodeURIComponent(
           key,
         )}&maxRows=100&&username=${this.user}&style=full`,
       )
@@ -73,7 +73,7 @@ export class GeoNames extends Registry {
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
     return fetch(
-      `https://api.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`,
+      `https://secure.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${this.user}`,
     ).then(response => {
       if (response.ok) {
         return response.json();
