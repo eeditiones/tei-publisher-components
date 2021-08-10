@@ -1,3 +1,10 @@
+## [1.24.17](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.16...v1.24.17) (2021-08-10)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** https api for geonames uses different domain ([9f20921](https://github.com/eeditiones/tei-publisher-components/commit/9f209212b806448f83ac206553239f79fa74fb3b))
+
 ## [1.24.16](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.15...v1.24.16) (2021-08-10)
 
 
