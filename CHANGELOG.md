@@ -1,3 +1,10 @@
+## [1.24.18](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.17...v1.24.18) (2021-08-10)
+
+
+### Bug Fixes
+
+* update Swedish translation ([e536d9c](https://github.com/eeditiones/tei-publisher-components/commit/e536d9c140435ee318656220bd30a74e76e898b9))
+
 ## [1.24.17](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.16...v1.24.17) (2021-08-10)
 
 
