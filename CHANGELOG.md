@@ -1,3 +1,10 @@
+## [1.24.16](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.15...v1.24.16) (2021-08-10)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** switch geonames connector to HTTPS to avoid CORS error ([4e2d706](https://github.com/eeditiones/tei-publisher-components/commit/4e2d706fe5cd7701545f080d82c90e7c51a6ad81))
+
 ## [1.24.15](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.14...v1.24.15) (2021-08-09)
 
 
