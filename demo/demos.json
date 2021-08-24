@@ -147,11 +147,5 @@
   },
   "pb-formula": {
     "demo/pb-formula.html": "Demo"
-  },
-  "pb-kwic-results": {
-    "demo/pb-kwic-results.html": "Demo"
-  },
-  "pb-kwic-highlight": {
-    "demo/pb-kwic-highlight": "Demo"
   }
 }

@@ -1,6 +1,5 @@
 import {LitElement, html, css} from 'lit-element';
 import anime from 'animejs';
-import responseData from '../demo/sample-results.js';
 import {pbMixin} from './pb-mixin.js';
 import './pb-paginate.js';
 import '@polymer/iron-icons';
@@ -23,6 +22,9 @@ export class PbKwicResults extends pbMixin(LitElement) {
              */
             data: {
                 type: Object
+            },
+            documents:{
+                type:Array
             },
             /**
              * document id
@@ -70,6 +72,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
         // this.data = responseData;
         console.log('data ', this.data);
         this.data = {documents: []};
+        this.documents = [];
         this.first = 1;
         this.doc = null;
         this.sort = null;
@@ -150,12 +153,18 @@ export class PbKwicResults extends pbMixin(LitElement) {
         });
 
         this.subscribeTo('force-load', (event) =>{
+            console.log('!!!!!!!!!!force-loadd',event);
+
             this.load();
+            this.requestUpdate();
+
         });
 
         this.subscribeTo('pb-results-received', (event) =>{
+            console.log('!!!!!!!!!!pb-results-received',event);
+            this.data = event.detail.data;
+            this.documents = this.data.documents;
             this._animate();
-            this.requestUpdate();
         });
 
     }
@@ -171,8 +180,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                     <th class="right">after</th>
                     <th class="hit-count">hits</th>
                 </tr>
-                ${this.data.documents.map(document => html`
-
+                ${this.documents.map(document => html`
                     <tr>
                         <td colspan="4" class="docName">
                             <a
@@ -197,6 +205,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
             </table>
         `;
     }
+
+
 
     firstUpdated() {
         super.firstUpdated();
@@ -225,14 +235,17 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 console.log('response ', data);
                 this.data = data;
                 localStorage.setItem('pb-kwic-results',JSON.stringify(this.data));
+/*
                 this.dispatchEvent(
                     new CustomEvent('kwic-data-loaded', { composed: true, bubbles: true, detail: {key:'pb-kwic-results'} }),
                 );
+*/
 
                 this.emitTo('pb-results-received', {
                     "count": data.docs ? parseInt(data.docs, 10) : 0,
                     "start": data.start,
-                    "params": data.params
+                    "params": data.params,
+                    "data": data
                 },[]);
             })
             .catch((error) => {

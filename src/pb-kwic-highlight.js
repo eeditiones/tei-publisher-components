@@ -1,10 +1,5 @@
 import {LitElement, html, css} from 'lit-element';
-import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 import {pbMixin} from './pb-mixin.js';
-import {translate} from "./pb-i18n.js";
 
 /**
  * Looks for KWIC results as produced by pb-kwic-results in sessionStorage.
@@ -125,6 +120,10 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
         const params = new URLSearchParams(window.location.search);
         this.pattern = params.get('pattern');
 
+        /*
+         * a dynMatch exists when the reloading was triggered by an nav action (prev/next)
+         * the match param will be passed by the respective nav handler
+         */
         if(this.dynMatch){
             this.matchParam = this.dynMatch;
         }else{
@@ -195,7 +194,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
 
     _getMatchObject(match){
 
-        // ### if there's not match param passed in from url return the appropriate object representing current match
+        // ### if there's no match param passed in from url return the appropriate object representing current match
         if(!match){
             if(Array.isArray(this.hits)){
                 // return this.hits[0];

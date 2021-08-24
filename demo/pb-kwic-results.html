@@ -216,11 +216,8 @@
                kwic.sort = e.target.value;
                kwic.load();
             });
-        });
 
-
-
-        document.querySelector('#pattern').addEventListener('keyup', (e) => {
+            document.querySelector('#pattern').addEventListener('keyup', (e) => {
                 if(e.keyCode === 13){
                     localStorage.setItem('kwic-pattern', e.target.value);
                     kwic.pattern = e.target.value;
