@@ -97,7 +97,7 @@ export class PbPaginate extends pbMixin(LitElement) {
             ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}">${item.label}</span>`)}
             <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
 
-            <span part="label" class="found">${translate(this.foundLabel, { count: this.total })}</span>
+            <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
         `;
     }
 
@@ -136,7 +136,6 @@ export class PbPaginate extends pbMixin(LitElement) {
             .found {
                 padding-left: 20px;
             }
-
         `;
     }
 
@@ -179,7 +178,6 @@ export class PbPaginate extends pbMixin(LitElement) {
     }
 
     _handleFirst(ev) {
-        console.log('_handleFirst')
         this.start = 1;
         this.emitTo('pb-load', {
             "params": {
