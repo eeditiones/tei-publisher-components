@@ -7,8 +7,20 @@ import '@polymer/paper-icon-button';
 
 
 /**
- * Displays KWIC results
+ * This component talks to the blacklab API of TEI-Publisher to
+ * load KWIC results from a remote Blacklab instance. It displays
+ * a list of documents that match the query given by `pattern`.
  *
+ * For each document a list of hits (matches) is displayed each showing the hit
+ * in context of the text.
+ *
+ * Document Id and hits are links that can be used to open the document
+ * and navigate through the hits with the help of pb-view and pb-kwic-highlight
+ * components.
+ *
+ * @doc - an optional document Id to limit the search to
+ * @param pattern - a CQL (Common Query Language) conformant query (required)
+ * @perPage - a number to indicate how many result entries to display on one page. Will be passed down to pb-paginate
  * @csspart paginator - the pb-paginate component
  * @csspart label - the pb-paginate label
  */
@@ -69,8 +81,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        // this.data = responseData;
-        console.log('data ', this.data);
         this.data = {documents: []};
         this.documents = [];
         this.first = 1;
@@ -153,15 +163,11 @@ export class PbKwicResults extends pbMixin(LitElement) {
         });
 
         this.subscribeTo('force-load', (event) =>{
-            console.log('!!!!!!!!!!force-loadd',event);
-
             this.load();
             this.requestUpdate();
-
         });
 
         this.subscribeTo('pb-results-received', (event) =>{
-            console.log('!!!!!!!!!!pb-results-received',event);
             this.data = event.detail.data;
             this.documents = this.data.documents;
             this._animate();
@@ -183,9 +189,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 ${this.documents.map(document => html`
                     <tr>
                         <td colspan="4" class="docName">
-                            <a
-                                href="${this.target}/${document.id}.xml?pattern=${this.pattern}&page=${document.matches[0].page[0]}"
-                                target="_blank">${document.id}</a>
+                            <a href="${this.target}/${document.id}.xml?pattern=${this.pattern}&page=${document.matches[0].page[0]}"
+                               target="_blank">${document.id}</a>
                         </td>
                         <td class="hit-count">
                             <span class="hit-count">${document.hits}</span>
@@ -206,15 +211,6 @@ export class PbKwicResults extends pbMixin(LitElement) {
         `;
     }
 
-
-
-    firstUpdated() {
-        super.firstUpdated();
-        console.log('pattern ', this.pattern);
-        console.log('first ', this.first);
-        console.log('per-page ', this.perPage);
-    }
-
     async load() {
         if(!this.getEndpoint()) return;
         if(!this.pattern) return;
@@ -232,15 +228,8 @@ export class PbKwicResults extends pbMixin(LitElement) {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log('response ', data);
                 this.data = data;
                 localStorage.setItem('pb-kwic-results',JSON.stringify(this.data));
-/*
-                this.dispatchEvent(
-                    new CustomEvent('kwic-data-loaded', { composed: true, bubbles: true, detail: {key:'pb-kwic-results'} }),
-                );
-*/
-
                 this.emitTo('pb-results-received', {
                     "count": data.docs ? parseInt(data.docs, 10) : 0,
                     "start": data.start,
@@ -249,7 +238,7 @@ export class PbKwicResults extends pbMixin(LitElement) {
                 },[]);
             })
             .catch((error) => {
-                console.error('Error retrieving remote content: ', error);
+                alert(`Error retrieving remote content: ${ error}`);
             });
 
     }

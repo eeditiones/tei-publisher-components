@@ -2,7 +2,27 @@ import {LitElement, html, css} from 'lit-element';
 import {pbMixin} from './pb-mixin.js';
 
 /**
- * Looks for KWIC results as produced by pb-kwic-results in sessionStorage.
+ * This component queries the blacklab API of TEI-Publisher for a list of text matches
+ * in a given document. The query is given as a CQL querystring (see pattern property).
+ *
+ * The component displays 2 navigation buttons to jump to previous / next match and
+ * a display of the current index and total number of matches.
+ *
+ * When navigating and the requested match is not on the current page a pb-refresh is dispatched
+ * to load the correct page. Once the page has dispatch pb-update this component will refresh and trigger
+ * loading of matches from the API.
+ *
+ * Highlighting is accomplished by marking the matched text with the following CSS classes:
+ * - kwic-start - for the start of the match
+ * - kwic-end - for the end of the match (might be on the same node as 'kwic-start'
+ * - kwic-current - to set a different highlight color for the current match
+ *
+ * When navigating the browser URL will be updated to allow bookmarks for a certain match.
+ *
+ * Note: this component does no caching of query results yet. In case of heavier use the data can be taken
+ * from localStorage ('pb-kwic-results') as usually pb-kwic-results has been visited by the user before. For
+ * stability reasons this was not done in this version.
+ *
  *
  * When data are present highlights are processed.
  *
@@ -12,6 +32,9 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
+            /**
+             * one-based index of the current highlight
+             */
             current: {
                 type: Number
             },
@@ -22,7 +45,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             * CQL search pattern send to Blacklab
+             * CQL search pattern send to the Blacklab API
              */
             pattern: {
                 type: String
@@ -45,6 +68,9 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             hits: {
                 type: Array
             },
+            /**
+             * contains full response after successful loading
+             */
             kwicData: {
                 type: Object
             },
@@ -54,18 +80,20 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             matchParam: {
                 type: String
             },
+            /**
+             * the pageId to display
+             */
             pageId: {
                 type: String
             },
+            /**
+             * how many hits shall be loaded. Defaults to 100. This value is passed to the blacklab API
+             */
             perDocument: {
                 type: Number,
                 attribute: 'per-document'
             }
         };
-    }
-
-    constructor() {
-        super();
     }
 
     connectedCallback() {
@@ -88,33 +116,37 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             this.shadow = this.viewElement.shadowRoot;
         });
 
-        this.subscribeTo('pb-update', (ev) => {
-            console.log('do it noow!');
+        this.subscribeTo('pb-update', () => {
             this._loadDocResults();
         });
         this.subscribeTo('pb-refresh', (ev) => {
-            console.log('pb-refresh', ev.detail);
             this.dynMatch = ev.detail.match;
-            // this._loadDocResults();
         });
     }
 
     render() {
         return html`
-            ${this.hits.length != 0
+            ${this.hits.length !== 0
             ? html`
-                    <section class="kwic-display">
-                        PageId:${this.pageId} / ${Array.isArray(this.hits) ? this.hits[this.current - 1].page[0] : ''}
-                        <paper-icon-button icon="icons:arrow-back" @click="${this._handlePrev}" ?disabled="${this.current === 1}"></paper-icon-button>
-                        <span class="current">${this.current}</span>/<span class="counter">${this.count}</span>
-                        <paper-icon-button icon="icons:arrow-forward" @click="${this._handleNext}" ?disabled="${this.current === this.hits.length}"></paper-icon-button>
-                    </section>` : ''
+                <section class="kwic-display">
+                    <paper-icon-button icon="icons:arrow-back" @click="${this._handlePrev}" ?disabled="${this.current === 1}"></paper-icon-button>
+                    <span class="current">${this.current}</span> / <span class="counter">${this.count}</span>
+                    <paper-icon-button icon="icons:arrow-forward" @click="${this._handleNext}" ?disabled="${this.current === this.hits.length}"></paper-icon-button>
+                </section>` : ''
         }
         `;
     }
 
+    /**
+     * loads matches from blacklab API, marks matches with CSS classes and displays the current match.
+     *
+     * The URL query params are used to set params for blacklab API
+     *
+     * @returns {Promise<void>}
+     * @private
+     */
     async _loadDocResults() {
-        console.log('endpoint ', this.getEndpoint());
+        // console.log('endpoint for loading kwic matches', this.getEndpoint());
         if (!this.getEndpoint()) return;
 
         const params = new URLSearchParams(window.location.search);
@@ -141,17 +173,11 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
             .then((response) => response.json())
             .then((data) => {
                 this.kwicData = data;
-                console.log('kwicData ', this.kwicData);
-                // this._doKwic();
-                // localStorage.setItem('pb-kwic-doc-matches',JSON.stringify(data));
-                // console.log('opening ',`${this.getEndpoint()}/${doc}.xml?id=${firstPage}`);
-                // window.location.href = `${this.getEndpoint()}/${doc}.xml?id=${firstPage}`;
             })
             .then(() => {
                 this._markAllMatches();
                 this._showMatch(this.matchParam);
             })
-
             .catch((error) => {
                 console.error('Error retrieving remote content: ', error);
             });
@@ -161,18 +187,12 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
         const docs = this.kwicData.documents;
         this.count = this.kwicData.hits;
         this.hits = docs[Object.keys(docs)[0]].hits; // 'jump over' docPid
-        console.log('hits', this.hits);
-        console.log('matchParam', this.matchParam);
         if (Array.isArray(this.hits)) {
-            console.log('hits', this.hits);
             this.hits.forEach((hit) => {
-                // console.log('match ', hit);
-                // console.log('match words ', hit.match.words);
                 const startId = hit.match.words[0];
                 const endId = hit.match.words[1];
                 this._addMarkerClasses(startId, endId);
             });
-
         }else{
             // ### it's just a single hit and we get object instead of array
             const startId = this.hits.match.words[0];
@@ -185,15 +205,20 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
 
 
     _showMatch(matchId){
-        // console.log('finding match.... ', this.matchParam);
-        // console.log('finding match in page ', this.pageId);
-
         const matchObj = this._getMatchObject(matchId);
         this._navigateToMatch(matchObj);
     }
 
+    /**
+     * If a match id is given it will be looked up in the loaded data and returned.
+     *
+     * If no match is given the first match in the response will be used.
+     *
+     * @param match
+     * @returns {[]|*}
+     * @private
+     */
     _getMatchObject(match){
-
         // ### if there's no match param passed in from url return the appropriate object representing current match
         if(!match){
             if(Array.isArray(this.hits)){
@@ -213,11 +238,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
     }
 
     _navigateToMatch(matchObj){
-        console.log('_navigateToMatch', matchObj);
         const matchPage = matchObj.page[0];
-
-        console.log('this.pageId ', this.pageId);
-        console.log('matchPage ', matchPage);
         const matchId = matchObj.match.words[0];
         const newUrl = `${this._endpoint}/${this.docId}.xml?doc=${this.docId}&pattern=${this.pattern}&match=${matchObj.match.words[0]}&id=${matchPage}`;
         if(this.pageId !== matchPage){

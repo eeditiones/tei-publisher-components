@@ -390,7 +390,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                     composed: true,
                     bubbles: true
                 });
-                document.dispatchEvent(ev);
+                this.dispatchEvent(ev);
             });
         }
     }
