@@ -147,5 +147,8 @@
   },
   "pb-formula": {
     "demo/pb-formula.html": "Demo"
+  },
+  "pb-table-grid": {
+    "demo/pb-table-grid.html": "Demo"
   }
 }
