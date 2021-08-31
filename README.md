@@ -61,8 +61,20 @@ Run `npm run build:production` to generate the set of bundle files in `dist`, co
 
 ## Development
 
-For development, run `npm start` as described above. It will open a browser window and watch for file changes.
+For development, run `npm start` as described above. It will start a development server (on port 8000 by default), open a browser window and watch for file changes. Every component should have a demo to show its functionality.
+
+You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment. 
+
+In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value *dev*. Below, the variable `$config:webcomponents-cdn` should be set to `http://localhost:8000`:
+
+```xquery
+declare variable $config:webcomponents := "dev";
+
+declare variable $config:webcomponents-cdn := "http://localhost:8000";
+```
+
+After reloading TEI Publisher in the browser, components should be loaded from your local development server.
+
+## Building Documentation
 
 To regenerate the API documentation, run `npm run docs`.
-
-Every component should have a demo to show its functionality.
