@@ -83,6 +83,10 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+    }
+
+    firstUpdated() {
+        const table = this.shadowRoot.getElementById('table');
 
         const pbColumns = this.querySelectorAll('pb-table-column');
         const columns = [];
@@ -122,12 +126,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 }
             };
             this.grid = new Grid(config);
-        });
-    }
 
-    firstUpdated() {
-        const table = this.shadowRoot.getElementById('table');
-        this.grid.render(table);
+            this.grid.render(table);
+        });
     }
 
     _submit() {
