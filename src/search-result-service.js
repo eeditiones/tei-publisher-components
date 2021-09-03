@@ -66,6 +66,9 @@ export class SearchResultService {
       scope: scope,
       binTitleRotated: this._binTitleRotatedLookup(scope)
     }
+    if (Object.keys(this.data.valid).length === 0) {
+      return exportData;
+    }
     // get start and end date
     const startCategory = this._classify(this.getMinDateStr(), scope);
     const startDateStr = this._getFirstDay(startCategory);

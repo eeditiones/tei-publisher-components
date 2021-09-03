@@ -236,6 +236,7 @@ export class PbBrowseDocs extends PbLoad {
                     <span class="label">${translate('browse.delete')}</span>
                 </paper-button>
             </div>
+            <slot name="header"></slot>
             <slot></slot>
             <slot name="footer"></slot>
             

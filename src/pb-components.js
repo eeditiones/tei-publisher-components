@@ -58,6 +58,7 @@ import './pb-blacklab-results.js';
 import './pb-blacklab-highlight.js';
 import './pb-table-grid.js';
 import './pb-split-list.js';
+import './pb-timeline.js';
 
 import '@polymer/iron-icons/editor-icons';
 import '@polymer/iron-icons/social-icons';

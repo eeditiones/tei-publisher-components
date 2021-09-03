@@ -1,7 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import { SearchResultService } from "./search-result-service.js";
 import { ParseDateService } from "./parse-date-service.js";
+import { pbMixin } from "./pb-mixin.js";
 import '@polymer/iron-ajax';
+import '@polymer/paper-icon-button';
 
 /**
 * A timeline component that displays a barchart for search results
@@ -34,13 +36,13 @@ import '@polymer/iron-ajax';
 */
 const scopes = ['D','W','M','Y','5Y','10Y'];
 
-export class PbTimeline extends LitElement {
+export class PbTimeline extends pbMixin(LitElement) {
 
 
     static get styles() {
     return css`
       :host{
-        display:block;
+        display: block;
         margin-top:20px;
       }
       .hidden {
@@ -59,8 +61,14 @@ export class PbTimeline extends LitElement {
         // justify-content: center;
         position: relative;
       }
+      #clear {
+        position: absolute;
+        right: 0;
+        top: -20px;
+      }
       .bin-container {
         cursor: crosshair;
+        margin-top: 20px;
         min-width: var(--pb-timeline-max-width, 14px);
         max-width: var(--pb-timeline-max-width, 20px);
         flex-grow: 1;
@@ -213,6 +221,7 @@ export class PbTimeline extends LitElement {
 
     static get properties() {
         return {
+          ...super.properties,
             /**
              * start date for timeline to display
              */
@@ -241,6 +250,12 @@ export class PbTimeline extends LitElement {
              */
             url:{
                 type: String
+            },
+            /**
+             * If set, data will be retrieved automatically on first load.
+             */
+            auto: {
+              type: Boolean
             }
         };
     }
@@ -254,7 +269,19 @@ export class PbTimeline extends LitElement {
     this.endDate = '';
     this.scope = '';
     this.url = '';
+    this.auto = false;
     this._resetSelectionProperty();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.subscribeTo('pb-results-received', () => {
+      const loader = this.shadowRoot.getElementById('loadData');
+      const url = this.toAbsoluteURL(this.url, this.getEndpoint());
+      loader.url = url;
+      loader.generateRequest();
+    });
   }
 
   firstUpdated() {
@@ -288,7 +315,6 @@ export class PbTimeline extends LitElement {
       this.resetSelection();
       this._hideTooltip();
     });
-
   }
 
     /**
@@ -410,30 +436,18 @@ export class PbTimeline extends LitElement {
   }
 
   _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr) {
-    if(startDateStr === endDateStr){
-        document.dispatchEvent(new CustomEvent('pb-timeline-date-changed', {
-            bubbles: true,
-            detail: {
-                date: startDateStr
-            }
-        }));
-
-    }else{
-        document.dispatchEvent(new CustomEvent('pb-timeline-daterange-changed', {
-            bubbles: true,
-            detail: {
-                startDateStr: startDateStr,
-                endDateStr: endDateStr,
-            }
-        }));
+    if(startDateStr === endDateStr) {
+      this.emitTo('pb-timeline-date-changed', { date: startDateStr });
+    } else {
+      this.emitTo('pb-timeline-daterange-changed', {
+        startDateStr,
+        endDateStr
+      });
     }
   }
 
   _dispatchPbTimelineResetSelectionEvent() {
-    document.dispatchEvent(new CustomEvent('pb-timeline-reset-selection', {
-      bubbles: true,
-      detail: {}
-    }));
+    this.emitTo('pb-timeline-reset-selection');
   }
 
   _showtooltip(event) {
@@ -529,6 +543,7 @@ export class PbTimeline extends LitElement {
       <div class="wrapper"
         @mouseenter="${this._mouseenter}"
         @mouseleave="${this._hideTooltip}">
+        <paper-icon-button id="clear" icon="icons:clear" @click="${this._dispatchPbTimelineResetSelectionEvent}"></paper-icon-button>
         ${this.dataObj ? this.renderBins() : ""}
         ${this.renderTooltip()}
         <iron-ajax
@@ -539,7 +554,7 @@ export class PbTimeline extends LitElement {
             with-credentials
             @response="${this._handleResponse}"
             url="${this.url}?start=${this.startDate}&end=${this.endDate}"
-            auto></iron-ajax>
+            ?auto="${this.auto}"></iron-ajax>
       </div>
     `;
   }
@@ -592,10 +607,14 @@ export class PbTimeline extends LitElement {
         const loader = this.shadowRoot.getElementById('loadData');
         const data = loader.lastResponse;
 
-        const newJsonData = {};
-        Object.keys(data).filter(key => key >= this.startDate && key < this.endDate).forEach(key => {
-            newJsonData[key] = data[key];
-        })
+        let newJsonData = {};
+        if (this.startDate && this.endDate) {
+          Object.keys(data).filter(key => key >= this.startDate && key < this.endDate).forEach(key => {
+              newJsonData[key] = data[key];
+          });
+        } else {
+          newJsonData = data;
+        }
         this.searchResult = new SearchResultService(newJsonData);
         this.setData(this.searchResult.export(this.scope));
         this.dispatchEvent(new CustomEvent('pb-timeline-loaded', {
@@ -605,8 +624,6 @@ export class PbTimeline extends LitElement {
             composed: true,
             bubbles: true
         }));
-
-        console.log('data:', data);
     }
 
 }

@@ -8,7 +8,11 @@
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-timeline.js"></script>
+        <script type="module" src="../src/pb-browse-docs.js"></script>
+        <script type="module" src="../src/pb-login.js"></script>
+        <script type="module" src="../src/pb-events.js"></script>
         <!--/scripts-->
 
         <style>
@@ -18,6 +22,7 @@
             }
             pb-timeline{
                 padding: 2rem 0;
+                width: 100%;
             }
             #start, #end, #scope{
                 display: block;
@@ -38,6 +43,8 @@
         <pb-demo-snippet>
             <template>
 -->
+        <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-login id="login" group="tei"></pb-login>
 
             <label for="start">Start Date</label>
             <input id="start" type="date" value="1891-05-18">
@@ -57,11 +64,23 @@
 
 
             <div class="wraptl">
-                <pb-timeline scope="Y" auto
-                             start-date="1891-05-18"
-                             end-date="1978-01-01"
-                             url="./timeline-dev-data.json"></pb-timeline>
+                <pb-timeline scope="10Y"
+                             start-date="1438-01-13"
+                             end-date="2020-02-01"
+                             subscribe="docs" emit="docs"
+                             url="api/search/timeline"></pb-timeline>
             </div>
+
+            <pb-browse-docs id="document-list" fix-links login="login"
+                collection="test"
+                sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
+                sort-by="title"
+                filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
+                filter-by="title" auto="auto" history="history" emit="docs" subscribe="docs">
+                <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
+                    emit="docs" subscribe="docs"></pb-paginate>
+            </pb-browse-docs>
+        </pb-page>
 
 <!--            <textarea id="logs"></textarea>-->
             <!--
@@ -73,53 +92,11 @@
         </main>
     </body>
 
-
-    <script type="module">
-        // import { jsonDataDev } from './timeline-dev-data.js';
-        import {SearchResultService} from "../src/search-result-service.js";
-
-/*
-        const jsonData = jsonDataDev;
-
-        const dispatchPbTimelineDataLoadedEvent = (jsonData) => {
-            document.dispatchEvent(new CustomEvent('pb-timeline-data-loaded', {
-                bubbles: true,
-                detail: {
-                    jsonData: jsonData,
-                }
-            }));
-        }
-*/
-
-        document.addEventListener("DOMContentLoaded", () => {
-            // initDevControls();
-
-            const startInput = document.getElementById('start');
-            startInput.addEventListener('input', (e)=>{
-                const val = e.target.value;
-                const tl = document.querySelector('pb-timeline').startDate = val;
-            });
-
-            const endInput = document.getElementById('end');
-            endInput.addEventListener('input', (e)=>{
-                const val = e.target.value;
-                const tl = document.querySelector('pb-timeline').endDate = val;
-            });
-            const select = document.getElementById('scope');
-            select.addEventListener('change', (e)=>{
-                console.log('scope changed')
-                const val = e.target.value;
-                const tl = document.querySelector('pb-timeline').scope = val;
-            });
-
-            document.addEventListener('pb-timeline-date-changed', (e) =>{
-                console.log('date changed ', e.detail.date);
-            });
-            document.addEventListener('pb-timeline-daterange-changed', (e) =>{
-                console.log('daterange changed ', e.detail.startDateStr, e.detail.endDateStr);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            pbEvents.subscribe('pb-timeline-daterange-changed', 'docs', (ev) => {
+                console.log(ev.detail);
             });
         });
-
-
     </script>
 </html>
