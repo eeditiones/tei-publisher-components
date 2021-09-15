@@ -11,11 +11,13 @@ import '@polymer/paper-icon-button';
  * load KWIC results from a remote Blacklab instance. It displays
  * a list of documents that match the query given by `pattern`.
  *
+ * **Note**: There's no demo for this component yet as it would need a blacklab instance.
+ * 
  * For each document a list of hits (matches) is displayed each showing the hit
  * in context of the text.
  *
  * Document Id and hits are links that can be used to open the document
- * and navigate through the hits with the help of pb-view and pb-kwic-highlight
+ * and navigate through the hits with the help of pb-view and pb-blacklab-highlight
  * components.
  *
  * @doc - an optional document Id to limit the search to
@@ -24,7 +26,7 @@ import '@polymer/paper-icon-button';
  * @csspart paginator - the pb-paginate component
  * @csspart label - the pb-paginate label
  */
-export class PbKwicResults extends pbMixin(LitElement) {
+export class PbBlacklabResults extends pbMixin(LitElement) {
 
     static get properties() {
         return {
@@ -256,4 +258,4 @@ export class PbKwicResults extends pbMixin(LitElement) {
 
 }
 
-customElements.define('pb-kwic-results', PbKwicResults);
+customElements.define('pb-blacklab-results', PbBlacklabResults);

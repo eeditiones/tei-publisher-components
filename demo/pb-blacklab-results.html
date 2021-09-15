@@ -9,7 +9,7 @@
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
-    <script type="module" src="../src/pb-kwic-results.js"></script>
+    <script type="module" src="../src/pb-blacklab-results.js"></script>
     <script type="module" src="../src/pb-paginate.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
 
@@ -107,7 +107,7 @@
                 border: none
 
             }
-            pb-kwic-results{
+            pb-blacklab-results{
                 padding:3rem;
                 max-width:100%;
             }
@@ -190,7 +190,7 @@
 
         <pb-page endpoint="http://localhost:8080/exist/apps/blacklab">
             <main>
-                <pb-kwic-results per-page="5" pattern='[word="love"][word="by"]' path="data"></pb-kwic-results>
+                <pb-blacklab-results per-page="5" pattern='[word="love"][word="by"]' path="data"></pb-blacklab-results>
             </main>
         </pb-page>
     </template>
@@ -200,7 +200,7 @@
 <script>
     (function () {
         document.addEventListener('pb-page-ready', () => {
-            const kwic = document.querySelector('pb-kwic-results');
+            const kwic = document.querySelector('pb-blacklab-results');
             const pat = '[word="love"][word="by"]';
             kwic.pattern = pat;
 

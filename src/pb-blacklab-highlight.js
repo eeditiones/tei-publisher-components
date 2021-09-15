@@ -5,6 +5,8 @@ import {pbMixin} from './pb-mixin.js';
  * This component queries the blacklab API of TEI-Publisher for a list of text matches
  * in a given document. The query is given as a CQL querystring (see pattern property).
  *
+ * **Note**: There's no demo for this component yet as it would need a blacklab instance. 
+ * 
  * The component displays 2 navigation buttons to jump to previous / next match and
  * a display of the current index and total number of matches.
  *
@@ -26,9 +28,8 @@ import {pbMixin} from './pb-mixin.js';
  *
  * When data are present highlights are processed.
  *
- *
  */
-export class PbKwicHighlight extends pbMixin(LitElement) {
+export class PbBlacklabHighlight extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
@@ -107,7 +108,7 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
          * waiting for the page to be ready before storing a reference to the shadowDOM of the view element this
          * component is attached to via the 'view' attribute.
          */
-        PbKwicHighlight.waitOnce('pb-page-ready', () => {
+        PbBlacklabHighlight.waitOnce('pb-page-ready', () => {
             this.viewElement = document.getElementById(this.view);
             if (!this.viewElement) {
                 console.error(`${this}: view element with id ${this.view} does not exist`);
@@ -323,4 +324,4 @@ export class PbKwicHighlight extends pbMixin(LitElement) {
 
 }
 
-customElements.define('pb-kwic-highlight', PbKwicHighlight);
+customElements.define('pb-blacklab-highlight', PbBlacklabHighlight);
