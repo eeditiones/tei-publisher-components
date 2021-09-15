@@ -161,7 +161,7 @@ export class PbPaginate extends pbMixin(LitElement) {
     }
 
     _refresh(ev) {
-        this.start = ev.detail.start;
+        this.start = Number(ev.detail.start);
         this.total = ev.detail.count;
         this._update(this.start, this.total);
     }

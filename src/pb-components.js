@@ -54,6 +54,8 @@ import './pb-clipboard.js';
 import './pb-formula.js';
 import './pb-authority-lookup.js';
 import './pb-message.js';
+import './pb-kwic-results.js';
+import './pb-kwic-highlight.js';
 
 import '@polymer/iron-icons/editor-icons';
 import '@polymer/iron-icons/social-icons';

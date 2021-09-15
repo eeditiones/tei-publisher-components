@@ -7,7 +7,7 @@ if (!window.TeiPublisher) {
 }
 
 /**
- * Global set to record the names of the channels for which a 
+ * Global set to record the names of the channels for which a
  * `pb-ready` event was fired.
  */
 const readyEventsFired = new Set();
@@ -129,10 +129,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     /**
      * Enable or disable certain features of a component. Called by `pb-toggle-feature`
      * and `pb-select-feature` to change the components behaviour.
-     * 
+     *
      * By default only one command is known: `disable` will disable any interactive feature
      * of the component.
-     * 
+     *
      * @param {string} command name of an action to take or setting to be toggled
      * @param {Boolean} state the state to set the setting to
      */
@@ -146,7 +146,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * Wait for the components referenced by the selector given in property `waitFor`
      * to signal that they are ready to respond to events. Only wait for elements which
      * emit to one of the channels this component subscribes to.
-     * 
+     *
      * @param callback function to be called when all components are ready
      */
     wait(callback) {
@@ -221,9 +221,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * Wait until the global event identified by name
      * has been fired once. This is mainly used to wait for initialization
      * events like `pb-page-ready`.
-     * 
-     * @param {string} name 
-     * @param {Function} callback 
+     *
+     * @param {string} name
+     * @param {Function} callback
      */
     static waitOnce(name, callback) {
         if (initEventsFired.has(name)) {
@@ -251,7 +251,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     /**
      * Get the list of channels this element subscribes to.
-     * 
+     *
      * @returns an array of channel names
      */
     getSubscribedChannels() {
@@ -269,7 +269,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     /**
      * Check if the other element emits to one of the channels this
      * element subscribes to.
-     * 
+     *
      * @param {Element} other the other element to compare with
      */
     emitsOnSameChannel(other) {
@@ -368,7 +368,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                 composed: true,
                 bubbles: true
             });
-            document.dispatchEvent(ev);
+            this.dispatchEvent(ev);
         } else {
             chs.forEach(key => {
                 const detail = {
@@ -390,7 +390,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                     composed: true,
                     bubbles: true
                 });
-                document.dispatchEvent(ev);
+                this.dispatchEvent(ev);
             });
         }
     }
@@ -411,12 +411,12 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     getParameter(name, fallback) {
-        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);        
+        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
         if (params && params.length == 1) {
             return params[0];
         }else if (params && params.length > 1) {
             return params
-        }        
+        }
         return fallback;
     }
 
@@ -448,7 +448,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     getParameters() {
         const params = {};
-        for (let key of TeiPublisher.url.searchParams.keys()) {            
+        for (let key of TeiPublisher.url.searchParams.keys()) {
             params[key] = this.getParameter(key);
         }
         return params;
