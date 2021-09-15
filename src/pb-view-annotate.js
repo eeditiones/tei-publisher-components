@@ -966,7 +966,9 @@ class PbViewAnnotate extends PbView {
     const types = new Set();
     const elem = this.shadowRoot.getElementById('view')
     elem.querySelectorAll('.annotation').forEach((annotation) => {
+      if (annotation.dataset.type) {
         types.add(annotation.dataset.type);
+      }
     });
     types.forEach((type) => {
       this._annotationColors.set(type, uniqolor(`annotation-${type.repeat(4)}`, {
