@@ -1,3 +1,11 @@
+## [1.24.19](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.18...v1.24.19) (2021-09-16)
+
+
+### Bug Fixes
+
+* rename pb-kwic-results to pb-blacklab-results and pb-kwic-highlight to pb-blacklab-highlight ([3e85fa5](https://github.com/eeditiones/tei-publisher-components/commit/3e85fa5427765f2c72840df183059ed7155c296d))
+* **pb-view-annotate:** avoid exception if data-type attribut is missing on an element ([41f0ab0](https://github.com/eeditiones/tei-publisher-components/commit/41f0ab0e946698179b2aceb904fa21255e8b8934))
+
 ## [1.24.18](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.17...v1.24.18) (2021-08-10)
 
 
