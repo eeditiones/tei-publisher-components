@@ -160,6 +160,12 @@ export class PbLoad extends pbMixin(LitElement) {
                 }
                 this.wait(() => this.load());
             });
+        } else {
+            PbLoad.waitOnce('pb-page-ready', (data) => {
+                if (data && data.language) {
+                    this.language = data.language;
+                }
+            });
         }
     }
 
