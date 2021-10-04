@@ -1,3 +1,10 @@
+## [1.24.20](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.19...v1.24.20) (2021-10-04)
+
+
+### Bug Fixes
+
+* **pb-load:** correctly pass initial language set if use-language is true ([a759e24](https://github.com/eeditiones/tei-publisher-components/commit/a759e248d2de18b143a89d5327f18299f07f2c71))
+
 ## [1.24.19](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.18...v1.24.19) (2021-09-16)
 
 
