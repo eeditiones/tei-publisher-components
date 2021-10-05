@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.20...v1.25.0) (2021-10-05)
+
+
+### Features
+
+* **dts-client:** support navigation to parent collection ([5985a70](https://github.com/eeditiones/tei-publisher-components/commit/5985a70253ac9f9b0f512a528b12e36178ea6413))
+
 ## [1.24.20](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.19...v1.24.20) (2021-10-04)
 
 
