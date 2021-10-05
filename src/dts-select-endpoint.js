@@ -95,14 +95,16 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
         if (!newEndpoint) {
             return;
         }
-        this.setParameter('endpoint', newEndpoint);
+        const endpoint = this.endpoints.find((endp) => endp.url === newEndpoint);
+        this.setParameter('endpoint', endpoint.url);
         this.pushHistory('dts-endpoint');
         console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
         this.emitTo('dts-endpoint', {
-            endpoint: newEndpoint,
+            endpoint: endpoint.url,
+            collection: endpoint.collection,
             reload: !this.endpoint
         });
-        this.endpoint = newEndpoint;
+        this.endpoint = endpoint.url;
     }
 }
 customElements.define('dts-select-endpoint', DtsSelectEndpoint);
