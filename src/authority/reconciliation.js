@@ -1,12 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Registry } from './registry.js'
 
-// Todo:
-// - strings <- types
-// - use scheme#types in @type output?
-// - test with other providers, inside custom connector
-// - documentation
-
 async function getServiceManifest (endpoint) {
 	const response = await fetch(endpoint);
 	const data = await response.json();
@@ -72,7 +66,7 @@ export class ReconciliationService extends Registry {
                   label: item.name,
                   link: this.view,
                   details: this.description,
-                  provider: 'OpenReconcile'
+                  provider: 'ReconciliationService'
               };
               results.push(result);
             });
