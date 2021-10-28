@@ -13,15 +13,12 @@ on:
 jobs:
   build:
       runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          node-version: [10.x, 12.x, 14.x]
       steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "14.x"
       - name: npm install and build
         run:
           npm ci
@@ -30,5 +27,9 @@ jobs:
         run: docker build -t exist-db -f Dockerfile .
       - name: Start docker image
         run: docker run --publish 8080:8080 --detach exist-db
+      - name: Wait for eXist
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
       - name: npm test
         run: npm test
