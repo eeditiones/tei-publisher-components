@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.25.0...v1.26.0) (2021-10-29)
+
+
+### Features
+
+* **pb-authority-lookup:** new connector for Georg Fischer AG Konzernarchiv ([b66b1b4](https://github.com/eeditiones/tei-publisher-components/commit/b66b1b46beefc9dfd12193aed643693891eb6047))
+
 # [1.25.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.24.20...v1.25.0) (2021-10-05)
 
 
