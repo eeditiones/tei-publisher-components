@@ -3,6 +3,7 @@ import { GeoNames } from './geonames.js';
 import { Airtable } from './airtable.js';
 import { GND } from './gnd.js';
 import { KBGA } from './kbga.js';
+import { GF } from './gf.js';
 import { Custom } from './custom.js';
 
 export function createConnectors(endpoint, root) {
@@ -22,6 +23,9 @@ export function createConnectors(endpoint, root) {
         break;
       case 'KBGA':
         instance = new KBGA(configElem);
+        break;
+      case 'GF':
+        instance = new GF(configElem);
         break;
       case 'Custom':
         instance = new Custom(endpoint, configElem);
