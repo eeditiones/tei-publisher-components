@@ -161,13 +161,13 @@ export class ReconciliationService extends Registry {
         })
         .catch(async () => {
           const result = await this.query(id);
-          if (this.debug) { console.log('Reconcile %s: getRecord results (via query): %o', this._register, result); }
-          return result;
+          if (this.debug) { console.log('Reconcile %s: getRecord results (via query): %o', this._register, result.items[0]); }
+          return result.items[0];
         });
       return r;
     }
-    const result = await this.query(id)[0];
-    if (this.debug) { console.log('Reconcile %s: getRecord() results (via query($s)): %o', this._register, id, result ); }
-    return result;
+    const result = await this.query(id);
+    if (this.debug) { console.log('Reconcile %s: getRecord() results (via query($s)): %o', this._register, id, result.items[0]); }
+    return result.items[0];
   }
 }
