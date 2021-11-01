@@ -126,6 +126,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 }
             };
             this.grid = new Grid(config);
+            this.grid.on('load', () => {
+                this.emitTo('pb-grid-loaded');
+            });
 
             this.grid.render(table);
         });
