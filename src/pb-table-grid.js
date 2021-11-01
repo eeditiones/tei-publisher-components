@@ -77,12 +77,18 @@ export class PbTableGrid extends pbMixin(LitElement) {
         super();
         this.cssPath = '../css/gridjs';
         this._params = {};
+        this._externalParams = {};
         this.resizable = false;
         this.search = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
+
+        this.subscribeTo('pb-search-resubmit', (ev) => {
+            this._externalParams = ev.detail.params;
+            this._submit();
+        });
     }
 
     firstUpdated() {
@@ -118,6 +124,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
                     server: {
                         url: (prev, page, limit) => {
                             const params = new URLSearchParams(this._params);
+                            Object.keys(this._externalParams).forEach((key) => {
+                                params.append(key, this._externalParams[key]);
+                            })
                             params.append('limit', limit);
                             params.append('start', page * limit);
                             return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${params.toString()}`;
@@ -127,7 +136,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
             };
             this.grid = new Grid(config);
             this.grid.on('load', () => {
-                this.emitTo('pb-grid-loaded');
+                this.emitTo('pb-results-received', {
+                    "params": this._externalParams
+                });
             });
 
             this.grid.render(table);
@@ -136,7 +147,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
     _submit() {
         const form = this.shadowRoot.getElementById('form');
-        this._params = form.serializeForm();
+        if (form) {
+            this._params = form.serializeForm();
+        }
         this.grid.forceRender();
     }
 
