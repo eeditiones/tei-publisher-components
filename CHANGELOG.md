@@ -1,3 +1,18 @@
+# [1.27.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.26.0...v1.27.0) (2021-11-02)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** emit pb-results-received after table data loaded ([3e04d55](https://github.com/eeditiones/tei-publisher-components/commit/3e04d55cbed1c71c61ef08231776bc70eade963b))
+* **pb-table-grid:** initialization issues ([072a6d9](https://github.com/eeditiones/tei-publisher-components/commit/072a6d98ce1fe2c4b54a19b2c43ad4e8e0b77f1e))
+* **pb-table-grid:** save and restore parameters from URL ([88c585c](https://github.com/eeditiones/tei-publisher-components/commit/88c585c60e61820b43177701c59cd6f25dfe39c8))
+
+
+### Features
+
+* **pb-table-grid:** add new table grid component ([c1f5825](https://github.com/eeditiones/tei-publisher-components/commit/c1f582525eadced4bdb59743fd37537aa721347a))
+* **pb-table-grid:** emit pb-grid-loaded event when data has updated ([9fc04af](https://github.com/eeditiones/tei-publisher-components/commit/9fc04af99fdbcb5ca7848fa34f4ec5ffd4750e37))
+
 # [1.26.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.25.0...v1.26.0) (2021-10-29)
 
 
