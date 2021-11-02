@@ -77,7 +77,6 @@ export class PbTableGrid extends pbMixin(LitElement) {
         super();
         this.cssPath = '../css/gridjs';
         this._params = {};
-        this._externalParams = {};
         this.resizable = false;
         this.search = false;
     }
@@ -86,7 +85,12 @@ export class PbTableGrid extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', (ev) => {
-            this._externalParams = ev.detail.params;
+            this._params = Object.assign({}, ev.detail.params);
+            this._submit();
+        });
+
+        window.addEventListener('popstate', (ev) => {
+            this._params = ev.state;
             this._submit();
         });
     }
@@ -99,6 +103,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
         pbColumns.forEach((column) => columns.push(column.data()));
 
         PbTableGrid.waitOnce('pb-page-ready', () => {
+            this._params = this.getParameters();
             const url = this.toAbsoluteURL(this.source);
             const config = {
                 columns,
@@ -123,13 +128,16 @@ export class PbTableGrid extends pbMixin(LitElement) {
                     limit: 10,
                     server: {
                         url: (prev, page, limit) => {
-                            const params = new URLSearchParams(this._params);
-                            Object.keys(this._externalParams).forEach((key) => {
-                                params.append(key, this._externalParams[key]);
-                            })
-                            params.append('limit', limit);
-                            params.append('start', page * limit);
-                            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${params.toString()}`;
+                            const form = this.shadowRoot.getElementById('form');
+                            if (form) {
+                                Object.assign(this._params, form.serializeForm());
+                            }
+                            this._params.limit = limit;
+                            this._params.start = page * limit;
+                            this.setParameters(this._params);
+                            this.pushHistory('grid', this._params);
+
+                            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(this._params).toString()}`;
                         }
                     }
                 }
@@ -137,7 +145,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
             this.grid = new Grid(config);
             this.grid.on('load', () => {
                 this.emitTo('pb-results-received', {
-                    "params": this._externalParams
+                    "params": this._params
                 });
             });
 
@@ -146,10 +154,6 @@ export class PbTableGrid extends pbMixin(LitElement) {
     }
 
     _submit() {
-        const form = this.shadowRoot.getElementById('form');
-        if (form) {
-            this._params = form.serializeForm();
-        }
         this.grid.forceRender();
     }
 
