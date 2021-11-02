@@ -54,6 +54,10 @@ export default [
             copy({
                 targets: [
                     {
+                        src: './node_modules/gridjs/dist/theme/mermaid.min.css',
+                        dest: './css/gridjs'
+                    },
+                    {
                         src: './node_modules/leaflet/dist/leaflet.css',
                         dest: './css/leaflet'
                     },

@@ -56,6 +56,7 @@ import './pb-authority-lookup.js';
 import './pb-message.js';
 import './pb-blacklab-results.js';
 import './pb-blacklab-highlight.js';
+import './pb-table-grid.js';
 
 import '@polymer/iron-icons/editor-icons';
 import '@polymer/iron-icons/social-icons';
