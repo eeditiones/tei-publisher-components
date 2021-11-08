@@ -454,7 +454,8 @@ class PbViewAnnotate extends PbView {
 
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
-    span.className = `annotation annotation-${teiRange.type} ${teiRange.type}`;
+    const addClass = teiRange.properties[this.key] === '' ? 'incomplete' : '';
+    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass}`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
 
@@ -657,9 +658,12 @@ class PbViewAnnotate extends PbView {
       range = clearProperties(range);
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     }
-
-    const json = Object.assign(JSON.parse(span.dataset.annotation), properties);
+    const jsonOld = JSON.parse(span.dataset.annotation);
+    const json = Object.assign(jsonOld || {}, properties);
     span.dataset.annotation = JSON.stringify(json);
+    if (json[this.key] !== '') {
+      span.classList.remove('incomplete');
+    }
   }
 
   _editAnnotation(ev) {
@@ -753,7 +757,7 @@ class PbViewAnnotate extends PbView {
         ev.preventDefault();
         ev.stopPropagation();
         const type = span.dataset.type;
-        const data = JSON.parse(span.dataset.annotation);
+        const data = JSON.parse(span.dataset.annotation) || {};
         const color = this._annotationColors.get(type);
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
@@ -896,7 +900,7 @@ class PbViewAnnotate extends PbView {
         const annoData = node.parentNode.dataset.annotation;
         const annoType = node.parentNode.dataset.type;
         if (annoData && annoType) {
-          const parsed = JSON.parse(annoData);
+          const parsed = JSON.parse(annoData) || {};
           isAnnotated = annoType === type;
           ref = parsed[this.key];
         }
@@ -1004,6 +1008,17 @@ class PbViewAnnotate extends PbView {
       classes.push(`
         .annotation-${type}::after {
           background-color: var(--pb-annotation-${type});
+          border-color: var(--pb-annotation-${type});
+          color: var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'});
+        }
+        .annotation-${type}.incomplete::after {
+          background: repeating-linear-gradient(
+            315deg,
+            var(--pb-annotation-${type}),
+            var(--pb-annotation-${type}) 5px,
+            var(${color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'}) 5px,
+            var(${color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'}) 10px
+          );
           color: var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'});
         }
       `);
@@ -1064,7 +1079,7 @@ class PbViewAnnotate extends PbView {
             font-variant: normal;
             padding: 2px;
         }
-        
+
         [part=highlight] {
           border: 3px solid rgb(255, 174, 0);
           border-radius: 8px;
