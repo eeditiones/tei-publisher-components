@@ -244,6 +244,13 @@
     "confirm-reload": "Discard current annotations and reload the source?",
     "modify": "Apply an edit to the base text",
     "modify-info": "Note: this is not an annotation, but will modify the base text when merged.",
-    "permission": "Permission denied: you are not allowed to save annotations."
+    "permission": "Permission denied: you are not allowed to save annotations.",
+    "ner": {
+      "title": "Named Entity Extraction",
+      "description": "Try to automatically find named entities in the text and mark them as annotations.",
+      "run": "Run",
+      "model": "Select a model",
+      "denied": "Unsaved changes found: please store or discard them first."
+    }
   }
 }
