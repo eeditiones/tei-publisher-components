@@ -832,8 +832,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             this.serializeAttribute('predicate', model.predicate),
             model.type === 'model' ? this.serializeAttribute('behaviour', model.behaviour) : '',
             this.serializeAttribute('cssClass', model.css),
-            this.serializeAttribute('useSourceRendition', model.sourcerend)
-        ].join('')
+            this.serializeAttribute('useSourceRendition', model.sourcerend),
+            this.serializeAttribute('pb:mode', model.mode)
+        ].join('');
 
         const desc = model.desc ? nestedIndent + '<desc>' + model.desc + '</desc>\n' : '';
 
@@ -854,6 +855,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         }
         const name = this.serializeAttribute('name', parameter.name);
         const value = this.serializeAttribute('value', parameter.value);
+        if (parameter.set) {
+            return `${indent}<pb:set-param xmlns=""${name}${value}/>\n`
+        }
         return `${indent}<param${name}${value}/>\n`
     }
 

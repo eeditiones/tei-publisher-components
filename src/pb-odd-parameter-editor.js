@@ -29,7 +29,7 @@ export class PbOddParameterEditor extends LitElement {
             }
             .wrapper{
                 display:grid;
-                grid-template-columns:150px auto 50px;
+                grid-template-columns:150px auto 50px 50px;
                 grid-column-gap:20px;
                 grid-row-gap:20px;
                 margin-bottom:10px;
@@ -37,8 +37,9 @@ export class PbOddParameterEditor extends LitElement {
             paper-dropdown-menu{
                 align-self:start;
             }
-            paper-icon-button{
-                align-self:center;
+            paper-icon-button, paper-checkbox {
+                align-self: center;
+                margin-top: 16px;
             }
         `;
     }
@@ -56,7 +57,7 @@ export class PbOddParameterEditor extends LitElement {
                         code="${this.value}"
                         linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') ? 'modules/editor.xql' : 'api/lint'}"
                         apiVersion="${this.apiVersion}"></pb-code-editor>
-
+            <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}">set</paper-checkbox>
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
 
@@ -87,6 +88,10 @@ export class PbOddParameterEditor extends LitElement {
             parameters: {
                 type: Object
             },
+            setParam: {
+                type: Boolean,
+                attribute: 'set'
+            },
             _currentParameters: {
                 type: Array
             },
@@ -104,6 +109,7 @@ export class PbOddParameterEditor extends LitElement {
         super();
         this.name = '';
         this.value = '';
+        this.setParam = false;
         this.behaviour = '';
         this.currentParameters = [];
         this.parameters = {
@@ -189,7 +195,8 @@ export class PbOddParameterEditor extends LitElement {
         console.log('_handleCodeChange ', e);
         this.value = this.shadowRoot.getElementById('editor').getSource();
         this.name = this.shadowRoot.getElementById('combo').text;
-        this.dispatchEvent(new CustomEvent('parameter-changed', { composed: true, bubbles: true, detail: { name: this.name, value: this.value } }));
+        this.setParam = this.shadowRoot.getElementById('set').checked;
+        this.dispatchEvent(new CustomEvent('parameter-changed', { composed: true, bubbles: true, detail: { name: this.name, value: this.value, set: this.setParam } }));
     }
 
 

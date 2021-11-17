@@ -171,6 +171,7 @@ export class PbOddElementspecEditor extends LitElement {
                 type="${model.type}"
                 output="${model.output}"
                 css="${model.css}"
+                mode="${model.mode}"
                 .model="${model}"
                 .parameters="${model.parameters}"
                 desc="${model.desc}"
@@ -203,6 +204,7 @@ export class PbOddElementspecEditor extends LitElement {
         const newModel = {
             behaviour: 'inline',
             css: '',
+            mode: '',
             predicate: '',
             desc: '',
             type: addModel.selected,

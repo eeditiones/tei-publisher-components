@@ -271,6 +271,9 @@ export class PbOddModelEditor extends LitElement {
                     return value;
                 }
             },
+            mode: {
+                type: String
+            },
             model: {
                 type: Object
             },
@@ -331,6 +334,7 @@ export class PbOddModelEditor extends LitElement {
         this.template = '';
         this.output = '';
         this.css = '';
+        this.mode = '';
         this.model = {};
         this.model.models = [];
         this.parameters = [];
@@ -479,6 +483,11 @@ export class PbOddModelEditor extends LitElement {
                                 placeholder="${translate('odd.editor.model.css-class-placeholder')}"
                                 label="CSS Class"
                                 @change="${this._inputCss}"></paper-input>
+                            
+                            <paper-input id="mode" .value="${this.mode}"
+                                placeholder="${translate('odd.editor.model.mode-placeholder')}"
+                                label="Mode"
+                                @change="${this._inputMode}"></paper-input>
                                 
                             <pb-code-editor id="template"
                                              code="${this.template}"
@@ -501,6 +510,7 @@ export class PbOddModelEditor extends LitElement {
                                        behaviour="${this.behaviour}"
                                        name="${parameter.name}"
                                        value="${parameter.value}"
+                                       ?set="${parameter.set}"
                                        endpoint="${this.endpoint}"
                                        apiVersion="${this.apiVersion}"
                                        @parameter-remove="${(e) => this._removeParam(e, index)}"
@@ -543,6 +553,7 @@ export class PbOddModelEditor extends LitElement {
                     type="${model.type}"
                     output="${model.output}"
                     css="${model.css}"
+                    mode="${model.mode}"
                     .model="${model}"
                     .parameters="${model.parameters}"
                     desc="${model.desc}"
@@ -836,6 +847,11 @@ export class PbOddModelEditor extends LitElement {
         this._fireModelChanged('css', this.css);
     }
 
+    _inputMode(ev) {
+        this.mode = ev.composedPath()[0].value;
+        this._fireModelChanged('mode', this.mode);
+    }
+
     _updateTemplate(ev) {
         this.template = this.shadowRoot.getElementById('template').getSource();
         this._fireModelChanged('template', this.template);
@@ -854,6 +870,7 @@ export class PbOddModelEditor extends LitElement {
     _updateParam(e, index) {
         this.parameters[index].name = e.detail.name;
         this.parameters[index].value = e.detail.value;
+        this.parameters[index].set = e.detail.set;
         this._fireModelChanged('parameters', this.parameters);
     }
 

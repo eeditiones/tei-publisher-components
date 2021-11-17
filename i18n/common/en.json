@@ -107,7 +107,7 @@
     "requiredGroup": "must be member of group {{group}}"
   },
   "search": {
-    "search":"Search",
+    "search": "Search",
     "reset": "Reset",
     "placeholder": "Enter Query",
     "sections": "Search sections",
@@ -162,7 +162,8 @@
         "custom-behaviour-placeholder": "[Custom Behaviour]",
         "template-placeholder": "[Define code template to apply to content]",
         "param-name-placeholder": "[Param name]",
-        "empty": "[Empty]"
+        "empty": "[Empty]",
+        "mode-placeholder": "Processing mode - passed to subsequent models"
       },
       "css-source": "Open CSS file"
     }
