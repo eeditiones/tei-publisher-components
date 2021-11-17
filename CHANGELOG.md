@@ -1,3 +1,15 @@
+# [1.28.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.27.1...v1.28.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** support setting number of entries per page ([69b29ab](https://github.com/eeditiones/tei-publisher-components/commit/69b29abfd7168012a32ad1cdacd8b404a655a090))
+
+
+### Features
+
+* **pb-odd-editor:** support extensions pb:set-param and [@pb](https://github.com/pb):mode ([748cd1e](https://github.com/eeditiones/tei-publisher-components/commit/748cd1e4d885e03e850b0433367bb9ac241f81c7))
+
 ## [1.27.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.27.0...v1.27.1) (2021-11-08)
 
 
