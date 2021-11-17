@@ -244,6 +244,13 @@
     "modify": "Änderung am Text vornehmen",
     "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt.",
     "apply-all": "Alle selektieren und anwenden",
-    "permission": "Zugriff verweigert: keine Berechtigung zum Speichern von Annotationen."
+    "permission": "Zugriff verweigert: keine Berechtigung zum Speichern von Annotationen.",
+    "ner": {
+      "title": "Automatische Entitätenerkennung",
+      "description": "Erkannte Entitäten werden als Annotationen markiert.",
+      "run": "Ausführen",
+      "model": "Wähle ein Modell",
+      "denied": "Ungespeicherte Änderungen gefunden: bitte zuerst speichern oder verwerfen."
+    }
   }
 }

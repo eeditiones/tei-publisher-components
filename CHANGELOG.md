@@ -1,3 +1,10 @@
+## [1.27.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.27.0...v1.27.1) (2021-11-08)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** add class .incomplete if a semantic annotation has an empty reference, so users can quickly see which annotations may need inspection ([b9370a0](https://github.com/eeditiones/tei-publisher-components/commit/b9370a00683d027f1826fef769a79493b5cadc7e))
+
 # [1.27.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.26.0...v1.27.0) (2021-11-02)
 
 
