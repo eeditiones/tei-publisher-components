@@ -60,6 +60,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
             resizable: {
                 type: Boolean
             },
+            perPage: {
+                type: Number,
+                attribute: 'per-page'
+            },
+            height: {
+                type: String
+            },
             /**
              * If specified, enable server-side search.
              */
@@ -79,6 +86,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
         this._params = {};
         this.resizable = false;
         this.search = false;
+        this.perPage = 10;
+        this.height = null;
+        this.fixedHeader = false;
     }
 
     connectedCallback() {
@@ -93,6 +103,15 @@ export class PbTableGrid extends pbMixin(LitElement) {
             this._params = ev.state;
             this._submit();
         });
+
+        if (!this.height) {
+            const property = getComputedStyle(this).getPropertyValue('--pb-table-grid-height');
+            if (property) {
+                this.height = property;
+            } else {
+                this.height = 'auto';
+            }
+        }
     }
 
     firstUpdated() {
@@ -101,11 +120,12 @@ export class PbTableGrid extends pbMixin(LitElement) {
         const pbColumns = this.querySelectorAll('pb-table-column');
         const columns = [];
         pbColumns.forEach((column) => columns.push(column.data()));
-
         PbTableGrid.waitOnce('pb-page-ready', () => {
             this._params = this.getParameters();
             const url = this.toAbsoluteURL(this.source);
             const config = {
+                height: this.height,
+                fixedHeader: true,
                 columns,
                 resizable: this.resizable,
                 server: {
@@ -115,6 +135,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 },
                 sort: {
                     multiColumn: false,
+                    enabled: true,
                     server: {
                         url: (prev, cols) => {
                             if (!cols.length) return prev;
@@ -125,7 +146,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 },
                 pagination: {
                     enabled: true,
-                    limit: 10,
+                    limit: this.perPage,
                     server: {
                         url: (prev, page, limit) => {
                             const form = this.shadowRoot.getElementById('form');
@@ -142,6 +163,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                     }
                 }
             };
+
             this.grid = new Grid(config);
             this.grid.on('load', () => {
                 this.emitTo('pb-results-received', {
