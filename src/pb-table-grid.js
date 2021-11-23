@@ -154,7 +154,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                                 Object.assign(this._params, form.serializeForm());
                             }
                             this._params.limit = limit;
-                            this._params.start = page * limit;
+                            this._params.start = page * limit + 1;
                             this.setParameters(this._params);
                             this.pushHistory('grid', this._params);
 
