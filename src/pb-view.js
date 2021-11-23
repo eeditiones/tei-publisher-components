@@ -496,6 +496,15 @@ export class PbView extends pbMixin(LitElement) {
 
     _refresh(ev) {
         if (ev && ev.detail) {
+            if (ev.detail.hash && !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)) {
+                // if only the scroll target has changed: scroll to the element without reloading
+                this._scrollTarget = ev.detail.hash;
+                const target = this.shadowRoot.getElementById(this._scrollTarget);
+                if (target) {
+                    setTimeout(() => target.scrollIntoView());
+                }
+                return;
+            }
             if (ev.detail.path) {
                 const doc = this.getDocument();
                 doc.path = ev.detail.path;
@@ -641,7 +650,7 @@ export class PbView extends pbMixin(LitElement) {
                 if (target) {
                     setTimeout(() => {
                         target.scrollIntoView();
-                    });
+                    }, 100);
                 }
                 this._scrollTarget = null;
             });
