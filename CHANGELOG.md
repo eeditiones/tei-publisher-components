@@ -1,3 +1,10 @@
+## [1.28.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.0...v1.28.1) (2021-11-23)
+
+
+### Bug Fixes
+
+* **pb-link, pb-view:** if only scroll target is changed, do not reload the content ([e7cc114](https://github.com/eeditiones/tei-publisher-components/commit/e7cc1145467935a41d410d3735b5d0327e26de14))
+
 # [1.28.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.27.1...v1.28.0) (2021-11-17)
 
 
