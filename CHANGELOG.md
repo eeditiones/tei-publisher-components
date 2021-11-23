@@ -1,3 +1,10 @@
+## [1.28.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.1...v1.28.2) (2021-11-23)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** start item reported to server should be 1, not 0 ([8feab1d](https://github.com/eeditiones/tei-publisher-components/commit/8feab1db0b8d0bd8e8db5b8ecbaf531485a3c94b))
+
 ## [1.28.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.0...v1.28.1) (2021-11-23)
 
 
