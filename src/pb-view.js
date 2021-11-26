@@ -272,6 +272,17 @@ export class PbView extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'disable-history'
             },
+            /**
+             * If set to the name of an event, the content of the pb-view will not be replaced
+             * immediately upon updates. Instead, an event is emitted, which contains the new content
+             * in property `root`. An event handler intercepting the event can thus modify the content.
+             * Once it is done, it should pass the modified content to the callback function provided
+             * in the event detail under the name `render`. See the demo for an example.
+             */
+            beforeUpdate: {
+                type: String,
+                attribute: 'before-update-event'
+            },
             _features: {
                 type: Object
             },
@@ -312,6 +323,7 @@ export class PbView extends pbMixin(LitElement) {
         this.highlight = false;
         this.infiniteScrollMax = 10;
         this.disableHistory = false;
+        this.beforeUpdate = null;
         this._features = {};
         this._selector = new Map();
         this._chunks = [];
@@ -696,6 +708,22 @@ export class PbView extends pbMixin(LitElement) {
         fragment.appendChild(elem);
         elem.innerHTML = resp.content;
 
+        // if before-update-event is set, we do not replace the content immediately,
+        // but emit an event
+        if (this.beforeUpdate) {
+            this.emitTo(this.beforeUpdate, {
+                data: resp,
+                root: elem,
+                render: (content) => {
+                    this._doReplaceContent(content, resp, direction);
+                }
+            });
+        } else {
+            this._doReplaceContent(elem, resp, direction);
+        }
+    }
+
+    _doReplaceContent(elem, resp, direction) {
         if (this.columnSeparator) {
             this._replaceColumns(elem);
             this._loading = false;
