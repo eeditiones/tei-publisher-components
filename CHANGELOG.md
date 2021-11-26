@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.2...v1.29.0) (2021-11-26)
+
+
+### Features
+
+* **pb-view:** allow custom javascript to intercept updates and modify content before it is shown ([c98035e](https://github.com/eeditiones/tei-publisher-components/commit/c98035e8696cb4e642c6a8396b346ceb29e83595))
+
 ## [1.28.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.1...v1.28.2) (2021-11-23)
 
 
