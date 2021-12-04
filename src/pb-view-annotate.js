@@ -985,6 +985,7 @@ class PbViewAnnotate extends PbView {
         lightness: [30, 60]
       }));
     });
+    this.emitTo('pb-annotation-colors', { colors: this._annotationColors });
   }
 
   _checkAnnotationColor(type) {
@@ -997,6 +998,7 @@ class PbViewAnnotate extends PbView {
       lightness: [30, 60]
     }));
     this._annotationStyles();
+    this.emitTo('pb-annotation-colors', { colors: this._annotationColors });
   }
 
   _annotationStyles() {
