@@ -1,3 +1,10 @@
+## [1.30.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.0...v1.30.1) (2021-12-04)
+
+
+### Bug Fixes
+
+* **odd editor:** add translations for pb:set-param and [@pb](https://github.com/pb):mode ([1e5422f](https://github.com/eeditiones/tei-publisher-components/commit/1e5422f53d0bbfff12b18f2d66805844b6449ef7))
+
 # [1.30.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.29.0...v1.30.0) (2021-12-04)
 
 
