@@ -57,7 +57,7 @@ export class PbOddParameterEditor extends LitElement {
                         code="${this.value}"
                         linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') ? 'modules/editor.xql' : 'api/lint'}"
                         apiVersion="${this.apiVersion}"></pb-code-editor>
-            <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}">set</paper-checkbox>
+            <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}">${translate('odd.editor.model.set-param')}</paper-checkbox>
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
 

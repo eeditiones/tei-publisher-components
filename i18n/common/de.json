@@ -162,7 +162,9 @@
         "custom-behaviour-placeholder": "[Selbstdefiniertes Behaviour]",
         "template-placeholder": "[Code Vorlage für den Inhalt angeben]",
         "param-name-placeholder": "[Name des Parameters]",
-        "empty": "[Leer]"
+        "empty": "[Leer]",
+        "mode-placeholder": "[Modus setzen für nachfolgende Modelle]",
+        "set-param": "setze"
       },
       "css-source": "CSS Datei öffnen"
     }

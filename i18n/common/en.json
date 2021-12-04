@@ -163,7 +163,8 @@
         "template-placeholder": "[Define code template to apply to content]",
         "param-name-placeholder": "[Param name]",
         "empty": "[Empty]",
-        "mode-placeholder": "Processing mode - passed to subsequent models"
+        "mode-placeholder": "[Processing mode - passed to subsequent models]",
+        "set-param": "set"
       },
       "css-source": "Open CSS file"
     }

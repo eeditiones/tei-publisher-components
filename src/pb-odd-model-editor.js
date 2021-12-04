@@ -214,6 +214,16 @@ export class PbOddModelEditor extends LitElement {
             pb-code-editor {
                 margin-bottom: 20px;
             }
+
+            .horizontal {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            #mode {
+                min-width: 18em;
+            }
         `;
     }
 
@@ -435,18 +445,23 @@ export class PbOddModelEditor extends LitElement {
                 </p>
             </header>
             <iron-collapse id="details" ?opened="${this.show}" class="details">
-                <paper-dropdown-menu class="selectOutput" label="Output">
-                    <paper-listbox id="output" slot="dropdown-content" attr-for-selected="value"
-                                   selected="${this.output}" @iron-select="${this._selectOutput}">
+                <div class="horizontal">
+                    <paper-dropdown-menu class="selectOutput" label="Output">
+                        <paper-listbox id="output" slot="dropdown-content" attr-for-selected="value"
+                                    selected="${this.output}" @iron-select="${this._selectOutput}">
 
-                        ${this.outputs.map((item) =>
-                        html`
-                            <paper-item value="${item}">${item}</paper-item>
-                        `)}
+                            ${this.outputs.map((item) =>
+                            html`
+                                <paper-item value="${item}">${item}</paper-item>
+                            `)}
 
-                    </paper-listbox>
-                </paper-dropdown-menu>
-
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                    <paper-input id="mode" .value="${this.mode}"
+                        placeholder="${translate('odd.editor.model.mode-placeholder')}"
+                        label="Mode"
+                        @change="${this._inputMode}"></paper-input>
+                </div>
                 <paper-input id="desc" .value="${this.desc}" placeholder="${translate('odd.editor.model.description-placeholder')}"
                     label="Description" @change="${this._inputDesc}"></paper-input>
 
@@ -483,11 +498,6 @@ export class PbOddModelEditor extends LitElement {
                                 placeholder="${translate('odd.editor.model.css-class-placeholder')}"
                                 label="CSS Class"
                                 @change="${this._inputCss}"></paper-input>
-                            
-                            <paper-input id="mode" .value="${this.mode}"
-                                placeholder="${translate('odd.editor.model.mode-placeholder')}"
-                                label="Mode"
-                                @change="${this._inputMode}"></paper-input>
                                 
                             <pb-code-editor id="template"
                                              code="${this.template}"
@@ -708,6 +718,7 @@ export class PbOddModelEditor extends LitElement {
             output: '',
             sourcerend: false,
             models: [],
+            mode: '',
             parameters: [],
             renditions: [],
             template: '',
