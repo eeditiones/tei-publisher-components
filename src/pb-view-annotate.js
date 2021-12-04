@@ -112,12 +112,13 @@ function ancestors(node, selector) {
  * @param {Node} node the current node
  * @returns next text node or the current node if none is found
  */
-function nextTextNode(node) {
-  let next = node.nextSibling;
-  while (next.hasChildNodes()) {
-    next = next.firstChild;
+function nextTextNode(context, node) {
+  const walker = document.createTreeWalker(context, NodeFilter.SHOW_TEXT);
+  walker.currentNode = node;
+  if (walker.nextNode()) {
+    return walker.currentNode;
   }
-  return next.nodeType === Node.TEXT_NODE ? next : node;
+  return node;
 }
 
 /**
@@ -433,12 +434,16 @@ class PbViewAnnotate extends PbView {
 
     console.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
     if (startPoint[1] === startPoint[0].textContent.length) {
-      const nextNode = nextTextNode(startPoint[0]);
+      // try to find the next text node
+      const nextNode = nextTextNode(context, startPoint[0]);
       // next text node is the endpoint: start there
       if (nextNode === endPoint[0]) {
         range.setStart(nextNode, 0);
+        // adjust startPoint for check below
+        startPoint[0] = nextNode;
+        startPoint[1] = 0;
       } else {
-        range.setStartBefore(startPoint[0].nextSibling);
+        range.setStartBefore(startPoint[0].nextSibling || nextNode);
       }
     } else if (startPoint[0] !== endPoint[0] && startPoint[1] === 0) {
       range.setStartBefore(extendRange(startPoint[0], context));
