@@ -1,3 +1,15 @@
+# [1.30.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.29.0...v1.30.0) (2021-12-04)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** fix range detection bugs ([d1f31b3](https://github.com/eeditiones/tei-publisher-components/commit/d1f31b3687f58d924f76d32e68bd53f0e53d79d2))
+
+
+### Features
+
+* **pb-view-annotate:** emit pb-annotation-colors event if annotation color scheme changed ([185b075](https://github.com/eeditiones/tei-publisher-components/commit/185b075fa72191d7fb8753026a38e217b90fd8d9))
+
 # [1.29.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.28.2...v1.29.0) (2021-11-26)
 
 
