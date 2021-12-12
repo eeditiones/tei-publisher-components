@@ -1,3 +1,10 @@
+## [1.30.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.1...v1.30.2) (2021-12-12)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** do not throw errors when batch-applying annotations ([5432c64](https://github.com/eeditiones/tei-publisher-components/commit/5432c64812276047eabf6fad0d0b96435c10669d))
+
 ## [1.30.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.0...v1.30.1) (2021-12-04)
 
 
