@@ -323,7 +323,7 @@ class PbViewAnnotate extends PbView {
 
   set annotations(annoData) {
     this._ranges = annoData;
-    this.updateAnnotations();
+    this.updateAnnotations(true);
     this._initAnnotationColors();
     this._annotationStyles();
   }
@@ -413,7 +413,7 @@ class PbViewAnnotate extends PbView {
     }, 300));
   }
 
-  _updateAnnotation(teiRange, batch = false) {
+  _updateAnnotation(teiRange, silent = false, batch = false) {
     const view = this.shadowRoot.getElementById('view');
     const context = Array.from(view.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
       node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
@@ -467,6 +467,9 @@ class PbViewAnnotate extends PbView {
     try {
       range.surroundContents(span);
     } catch (e) {
+      if (silent) {
+        return null;
+      }
       throw new Error('An error occurred. The annotation may not be displayed. You should consider saving and reloading the document.');
     }
     this._rangesMap.set(span, teiRange);
@@ -478,7 +481,7 @@ class PbViewAnnotate extends PbView {
     return span;
   }
 
-  updateAnnotations() {
+  updateAnnotations(silent = false) {
     this._ranges.forEach((teiRange) => { 
       let span;
       switch (teiRange.type) {
@@ -495,7 +498,7 @@ class PbViewAnnotate extends PbView {
           span.dataset.annotation = JSON.stringify(teiRange.properties);
           break;
         default:
-          this._updateAnnotation(teiRange, true);
+          this._updateAnnotation(teiRange, silent, true);
           break;   
       }
     });
