@@ -140,6 +140,12 @@ export class PbSelectFeature extends pbMixin(LitElement) {
             :host {
                 display: block;
             }
+
+            #menu {
+                width: inherit;
+                min-width: inherit;
+                max-width: inherit;
+            }
         `;
     }
 }
