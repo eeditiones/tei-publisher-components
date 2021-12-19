@@ -254,5 +254,25 @@
       "model": "Select a model",
       "denied": "Unsaved changes found: please store or discard them first."
     }
+  },
+  "ner": {
+    "title": "Train a Named Entity Recognition Model",
+    "not-found": "This feature requires the TEI Publisher NER service to be running! Failed to contact the service.",
+    "found": "Found TEI Publisher NER with spaCy version",
+    "name-placeholder": "Name of the model to create",
+    "name": "Name",
+    "path": "Path",
+    "path-placeholder": "Relative path to document or collection",
+    "path-info": "Enter path to a document or collection to use as training input. Should be relative to TEI Publisher's data root.",
+    "lang-info": "You may either train a new model for a language or select an existing model to extend below. If not extending an existing model, you must specify a language. Otherwise leave it empty.",
+    "language-placeholder": "Language to create the model for",
+    "language": "Language",
+    "language-error": "Either a language or a base model are required",
+    "model": "Base Model",
+    "model-placeholder": "Base model to extend or copy from",
+    "vectors": "Only copy vectors from base model",
+    "output": "Training Output",
+    "prepare": "Preparing training data",
+    "start": "Run"
   }
 }

@@ -254,5 +254,25 @@
       "model": "Wähle ein Modell",
       "denied": "Ungespeicherte Änderungen gefunden: bitte zuerst speichern oder verwerfen."
     }
+  },
+  "ner": {
+    "title": "Trainiere ein Modell zur Entitätenerkennung",
+    "not-found": "Dieses Feature benötigt einen laufenden TEI Publisher NER Server, aber der Dienst antwortet nicht.",
+    "found": "TEI Publisher NER gefunden. spaCy Version:",
+    "name-placeholder": "Name des zu erstellenden Modells",
+    "name": "Name",
+    "path": "Pfad",
+    "path-placeholder": "Relativer Pfad zu einer Sammlung oder Datei",
+    "path-info": "Pfad zu einem Dokument oder einer Sammlung eingeben. Diese wird als Eingabe für das Training verwendet. Sollte relativ zum TEI Publisher Datenverzeichnis sein.",
+    "lang-info": "Es kann entweder ein neues Modell trainiert oder ein bestehendes Basismodell erweitert werden. Falls kein Basismodell unten ausgewählt wird, ist die Sprache anzugeben.",
+    "language-placeholder": "Sprache für die das Modell erstellt wird",
+    "language": "Sprache",
+    "language-error": "Benötige entweder eine Sprache oder ein Basismodell",
+    "model": "Basismodell",
+    "model-placeholder": "Zu erweiterndes Basismodell",
+    "vectors": "nur die Vektoren aus Basismodell kopieren",
+    "output": "Trainingsausgabe",
+    "prepare": "Trainingsdaten vorbereiten",
+    "start": "Ausführen"
   }
 }
