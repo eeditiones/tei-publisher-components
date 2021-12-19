@@ -1,3 +1,10 @@
+## [1.30.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.2...v1.30.3) (2021-12-19)
+
+
+### Bug Fixes
+
+* **pb-select-feature:** inherit width for dropdown ([29f0079](https://github.com/eeditiones/tei-publisher-components/commit/29f0079dbe35a403921d24fa2aa7e7d413a91088))
+
 ## [1.30.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.1...v1.30.2) (2021-12-12)
 
 
