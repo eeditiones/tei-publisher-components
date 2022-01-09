@@ -55,6 +55,7 @@ export class PbTimeline extends pbMixin(LitElement) {
       }
       .wrapper {
         margin: 0 auto;
+        padding: var(--pb-timeline-padding);
         width: auto;
         height: 80px;
         display: flex;
@@ -348,19 +349,13 @@ export class PbTimeline extends pbMixin(LitElement) {
     });
   }
 
-  getSelectedInterval() {
-    return [this.getSelectedStartDateStr, this.getSelectedEndDateStr];
-  }
-
   getSelectedStartDateStr() {
-    const selectionStartStr = this.shadowRoot.querySelectorAll(".bin-container.selected")[0].dataset.selectionstart;
-    return new ParseDateService().run(selectionStartStr);
+    return this.shadowRoot.querySelectorAll(".bin-container.selected")[0].dataset.selectionstart;
   }
 
   getSelectedEndDateStr() {
     const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
-    const selectionEndStr = selectedBins[selectedBins.length - 1].dataset.selectionend;
-    return new ParseDateService().run(selectionEndStr);
+    return selectedBins[selectedBins.length - 1].dataset.selectionend;
   }
 
   resetSelection() {
@@ -437,7 +432,14 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr) {
     if(startDateStr === endDateStr) {
-      this.emitTo('pb-timeline-date-changed', { date: startDateStr });
+      if (this.dataObj.scope !== 'D') {
+        this.emitTo('pb-timeline-daterange-changed', {
+          startDateStr,
+          endDateStr: this.searchResult.getEndOfRangeDate(this.dataObj.scope, endDateStr)
+        });
+      } else {
+        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null });
+      }
     } else {
       this.emitTo('pb-timeline-daterange-changed', {
         startDateStr,

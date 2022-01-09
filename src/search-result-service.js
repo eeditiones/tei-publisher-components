@@ -48,6 +48,10 @@ export class SearchResultService {
     return this._dateStrToUTCDate(this.getMaxDateStr());
   }
 
+  getEndOfRangeDate(scope, date) {
+    return this._UTCDateToDateStr(this._increaseDateBy(scope, date));
+  }
+  
   /*
   * exports data for each scope
   * when no argument is provided, the optimal scope based
