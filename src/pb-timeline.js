@@ -18,6 +18,9 @@ import { get as i18n } from "./pb-i18n.js";
  * - by week (W)
  * - by day (D)
  * 
+ * The endpoint is expected to return a JSON object. Each property should be a date and its value
+ * should correspond to a count of resources. The property '?' indicates the number of undated resources - if any.
+ * 
  * @fires pb-timeline-date-changed - Triggered when user clicks on a single entry
  * @fires pb-timeline-daterange-changed - Triggered when user selects a range of entries
  * @fires pb-timeline-reset-selection - Requests that the timeline is reset to initial state
