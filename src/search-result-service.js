@@ -1,3 +1,5 @@
+import { get as i18n } from "./pb-i18n.js";
+
 export class SearchResultService {
   /*
   * SEARCH RESULT OBJECT
@@ -22,10 +24,10 @@ export class SearchResultService {
   * maxInterval: max amount of bins allowed
   * scopes: array of all 6 possible values for scope
   */
-  constructor(jsonData = {}, maxInterval = 60) {
+  constructor(jsonData = {}, maxInterval = 60, scopes = ["D", "W", "M", "Y", "5Y", "10Y"]) {
     this.data = { invalid: {}, valid: {} };
     this.maxInterval = maxInterval;
-    this.scopes = ["D", "W", "M", "Y", "5Y", "10Y"];
+    this.scopes = scopes;
     this._validateJsonData(jsonData);
   }
 
@@ -97,6 +99,20 @@ export class SearchResultService {
         console.log(currentCategory);
       }
     });
+    if (this.data.invalid) {
+      let invalid = 0;
+      Object.values(this.data.invalid).forEach((count) => { invalid += count });
+      if (invalid > 0) {
+        exportData.data.push({
+          tooltip: i18n('timeline.unknown'),
+          title: i18n('timeline.unknown'),
+          // binTitle: i18n('timeline.unknown'),
+          category: '?',
+          separator: true,
+          value: invalid
+        });
+      }
+    }
     return exportData;
   }
 
@@ -379,7 +395,11 @@ export class SearchResultService {
     }
   }
   _computeIntervalSize(scope) {
-    const endDate = this._dateStrToUTCDate(this.getMaxDateStr());
+    const maxDate = this.getMaxDateStr();
+    if (!maxDate) {
+      return 0;
+    }
+    const endDate = this._dateStrToUTCDate(maxDate);
     const firstDayDateStr = this._getFirstDay(this._classify(this.getMinDateStr(), scope));
     let currentDate = this._dateStrToUTCDate(firstDayDateStr);
     let count = 0;
@@ -438,6 +458,10 @@ export class SearchResultService {
   * => day: [1-31]
   */
   _isValidDateStr(str) {
+    if (!str) {
+      return false;
+    }
+
     let split = str.split("-");
     if (split.length !== 3) return false;
     let year = split[0];

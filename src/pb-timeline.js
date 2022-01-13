@@ -4,38 +4,25 @@ import { ParseDateService } from "./parse-date-service.js";
 import { pbMixin } from "./pb-mixin.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-icon-button';
+import { get as i18n } from "./pb-i18n.js";
 
 /**
-* A timeline component that displays a barchart for search results
-* and has 6 different scaling settings (scopes)
-* - Decades (10Y)
-* - 5 Years (5Y)
-* - Years (Y)
-* - Months (M)
-* - Weeks (W)
-* - Days (D)
-*
-* Features
-* - brushing / selection of subdata
-* - reset selection
-* - tooltip on hover and over selection
-*
-* Public methods
-*   setData()
-*   getSelectedInterval();
-*   getSelectedStartDateStr()
-*   getSelectedEndDateStr()
-*   select(startDatetr, EndDateStr)
-*   resetSelection()
-*
-* Public Events
-*   pb-timeline-daterange-changed
-*   pb-timeline-date-changed
-*   pb-timeline-reset-selection
-*   pb-timeline-loaded
-*/
-const scopes = ['D','W','M','Y','5Y','10Y'];
-
+ * A timeline component to display time series data in a bar chart like view.
+ *
+ * Time series data can be displayed in one of 6 different scales:
+ * 
+ * - by decade (10Y)
+ * - by 5 years (5Y)
+ * - by years (Y)
+ * - by month (M)
+ * - by week (W)
+ * - by day (D)
+ * 
+ * @fires pb-timeline-date-changed - Triggered when user clicks on a single entry
+ * @fires pb-timeline-daterange-changed - Triggered when user selects a range of entries
+ * @fires pb-timeline-reset-selection - Requests that the timeline is reset to initial state
+ * @fires pb-timeline-loaded - Timeline was loaded
+ */
 export class PbTimeline extends pbMixin(LitElement) {
 
 
@@ -79,8 +66,11 @@ export class PbTimeline extends pbMixin(LitElement) {
         // justify-content: center;
         position: relative;
       }
-      .bin-container.border-left {
+      .bin-container.border-left, .bin-container.unknown {
         border-left: 1px solid rgba(0,0,0,0.4);
+      }
+      .bin-container.unknown {
+        margin-left: 40px;
       }
       .bin-container:hover .bin {
         background-color: #3f52b5;
@@ -227,7 +217,8 @@ export class PbTimeline extends pbMixin(LitElement) {
              * start date for timeline to display
              */
             startDate:{
-                type:String,
+                type: String,
+                reflect: true,
                 attribute: 'start-date'
             },
             /**
@@ -235,16 +226,27 @@ export class PbTimeline extends pbMixin(LitElement) {
              */
             endDate: {
                 type: String,
+                reflect: true,
                 attribute: 'end-date'
             },
             /**
-             * the scope for the timeline. Must be one of the pre-defined scopes.
+             * The scope for the timeline. Must be one of the pre-defined scopes.
+             * If not set, the component automatically tries to determine the best scope fitting the
+             * given time series.
              */
             scope:{
                 type: String
             },
             /**
-             * endpoint to load timeline data. Expects response to be an
+             * The scopes to consider for automatic scoping.
+             * 
+             * Defaults to ["D", "W", "M", "Y", "5Y", "10Y"]
+             */
+            scopes: {
+              type: Array
+            },
+            /**
+             * Endpoint to load timeline data from. Expects response to be an
              * object with key value pairs for (date, hits).
              *
              * Will be reloaded whenever 'start-date' or 'end-date' attributes change.
@@ -269,6 +271,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.startDate = '';
     this.endDate = '';
     this.scope = '';
+    this.scopes = ["D", "W", "M", "Y", "5Y", "10Y"];
     this.url = '';
     this.auto = false;
     this._resetSelectionProperty();
@@ -327,7 +330,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     if(changedProperties.has('scope')){
 
         if(this.searchResult){
-            if(scopes.includes(this.scope)){
+            if(this.scopes.includes(this.scope)){
                 this.setData(this.searchResult.export(this.scope));
             }else{
                 console.error('unknown scope ', this.scope);
@@ -356,6 +359,13 @@ export class PbTimeline extends pbMixin(LitElement) {
   getSelectedEndDateStr() {
     const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
     return selectedBins[selectedBins.length - 1].dataset.selectionend;
+  }
+
+  getSelectedCategories() {
+    const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
+    const categories = [];
+    selectedBins.forEach((bin) => categories.push(bin.dataset.category));
+    return categories;
   }
 
   resetSelection() {
@@ -398,7 +408,7 @@ export class PbTimeline extends pbMixin(LitElement) {
       if (start) {
         const startDateStr = new ParseDateService().run(start);
         const endDateStr = new ParseDateService().run(end);
-        this._dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr);
+        this._dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, this.getSelectedCategories());
       }
     }
   }
@@ -430,20 +440,26 @@ export class PbTimeline extends pbMixin(LitElement) {
     this._applySelectionToBins();
   }
 
-  _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr) {
-    if(startDateStr === endDateStr) {
+  _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, categories) {
+    if (startDateStr === '????-??-??') {
+      this.emitTo('pb-timeline-date-changed', { startDateStr: null, endDateStr: null, categories: ['?'] });
+    } else if(startDateStr === endDateStr) {
       if (this.dataObj.scope !== 'D') {
         this.emitTo('pb-timeline-daterange-changed', {
           startDateStr,
-          endDateStr: this.searchResult.getEndOfRangeDate(this.dataObj.scope, endDateStr)
+          endDateStr: this.searchResult.getEndOfRangeDate(this.dataObj.scope, endDateStr),
+          scope: this.dataObj.scope,
+          categories
         });
       } else {
-        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null });
+        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null, scope: this.dataObj.scope, categories });
       }
     } else {
       this.emitTo('pb-timeline-daterange-changed', {
         startDateStr,
-        endDateStr
+        endDateStr,
+        categories,
+        scope: this.dataObj.scope
       });
     }
   }
@@ -580,8 +596,9 @@ export class PbTimeline extends pbMixin(LitElement) {
       ${this.dataObj.data.map((binObj, indx) => {
         return html`
           <div class="bin-container ${binObj.seperator ? "border-left" : ""}
-            ${indx % 2 === 0 ? "grey" : "white"}"
+            ${indx % 2 === 0 ? "grey" : "white"} ${binObj.category === '?' ? 'unknown' : ''}"
             data-tooltip="${binObj.tooltip}"
+            data-category="${binObj.category}"
             data-selectionstart="${binObj.selectionStart}"
             data-selectionend="${binObj.selectionEnd}"
             data-isodatestr="${binObj.dateStr}"
@@ -617,7 +634,7 @@ export class PbTimeline extends pbMixin(LitElement) {
         } else {
           newJsonData = data;
         }
-        this.searchResult = new SearchResultService(newJsonData);
+        this.searchResult = new SearchResultService(newJsonData, 60, this.scopes);
         this.setData(this.searchResult.export(this.scope));
         this.dispatchEvent(new CustomEvent('pb-timeline-loaded', {
             detail: {
