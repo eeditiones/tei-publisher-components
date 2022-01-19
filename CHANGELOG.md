@@ -1,3 +1,10 @@
+## [1.30.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.3...v1.30.4) (2022-01-19)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** fix zoom if there's just one location; automatically emit pb-geolocation event ([7259290](https://github.com/eeditiones/tei-publisher-components/commit/72592902db5fda2ddbdae58e8e152e2cc2508205))
+
 ## [1.30.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.2...v1.30.3) (2021-12-19)
 
 
