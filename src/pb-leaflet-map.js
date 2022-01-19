@@ -12,7 +12,6 @@ import './pb-map-layer.js';
  * @fires pb-update-map - When received, redraws the map to fit markers passed in with the event
  * @fires pb-update - When received, redraws the map to show markers for all pb-geolocation elements
  * @fires pb-geolocation - When received, focuses the map on the geocoordinates passed in with the event
- 
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
@@ -143,7 +142,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 });
             });
             // this._map.invalidateSize();
-            if (locations.length > 1) {
+            if (locations.length >= 1) {
                 this._map.fitBounds(bounds);
             } else {
                 this._map.fitWorld();

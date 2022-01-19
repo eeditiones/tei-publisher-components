@@ -32,6 +32,9 @@ export class PbGeolocation extends PbHighlight {
             },
             event: {
                 type: String
+            },
+            auto: {
+                type: Boolean
             }
         };
     }
@@ -39,22 +42,38 @@ export class PbGeolocation extends PbHighlight {
     constructor() {
         super();
         this.event = 'mouseover';
+        this.auto = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        this.addEventListener(this.event, () =>
-            this.emitTo('pb-geolocation', {
-                coordinates: {
-                    latitude: this.latitude,
-                    longitude: this.longitude
-                },
-                label: this.label,
-                popup: this.popup,
-                element: this
-            })
-        );
+        if (this.event) {
+            this.addEventListener(this.event, () =>
+                this.emitTo('pb-geolocation', {
+                    coordinates: {
+                        latitude: this.latitude,
+                        longitude: this.longitude
+                    },
+                    label: this.label,
+                    popup: this.popup,
+                    element: this
+                })
+            );
+        }
+        if (this.auto) {
+            this.waitForChannel(() => {
+                this.emitTo('pb-geolocation', {
+                    coordinates: {
+                        latitude: this.latitude,
+                        longitude: this.longitude
+                    },
+                    label: this.label,
+                    popup: this.popup,
+                    element: this
+                });
+            });
+        }
     }
 
     render() {
