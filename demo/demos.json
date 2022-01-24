@@ -151,5 +151,8 @@
   },
   "pb-table-grid": {
     "demo/pb-table-grid.html": "Demo"
+  },
+  "pb-custom-form": {
+    "demo/pb-custom-form.html": "Demo"
   }
 }

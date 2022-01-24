@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-split-list Demo</title>
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-input/paper-input.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-listbox/paper-listbox.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-custom-form.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-events.js"></script>
+        <!--/scripts-->
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                    fieldset {
+                        display: flex;
+                        align-items: center;
+                        border: 0;
+                    }
+                    fieldset * {
+                        margin-right: 20px;
+                    }
+                </style>
+                <pb-page endpoint="http://localhost:8080/exist/apps/escher">
+                    <pb-custom-form auto-submit="paper-input,paper-icon-button,input,select,paper-dropdown-menu">
+                        <paper-input name="search" label="Search">
+                            <paper-icon-button icon="search" slot="suffix"></paper-icon-button>
+                        </paper-input>
+                        <fieldset>
+                            <label>
+                                <input type="radio" name="view" value="correspondents"> Korrespondenten
+                            </label>
+                            <label>
+                                <input type="radio" name="view" value="mentions"> Korrespondenten und erwähnte Personen
+                            </label>
+                        </fieldset>
+                        <fieldset>
+                            <select name="type">
+                                <option value="one">One</option>
+                                <option value="two">Two</option>
+                            </select>
+                            <paper-dropdown-menu id="sort" label="Sort" name="sort">
+                                <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
+                                    <paper-item value="author">Author</paper-item>
+                                    <paper-item value="title">Title</paper-item>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                        </fieldset>
+                    </pb-custom-form>
+                    <pre id="output"></pre>
+                </pb-page>
+                <script>
+                    window.addEventListener('WebComponentsReady', () => {
+                        pbEvents.subscribe('pb-submit', null, (ev) => {
+                            document.getElementById('output').innerText = JSON.stringify(ev.detail.params);
+                        });
+                    });
+                </script>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

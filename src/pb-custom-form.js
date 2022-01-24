@@ -7,14 +7,16 @@ import { PbLoad } from './pb-load.js';
 
 /**
  * A custom form element which loads the actual form from a server-side script using AJAX.
- * Emits a `pb-search-resubmit` event when the form is submitted, signalling `pb-search` that
- * a search should be redone using the parameters passed.
+ * Emits `pb-search-resubmit` and `pb-submit` events, signalling the receiver that it should
+ * refresh.
  *
- * The component is currently used to implement the additional search facets on the start page and
- * search result page.
+ * The component is currently used to implement the additional search facets on the start and
+ * search result page. It can also be combined with `pb-split-list` to contain an additional form
+ * with options.
  *
- * @customElement
- * @polymer
+ * @fires pb-custom-form-loaded - Fired before the element updates its content
+ * @fires pb-search-resubmit - Fired when the form is submitted
+ * @fires pb-submit - Fired when the form is submitted
  */
 export class PbCustomForm extends PbLoad {
 
@@ -34,6 +36,8 @@ export class PbCustomForm extends PbLoad {
                 this._reset();
             }
         });
+
+        this._submissionHandlers();
     }
 
     render() {
@@ -81,7 +85,8 @@ export class PbCustomForm extends PbLoad {
 
     _submit() {
         const json = this.serializeForm();
-        this.emitTo('pb-search-resubmit', { 'params': json });
+        this.emitTo('pb-search-resubmit', { params: json });
+        this.emitTo('pb-submit', { params: json});
     }
 
     _reset(){
@@ -100,6 +105,43 @@ export class PbCustomForm extends PbLoad {
         super._onLoad(content);
 
         this.dispatchEvent(new CustomEvent('pb-custom-form-loaded', { detail: content }));
+    }
+
+    _submissionHandlers() {
+        if (!this.autoSubmit) {
+            return;
+        }
+        this.querySelectorAll(this.autoSubmit).forEach((control) => {
+            const name = control.nodeName.toLowerCase();
+            let event = 'change';
+            if (control instanceof HTMLButtonElement ||
+                name === 'paper-icon-button' || name === 'paper-button' ||
+                (name === 'input' && (control.type === 'button' || control.type === 'submit' || control.type === 'reset'))
+            ) {
+                event = 'click';
+            } else if (name === 'paper-input' || (control instanceof HTMLInputElement && control.type === 'text')) {
+                event = 'keyup';
+            } else if (name === 'paper-dropdown-menu') {
+                event = 'value-changed';
+            }
+            control.addEventListener(event, this._submit.bind(this));
+        });
+    }
+
+    static get properties() {
+        return {
+            /**
+             * Register event handlers on all inputs and submit the form
+             * automatically if any of those changes. For button-like controls,
+             * a submit is triggered on click, for text input on keyUp, and for
+             * all other form components on change.
+             */
+            autoSubmit: {
+                type: String,
+                attribute: 'auto-submit'
+            },
+            ...super.properties
+        };
     }
 
     /**
