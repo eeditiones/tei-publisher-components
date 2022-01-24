@@ -142,10 +142,12 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 });
             });
             // this._map.invalidateSize();
-            if (locations.length >= 1) {
-                this._map.fitBounds(bounds);
-            } else {
+            if (locations.length === 0) {
                 this._map.fitWorld();
+            } else if (locations.length === 1) {
+                this._map.fitBounds(bounds, {maxZoom: this.zoom});
+            } else {
+                this._map.fitBounds(bounds);
             }
         });
 
