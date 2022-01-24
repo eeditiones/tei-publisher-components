@@ -1,3 +1,16 @@
+# [1.31.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.4...v1.31.0) (2022-01-24)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** if there's only one location marked, show it on the map using the defined zoom level and not the whole world ([88ca01d](https://github.com/eeditiones/tei-publisher-components/commit/88ca01d24ce9ea1e756f9707eed0d1e74ae14ffc))
+
+
+### Features
+
+* **pb-custom-form:** add auto-submit feature: selected form elements will automatically submit the form when changed ([b34385a](https://github.com/eeditiones/tei-publisher-components/commit/b34385a768281964c8f571ebc96d6712276fe7c9))
+* **pb-split-list:** new component to display lists organized into categories (e.g. letter of the alphabet, topic, country ...) ([0060931](https://github.com/eeditiones/tei-publisher-components/commit/00609317946f6f2750d9c504d9775f5191835868))
+
 ## [1.30.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.3...v1.30.4) (2022-01-19)
 
 
