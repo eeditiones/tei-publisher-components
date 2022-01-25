@@ -159,10 +159,10 @@ export class PbSplitList extends pbMixin(LitElement) {
             }
 
             header {
-                display: grid;
-                grid-auto-flow: column;
-                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
                 column-gap: 10px;
+                width: 100%;
             }
 
             #items {
