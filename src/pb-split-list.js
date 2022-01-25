@@ -49,9 +49,6 @@ export class PbSplitList extends pbMixin(LitElement) {
             _categories: {
                 type: Array
             },
-            _items: {
-                type: Array
-            },
             ...super.properties
         };
     }
@@ -59,7 +56,6 @@ export class PbSplitList extends pbMixin(LitElement) {
     constructor() {
         super();
         this._categories = [];
-        this._items = [];
         this._params = {};
         this.selected = null;
         this.subforms = null;
@@ -112,7 +108,7 @@ export class PbSplitList extends pbMixin(LitElement) {
         })
         .then((json) => {
             this._categories = json.categories;
-            this._items = json.items;
+            this.innerHTML = json.items.join('');
             this.emitTo('pb-end-update');
         })
         .catch((error) => {
@@ -152,11 +148,7 @@ export class PbSplitList extends pbMixin(LitElement) {
                 )
             }
             </header>
-            <div id="items" part="items">
-            ${
-                this._items.map((item) => html`<div part="item">${unsafeHTML(item)}</div>`)
-            }
-            </div>
+            <div id="items" part="items"><slot></slot></div>
         `;
     }
 
