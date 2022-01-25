@@ -30,8 +30,18 @@ export class PbGeolocation extends PbHighlight {
             label: {
                 type: String
             },
+            /**
+             * Name of the event which triggers a pb-geolocation event, e.g. 'click'.
+             * Default is 'mouseover'.
+             */
             event: {
                 type: String
+            },
+            /**
+             * Zoom level to use for the map if it centers on the location.
+             */
+            zoom: {
+                type: Number
             },
             /**
              * If set, add location to a map automatically upon load by
@@ -48,6 +58,7 @@ export class PbGeolocation extends PbHighlight {
         super();
         this.event = 'mouseover';
         this.auto = false;
+        this.zoom = null;
     }
 
     connectedCallback() {
@@ -61,6 +72,7 @@ export class PbGeolocation extends PbHighlight {
                         longitude: this.longitude
                     },
                     label: this.label,
+                    zoom: this.zoom,
                     popup: this.popup,
                     element: this
                 })

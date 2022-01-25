@@ -159,6 +159,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             if (ev.detail.coordinates) {
                 this.latitude = ev.detail.coordinates.latitude;
                 this.longitude = ev.detail.coordinates.longitude;
+                if (ev.detail.zoom) {
+                    this.zoom = ev.detail.zoom;
+                }
                 if (!this._hasMarker(this.latitude, this.longitude)) {
                     const marker = L.marker([this.latitude, this.longitude]);
                     marker.addEventListener('click', () => {
@@ -183,7 +186,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 if (this.toggle) {
                     this.disabled = false;
                 }
-                this._locationChanged(this.latitude, this.longitude);
+                this._locationChanged(this.latitude, this.longitude, this.zoom);
             }
         });
     }
@@ -351,7 +354,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
-    _locationChanged(lat, long) {
+    _locationChanged(lat, long, zoom) {
         if (this._map) {
             const coords = L.latLng([lat, long]);
             this._markerLayer.eachLayer((layer) => {
@@ -360,7 +363,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 }
             });
             if (!this.noScroll) 
-                this._map.setView(coords, this.zoom);
+                this._map.setView(coords, zoom);
         }
     }
 
