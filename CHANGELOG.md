@@ -1,3 +1,15 @@
+# [1.32.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.31.0...v1.32.0) (2022-01-25)
+
+
+### Bug Fixes
+
+* **pb-split-list:** add items to light DOM instead of shadow DOM, so they can be styled ([6dd2267](https://github.com/eeditiones/tei-publisher-components/commit/6dd22675c898b1a7cf641ee653e21def9c23e818))
+
+
+### Features
+
+* **pb-leaflet-map:** Support clustering of markers to improve performance of maps with many markers ([4d73e38](https://github.com/eeditiones/tei-publisher-components/commit/4d73e3898fc235d402e28420e18819c5146b1673))
+
 # [1.31.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.30.4...v1.31.0) (2022-01-24)
 
 
