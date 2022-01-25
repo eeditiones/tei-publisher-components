@@ -1,3 +1,11 @@
+## [1.32.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.0...v1.32.1) (2022-01-25)
+
+
+### Bug Fixes
+
+* **pb-geolocation:** allow a desired zoom level to be passed in via pb-geolocation event ([e0054f8](https://github.com/eeditiones/tei-publisher-components/commit/e0054f89d9f08d1e1b5ee5dd712f0eb354225e1e))
+* **pb-split-list:** allow categories to wrap around if screen is too small ([53fb84d](https://github.com/eeditiones/tei-publisher-components/commit/53fb84dc7087fb85665ec250c0e6c6ec2f343a87))
+
 # [1.32.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.31.0...v1.32.0) (2022-01-25)
 
 
