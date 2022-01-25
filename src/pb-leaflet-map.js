@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import * as L from 'leaflet/dist/leaflet-src.esm.js';
+import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import './pb-map-layer.js';
@@ -28,6 +28,20 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             },
             crs: {
                 type: String
+            },
+            /**
+             * If set, the map will automatically zoom so it can fit all the markers
+             */
+            fitMarkers: {
+                type: Boolean,
+                attribute: 'fit-markers'
+            },
+            /**
+             * If set, combine markers into clusters if they are located too close together
+             * to display as single markers
+             */
+            cluster: {
+                type: Boolean
             },
             /**
              * If enabled, the map will not automatically scroll to the coordinates received via `pb-geolocation`
@@ -73,6 +87,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.toggle = false;
         this.noScroll = false;
         this.disabled = true;
+        this.cluster = false;
+        this.fitMarkers = false;
     }
 
     connectedCallback() {
@@ -85,7 +101,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
          * @param {{ detail: any[]; }} ev
          */
         this.subscribeTo('pb-update-map', (ev) => {
-            const bounds = L.latLngBounds();
+            this._markerLayer.clearLayers();
+
             /**
              * @param {{ latitude: any; longitude: any; label: any; }} loc
              */
@@ -101,14 +118,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     this.emitTo('pb-leaflet-marker-click', loc);
                 });
                 marker.bindTooltip(loc.label);
-                marker.addTo(this._map);
-                bounds.extend([loc.latitude, loc.longitude]);
+                this._markerLayer.addLayer(marker);
             });
-            if (ev.detail.length > 1) {
-                this._map.fitBounds(bounds);
-            } else {
-                this._map.setZoom(this.zoom);
-            }
+            this._fitBounds();
         });
 
         /**
@@ -117,20 +129,14 @@ export class PbLeafletMap extends pbMixin(LitElement) {
          * @param {{ detail: { root: { querySelectorAll: (arg0: string) => any[]; }; }; }} ev
          */
         this.subscribeTo('pb-update', (ev) => {
-            this._map.eachLayer((layer) => {
-                if (layer instanceof L.Marker) {
-                    layer.remove();
-                }
-            });
-            const bounds = L.latLngBounds();
+            this._markerLayer.clearLayers();
             const locations = ev.detail.root.querySelectorAll('pb-geolocation');
             /**
              * @param {{ latitude: any; longitude: any; }} loc
              */
             locations.forEach((loc) => {
                 const coords = L.latLng(loc.latitude, loc.longitude);
-                bounds.extend(coords);
-                const marker = L.marker(coords).addTo(this._map);
+                const marker = L.marker(coords).addTo(this._markerLayer);
                 if (loc.label) {
                     marker.bindTooltip(loc.label);
                 }
@@ -141,14 +147,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     this.emitTo('pb-leaflet-marker-click', loc);
                 });
             });
-            // this._map.invalidateSize();
-            if (locations.length === 0) {
-                this._map.fitWorld();
-            } else if (locations.length === 1) {
-                this._map.fitBounds(bounds, {maxZoom: this.zoom});
-            } else {
-                this._map.fitBounds(bounds);
-            }
+            this._fitBounds();
         });
 
         /**
@@ -171,7 +170,12 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     if (ev.detail.popup) {
                         marker.bindPopup(ev.detail.popup);
                     }
-                    marker.addTo(this._map);
+                    marker.addTo(this._markerLayer);
+
+                    if (ev.detail.fitBounds) {
+                        this._fitBounds();
+                    }
+
                     console.log('<pb-leaflet-map> added marker');
                 } else {
                     console.log('<pb-leaflet-map> Marker already added to map');
@@ -179,7 +183,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 if (this.toggle) {
                     this.disabled = false;
                 }
-                this._locationChanged();
+                this._locationChanged(this.latitude, this.longitude);
             }
         });
     }
@@ -188,13 +192,23 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         if (!this.toggle) {
             this.disabled = false;
         }
-        this._initMap();
+        window.ESGlobalBridge.requestAvailability();
+        const leafletPath = resolveURL('../lib/leaflet-src.js');
+        const pluginPath = resolveURL('../lib/leaflet.markercluster-src.js');
+        window.ESGlobalBridge.instance.load("leaflet", leafletPath)
+        .then(() => window.ESGlobalBridge.instance.load("plugin", pluginPath));
+        window.addEventListener(
+            "es-bridge-plugin-loaded",
+            this._initMap.bind(this),
+            { once: true }
+        );
     }
 
     render() {
         const cssPath = resolveURL(this.cssPath);
         return html`
             <link rel="Stylesheet" href="${cssPath}/leaflet.css">
+            <link rel="Stylesheet" href="${cssPath}/MarkerCluster.Default.css">
             <div id="map" style="height: 100%; width: 100%"></div>
         `;
     }
@@ -236,6 +250,14 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             crs
         });
         this._configureLayers();
+
+        if (this.cluster) {
+            this._markerLayer = L.markerClusterGroup();
+        } else {
+            this._markerLayer = L.layerGroup();
+        }
+        this._markerLayer.addTo(this._map);
+
         this.signalReady();
 
         L.control.scale().addTo(this._map);
@@ -310,16 +332,31 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
-    _locationChanged() {
+    _fitBounds() {
+        if (!this.fitMarkers) {
+            return;
+        }
+        const bounds = L.latLngBounds();
+        let len = 0;
+        this._markerLayer.eachLayer((layer) => {
+            bounds.extend(layer.getLatLng());
+            len += 1;
+        });
+        if (len === 0) {
+            this._map.fitWorld();
+        } else if (len === 1) {
+            this._map.fitBounds(bounds, {maxZoom: this.zoom});
+        } else {
+            this._map.fitBounds(bounds);
+        }
+    }
+
+    _locationChanged(lat, long) {
         if (this._map) {
-            const coords = L.latLng([this.latitude, this.longitude]);
-            this._map.eachLayer((layer) => {
-                if (layer instanceof L.Marker) {
-                    if (layer.getLatLng().equals(coords)) {
-                        layer.openTooltip();
-                    } else {
-                        layer.closeTooltip();
-                    }
+            const coords = L.latLng([lat, long]);
+            this._markerLayer.eachLayer((layer) => {
+                if (layer.getLatLng().equals(coords)) {
+                    layer.openTooltip();
                 }
             });
             if (!this.noScroll) 
@@ -330,7 +367,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     _hasMarker(lat, long) {
         const coords = L.latLng([lat, long]);
         let found = false;
-        this._map.eachLayer((layer) => {
+        this._markerLayer.eachLayer((layer) => {
             if (layer instanceof L.Marker && layer.getLatLng().equals(coords)) {
                 found = true;
             }

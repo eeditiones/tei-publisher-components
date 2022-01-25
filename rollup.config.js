@@ -80,6 +80,22 @@ export default [
                     {
                         src: './node_modules/codemirror/theme/*',
                         dest: './css/codemirror'
+                    },
+                    {
+                        src: './node_modules/leaflet/dist/leaflet-src.js',
+                        dest: './lib'
+                    },
+                    {
+                        src: './node_modules/leaflet/dist/leaflet.css',
+                        dest: './css/leaflet'
+                    },
+                    {
+                        src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js',
+                        dest: './lib'
+                    },
+                    {
+                        src: './node_modules/leaflet.markercluster/dist/*.css',
+                        dest: './css/leaflet'
                     }
                 ]
             })

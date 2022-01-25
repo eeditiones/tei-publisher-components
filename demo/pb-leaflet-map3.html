@@ -68,13 +68,11 @@
                             </pb-geolocation>
                         </li>
                     </ul>
-                    <pb-leaflet-map id="map" zoom="14" access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw">
-                        <pb-map-layer show base label="HikeBike Map" url="https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png" max-zoom="19"
-                            attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
+                    <pb-leaflet-map id="map" zoom="14" fit-markers>
+                        <pb-map-layer show base label="OpenTopo Map" url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png" max-zoom="19"
+                            attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors, &lt;a href="http://viewfinderpanoramas.org">SRTM&lt;/a> | Map style: &copy; &lt;a href="https://opentopomap.org">OpenTopoMap&lt;/a> (&lt;a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'></pb-map-layer>
                         <pb-map-layer base label="ESRI World Imagery" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                             attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'></pb-map-layer>
-                        <pb-map-layer show label="Hillshading" url="https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png" max-zoom="15"
-                            attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; contributors'></pb-map-layer>
                         <pb-map-layer show label="Ski Slopes" url="https://tile.waymarkedtrails.org/slopes/{z}/{x}/{y}.png"
                             attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors | Map style: &copy; &lt;a href="https://waymarkedtrails.org">waymarkedtrails.org</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'
                             max-zoom="18"></pb-map-layer>

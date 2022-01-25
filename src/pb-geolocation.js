@@ -33,6 +33,11 @@ export class PbGeolocation extends PbHighlight {
             event: {
                 type: String
             },
+            /**
+             * If set, add location to a map automatically upon load by
+             * emitting an event. If not set, locations are only added when
+             * the configured event is triggered.
+             */
             auto: {
                 type: Boolean
             }
@@ -70,6 +75,7 @@ export class PbGeolocation extends PbHighlight {
                     },
                     label: this.label,
                     popup: this.popup,
+                    fitBounds: true,
                     element: this
                 });
             });

@@ -8,6 +8,7 @@
     <!--scripts-->
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-events.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-leaflet-map.js"></script>
     <script type="module" src="../src/pb-geolocation.js"></script>
@@ -45,7 +46,7 @@
                             </pb-geolocation>
                         </li>
                     </ul>
-                    <pb-leaflet-map id="map" zoom="11">
+                    <pb-leaflet-map id="map" zoom="11" fit-markers>
                         <pb-map-layer show base label="HikeBike Map" url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}" max-zoom="19"
                             access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw"
                             attribution='&copy; &lt;a href="https://www.mapbox.com/about/maps/"&gt;Mapbox&lt;/a&gt; &copy &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; &lt;strong&gt;&lt;a href="https://www.mapbox.com/map-feedback/" target="_blank"&gt;Improve this map&lt;/a&gt;&lt;/strong&gt;'></pb-map-layer>
@@ -58,12 +59,14 @@
                  * Not necessary if the pb-geolocation appear inside a component
                  * which does itself send the `pb-update` event, e.g. `pb-view`.
                  */
-                document.addEventListener('WebComponentsReady', () => { 
-                    document.dispatchEvent(new CustomEvent('pb-update', { 
-                        detail: { 
-                            root: document.getElementById('locations')
-                        }
-                    }));
+                document.addEventListener('WebComponentsReady', () => {
+                    pbEvents.subscribe('pb-ready', null, function() {
+                        document.dispatchEvent(new CustomEvent('pb-update', { 
+                            detail: { 
+                                root: document.getElementById('locations')
+                            }
+                        }));
+                    });
                 });
             </script>
         </template>
