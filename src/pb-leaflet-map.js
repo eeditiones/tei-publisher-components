@@ -9,9 +9,22 @@ import './pb-map-layer.js';
  *
  * @slot - may contain a series of `pb-map-layer` configurations
  * @fires pb-leaflet-marker-click - Fires event to be processed by the map upon click
- * @fires pb-update-map - When received, redraws the map to fit markers passed in with the event
- * @fires pb-update - When received, redraws the map to show markers for all pb-geolocation elements
- * @fires pb-geolocation - When received, focuses the map on the geocoordinates passed in with the event
+ * @fires pb-update-map - When received, redraws the map to fit markers passed in with the event.
+ * Event details should include an array of locations, see `pb-geolocation` event below.
+ * @fires pb-update - When received, redraws the map to show markers for all pb-geolocation elements found in the content of the pb-view
+ * @fires pb-geolocation - When received, focuses the map on the geocoordinates passed in with the event.
+ * The event details should include an object:
+ * ```
+ * {
+ *   coordinates: {
+ *         latitude: Number,
+ *         longitude: Number
+ *   },
+ *   label: string - the label to show on mouseover,
+ *   zoom: Number - fixed zoom level to zoom to,
+ *   fitBounds: Boolean - if true, recompute current zoom level to show all markers
+ * }
+ * ```
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
@@ -42,6 +55,16 @@ export class PbLeafletMap extends pbMixin(LitElement) {
              */
             cluster: {
                 type: Boolean
+            },
+            /**
+             * Limits up to which zoom level markers are arranged into clusters.
+             * Using a higher zoom level here will result in more markers to be shown.
+             * 
+             * Requires `cluster` option to be enabled.
+             */
+            disableClusteringAt: {
+                type: Number,
+                attribute: 'disable-clustering-at'
             },
             /**
              * If enabled, the map will not automatically scroll to the coordinates received via `pb-geolocation`
@@ -89,6 +112,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.disabled = true;
         this.cluster = false;
         this.fitMarkers = false;
+        this.disableClusteringAt = null;
     }
 
     connectedCallback() {
@@ -159,9 +183,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             if (ev.detail.coordinates) {
                 this.latitude = ev.detail.coordinates.latitude;
                 this.longitude = ev.detail.coordinates.longitude;
-                if (ev.detail.zoom) {
-                    this.zoom = ev.detail.zoom;
-                }
                 if (!this._hasMarker(this.latitude, this.longitude)) {
                     const marker = L.marker([this.latitude, this.longitude]);
                     marker.addEventListener('click', () => {
@@ -186,7 +207,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 if (this.toggle) {
                     this.disabled = false;
                 }
-                this._locationChanged(this.latitude, this.longitude, this.zoom);
+                this._locationChanged(this.latitude, this.longitude, ev.detail.zoom);
             }
         });
     }
@@ -255,7 +276,11 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this._configureLayers();
 
         if (this.cluster) {
-            this._markerLayer = L.markerClusterGroup();
+            const options = {};
+            if (this.disableClusteringAt) {
+                options.disableClusteringAtZoom = this.disableClusteringAt;
+            }
+            this._markerLayer = L.markerClusterGroup(options);
         } else {
             this._markerLayer = L.layerGroup();
         }
@@ -359,11 +384,19 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             const coords = L.latLng([lat, long]);
             this._markerLayer.eachLayer((layer) => {
                 if (layer.getLatLng().equals(coords)) {
-                    layer.openTooltip();
+                    if (zoom && !this.noScroll) {
+                        layer.openTooltip();
+                        this._map.setView(coords, zoom);
+                    } else if (this.cluster) {
+                        this._markerLayer.zoomToShowLayer(layer, () =>
+                            layer.openTooltip()
+                        );
+                    } else {
+                        layer.openTooltip();
+                        this._map.setView(coords, this.zoom);
+                    }
                 }
             });
-            if (!this.noScroll) 
-                this._map.setView(coords, zoom);
         }
     }
 
