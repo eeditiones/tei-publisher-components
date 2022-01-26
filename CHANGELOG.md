@@ -1,3 +1,10 @@
+## [1.32.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.1...v1.32.2) (2022-01-26)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** when clustering markers, make sure to zoom the map so the marker becomes visible - unless user defined a fixed zoom level ([2e44a9a](https://github.com/eeditiones/tei-publisher-components/commit/2e44a9a872b9c3030aa2776793625ff4dab13617))
+
 ## [1.32.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.0...v1.32.1) (2022-01-25)
 
 
