@@ -3,8 +3,9 @@ import { SearchResultService } from "./search-result-service.js";
 import { ParseDateService } from "./parse-date-service.js";
 import { pbMixin } from "./pb-mixin.js";
 import '@polymer/iron-ajax';
+import '@polymer/iron-icons';
 import '@polymer/paper-icon-button';
-import { get as i18n } from "./pb-i18n.js";
+import { translate } from "./pb-i18n.js";
 
 /**
  * A timeline component to display time series data in a bar chart like view.
@@ -18,13 +19,32 @@ import { get as i18n } from "./pb-i18n.js";
  * - by week (W)
  * - by day (D)
  * 
- * The endpoint is expected to return a JSON object. Each property should be a date and its value
- * should correspond to a count of resources. The property '?' indicates the number of undated resources - if any.
+ * The endpoint is expected to return a JSON object. Each property should either be a date or the special
+ * marker `?`, which indicates undated resources.
+ * The value associated with each entry
+ * should either correspond to a count of resources or an object with properties `count` and `tooltip`. 
+ * The property '?' indicates the number of undated resources - if any.
+ *
+ * @slot label - Inserted before the label showing the currently displayed time range
  * 
  * @fires pb-timeline-date-changed - Triggered when user clicks on a single entry
  * @fires pb-timeline-daterange-changed - Triggered when user selects a range of entries
  * @fires pb-timeline-reset-selection - Requests that the timeline is reset to initial state
  * @fires pb-timeline-loaded - Timeline was loaded
+ * 
+ * @cssprop --pb-timeline-height
+ * @cssprop --pb-timeline-padding
+ * @cssprop --pb-timeline-color-highlight
+ * @cssprop --pb-timeline-color-light
+ * @cssprop --pb-timeline-color-dark
+ * @cssprop --pb-timeline-color-selected
+ * @cssprop --pb-timeline-color-bin
+ * @cssprop --pb-timeline-title-font-size
+ * @cssprop --pb-timeline-tooltip-font-size
+ * 
+ * @csspart label
+ * @csspart tooltip
+ * @csspart title
  */
 export class PbTimeline extends pbMixin(LitElement) {
 
@@ -33,7 +53,6 @@ export class PbTimeline extends pbMixin(LitElement) {
     return css`
       :host{
         display: block;
-        margin-top:20px;
       }
       .hidden {
         visibility: hidden;
@@ -47,20 +66,22 @@ export class PbTimeline extends pbMixin(LitElement) {
         margin: 0 auto;
         padding: var(--pb-timeline-padding);
         width: auto;
-        height: 80px;
+        height: var(--pb-timeline-height, 80px);
         display: flex;
-        // justify-content: center;
         position: relative;
       }
-      #clear {
-        position: absolute;
-        right: 0;
-        top: -20px;
+      .wrapper.empty {
+        display: none;
+      }
+
+      .label {
+        display: flex;
+        align-items: center;
       }
       .bin-container {
         cursor: crosshair;
         margin-top: 20px;
-        min-width: var(--pb-timeline-max-width, 14px);
+        min-width: var(--pb-timeline-min-width, 14px);
         max-width: var(--pb-timeline-max-width, 20px);
         flex-grow: 1;
         flex-basis: 0;
@@ -76,26 +97,26 @@ export class PbTimeline extends pbMixin(LitElement) {
         margin-left: 40px;
       }
       .bin-container:hover .bin {
-        background-color: #3f52b5;
+        background-color: var(--pb-timeline-color-highlight, #3f52b5);
       }
       .bin-container.selected > .bin {
-        background-color: #3f52b5;
+        background-color: var(--pb-timeline-color-highlight, #3f52b5);
       }
       .bin-container.selected p {
         font-weight: bold;
       }
       .bin-container.white {
-        background-color: white;
+        background-color: var(--pb-timeline-color-light, white);
       }
       .bin-container.grey {
-        background-color: #f1f1f1;
+        background-color: var(--pb-timeline-color-dark, #f1f1f1);
       }
       .bin-container.selected {
-        background-color: #e6eaff !important;
+        background-color: var(--pb-timeline-color-selected, #e6eaff) !important;
       }
       .bin {
         width: 80%;
-        background-color: #ccc;
+        background-color: var(--pb-timeline-color-bin, #ccc);
         border-radius: 2px;
         user-select: none;
       }
@@ -103,10 +124,9 @@ export class PbTimeline extends pbMixin(LitElement) {
         pointer-events: none;
         position: absolute;
         top: 5px;
-        font-size: 10px;
         z-index: 10;
         margin: 0;
-        font-size: 12px;
+        font-size: var(--pb-timeline-title-font-size, 12px);
         user-select: none;
         white-space: nowrap;
       }
@@ -131,13 +151,13 @@ export class PbTimeline extends pbMixin(LitElement) {
         position: absolute;
         left: 0;
         top: -20px;
-        font-size: 12px;
-        background-color: #535353;
-        color: #ffffff;
+        font-size: var(--pb-timeline-title-font-size, 12px);
+        background-color: var(--pb-timeline-background-color-title, #535353);
+        color: var(--pb-timeline-color-title, #ffffff);
         padding: 2px 4px;
         border-radius: 5px;
-        height: 12px;
-        line-height: 12px;
+        height: var(--pb-timeline-title-font-size, 12px);
+        line-height: var(--pb-timeline-title-font-size, 12px);
         user-select: none;
       }
       /* TOOLTIP */
@@ -146,14 +166,14 @@ export class PbTimeline extends pbMixin(LitElement) {
         white-space: nowrap;
         height: 15px;
         position: absolute;
-        font-size: 11px;
-        line-height: 15px;
+        font-size: var(--pb-timeline-tooltip-font-size, 11px);
+        line-height: 1.25;
         background-color: black;
         color: #fff;
         text-align: center;
         border-radius: 6px;
         padding: 5px 10px;
-        top: 85px;
+        top: calc(var(--pb-timeline-height, 80px) - 5px);
         left: 0;
       }
       #tooltip-close {
@@ -262,6 +282,9 @@ export class PbTimeline extends pbMixin(LitElement) {
              */
             auto: {
               type: Boolean
+            },
+            resettable: {
+              type: Boolean
             }
         };
     }
@@ -277,6 +300,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.scopes = ["D", "W", "M", "Y", "5Y", "10Y"];
     this.url = '';
     this.auto = false;
+    this.resettable = false;
     this._resetSelectionProperty();
   }
 
@@ -355,6 +379,16 @@ export class PbTimeline extends pbMixin(LitElement) {
     });
   }
 
+  get label() {
+    if (!this.dataObj || this.dataObj.data.length === 0) {
+      return '';
+    }
+    if (this.dataObj.data.length === 1) {
+      return this.dataObj.data[0].category;
+    }
+    return `${this.dataObj.data[0].category} – ${this.dataObj.data[this.dataObj.data.length - 1].category}`;
+  }
+
   getSelectedStartDateStr() {
     return this.shadowRoot.querySelectorAll(".bin-container.selected")[0].dataset.selectionstart;
   }
@@ -369,6 +403,13 @@ export class PbTimeline extends pbMixin(LitElement) {
     const categories = [];
     selectedBins.forEach((bin) => categories.push(bin.dataset.category));
     return categories;
+  }
+
+  getSelectedItemCount() {
+    const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
+    let count = 0;
+    selectedBins.forEach((bin) => { count += parseInt(bin.dataset.value); });
+    return count;
   }
 
   resetSelection() {
@@ -411,7 +452,8 @@ export class PbTimeline extends pbMixin(LitElement) {
       if (start) {
         const startDateStr = new ParseDateService().run(start);
         const endDateStr = new ParseDateService().run(end);
-        this._dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, this.getSelectedCategories());
+        const itemCount = this.getSelectedItemCount();
+        this._dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, this.getSelectedCategories(), itemCount);
       }
     }
   }
@@ -443,26 +485,28 @@ export class PbTimeline extends pbMixin(LitElement) {
     this._applySelectionToBins();
   }
 
-  _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, categories) {
+  _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, categories, itemCount) {
     if (startDateStr === '????-??-??') {
-      this.emitTo('pb-timeline-date-changed', { startDateStr: null, endDateStr: null, categories: ['?'] });
+      this.emitTo('pb-timeline-date-changed', { startDateStr: null, endDateStr: null, categories: ['?'], count: itemCount });
     } else if(startDateStr === endDateStr) {
       if (this.dataObj.scope !== 'D') {
         this.emitTo('pb-timeline-daterange-changed', {
           startDateStr,
           endDateStr: this.searchResult.getEndOfRangeDate(this.dataObj.scope, endDateStr),
           scope: this.dataObj.scope,
-          categories
+          categories,
+          count: itemCount
         });
       } else {
-        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null, scope: this.dataObj.scope, categories });
+        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null, scope: this.dataObj.scope, categories, count: itemCount });
       }
     } else {
       this.emitTo('pb-timeline-daterange-changed', {
         startDateStr,
         endDateStr,
         categories,
-        scope: this.dataObj.scope
+        scope: this.dataObj.scope,
+        count: itemCount
       });
     }
   }
@@ -497,6 +541,7 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   _resetTooltip() {
     this._hideTooltip();
+    this.tooltip.style.left = '-1000px';
     this.tooltip.querySelector("#tooltip-text").innerHTML = "";
   }
 
@@ -561,10 +606,18 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <div class="wrapper"
+      <div class="label" part="label">
+        <span class="label"><slot name="label"></slot>${this.label}</span>
+        ${
+          this.resettable ? html`
+            <paper-icon-button id="clear" icon="icons:clear" title="${translate('timeline.clear')}"
+            @click="${this._dispatchPbTimelineResetSelectionEvent}"></paper-icon-button>
+          ` : null
+        }
+      </div>
+      <div class="wrapper ${!this.dataObj || this.dataObj.data.length <= 1 ? 'empty' : ''}"
         @mouseenter="${this._mouseenter}"
         @mouseleave="${this._hideTooltip}">
-        <paper-icon-button id="clear" icon="icons:clear" @click="${this._dispatchPbTimelineResetSelectionEvent}"></paper-icon-button>
         ${this.dataObj ? this.renderBins() : ""}
         ${this.renderTooltip()}
         <iron-ajax
@@ -582,7 +635,7 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   renderTooltip() {
     return html`
-      <div id="tooltip" class="hidden">
+      <div id="tooltip" class="hidden" part="tooltip">
         <span id="tooltip-text"></span>
         <div
           id="tooltip-close"
@@ -616,12 +669,12 @@ export class PbTimeline extends pbMixin(LitElement) {
               >${binObj.binTitle ? binObj.binTitle : ""}
             </p>
             ${binObj.title ? html`
-              <p class="bins-title">${binObj.title}</p>
+              <p class="bins-title" part="title">${binObj.title}</p>
             ` : ""}
           </div>
         `;
       })}
-    `
+    `;
   }
 
     async _handleResponse (){

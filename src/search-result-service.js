@@ -92,7 +92,12 @@ export class SearchResultService {
       const currentCategory = this._classify(dateStr, scope);
       const targetBinObject = exportData.data.find(it => it.category === currentCategory);
       try {
-        targetBinObject.value += this.data.valid[dateStr] || 0;
+        const value = this.data.valid[dateStr];
+        if (typeof value === 'object') {
+          targetBinObject.value += value.count || 0;
+        } else {
+          targetBinObject.value += this.data.valid[dateStr] || 0;
+        }
       } catch(e) {
         console.log(e);
         console.log("currentCategory");
@@ -138,9 +143,9 @@ export class SearchResultService {
   _validateJsonData(jsonData) {
     Object.keys(jsonData).sort().forEach(key => {
       if (this._isValidDateStr(key)) {
-        this.data.valid[key] = Number(jsonData[key]);
+        this.data.valid[key] = jsonData[key];
       } else {
-        this.data.invalid[key] = Number(jsonData[key]);
+        this.data.invalid[key] = jsonData[key];
       }
     });
   }

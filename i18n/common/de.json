@@ -276,6 +276,7 @@
     "start": "Ausführen"
   },
   "timeline": {
-    "unknown": "undatiert"
+    "unknown": "undatiert",
+    "clear": "Zeitraum zurücksetzen"
   }
 }

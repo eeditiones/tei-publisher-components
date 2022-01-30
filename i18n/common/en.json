@@ -276,6 +276,7 @@
     "start": "Run"
   },
   "timeline": {
-    "unknown": "undated"
+    "unknown": "undated",
+    "clear": "Clear date selection"
   }
 }

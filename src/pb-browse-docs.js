@@ -206,6 +206,7 @@ export class PbBrowseDocs extends PbLoad {
                     }
                 </style>
             </custom-style>
+            <slot name="header"></slot>
             <div class="toolbar">
                 <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}" part="sort-dropdown">
                     <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
@@ -236,7 +237,6 @@ export class PbBrowseDocs extends PbLoad {
                     <span class="label">${translate('browse.delete')}</span>
                 </paper-button>
             </div>
-            <slot name="header"></slot>
             <slot></slot>
             <slot name="footer"></slot>
             
