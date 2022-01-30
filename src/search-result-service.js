@@ -95,6 +95,9 @@ export class SearchResultService {
         const value = this.data.valid[dateStr];
         if (typeof value === 'object') {
           targetBinObject.value += value.count || 0;
+          if (value.info) {
+            targetBinObject.info = targetBinObject.info.concat(value.info);
+          }
         } else {
           targetBinObject.value += this.data.valid[dateStr] || 0;
         }
@@ -178,7 +181,8 @@ export class SearchResultService {
     const binObject = {
       dateStr: dateStr,
       category: category,
-      value: 0
+      value: 0,
+      info: []
     }
     // scope specific bin data
     if (scope === "10Y") {

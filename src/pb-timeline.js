@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { SearchResultService } from "./search-result-service.js";
 import { ParseDateService } from "./parse-date-service.js";
 import { pbMixin } from "./pb-mixin.js";
@@ -22,8 +23,8 @@ import { translate } from "./pb-i18n.js";
  * The endpoint is expected to return a JSON object. Each property should either be a date or the special
  * marker `?`, which indicates undated resources.
  * The value associated with each entry
- * should either correspond to a count of resources or an object with properties `count` and `tooltip`. 
- * The property '?' indicates the number of undated resources - if any.
+ * should either correspond to a count of resources or an object with properties `count` and `info`. 
+ * `info` should be an array, containing HTML to be shown in a list within the tooltips.
  *
  * @slot label - Inserted before the label showing the currently displayed time range
  * 
@@ -160,21 +161,29 @@ export class PbTimeline extends pbMixin(LitElement) {
         line-height: var(--pb-timeline-title-font-size, 12px);
         user-select: none;
       }
+      .info {
+        display: none;
+      }
+
       /* TOOLTIP */
       #tooltip {
         display: inline-block;
-        white-space: nowrap;
-        height: 15px;
         position: absolute;
+        min-width: var(--pb-timeline-tooltip-min-width, 200px);
         font-size: var(--pb-timeline-tooltip-font-size, 11px);
         line-height: 1.25;
-        background-color: black;
-        color: #fff;
-        text-align: center;
+        background: var(--pb-timeline-background-color-title, #535353);
+        color: var(--pb-timeline-color-title, #ffffff);
+        text-align: left;
         border-radius: 6px;
         padding: 5px 10px;
         top: calc(var(--pb-timeline-height, 80px) - 5px);
         left: 0;
+      }
+      #tooltip ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
       }
       #tooltip-close {
         position: absolute;
@@ -521,7 +530,9 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.tooltip.style.left = offset + "px";
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
-    this.tooltip.querySelector("#tooltip-text").innerHTML = `<strong>${datestr}</strong>: ${value}`;
+    const info = event.currentTarget.querySelector('.info');
+    this.tooltip.querySelector("#tooltip-text").innerHTML = 
+      `<div><strong>${datestr}</strong>: ${value}</div><ul>${info ? info.innerHTML : ''}</ul>`;
   }
 
   _showtooltipSelection() {
@@ -636,7 +647,7 @@ export class PbTimeline extends pbMixin(LitElement) {
   renderTooltip() {
     return html`
       <div id="tooltip" class="hidden" part="tooltip">
-        <span id="tooltip-text"></span>
+        <div id="tooltip-text"></div>
         <div
           id="tooltip-close"
           class="hidden"
@@ -671,10 +682,22 @@ export class PbTimeline extends pbMixin(LitElement) {
             ${binObj.title ? html`
               <p class="bins-title" part="title">${binObj.title}</p>
             ` : ""}
+            ${this.renderInfo(binObj)}
           </div>
         `;
       })}
     `;
+  }
+
+  renderInfo(binObj) {
+    if (binObj.info && binObj.info.length > 0 && binObj.info.length < 6) {
+      return html`
+        <ul class="info">
+        ${ binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`) }
+        </ul>
+      `;
+    }
+    return null;
   }
 
     async _handleResponse (){
