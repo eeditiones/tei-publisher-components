@@ -1,3 +1,18 @@
+# [1.33.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.2...v1.33.0) (2022-01-31)
+
+
+### Bug Fixes
+
+* **pb-timeline:** fix reported range ([fdbbc44](https://github.com/eeditiones/tei-publisher-components/commit/fdbbc445ede8a36631349e43ee6966804e03b819))
+* **pb-timeline:** get timeline to work with facets ([71b3c4d](https://github.com/eeditiones/tei-publisher-components/commit/71b3c4da45c043f269e3114725370973180e2f44))
+* **pb-timeline:** improve display, show current time range ([edc317e](https://github.com/eeditiones/tei-publisher-components/commit/edc317e7e880c2609b1df1f8156eb10d4e7851a1))
+* **pb-timeline:** various fixes to support integration in publisher ([8fb1b7c](https://github.com/eeditiones/tei-publisher-components/commit/8fb1b7c63c3c33dda21b982310372590d0b55202))
+
+
+### Features
+
+* **pb-timeline:** show additional info in tooltip ([45dd690](https://github.com/eeditiones/tei-publisher-components/commit/45dd6907debc7c67db067eb6558304e3c6475972))
+
 ## [1.32.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.1...v1.32.2) (2022-01-26)
 
 
