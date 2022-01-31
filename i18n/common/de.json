@@ -274,5 +274,9 @@
     "output": "Trainingsausgabe",
     "prepare": "Trainingsdaten vorbereiten",
     "start": "Ausführen"
+  },
+  "timeline": {
+    "unknown": "undatiert",
+    "clear": "Zeitraum zurücksetzen"
   }
 }

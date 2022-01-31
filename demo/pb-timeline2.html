@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-timeline Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-timeline.js"></script>
+        <script type="module" src="../src/pb-browse-docs.js"></script>
+        <script type="module" src="../src/pb-login.js"></script>
+        <script type="module" src="../src/pb-events.js"></script>
+        <!--/scripts-->
+
+        <style>
+            main{
+                padding: 50px;
+
+            }
+            pb-timeline{
+                padding: 2rem 0;
+                width: 100%;
+            }
+            #start, #end, #scope{
+                display: block;
+                margin-bottom: 1rem;
+            }
+            .wraptl{
+                max-width: 60vw;
+                overflow-y:hidden;
+                overflow-x:auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <h1>Timeline Demo</h1>
+            <!--
+        <pb-demo-snippet>
+            <template>
+-->
+        <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-login id="login" group="tei"></pb-login>
+
+            <label for="start">Start Date</label>
+            <input id="start" type="date" value="1891-05-18">
+            <label for="end">End Date</label>
+            <input id="end" type="date" value="1978-01-01">
+
+
+            <label for="scope">Scope</label>
+            <select id="scope">
+                <option value="D">Day</option>
+                <option value="W">Week</option>
+                <option value="M">Month</option>
+                <option value="Y" selected="selected">Year</option>
+                <option value="5Y">5 Years</option>
+                <option value="10Y">10 Years</option>
+            </select>
+
+
+            <div class="wraptl">
+                <pb-timeline scope="10Y"
+                             start-date="1438-01-13"
+                             end-date="2020-02-01"
+                             subscribe="docs" emit="docs"
+                             url="api/search/timeline"></pb-timeline>
+            </div>
+
+            <pb-browse-docs id="document-list" fix-links login="login"
+                collection="test"
+                sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
+                sort-by="title"
+                filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
+                filter-by="title" auto="auto" history="history" emit="docs" subscribe="docs">
+                <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
+                    emit="docs" subscribe="docs"></pb-paginate>
+            </pb-browse-docs>
+        </pb-page>
+
+<!--            <textarea id="logs"></textarea>-->
+            <!--
+
+                </template>
+            </pb-demo-snippet>
+    -->
+
+        </main>
+    </body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            pbEvents.subscribe('pb-timeline-daterange-changed', 'docs', (ev) => {
+                console.log(ev.detail);
+            });
+        });
+    </script>
+</html>

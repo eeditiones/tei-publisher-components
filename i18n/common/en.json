@@ -274,5 +274,9 @@
     "output": "Training Output",
     "prepare": "Preparing training data",
     "start": "Run"
+  },
+  "timeline": {
+    "unknown": "undated",
+    "clear": "Clear date selection"
   }
 }
