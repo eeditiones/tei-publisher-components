@@ -109,7 +109,15 @@ export class SearchResultService {
     });
     if (this.data.invalid) {
       let invalid = 0;
-      Object.values(this.data.invalid).forEach((count) => { invalid += count });
+      let info = [];
+      Object.values(this.data.invalid).forEach((value) => {
+        if (typeof value === 'object') {
+          invalid += value.count || 0;
+          info = info.concat(value.info);
+        } else {
+          invalid += value;
+        }
+      });
       if (invalid > 0) {
         exportData.data.push({
           tooltip: i18n('timeline.unknown'),
@@ -117,7 +125,8 @@ export class SearchResultService {
           // binTitle: i18n('timeline.unknown'),
           category: '?',
           separator: true,
-          value: invalid
+          value: invalid,
+          info
         });
       }
     }

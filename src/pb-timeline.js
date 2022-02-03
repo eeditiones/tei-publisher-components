@@ -177,8 +177,9 @@ export class PbTimeline extends pbMixin(LitElement) {
         text-align: left;
         border-radius: 6px;
         padding: 5px 10px;
-        top: calc(var(--pb-timeline-height, 80px) - 5px);
+        top: var(--pb-timeline-height, 80px);
         left: 0;
+        z-index: 1000;
       }
       #tooltip ul {
         list-style: none;
@@ -194,11 +195,15 @@ export class PbTimeline extends pbMixin(LitElement) {
         content: "";
         position: absolute;
         bottom: 100%;
-        left: 50%;
+        left: 10px;
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
         border-color: transparent transparent black transparent;
+      }
+      #tooltip.right::after {
+        right: 10px;
+        left: auto;
       }
       /* pure css close button for tooltip */
       .close{
@@ -526,7 +531,14 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   _showtooltip(event) {
     const interval = this._getElementInterval(event.currentTarget);
-    const offset = Math.round((((interval[0] + interval[1]) / 2) - this.tooltip.offsetWidth / 2));
+    let offset;
+    if (interval[0] < interval[2]) {
+      offset = Math.round((((interval[0] + interval[1]) / 2)) - 10);
+      this.tooltip.classList.remove('right');
+    } else {
+      offset = Math.round((((interval[0] + interval[1]) / 2) - this.tooltip.offsetWidth)) + 10;
+      this.tooltip.classList.add('right');
+    }
     this.tooltip.style.left = offset + "px";
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
@@ -574,7 +586,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     let interval = [bin.getBoundingClientRect().x, bin.getBoundingClientRect().x + bin.getBoundingClientRect().width]
     let x1 = interval[0] - rect.left + 1; //x position within the element.
     let x2 = interval[1] - rect.left + 1; //x position within the element.
-    return [x1, x2];
+    return [x1, x2, rect.width / 2];
   }
 
   _getSelectionInterval() {
@@ -690,7 +702,7 @@ export class PbTimeline extends pbMixin(LitElement) {
   }
 
   renderInfo(binObj) {
-    if (binObj.info && binObj.info.length > 0 && binObj.info.length < 6) {
+    if (binObj.info && binObj.info.length > 0 && binObj.info.length <= 10) {
       return html`
         <ul class="info">
         ${ binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`) }
