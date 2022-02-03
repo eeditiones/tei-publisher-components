@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.33.0...v1.33.1) (2022-02-03)
+
+
+### Bug Fixes
+
+* **pb-timeline:** improve tooltip placement; show details for undated entries as well ([d1edea8](https://github.com/eeditiones/tei-publisher-components/commit/d1edea8e5833f9a641329974710016529ada59ec))
+
 # [1.33.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.32.2...v1.33.0) (2022-01-31)
 
 
