@@ -326,7 +326,7 @@ export class PbBrowseDocs extends PbLoad {
     getURL(params) {
         if (this.static) {
             // use a static URL
-            return `collections/${this.collection}/${params.start || '1'}.html`;
+            return `collections/${this.collection ? this.collection + '/' : ''}${params.start || '1'}.html`;
         }
         const url = super.getURL(params);
         return this.collection ? `${url}/${this.collection}` : url;
@@ -440,6 +440,7 @@ export class PbBrowseDocs extends PbLoad {
             link.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 this.collection = link.getAttribute('data-collection');
+                this.start = 1;
                 this.setParameter('collection', this.collection);
                 this.pushHistory('browse collection');
                 console.log('<pb-browse-docs> loading collection %s', this.collection);
