@@ -1,3 +1,15 @@
+# [1.34.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.33.1...v1.34.0) (2022-02-14)
+
+
+### Bug Fixes
+
+* **pb-load:** for pagination, allow total number of pages/current page to also be specified via data-pagination-* attributes in content for cases where HTTP header cannot be used ([347ea0c](https://github.com/eeditiones/tei-publisher-components/commit/347ea0c4b7a09039d2dbf5615ee807b82727fb1d))
+
+
+### Features
+
+* **pb-view, pb-browse-docs:** add an option "static" to load pre-generated pages from a static endpoint, i.e. not a full TEI Publisher instance ([496ea4b](https://github.com/eeditiones/tei-publisher-components/commit/496ea4b2f0c84e653c3d8fe2047a56d66c90edae))
+
 ## [1.33.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.33.0...v1.33.1) (2022-02-03)
 
 
