@@ -1,3 +1,10 @@
+## [1.34.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.0...v1.34.1) (2022-02-14)
+
+
+### Bug Fixes
+
+* **pb-browse-docs:** navigating to parent collection should start on page 1 again ([804e6c4](https://github.com/eeditiones/tei-publisher-components/commit/804e6c40c30f2acda62b1b9903f801909f070a3e))
+
 # [1.34.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.33.1...v1.34.0) (2022-02-14)
 
 
