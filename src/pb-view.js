@@ -162,6 +162,14 @@ export class PbView extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * If set, rewrite URLs to load pages as static HTML files,
+             * so no TEI Publisher instance is required. Use this in combination with
+             * [tei-publisher-static](https://github.com/eeditiones/tei-publisher-static).
+             */
+            static: {
+                type: Boolean
+            },
+            /**
             * The server returns footnotes separately. Set this property
             * if you wish to append them to the main text.
             */
@@ -328,6 +336,7 @@ export class PbView extends pbMixin(LitElement) {
         this._selector = new Map();
         this._chunks = [];
         this._scrollTarget = null;
+        this.static = false;
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -584,20 +593,56 @@ export class PbView extends pbMixin(LitElement) {
 
         const loadContent = this.shadowRoot.getElementById('loadContent');
         
-        if (!this.url) {
-            if (this.minApiVersion('1.0.0')) {
-                this.url = "api/parts";
-            } else {
-                this.url = "modules/lib/components.xql";
-            }
-        }
-        if (this.minApiVersion('1.0.0')) {
-            loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
+        if (this.static) {
+            this._staticUrl(params).then((url) => {
+                loadContent.url = url;
+                loadContent.generateRequest();
+            });
         } else {
-            loadContent.url = `${this.getEndpoint()}/${this.url}`;
+            if (!this.url) {
+                if (this.minApiVersion('1.0.0')) {
+                    this.url = "api/parts";
+                } else {
+                    this.url = "modules/lib/components.xql";
+                }
+            }
+            if (this.minApiVersion('1.0.0')) {
+                loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
+            } else {
+                loadContent.url = `${this.getEndpoint()}/${this.url}`;
+            }
+            loadContent.params = params;
+            loadContent.generateRequest();
         }
-        loadContent.params = params;
-        loadContent.generateRequest();
+    }
+
+    /**
+     * Use a static URL to load pre-generated content.
+     */
+    async _staticUrl(params) {
+        function createKey(paramNames) {
+            const urlComponents = [];
+            paramNames.sort().forEach(key => {
+                if (params[key]) {
+                    urlComponents.push(`${key}=${params[key]}`);
+                }
+            });
+            return urlComponents.join('&');
+        }
+        
+        const index = await fetch(`index.json`)
+            .then((response) => response.json());
+        const paramNames = ['odd', 'view', 'xpath'];
+        this.querySelectorAll('pb-param').forEach((param) => paramNames.push(`user.${param.getAttribute('name')}`));
+        let url = createKey([...paramNames, 'root']);
+        let file = index[url];
+        if (!file) {
+            url = createKey(paramNames);
+            file = index[url];
+        }
+
+        console.log('<pb-view> Static lookup %s: %s', url, file);
+        return `${file}`;
     }
 
     _clear() {
@@ -838,7 +883,11 @@ export class PbView extends pbMixin(LitElement) {
         let link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
+        if (this.static) {
+            link.setAttribute('href', `/css/${this.getOdd()}.css`);
+        } else {
+            link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
+        }
         links.push(link);
 
         if (this.loadCss) {

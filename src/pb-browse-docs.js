@@ -87,6 +87,13 @@ export class PbBrowseDocs extends PbLoad {
             subforms: {
                 type: String
             },
+            /**
+             * If set, rewrite URLs to load pages as static HTML files,
+             * so no TEI Publisher instance is required
+             */
+            static: {
+                type: Boolean
+            },
             _file: {
                 type: String
             },
@@ -120,6 +127,8 @@ export class PbBrowseDocs extends PbLoad {
         this.filterBy = 'title';
         this._allowModification = false;
         this._suggestions = [];
+
+        this.static = false;
     }
 
     connectedCallback() {
@@ -177,14 +186,16 @@ export class PbBrowseDocs extends PbLoad {
         });
         this.shadowRoot.getElementById('autocomplete').addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
-        const login = document.getElementById(this.login);
-        if (!login) {
-            console.error('<pb-browse-docs> connected pb-login element not found!');
-        } else {
-            this.subscribeTo('pb-login', (ev) => {
-                this._allowModification = this._loggedIn(ev.detail.user, ev.detail.group);
-            }, []);
-            this._allowModification = login.loggedIn && this._loggedIn(login.user, login.groups);
+        if (this.login) {
+            const login = document.getElementById(this.login);
+            if (!login) {
+                console.error('<pb-browse-docs> connected pb-login element not found!');
+            } else {
+                this.subscribeTo('pb-login', (ev) => {
+                    this._allowModification = this._loggedIn(ev.detail.user, ev.detail.group);
+                }, []);
+                this._allowModification = login.loggedIn && this._loggedIn(login.user, login.groups);
+            }
         }
 
         this.shadowRoot.getElementById('sort-list').addEventListener('selected-item-changed', this._sort.bind(this));
@@ -313,6 +324,10 @@ export class PbBrowseDocs extends PbLoad {
     }
 
     getURL(params) {
+        if (this.static) {
+            // use a static URL
+            return `collections/${this.collection}/${params.start || '1'}.html`;
+        }
         const url = super.getURL(params);
         return this.collection ? `${url}/${this.collection}` : url;
     }
