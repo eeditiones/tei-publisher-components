@@ -288,13 +288,12 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     _handleContent(ev) {
-        this._parseHeaders(ev.detail.xhr);
-
         const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
         if (this.container) {
             this.style.display = 'none';
             document.querySelectorAll(this.container).forEach((elem) => {
-                elem.innerHTML = resp
+                elem.innerHTML = resp;
+                this._parseHeaders(ev.detail.xhr, elem);
                 this._fixLinks(elem);
                 this._onLoad(elem);
             });
@@ -304,6 +303,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
             const div = document.createElement('div');
             div.innerHTML = resp;
+            this._parseHeaders(ev.detail.xhr, div);
             div.slot = '';
             this.appendChild(div);
             this._fixLinks(div);
@@ -338,9 +338,20 @@ export class PbLoad extends pbMixin(LitElement) {
         dialog.open();
     }
 
-    _parseHeaders(xhr) {
-        const total = xhr.getResponseHeader('pb-total');
-        const start = xhr.getResponseHeader('pb-start');
+    _parseHeaders(xhr, content) {
+        // Try to determine number of pages and current position
+        // Search for data-pagination-* attributes first and if they
+        // can't be found, check HTTP headers
+        function getPaginationParam(type) {
+            const elem = content.querySelector(`[data-pagination-${type}]`);
+            if (elem) {
+                return elem.getAttribute(`data-pagination-${type}`);
+            }
+            return xhr.getResponseHeader(`pb-${type}`);
+        }
+
+        const total = getPaginationParam('total');
+        const start = getPaginationParam('start');
 
         if (this.start !== start) {
             this.start = parseInt(start);
