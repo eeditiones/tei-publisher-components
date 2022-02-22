@@ -1,3 +1,11 @@
+## [1.34.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.1...v1.34.2) (2022-02-22)
+
+
+### Bug Fixes
+
+* **pb-timeline:** safari broken: does not support regex look back ([349924c](https://github.com/eeditiones/tei-publisher-components/commit/349924c6e2c3be4bd84bd3c9d7850db0e8acfe43))
+* **pb-view:** change "static" property to point to HTTP context path to use for CSS stylesheet loading ([539af55](https://github.com/eeditiones/tei-publisher-components/commit/539af55f43061f62076882e4884e4995eccb9b4c))
+
 ## [1.34.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.0...v1.34.1) (2022-02-14)
 
 
