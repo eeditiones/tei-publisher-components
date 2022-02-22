@@ -165,9 +165,11 @@ export class PbView extends pbMixin(LitElement) {
              * If set, rewrite URLs to load pages as static HTML files,
              * so no TEI Publisher instance is required. Use this in combination with
              * [tei-publisher-static](https://github.com/eeditiones/tei-publisher-static).
+             * The value should point to the HTTP root path under which the static version
+             * will be hosted. This is used to resolve CSS stylesheets.
              */
             static: {
-                type: Boolean
+                type: String
             },
             /**
             * The server returns footnotes separately. Set this property
@@ -336,7 +338,7 @@ export class PbView extends pbMixin(LitElement) {
         this._selector = new Map();
         this._chunks = [];
         this._scrollTarget = null;
-        this.static = false;
+        this.static = null;
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -623,7 +625,7 @@ export class PbView extends pbMixin(LitElement) {
         function createKey(paramNames) {
             const urlComponents = [];
             paramNames.sort().forEach(key => {
-                if (params[key]) {
+                if (params.hasOwnProperty(key)) {
                     urlComponents.push(`${key}=${params[key]}`);
                 }
             });
@@ -632,9 +634,9 @@ export class PbView extends pbMixin(LitElement) {
         
         const index = await fetch(`index.json`)
             .then((response) => response.json());
-        const paramNames = ['odd', 'view', 'xpath'];
+        const paramNames = ['odd', 'view', 'xpath', 'map'];
         this.querySelectorAll('pb-param').forEach((param) => paramNames.push(`user.${param.getAttribute('name')}`));
-        let url = createKey([...paramNames, 'root']);
+        let url = params.id ? createKey([...paramNames, 'id']) : createKey([...paramNames, 'root']);
         let file = index[url];
         if (!file) {
             url = createKey(paramNames);
@@ -884,7 +886,7 @@ export class PbView extends pbMixin(LitElement) {
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
         if (this.static) {
-            link.setAttribute('href', `/css/${this.getOdd()}.css`);
+            link.setAttribute('href', `${this.static}/css/${this.getOdd()}.css`);
         } else {
             link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
         }
@@ -894,7 +896,7 @@ export class PbView extends pbMixin(LitElement) {
             link = document.createElement('link');
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('type', 'text/css');
-            link.setAttribute('href', `${this.getEndpoint()}/${this.loadCss}`);
+            link.setAttribute('href', this.toAbsoluteURL(this.loadCss));
             links.push(link);
         }
 
