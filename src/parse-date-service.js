@@ -30,12 +30,12 @@ export class ParseDateService {
     const resultWeekMatch = this.input.match(this._weekMatchRegex());
     const resultYearAndMonthMatch = this.input.match(this._yearAndMonthRegex());
     if (resultIsoMatch) {
-      const split = resultIsoMatch[0].split(/-|\/|\s/);
+      const split = resultIsoMatch[1].split(/-|\/|\s/);
       this.year  = split[0];
       this.month = this._setWithLeadingZero(split[1]);
       this.day   = this._setWithLeadingZero(split[2]);
     } else if (resultYearAndMonthMatch) {
-      const split = resultYearAndMonthMatch[0].split("-");
+      const split = resultYearAndMonthMatch[1].split("-");
       this.year = split[0];
       this.month = this._setWithLeadingZero(split[1]);
       this.day = "01";
@@ -73,7 +73,7 @@ export class ParseDateService {
   * | 2012/1/31  | 2012 1 31 | 2012 01 31 |
   */
   _isoMatchRegex() {
-    return /(?<=\s|^)\d{4}(-|\s|\/)([0][1-9]|[1-9]|10|11|12)(-|\s|\/)([0][1-9]|[1-2][0-9]|3[01]|[1-9])(?=\s|$|\.)/;
+    return /(?:\s|^)(\d{4}(-|\s|\/)([0][1-9]|[1-9]|10|11|12)(-|\s|\/)([0][1-9]|[1-2][0-9]|3[01]|[1-9]))(?=\s|$|\.)/;
     /*      |        | year         | 01-09 | 1-9 | 10-12   |         |01-09  |10-29     |30,31| 1-9  |
     *       |             | dash or slash                   | dash or slash                           |
     *       |preceding with space or start of string                 end with space endofstr or dot <-|*/
@@ -111,7 +111,7 @@ export class ParseDateService {
   * | 2020-01 | 2020-12 | 2012-1 |
   */
   _yearAndMonthRegex() {
-    return /(?<=\s|^)\d{4}-([0][1-9]|[1-9]|10|11|12)(?=\s|$)/;
+    return /(?:\s|^)(\d{4}-([0][1-9]|[1-9]|10|11|12))(?=\s|$)/;
   }
 
   _findYear() {
@@ -126,14 +126,14 @@ export class ParseDateService {
   _findMonth() {
     const months = this._monthDictionaryValues();
     months.forEach(month => {
-      let re = new RegExp(`(?<=\\s|^)(${month})(?=\\s|$|\\.)`, "i")
+      const re = new RegExp(`(?:\\s|^)(${month})(?=\\s|$|\\.)`, "i")
       const result = this.input.match(re);
       if (result) { // yes => get dict and value + return
-        this.month = this._monthDictionary()[result[0].toLowerCase()];
+        this.month = this._monthDictionary()[result[1].toLowerCase()];
         this._removeMatchFromInput(result);
         return this.month;
       }
-    })
+    });
     return undefined;
   }
 
@@ -141,14 +141,14 @@ export class ParseDateService {
   * find single numbers from 1-31
   */
   _findDay() {
-    let regex = /(?<=\s|^)([0][1-9]|[1-2][0-9]|3[01]|[1-9])(?=\s|$|\.|st|nd|rd|th)/;
+    const regex = /(?:\s|^)([0][1-9]|[1-2][0-9]|3[01]|[1-9])(?=\s|$|\.|st|nd|rd|th)/;
     /*           |         | 01-09 | 10-29    |30,31|1-9    | ends with whitespace, endofstr or dot.
     *            | starts with whitepace or startoftr       | won't be included in match (lookbehind operator)
     *            | look behind operator (not included)
     *            | https://stackoverflow.com/a/6713378/6272061 */
     const result = this.input.match(regex)
     if (result) {
-      this.day = this._setWithLeadingZero(result[0]);
+      this.day = this._setWithLeadingZero(result[1]);
     }
   }
 

@@ -299,6 +299,9 @@ export class PbTimeline extends pbMixin(LitElement) {
             },
             resettable: {
               type: Boolean
+            },
+            _language: {
+              type: String
             }
         };
     }
@@ -315,6 +318,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.url = '';
     this.auto = false;
     this.resettable = false;
+    this._language = 'en';
     this._resetSelectionProperty();
   }
 
@@ -326,6 +330,9 @@ export class PbTimeline extends pbMixin(LitElement) {
       const url = this.toAbsoluteURL(this.url, this.getEndpoint());
       loader.url = url;
       loader.generateRequest();
+    });
+    this.subscribeTo('pb-i18n-update', (ev) => {
+      this._language = ev.detail.language;
     });
   }
 
@@ -620,7 +627,7 @@ export class PbTimeline extends pbMixin(LitElement) {
   }
 
   _numberWithCommas(input) {
-    return input.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "'");
+    return new Intl.NumberFormat(this._language, {style: 'decimal'}).format(input);
   }
 
   _areOverlapping(A, B) { // check if 2 intervals are overlapping
