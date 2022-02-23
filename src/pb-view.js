@@ -45,6 +45,7 @@ import '@polymer/paper-dialog-scrollable';
  * @cssprop --pb-footnote-padding - Padding around a footnote marker
  * @cssprop --pb-footnote-font-size - Font size for the footnote marker
  * @cssprop --pb-footnote-font-family - Font family for the footnote marker
+ * @cssprop --pb-view-scroll-margin-top - Applied to any element with an id
  * @csspart content - The root div around the displayed content
  * @csspart footnotes - div containing the footnotes
   
@@ -524,7 +525,7 @@ export class PbView extends pbMixin(LitElement) {
                 this._scrollTarget = ev.detail.hash;
                 const target = this.shadowRoot.getElementById(this._scrollTarget);
                 if (target) {
-                    setTimeout(() => target.scrollIntoView());
+                    setTimeout(() => target.scrollIntoView({block: 'nearest'}));
                 }
                 return;
             }
@@ -595,7 +596,7 @@ export class PbView extends pbMixin(LitElement) {
 
         const loadContent = this.shadowRoot.getElementById('loadContent');
         
-        if (this.static) {
+        if (this.static !== null) {
             this._staticUrl(params).then((url) => {
                 loadContent.url = url;
                 loadContent.generateRequest();
@@ -707,9 +708,11 @@ export class PbView extends pbMixin(LitElement) {
                 const target = this.shadowRoot.getElementById(this._scrollTarget) || 
                     this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
                 if (target) {
-                    setTimeout(() => {
-                        target.scrollIntoView();
-                    }, 100);
+                    window.requestAnimationFrame(() =>
+                        setTimeout(() => {
+                            target.scrollIntoView({block: 'nearest'});
+                        }, 400)
+                    );
                 }
                 this._scrollTarget = null;
             });
@@ -885,7 +888,7 @@ export class PbView extends pbMixin(LitElement) {
         let link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        if (this.static) {
+        if (this.static !== null) {
             link.setAttribute('href', `${this.static}/css/${this.getOdd()}.css`);
         } else {
             link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
@@ -1204,6 +1207,10 @@ export class PbView extends pbMixin(LitElement) {
             :host(.noscroll)::-webkit-scrollbar { 
                 width: 0 !important;
                 display: none; 
+            }
+
+            [id] {
+                scroll-margin-top: var(--pb-view-scroll-margin-top);
             }
 
             #view {
