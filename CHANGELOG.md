@@ -1,3 +1,10 @@
+## [1.34.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.2...v1.34.3) (2022-02-23)
+
+
+### Bug Fixes
+
+* **pb-view:** add CSS property --pb-view-scroll-margin-top to control scrolling offset for all elements being a potential link target ([9b836b9](https://github.com/eeditiones/tei-publisher-components/commit/9b836b9dce7ae6cba6c6b49ddc9484e7bc6a141a))
+
 ## [1.34.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.1...v1.34.2) (2022-02-22)
 
 
