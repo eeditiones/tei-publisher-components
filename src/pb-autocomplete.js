@@ -6,6 +6,31 @@ import '@polymer/iron-ajax';
 import '@polymer/iron-icon';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 
+function _query(datasource, query) {
+    const queryResult = [];
+    datasource.forEach((item) => {
+      let objText, objValue;
+
+      if (typeof item === 'object') {
+        objText = item.text;
+        objValue = item.value;
+      } else {
+        objText = item.toString();
+        objValue = objText;
+      }
+
+      if (objText.toLowerCase().indexOf(query) > -1) {
+        // NOTE: the structure of the result object matches with the current template. For custom templates, you
+        // might need to return more data
+        const resultItem = {};
+        resultItem.text = objText;
+        resultItem.value = objValue;
+        queryResult.push(resultItem);
+      }
+    });
+    return queryResult;
+}
+
 /**
  * Provides an input with attached autocomplete. The autocomplete suggestions can be read
  * either from a static list or a remote endpoint to which the current user input is sent.
@@ -53,12 +78,27 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * If set, the entire list of possible suggestions will be preloaded upon initialization of the
+             * component.
+             */
+            preload: {
+                type: Boolean
+            },
+            /**
              * A static list of suggestions. Use instead of `source`. May either be a flat array of strings,
              * or an array containing objects of the form `{"text": "", "value": ""}, in which case "value" denotes
              * the value to be used when the enclosing form is submitted, and "text" is the label to be displayed.
              */
             suggestions: {
                 type: Array
+            },
+            /**
+             * By default suggestions are filtered by prefix, i.e. only suggestions starting with the prefix
+             * typed by the user are shown. Set this property to true to search for the user-provided string
+             * anywhere within the suggestion text.
+             */
+            substring: {
+                type: Boolean
             },
             /**
              * An icon to display next to the input.
@@ -74,6 +114,8 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this.placeholder = 'search.placeholder';
         this.suggestions = [];
         this.lastSelected = null;
+        this.preload = false;
+        this.substring = false;
         this._hiddenInput = null;
         this._initialized = false;
     }
@@ -94,7 +136,14 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         const autocomplete = this.shadowRoot.getElementById('autocomplete'); 
         autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
-        if (this.value) {
+        if (this.preload && this.source) {
+            if (this.substring) {
+                autocomplete.queryFn = _query;
+            }
+            PbAutocomplete.waitOnce('pb-page-ready', () => {
+                this._sendRequest();
+            });
+        } else if (this.value) {
             if (this.source) {
                 PbAutocomplete.waitOnce('pb-page-ready', () => {
                     //console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
@@ -140,7 +189,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
                 always-float-label>
                 ${this.icon ? html`<iron-icon icon="${this.icon}" slot="prefix"></iron-icon>` : null}
             </paper-input>
-            <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${this.source}"
+            <paper-autocomplete-suggestions id="autocomplete" for="search" .source="${this.suggestions}" ?remote-source="${!this.preload && this.source}"
                 @autocomplete-selected="${this._autocompleteSelected}"></paper-autocomplete-suggestions>
           
         <iron-ajax
@@ -179,7 +228,6 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this._sendRequest(search.value);
     }
 
-
     _sendRequest(query) {
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
         loader.url = this.toAbsoluteURL(this.source);
@@ -195,35 +243,33 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
     _updateSuggestions() {
         const loader = this.shadowRoot.getElementById('autocompleteLoader');
-
         if (this._initialized) {
             const autocomplete = this.shadowRoot.getElementById('autocomplete');
             if (loader.lastResponse) {
                 this.suggestions = loader.lastResponse;
                 autocomplete.suggestions(this.suggestions);
             }
-        } else {
-            if (loader.lastResponse) {
-                let suggestions = loader.lastResponse;
-                //console.log('suggestions received', suggestions);
+        } else if (loader.lastResponse) {
+            const suggestions = loader.lastResponse;
 
-                const input = this.shadowRoot.getElementById('search');
-                const value = suggestions.find((suggestion) => {
-                    if (suggestion.text) {
-                        return suggestion.value === this.value;
-                    }
-                    return suggestion === this.value;
-                });
-                if (value) {
-                    input.value = value.text || value;
-                    if (this._hiddenInput) {
-                        this._hiddenInput.value = value.value || value;
-                    }
-                } else {
-                    if (this._hiddenInput) {
-                        this._hiddenInput.value = this.value;
-                    }
+            const input = this.shadowRoot.getElementById('search');
+            const value = suggestions.find((suggestion) => {
+                if (suggestion.text) {
+                    return suggestion.value === this.value;
                 }
+                return suggestion === this.value;
+            });
+            if (value) {
+                input.value = value.text || value;
+                if (this._hiddenInput) {
+                    this._hiddenInput.value = value.value || value;
+                }
+            } else if (this._hiddenInput) {
+                this._hiddenInput.value = this.value;
+            }
+
+            if (this.preload) {
+                this.suggestions = suggestions;
             }
         }
         this._initialized = true;
@@ -242,22 +288,48 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     _autocompleteSelected(ev) {
         this.lastSelected = ev.detail.text;
         const input = this.shadowRoot.getElementById('search');
-        console.log('autocomplete selected %s', ev.detail.text);
         input.value = ev.detail.text;
         this.value = ev.detail.value;
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
+
+        this.emitTo('pb-autocomplete-selected', {
+            text: ev.detail.text,
+            value: ev.detail.value
+        });
     }
 
     _setInput(ev) {
         const input = this.shadowRoot.getElementById('search');
-        console.log('Autocomplete set manually to %s', input.value);
-
         this.value = input.value;
+
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         } 
+
+        if (ev.keyCode === 13) {
+            const entry = this.suggestions.find((suggestion) => {
+                if (suggestion.text) {
+                    return suggestion.value === this.value;
+                }
+                return suggestion === this.value;
+            });
+            if (!entry) {
+                return;
+            }
+            if (entry.value) {
+                this.emitTo('pb-autocomplete-selected', {
+                    text: entry.text,
+                    value: entry.value
+                });
+            } else {
+                this.emitTo('pb-autocomplete-selected', {
+                    text: entry,
+                    value: entry
+                });
+            }
+        }
     }
 
    

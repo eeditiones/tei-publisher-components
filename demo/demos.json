@@ -138,7 +138,8 @@
   },
   "pb-autocomplete": {
     "demo/pb-autocomplete.html": "Demo",
-    "demo/pb-autocomplete2.html": "Search with autocomplete"
+    "demo/pb-autocomplete2.html": "Search with autocomplete",
+    "demo/pb-autocomplete3.html": "Preloaded, static autocomplete list"
   },
   "pb-select": {
     "demo/pb-select.html": "Demo",

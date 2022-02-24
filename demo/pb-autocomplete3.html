@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Using pb-autocomplete</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+            select {
+                margin-right: 10px;
+            }
+        </style>
+        <!--scripts-->
+        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        <script type="module" src="../src/pb-autocomplete.js"></script>
+        <script type="module" src="../src/pb-events.js"></script>
+        <!--/scripts-->
+    </head>
+    <body>
+        <h1>Using pb-autocomplete</h1>
+
+        <pb-demo-snippet>
+            <template>
+                <pb-page>
+                    <form action="" id="form">
+                        <h2>Static remote suggestion list loaded once upon initialization</h2>
+                        <pb-autocomplete name="autocomplete3" placeholder="language" source="select.json" preload substring></pb-autocomplete>
+                        <p>Selected: <span id="selected"></span></p>
+                    </pb-page>
+                    <script>
+                        window.addEventListener('WebComponentsReady', () => {
+                            pbEvents.subscribe('pb-autocomplete-selected', null, (ev) => {
+                                document.getElementById('selected').innerHTML = `${ev.detail.value  } = ${  ev.detail.text}`;
+                            });
+                        });
+                    </script>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
