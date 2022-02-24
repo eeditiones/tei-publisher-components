@@ -1,3 +1,15 @@
+# [1.35.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.3...v1.35.0) (2022-02-24)
+
+
+### Bug Fixes
+
+* **pb-view:** allow 'xpath' to be specified in 'pb-refresh' event ([5375710](https://github.com/eeditiones/tei-publisher-components/commit/5375710251861fa767502ecdf8e9769acb306766))
+
+
+### Features
+
+* **pb-autocomplete:** add 'preload' property to preload entire list of possible suggestions once during initialization ([447dfcb](https://github.com/eeditiones/tei-publisher-components/commit/447dfcbf6963cbcdb631ce84993b2f3a5cdd3280))
+
 ## [1.34.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.2...v1.34.3) (2022-02-23)
 
 
