@@ -51,6 +51,10 @@ export class PbSearch extends pbMixin(LitElement) {
             },
             subforms: {
                 type: String
+            },
+            disableAutocomplete: {
+                type: Boolean,
+                attribute: 'disable-autocomplete'
             }
         };
     }
@@ -61,6 +65,7 @@ export class PbSearch extends pbMixin(LitElement) {
         this.redirect = false;
         this.submitOnLoad = false;
         this.placeHolder = 'search.placeholder';
+        this.disableAutocomplete = false;
     }
 
     connectedCallback() {
@@ -70,8 +75,10 @@ export class PbSearch extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        const autocomplete = this.shadowRoot.getElementById('autocomplete');
-        autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
+        if (!this.disableAutocomplete) {
+            const autocomplete = this.shadowRoot.getElementById('autocomplete');
+            autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
+        }
         const ironform = this.shadowRoot.getElementById('ironform');
         ironform.addEventListener('iron-form-response', (event) =>
             event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
