@@ -1,3 +1,10 @@
+## [1.35.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.0...v1.35.1) (2022-02-26)
+
+
+### Bug Fixes
+
+* **pb-search:** add option to disable autocomplete ([18be531](https://github.com/eeditiones/tei-publisher-components/commit/18be53150f23fe97322b3b9dedefbdb4fe9dbf5b))
+
 # [1.35.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.34.3...v1.35.0) (2022-02-24)
 
 
