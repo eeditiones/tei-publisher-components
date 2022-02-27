@@ -294,6 +294,14 @@ export class PbView extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'before-update-event'
             },
+            /**
+             * If set, do not scroll the view to target node (e.g. given in URL hash) 
+             * after content was loaded.
+             */
+            noScroll: {
+                type: Boolean,
+                attribute: 'no-scroll'
+            },
             _features: {
                 type: Object
             },
@@ -335,6 +343,7 @@ export class PbView extends pbMixin(LitElement) {
         this.infiniteScrollMax = 10;
         this.disableHistory = false;
         this.beforeUpdate = null;
+        this.noScroll = false;
         this._features = {};
         this._selector = new Map();
         this._chunks = [];
@@ -520,7 +529,7 @@ export class PbView extends pbMixin(LitElement) {
 
     _refresh(ev) {
         if (ev && ev.detail) {
-            if (ev.detail.hash && !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)) {
+            if (ev.detail.hash && !this.noScroll && !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)) {
                 // if only the scroll target has changed: scroll to the element without reloading
                 this._scrollTarget = ev.detail.hash;
                 const target = this.shadowRoot.getElementById(this._scrollTarget);
@@ -551,7 +560,9 @@ export class PbView extends pbMixin(LitElement) {
             } else {
                 this.nodeId = ev.detail.position || this.nodeId;
             }
-            this._scrollTarget = ev.detail.hash;
+            if (!this.noScroll) {
+                this._scrollTarget = ev.detail.hash;
+            }
         }
         this._updateStyles();
         if (this.infiniteScroll) {
@@ -867,12 +878,19 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _scroll() {
+        if (this.noScroll) {
+            return;
+        }
         const { hash } = this.getUrl();
         if (hash) {
             const target = this.shadowRoot.getElementById(hash.substring(1));
             console.log('hash target: %o', target);
             if (target) {
-                target.scrollIntoView({ block: "center", inline: "nearest" });
+                window.requestAnimationFrame(() =>
+                    setTimeout(() => {
+                        target.scrollIntoView({block: 'nearest'});
+                    }, 400)
+                );
             }
         }
     }
