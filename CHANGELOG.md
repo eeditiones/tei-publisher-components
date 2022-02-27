@@ -1,3 +1,10 @@
+## [1.35.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.1...v1.35.2) (2022-02-27)
+
+
+### Bug Fixes
+
+* **pb-view:** add option 'no-scroll' to disable automatic scrolling of content to hash target ([0b1737f](https://github.com/eeditiones/tei-publisher-components/commit/0b1737fef77ff7c234c6f1a5746fe13f89070a07))
+
 ## [1.35.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.0...v1.35.1) (2022-02-26)
 
 
