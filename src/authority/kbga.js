@@ -11,8 +11,10 @@ export class KBGA extends Registry {
         const results = [];
      
         const register = this.getRegister();
-        const url = `https://meta.karl-barth.ch/api/${register}?search=${encodeURIComponent(key)}`;
+        const searchParam = register === 'bibls' ? 'biblsearch' : 'search';
+        const url = `https://meta.karl-barth.ch/api/${register}?${searchParam}=${encodeURIComponent(key)}`;
         const label = this.getLabelField();
+        console.log(label);
         return new Promise((resolve) => {
             fetch(url)
               .then(response => response.json())
@@ -26,10 +28,10 @@ export class KBGA extends Registry {
                     const result = {
                       register: this._register,
                       id: (this._prefix ? `${this._prefix}:${item['full-id']}` : item['full-id']),
-                      label: item[label],
+                      label: typeof label === "string" ? item[label] : label(item),
                       details: `${item['full-id']}`,
                       link: `https://meta.karl-barth.ch/${register}/${item.id}`,
-                      strings: [item[label]],
+                      strings: [typeof label === "string" ? item[label] : label(item)],
                       provider: 'KBGA'
                     };
                     results.push(result);
@@ -54,7 +56,7 @@ export class KBGA extends Registry {
           const dates = json.data.birth ? `<p>* ${json.data.birth} ${died}</p>` : '';
           const note = json.data.note_bio ? `<p>${json.data.note_bio}</p>` : '';
           const output = `
-            <h3 class="label"><a href="https://${json.wikipediaURL}" target="_blank">${json.data[label]}</a></h3>
+            <h3 class="label"><a href="https://${json.wikipediaURL}" target="_blank">${typeof label === 'string' ? json.data[label] : label(json.data)}</a></h3>
               ${dates}
               ${note}
           `;
@@ -112,6 +114,9 @@ export class KBGA extends Registry {
           case 'abbreviation':
               label = 'label';
               break;
+          case 'bibl':
+              label = (data) => data.title.m || data.title.s;
+              break;
           default:
               label = 'persName_full';
               break;
@@ -137,6 +142,9 @@ export class KBGA extends Registry {
           break;
         case 'abbreviation':
           register = 'abbreviations';
+          break;
+        case 'bibl':
+          register = 'bibls';
           break;
         default:
           register = this._register;
