@@ -223,12 +223,22 @@ class PbViewAnnotate extends PbView {
   static get properties() {
     return {
       /**
-       * Configures the annotation property containing the key for authority entries.
+       * Configures the default annotation property containing the key for authority entries.
        * Default: 'ref', corresponding to TEI attribute @ref. Change to 'corresp' or 'key' when
        * using those attributes instead.
+       * 
+       * You can also define a custom mapping of annotation types to key properties, e.g. if you would
+       * like to use @key for some elements, but @corresp for others.
        */
       key: {
         type: String
+      },
+      /**
+       * Optional mapping of annotation type names to key properties
+       */
+      keyMap: {
+        type: Object,
+        attribute: 'key-map'
       },
       /**
        * When searching the displayed text for other potential occurrences of an entity,
@@ -244,6 +254,7 @@ class PbViewAnnotate extends PbView {
   constructor() {
     super();
     this.key = 'ref';
+    this.keyMap = {};
     this.caseSensitive = false;
     this._ranges = [];
     this._rangesMap = new Map();
@@ -373,6 +384,10 @@ class PbViewAnnotate extends PbView {
     window.requestAnimationFrame(() => this.refreshMarkers());
   }
   
+  getKey(type) {
+    return this.keyMap[type] || this.key;
+  }
+
   _resizeHandler() {
     let _pendingCallback = null;
 
@@ -406,6 +421,7 @@ class PbViewAnnotate extends PbView {
       this._initAnnotationColors();
       this._annotationStyles();
       this.updateAnnotations();
+      this._markIncompleteAnnotations();
       if (this._scrollTop) {
         this.scrollTop = this._scrollTop;
         this._scrollTop = undefined;
@@ -459,7 +475,7 @@ class PbViewAnnotate extends PbView {
 
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
-    const addClass = teiRange.properties[this.key] === '' ? 'incomplete' : '';
+    const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass}`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
@@ -669,7 +685,7 @@ class PbViewAnnotate extends PbView {
     const jsonOld = JSON.parse(span.dataset.annotation);
     const json = Object.assign(jsonOld || {}, properties);
     span.dataset.annotation = JSON.stringify(json);
-    if (json[this.key] !== '') {
+    if (json[this.getKey(span.dataset.type)] !== '') {
       span.classList.remove('incomplete');
     }
   }
@@ -770,10 +786,10 @@ class PbViewAnnotate extends PbView {
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
-        if (data[this.key]) {
+        if (data[this.getKey(type)]) {
           this.emitTo('pb-annotation-detail', {
             type,
-            id: data[this.key],
+            id: data[this.getKey(type)],
             container: info,
             span,
           });
@@ -910,7 +926,7 @@ class PbViewAnnotate extends PbView {
         if (annoData && annoType) {
           const parsed = JSON.parse(annoData) || {};
           isAnnotated = annoType === type;
-          ref = parsed[this.key];
+          ref = parsed[this.getKey(type)];
         }
 
         const startRange = rangeToPoint(node, match.index);
@@ -925,7 +941,7 @@ class PbViewAnnotate extends PbView {
           textNode: node,
           kwic: kwicText(str, start + match.index, start + end),
         };
-        entry[this.key] = ref;
+        entry[this.getKey(type)] = ref;
         result.push(entry);
       }
     }
@@ -973,10 +989,23 @@ class PbViewAnnotate extends PbView {
     }
   }
 
+  _markIncompleteAnnotations() {
+    const elem = this.shadowRoot.getElementById('view')
+    elem.querySelectorAll('.annotation.authority').forEach((annotation) => {
+      if (annotation.dataset.type) {
+        const data = JSON.parse(annotation.dataset.annotation);
+        const key = this.getKey(annotation.dataset.type);
+        if (!data[key] || data[key].length === 0) {
+          annotation.classList.add('incomplete');
+        }
+      }
+    });
+  }
+
   _initAnnotationColors() {
     this._annotationColors = new Map();
     const types = new Set();
-    const elem = this.shadowRoot.getElementById('view')
+    const elem = this.shadowRoot.getElementById('view');
     elem.querySelectorAll('.annotation').forEach((annotation) => {
       if (annotation.dataset.type) {
         types.add(annotation.dataset.type);
@@ -1043,7 +1072,7 @@ class PbViewAnnotate extends PbView {
     styles = document.createElement('style');
     styles.className = '_annotation-styles';
     styles.innerHTML = css;
-    view.appendChild(styles);
+    view.insertBefore(styles, view.firstChild);
   }
 
   static get styles() {
