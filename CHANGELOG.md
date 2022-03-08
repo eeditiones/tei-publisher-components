@@ -1,3 +1,11 @@
+# [1.36.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.2...v1.36.0) (2022-03-08)
+
+
+### Features
+
+* **pb-authority-lookup, kbga:** integrate bibliographic database lookups ([867e29f](https://github.com/eeditiones/tei-publisher-components/commit/867e29f30bcad416fb0b21d1055d35f53a0daf1c))
+* **pb-view-annotate:** the key attribute for authority references can now optionally be configured for each annotation type, so one can use [@key](https://github.com/key) for some, [@corresp](https://github.com/corresp) for others ([b51e9a0](https://github.com/eeditiones/tei-publisher-components/commit/b51e9a0ddf0d4f2f46729b400a1d3a0daf1b9c43))
+
 ## [1.35.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.1...v1.35.2) (2022-02-27)
 
 
