@@ -1,3 +1,11 @@
+## [1.36.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.0...v1.36.1) (2022-03-09)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** allow HTML for the main label to be displayed ([be24182](https://github.com/eeditiones/tei-publisher-components/commit/be241829f70161fc28d39f6369bb2ae9d32eba07))
+* **pb-authority-lookup, kbga:** display full bibliographic entry ([1aae87c](https://github.com/eeditiones/tei-publisher-components/commit/1aae87c1152a2c88ee3c91512f9900242fae6043))
+
 # [1.36.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.35.2...v1.36.0) (2022-03-08)
 
 
