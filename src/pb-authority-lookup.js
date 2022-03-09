@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { createConnectors } from "./authority/connectors.js";
@@ -121,8 +122,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         <td>
           <div>
             ${item.link
-              ? html`<a target="_blank" href="${item.link}">${item.label}</a>`
-              : item.label}
+              ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
+              : html`${unsafeHTML(item.label)}`
+            }
           </div>
           ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
         </td>
