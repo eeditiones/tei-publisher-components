@@ -14,7 +14,6 @@ export class KBGA extends Registry {
         const searchParam = register === 'bibls' ? 'biblsearch' : 'search';
         const url = `https://meta.karl-barth.ch/api/${register}?${searchParam}=${encodeURIComponent(key)}`;
         const label = this.getLabelField();
-        console.log(label);
         return new Promise((resolve) => {
             fetch(url)
               .then(response => response.json())
@@ -63,7 +62,7 @@ export class KBGA extends Registry {
           container.innerHTML = output;
           resolve({
             id: json.data['full-id'],
-            strings: [json.data[label]]
+            strings: [typeof label === 'string' ? json.data[label] : label(json.data)]
           });
         });
       });
@@ -115,7 +114,7 @@ export class KBGA extends Registry {
               label = 'label';
               break;
           case 'bibl':
-              label = (data) => data.title.m || data.title.s;
+              label = 'asHtml';
               break;
           default:
               label = 'persName_full';
