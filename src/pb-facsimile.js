@@ -86,6 +86,21 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 attribute: 'visibility-ratio'
             },
             /**
+             * If set, thumbnails of all images are shown in a reference strip at the
+             * bottom of the viewer.
+             */
+            referenceStrip: {
+                type: Boolean,
+                attribute: 'reference-strip'
+            },
+            /**
+             * Size ratio for the reference strip thumbnails. 0.2 by default.
+             */
+            referenceStripSizeRatio: {
+                type: Number,
+                attribute: 'reference-strip-size-ratio'
+            },
+            /**
              * Type of the source of the image to display: either 'iiif' or 'image'
              * (for simple image links not served via IIIF).
              */
@@ -134,6 +149,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.showFullPageControl = false;
         this.showRotationControl = false;
         this.constrainDuringPan = false;
+        this.referenceStrip = false;
+        this.referenceStripSizeRatio = 0.2;
         this.src = '';
         this.prefixUrl = '../images/openseadragon/';
         this.loaded = false;
@@ -197,7 +214,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     // Init openseadragon
     _initOpenSeadragon() {
         const prefixUrl = resolveURL(this.prefixUrl + (this.prefixUrl.endsWith("/") ? "" : "/"));
-        this.viewer = OpenSeadragon({
+        const options = {
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,
             preserveViewport: true,
@@ -213,7 +230,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
             minZoomLevel: 1,
             defaultZoomLevel: this.defaultZoomLevel,
             constrainDuringPan: true
-        });
+        };
+        if (this.referenceStrip) {
+            options.showReferenceStrip = true;
+            options.referenceStripSizeRatio = this.referenceStripSizeRatio;
+        }
+        this.viewer = OpenSeadragon(options);
 
         this.viewer.addHandler('open', () => {
             this.resetZoom();
