@@ -1,3 +1,10 @@
+## [1.36.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.1...v1.36.2) (2022-03-16)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** add option to enable a reference strip ([3aa5ed1](https://github.com/eeditiones/tei-publisher-components/commit/3aa5ed1a7044062503641a07c3e3f729f15407d4))
+
 ## [1.36.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.0...v1.36.1) (2022-03-09)
 
 
