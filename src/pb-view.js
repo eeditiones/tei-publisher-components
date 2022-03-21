@@ -385,7 +385,7 @@ export class PbView extends pbMixin(LitElement) {
             } else if (registry.state.root && !this.nodeId) {
                 this.nodeId = registry.state.root;
             }
-            this.subscribeTo('pb-popstate', this._refresh.bind(this));
+            this.subscribeTo('pb-popstate', this._refresh.bind(this), []);
             // registry.subscribe(this._refresh.bind(this));
         }
         if (!this.waitFor) {
@@ -529,22 +529,24 @@ export class PbView extends pbMixin(LitElement) {
 
     _refresh(ev) {
         if (ev && ev.detail) {
-            if (ev.detail.hash && !this.noScroll && !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)) {
+            const detail = ev.detail.state ? ev.detail.state : ev.detail;
+            if (detail.hash && !this.noScroll && !(detail.id || detail.path || detail.odd || detail.view || detail.position)) {
                 // if only the scroll target has changed: scroll to the element without reloading
-                this._scrollTarget = ev.detail.hash;
+                this._scrollTarget = detail.hash;
                 const target = this.shadowRoot.getElementById(this._scrollTarget);
                 if (target) {
                     setTimeout(() => target.scrollIntoView({block: 'nearest'}));
                 }
                 return;
             }
-            const detail = ev.detail.state ? ev.detail.state : ev.detail;
             if (detail.path) {
                 const doc = this.getDocument();
                 doc.path = detail.path;
             }
             if (detail.id) {
                 this.xmlId = detail.id;
+            } else {
+                this.xmlId = null;
             }
             this.odd = detail.odd || this.odd;
             if (detail.columnSeparator !== undefined) {

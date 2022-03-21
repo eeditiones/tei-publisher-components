@@ -79,7 +79,6 @@ class Registry {
 
     set(path, value) {
         const components = path.split('.');
-        let last;
         if (components.length > 1) {
             const last = components.slice(0, components.length - 1)
                 .reduce((result, component) => {

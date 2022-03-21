@@ -88,7 +88,10 @@ export class PbLink extends pbMixin(LitElement) {
     _onClick(ev) {
         ev.preventDefault();
 
-        const params = {};
+        const params = { 
+            id: null,
+            root: null
+        };
         if (this.xmlId) {
             params.id = this.xmlId;
         } else if (this.nodeId) {
