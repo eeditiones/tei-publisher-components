@@ -1,12 +1,14 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { registry } from "./urls.js";
+import { registry, addStateListener } from "./urls.js";
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
+
+const ACTION_KEY = 'pb-view';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -385,7 +387,7 @@ export class PbView extends pbMixin(LitElement) {
             } else if (registry.state.root && !this.nodeId) {
                 this.nodeId = registry.state.root;
             }
-            this.subscribeTo('pb-popstate', this._refresh.bind(this), []);
+            addStateListener(ACTION_KEY, this._refresh.bind(this));
             // registry.subscribe(this._refresh.bind(this));
         }
         if (!this.waitFor) {
@@ -529,6 +531,7 @@ export class PbView extends pbMixin(LitElement) {
 
     _refresh(ev) {
         if (ev && ev.detail) {
+            // when function responds to pb-popstate, params are in ev.detail.state
             const detail = ev.detail.state ? ev.detail.state : ev.detail;
             if (detail.hash && !this.noScroll && !(detail.id || detail.path || detail.odd || detail.view || detail.position)) {
                 // if only the scroll target has changed: scroll to the element without reloading
@@ -552,9 +555,9 @@ export class PbView extends pbMixin(LitElement) {
             if (detail.columnSeparator !== undefined) {
                 this.columnSeparator = detail.columnSeparator;
             }
-            this.view = ev.detail.view || this.view;
-            if (ev.detail.xpath) {
-                this.xpath = ev.detail.xpath;
+            this.view = detail.view || this.view;
+            if (detail.xpath) {
+                this.xpath = detail.xpath;
                 this.nodeId = null;
             }
             // clear nodeId if set to null
@@ -564,7 +567,7 @@ export class PbView extends pbMixin(LitElement) {
                 this.nodeId = detail.root || this.nodeId;
             }
             if (!this.noScroll) {
-                this._scrollTarget = ev.detail.hash;
+                this._scrollTarget = detail.hash;
             }
         }
         this._updateStyles();
@@ -1075,7 +1078,7 @@ export class PbView extends pbMixin(LitElement) {
                     } else {
                         registry.state.root = this.previous;
                     }
-                    registry.commit('Navigate backward');
+                    registry.commit(ACTION_KEY);
                 }
                 this._load(this.previous, direction);
             }
@@ -1086,7 +1089,7 @@ export class PbView extends pbMixin(LitElement) {
                 } else {
                     registry.state.root = this.next;
                 }
-                registry.commit('Navigate forward');
+                registry.commit(ACTION_KEY);
             }
             this._load(this.next, direction);
         }

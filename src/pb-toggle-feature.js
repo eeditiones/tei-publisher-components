@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
-import { registry } from './urls.js';
+import { registry, addStateListener } from './urls.js';
 import '@polymer/paper-checkbox';
 
 /**
@@ -191,9 +191,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 };
                 registry.set(`toggles.${this.name}`, params);
                 registry.state[this.name] = this.checked ? 'on' : 'off';
-                registry.replace('pb-toggle init');
+                registry.replace('pb-toggle');
                 this.emitTo('pb-toggle', params);
-                console.log('pb-toggle ready');
                 this.signalReady();
             });
         } else {
@@ -216,14 +215,16 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 };
                 registry.set(`toggles.${this.name}`, params);
                 registry.state[this.name] = this.checked ? 'on' : 'off';
-                registry.replace('pb-toggle init');
+                registry.replace('pb-toggle');
                 this.emitTo('pb-toggle', params);
                 this.signalReady();
             });
         }
-        this.subscribeTo('pb-popstate', () => {
+        addStateListener('pb-toggle', () => {
             this.checked = registry.get(`toggles.${this.name}.state`);
             this.shadowRoot.getElementById('checkbox').checked = this.checked;
+            
+            this._emitEvent();
         });
     }
 
@@ -247,6 +248,10 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         }
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
         
+        this._emitEvent(true);
+    }
+
+    _emitEvent(commit) {
         const params = {
             state: this.checked,
             selectors: [{
@@ -257,10 +262,10 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             properties: this.checked ? this.propertiesOn : this.propertiesOff,
             action: 'refresh'
         };
-        if (this.name) {
+        if (this.name && commit) {
             registry.set(`toggles.${this.name}`, params);
             registry.state[this.name] = this.checked ? 'on' : 'off';
-            registry.commit(`toggle feature ${this.name}`);
+            registry.commit('pb-toggle');
         }
         this.emitTo('pb-toggle', params);
     }

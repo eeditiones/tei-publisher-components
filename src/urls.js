@@ -1,4 +1,5 @@
 import { UriTemplate } from 'uri-templates-es';
+import { PbEvents } from "./pb-events.js";
 
 function log(...args) {
     args[0] = `%c<registry>%c ${args[0]}`;
@@ -6,10 +7,13 @@ function log(...args) {
     console.log.apply(null, args);
 }
 
-function stateToJson(state) {
+function stateToJson(action, state) {
     const cleanState = {};
     Object.keys(state).filter(key => key !== '_source').forEach(key => { cleanState[key] = state[key] });
-    return JSON.stringify(cleanState);
+    return JSON.stringify({
+        action,
+        state: cleanState
+    });
 }
 
 class Registry {
@@ -29,30 +33,30 @@ class Registry {
         } else {
             this.state = initialState;
         }
-        window.history.replaceState(stateToJson(this.state), '');
+        // window.history.replaceState(stateToJson(null, this.state), '');
         log('path: %s; template: %s; initial state: %o', absPath, `${rootPath}${template}`, this.state);
 
         window.addEventListener('popstate', (ev) => {
             if (!ev.state) {
                 return;
             }
-            this.state = JSON.parse(ev.state);
+            const data = JSON.parse(ev.state);
+            this.state = data.state;
             log('popstate: %o', this.state);
             if (this.channels.length === 0) {
                 document.dispatchEvent(
                   new CustomEvent('pb-popstate', {
-                    detail: {
-                      state: this.state
-                    },
+                    detail: data,
                     composed: true,
                     bubbles: true,
-                  }),
+                  })
                 );
             } else {
                 this.channels.forEach((channel) =>
                     document.dispatchEvent(
                         new CustomEvent('pb-popstate', {
                             detail: {
+                                action: data.action,
                                 state: this.state,
                                 key: channel
                             },
@@ -100,14 +104,25 @@ class Registry {
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);
         log('commit %s: %s %o', message, resolved.toString(), this.state);
-        const serialized = stateToJson(this.state);
+        const serialized = stateToJson(message, this.state);
         window.history.pushState(serialized, message, resolved.toString());
     }
 
     replace(message) {
-        const serialized = stateToJson(this.state);
+        const serialized = stateToJson(message, this.state);
+        log('replaced state: %s %o %s', message, serialized, history.length);
         window.history.replaceState(serialized, message);
     }
 }
 
 export const registry = new Registry();
+
+export function addStateListener(action, handler) {
+    PbEvents.subscribe('pb-popstate', null, (ev) => {
+        if (action && ev.detail.state && ev.detail.action !== action) {
+            console.log('wrong action: %s', ev.detail.action);
+            return;
+        }
+        handler(ev);
+    });
+}

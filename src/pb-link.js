@@ -110,7 +110,7 @@ export class PbLink extends pbMixin(LitElement) {
             params.view = this.view;
         }
         if (this.history) {
-            registry.commit('link click', params, false);
+            registry.commit('pb-view', params, false);
         }
 
         this.emitTo('pb-refresh', params);
