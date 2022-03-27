@@ -8,8 +8,6 @@ import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 
-const ACTION_KEY = 'pb-view';
-
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
  * The document to be viewed is determined by the `pb-document` element the property
@@ -387,8 +385,17 @@ export class PbView extends pbMixin(LitElement) {
             } else if (registry.state.root && !this.nodeId) {
                 this.nodeId = registry.state.root;
             }
-            addStateListener(ACTION_KEY, this._refresh.bind(this));
-            // registry.subscribe(this._refresh.bind(this));
+            addStateListener('pb-view', this._refresh.bind(this));
+
+            const initialState = {
+                id: this.xmlId,
+                root: this.nodeId,
+                view: this.getView(),
+                odd: this.getOdd(),
+                path: this.getDocument().path
+            };
+            registry.state = initialState;
+            registry.replace('pb-view');
         }
         if (!this.waitFor) {
             this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
@@ -1078,7 +1085,7 @@ export class PbView extends pbMixin(LitElement) {
                     } else {
                         registry.state.root = this.previous;
                     }
-                    registry.commit(ACTION_KEY);
+                    registry.commit('pb-view');
                 }
                 this._load(this.previous, direction);
             }
@@ -1089,7 +1096,7 @@ export class PbView extends pbMixin(LitElement) {
                 } else {
                     registry.state.root = this.next;
                 }
-                registry.commit(ACTION_KEY);
+                registry.commit('pb-view');
             }
             this._load(this.next, direction);
         }

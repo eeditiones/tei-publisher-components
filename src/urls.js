@@ -42,7 +42,7 @@ class Registry {
             }
             const data = JSON.parse(ev.state);
             this.state = data.state;
-            log('popstate: %o', this.state);
+            log('popstate: %o', data);
             if (this.channels.length === 0) {
                 document.dispatchEvent(
                   new CustomEvent('pb-popstate', {
@@ -105,13 +105,13 @@ class Registry {
         const resolved = new URL(newUrl, window.location.href);
         log('commit %s: %s %o', message, resolved.toString(), this.state);
         const serialized = stateToJson(message, this.state);
-        window.history.pushState(serialized, message, resolved.toString());
+        window.history.pushState(serialized, '', resolved.toString());
     }
 
     replace(message) {
         const serialized = stateToJson(message, this.state);
         log('replaced state: %s %o %s', message, serialized, history.length);
-        window.history.replaceState(serialized, message);
+        window.history.replaceState(serialized, '');
     }
 }
 

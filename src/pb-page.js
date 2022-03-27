@@ -145,7 +145,7 @@ class PbPage extends pbMixin(LitElement) {
         this.endpoint = ".";
         this.apiVersion = undefined;
         this.requireLanguage = false;
-        this.urlTemplate = `{?root}{#id}`;
+        this.urlTemplate = `/{+path}{?root,odd}{#id}`;
         this._localeFallbacks = [];
         this._i18nInstance = null;
 
