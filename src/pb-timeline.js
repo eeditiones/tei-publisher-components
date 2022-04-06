@@ -282,6 +282,10 @@ export class PbTimeline extends pbMixin(LitElement) {
             scopes: {
               type: Array
             },
+            maxInterval: {
+              type: Number,
+              attribute: 'max-interval'
+            },
             /**
              * Endpoint to load timeline data from. Expects response to be an
              * object with key value pairs for (date, hits).
@@ -315,6 +319,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.endDate = '';
     this.scope = '';
     this.scopes = ["D", "W", "M", "Y", "5Y", "10Y"];
+    this.maxInterval = 60;
     this.url = '';
     this.auto = false;
     this.resettable = false;
@@ -516,10 +521,18 @@ export class PbTimeline extends pbMixin(LitElement) {
           endDateStr: this.searchResult.getEndOfRangeDate(this.dataObj.scope, endDateStr),
           scope: this.dataObj.scope,
           categories,
-          count: itemCount
+          count: itemCount,
+          label: this.label
         });
       } else {
-        this.emitTo('pb-timeline-date-changed', { startDateStr, endDateStr: null, scope: this.dataObj.scope, categories, count: itemCount });
+        this.emitTo('pb-timeline-date-changed', { 
+          startDateStr, 
+          endDateStr: null, 
+          scope: this.dataObj.scope, 
+          categories, 
+          count: itemCount,
+          label: this.label
+        });
       }
     } else {
       this.emitTo('pb-timeline-daterange-changed', {
@@ -527,7 +540,8 @@ export class PbTimeline extends pbMixin(LitElement) {
         endDateStr,
         categories,
         scope: this.dataObj.scope,
-        count: itemCount
+        count: itemCount,
+        label: this.label
       });
     }
   }
@@ -732,15 +746,12 @@ export class PbTimeline extends pbMixin(LitElement) {
         } else {
           newJsonData = data;
         }
-        this.searchResult = new SearchResultService(newJsonData, 60, this.scopes);
+        this.searchResult = new SearchResultService(newJsonData, this.maxInterval, this.scopes);
         this.setData(this.searchResult.export(this.scope));
-        this.dispatchEvent(new CustomEvent('pb-timeline-loaded', {
-            detail: {
-                value: true
-            },
-            composed: true,
-            bubbles: true
-        }));
+        this.emitTo('pb-timeline-loaded', {
+          value: true,
+          label: this.label
+        });
     }
 
 }
