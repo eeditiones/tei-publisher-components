@@ -1,3 +1,10 @@
+## [1.36.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.2...v1.36.3) (2022-04-06)
+
+
+### Bug Fixes
+
+* **pb-timeline:** allow max-interval to be configured; emit label with events ([7f4818f](https://github.com/eeditiones/tei-publisher-components/commit/7f4818f2938f5298d34119e0d84471d6de658b19))
+
 ## [1.36.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.1...v1.36.2) (2022-03-16)
 
 
