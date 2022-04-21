@@ -53,8 +53,8 @@ import { translate } from "./pb-i18n.js";
  * </pb-timeline>
  * ```
  * See https://www.briefedition.alfred-escher.ch/briefe/ for a running sample. The source code of the webpage is here: https://github.com/stazh/briefedition-escher. Relevant files are: 
- * - [templates/index.html](https://github.com/stazh/briefedition-escher/blob/master/templates/index.html#L223) - usage of pb-timeline
- * - [modules/custom-api.json](https://github.com/stazh/briefedition-escher/blob/master/modules/custom-api.json#L1080) - endpoint delivering required JSON object
+ * - [templates/people.html](https://github.com/stazh/briefedition-escher/blob/master/templates/people.html#L91) - usage of pb-timeline
+ * - [modules/custom-api.json](https://github.com/stazh/briefedition-escher/blob/master/modules/custom-api.json#L1080) - `/api/timeline` endpoint delivering required JSON object
  * 
  * @slot label - Inserted before the label showing the currently displayed time range
  * 
