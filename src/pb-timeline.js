@@ -25,7 +25,37 @@ import { translate } from "./pb-i18n.js";
  * The value associated with each entry
  * should either correspond to a count of resources or an object with properties `count` and `info`. 
  * `info` should be an array, containing HTML to be shown in a list within the tooltips.
- *
+ * Expected JSON: 
+ * ```javascript
+ * {
+ *  "1852-01-14": {
+ *      "count": 1,
+ *      "info": [
+ *        "<a href='/briefe/B0977' part='tooltip-link'>Alfred Escher an Joseph Wolfgang von Deschwanden, Belvoir (Enge, Zürich), Mittwoch, 14. Januar 1852</a>"
+ *     ]
+ *   },
+ * "1874-01-25": {
+ *    "count": 3,
+ *     "info": [
+ *         "<a href='/briefe/B8140' part='tooltip-link'>Alfred Escher an Gustav von Mevissen, Zürich, Sonntag, 25. Januar 1874</a>",
+ *         "<a href='/briefe/B8139' part='tooltip-link'>Alfred Escher an Theodor Weishaupt, Zürich, Sonntag, 25. Januar 1874</a>",
+ *         "<a href='/briefe/B8143' part='tooltip-link'>Alfred Escher an Ludwig August Parcus, Zürich, Sonntag, 25. Januar 1874</a>"
+ *     ]
+ *  }
+ * }
+ * ```
+ * Sample Usage:
+ * ```xml
+ * <pb-timeline url="api/timeline" scopes="['D', 'M', 'Y', '5Y', '10Y']"
+ *      resettable=""
+ *      subscribe="docs" emit="timeline">
+ *   <span slot="label">Angezeigter Zeitraum: </span>
+ * </pb-timeline>
+ * ```
+ * See https://www.briefedition.alfred-escher.ch/briefe/ for a running sample. The source code of the webpage is here: https://github.com/stazh/briefedition-escher. Relevant files are: 
+ * - [templates/index.html](https://github.com/stazh/briefedition-escher/blob/master/templates/index.html#L223) - usage of pb-timeline
+ * - [modules/custom-api.json](https://github.com/stazh/briefedition-escher/blob/master/modules/custom-api.json#L1080) - endpoint delivering required JSON object
+ * 
  * @slot label - Inserted before the label showing the currently displayed time range
  * 
  * @fires pb-timeline-date-changed - Triggered when user clicks on a single entry
