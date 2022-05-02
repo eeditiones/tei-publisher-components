@@ -12,7 +12,7 @@ if ($exist:path eq "") then
     </dispatch>
 
 else if ($exist:path eq "/") then
-    (: forward root path to index.xql :)
+    (: forward root path to dist/api.html :)
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="dist/api.html"/>
     </dispatch>

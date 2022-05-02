@@ -128,7 +128,7 @@ export class PbView extends pbMixin(LitElement) {
                 reflect: true
             },
             /**
-            * If defined denotes the local name of an XQuery function in `modules/map.xql`, which will be called
+            * If defined denotes the local name of an XQuery function in `modules/map.xqm`, which will be called
             * with the current root node and should return the node of a mapped fragment. This is helpful if one
             * wants, for example, to show a translation fragment aligned with the part of the transcription currently
             * shown. In this case, the properties of the `pb-view` would still point to the transcription, but the function
