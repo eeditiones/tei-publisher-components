@@ -25,11 +25,13 @@
                         <h2>Suggestion list passed in a property</h2>
                         <pb-autocomplete name="autocomplete1" placeholder="Greek letter name" suggestions='["alpha", "beta", "gamma"]' value="alpha"></pb-autocomplete>
                         <h2>Suggestion list supplied by remote XQuery</h2>
+                        <!-- old api: -->
                         <!--pb-autocomplete name="autocomplete2" placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete-->
                         <pb-autocomplete name="autocomplete2" placeholder="query" source="api/search/autocomplete"></pb-autocomplete>
                         <h2>Static remote suggestion list loaded once upon initialization</h2>
                         <pb-autocomplete name="autocomplete3" placeholder="language" source="demo/select.json" preload></pb-autocomplete>
                         <h2>Combine with other form fields whose value is passed on</h2>
+                        <!-- old api: -->
                         <!--pb-autocomplete name="autocomplete3" placeholder="query" source="modules/autocomplete.xql"-->
                         <pb-autocomplete name="autocomplete3" placeholder="query" source="api/search/autocomplete">
                             <select name="field">

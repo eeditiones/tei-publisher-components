@@ -8,7 +8,7 @@ import "@polymer/iron-ajax";
 
 /**
  * `pb-select-template`: Switch between available page templates.
- * It loads the list of templates from `components-list-templates.xql`.
+ * It loads the list of templates from the `templates` API.
  * Emits a page reload on selection.
  *
  */

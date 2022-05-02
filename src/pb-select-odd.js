@@ -10,7 +10,7 @@ import "@polymer/neon-animation";
 
 /**
  * `pb-select-odd`: Switch between available ODDs.
- * It loads the list of ODDs from `components-odd.xql`.
+ * It loads the list of ODDs from the `odd` API.
  * Emits a `pb-refresh` event to subscribed views.
  *
  * @fires pb-refresh - Fires a refresh event to subscribed views after a different ODD has been selected for display.
