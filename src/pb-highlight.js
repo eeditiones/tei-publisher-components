@@ -47,6 +47,9 @@ export class PbHighlight extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'highlight-self'
             },
+            click: {
+                type: Boolean
+            },
             _className: {
                 type: String
             }
@@ -59,6 +62,7 @@ export class PbHighlight extends pbMixin(LitElement) {
         this.duration = 0;
         this.scroll = false;
         this.highlightSelf = false;
+        this.click = false;
         this._className = 'highlight-off';
     }
 
@@ -75,7 +79,7 @@ export class PbHighlight extends pbMixin(LitElement) {
         }
     }
 
-    _mouseOver() {
+    _mouseInteraction() {
         this.emitTo('pb-highlight-off', {
             source: this
         });
@@ -93,7 +97,11 @@ export class PbHighlight extends pbMixin(LitElement) {
         if (this.disabled) {
             return html`<slot></slot>`;
         }
-        return html`<span id="content" class="${this._className}" @mouseover="${this._mouseOver}"><slot></slot></span>`;
+        if (this.click) {
+            return html`<span id="content" class="${this._className}" @click="${this._mouseInteraction}"><slot></slot></span>`;
+        } else {
+            return html`<span id="content" class="${this._className}" @mouseover="${this._mouseInteraction}"><slot></slot></span>`;
+        }
     }
 
     static get styles() {
