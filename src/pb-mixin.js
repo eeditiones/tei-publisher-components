@@ -23,6 +23,28 @@ export function clearPageEvents() {
 }
 
 /**
+* Get the list of channels this element emits to.
+*
+* @returns an array of channel names
+*/
+export function getEmittedChannels(elem) {
+   const chs = [];
+   const emitConfig = elem.getAttribute('emit-config');
+   if (emitConfig) {
+       const json = JSON.parse(emitConfig);
+       Object.keys(json).forEach(key => {
+           chs.push(key);
+       });
+   } else {
+       const emitAttr = elem.getAttribute('emit');
+       if (emitAttr) {
+           chs.push(emitAttr);
+       }
+   }
+   return chs;
+}
+
+/**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
  *
@@ -274,34 +296,12 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      */
     emitsOnSameChannel(other) {
         const myChannels = this.getSubscribedChannels();
-        const otherChannels = PbMixin.getEmittedChannels(other);
+        const otherChannels = getEmittedChannels(other);
         if (myChannels.length === 0 && otherChannels.length === 0) {
             // both emit to the default channel
             return true;
         }
         return myChannels.some((channel) => otherChannels.includes(channel));
-    }
-
-    /**
-     * Get the list of channels this element emits to.
-     *
-     * @returns an array of channel names
-     */
-    static getEmittedChannels(elem) {
-        const chs = [];
-        const emitConfig = elem.getAttribute('emit-config');
-        if (emitConfig) {
-            const json = JSON.parse(emitConfig);
-            Object.keys(json).forEach(key => {
-                chs.push(key);
-            });
-        } else {
-            const emitAttr = elem.getAttribute('emit');
-            if (emitAttr) {
-                chs.push(emitAttr);
-            }
-        }
-        return chs;
     }
 
     /**
@@ -353,7 +353,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {
-        const chs = channels || PbMixin.getEmittedChannels(this);
+        const chs = channels || getEmittedChannels(this);
         if (chs.length == 0) {
             if (type === 'pb-ready') {
                 readyEventsFired.add('__default__');

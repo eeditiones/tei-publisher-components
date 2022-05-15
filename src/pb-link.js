@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 
 /**
  * Create an internal link: clicking it will cause connected views to
@@ -84,33 +85,30 @@ export class PbLink extends pbMixin(LitElement) {
     _onClick(ev) {
         ev.preventDefault();
 
-        const params = {
-            position: null
+        const params = { 
+            id: null,
+            root: null
         };
         if (this.xmlId) {
             params.id = this.xmlId;
-            this.history && this.setParameter('id', this.xmlId);
         } else if (this.nodeId) {
-            params.position = this.nodeId;
-            this.history && this.setParameter('root', this.nodeId);
+            params.root = this.nodeId;
         }
         if (this.path) {
             params.path = this.path;
-            this.history && this.setPath(this.path);
         }
         if (this.odd) {
             params.odd = this.odd;
-            this.history && this.setParameter('odd', this.odd);
         }
-        if (this.hash){
+        if (this.hash) {
             params.hash = this.hash;
-            if (this.history) {
-                this.getUrl().hash = this.hash;
-            }
-        } else if (this.history) {
-            this.getUrl().hash = '';
         }
-        this.pushHistory('link click');
+        if (this.view) {
+            params.view = this.view;
+        }
+        if (this.history) {
+            registry.commit(this, params);
+        }
 
         this.emitTo('pb-refresh', params);
     }

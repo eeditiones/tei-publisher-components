@@ -7,6 +7,7 @@ import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -36,6 +37,10 @@ class PbPage extends pbMixin(LitElement) {
             appRoot: {
                 type: String,
                 attribute: 'app-root'
+            },
+            urlTemplate: {
+                type: String,
+                attribute: 'url-template'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -138,6 +143,7 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlTemplate = `/{+path}{?root,odd}{#id}`;
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this._localeFallbacks = [];
@@ -172,6 +178,14 @@ class PbPage extends pbMixin(LitElement) {
         
         if (this.disabled) {
             return;
+        }
+
+        if (!this.appRoot) {
+            this.appRoot = window.location.pathname;
+        }
+
+        if (this.urlTemplate) {
+            registry.configure(this.urlTemplate, this.appRoot);
         }
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
