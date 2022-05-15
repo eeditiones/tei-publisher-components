@@ -8,6 +8,7 @@ import { resolveURL } from './utils.js';
 import { loadStylesheets } from "./theming.js";
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -37,6 +38,10 @@ export class PbPage extends pbMixin(LitElement) {
             appRoot: {
                 type: String,
                 attribute: 'app-root'
+            },
+            urlTemplate: {
+                type: String,
+                attribute: 'url-template'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -142,6 +147,7 @@ export class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlTemplate = `/{+path}{?root,odd}{#id}`;
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this.theme = null;
@@ -177,6 +183,14 @@ export class PbPage extends pbMixin(LitElement) {
         
         if (this.disabled) {
             return;
+        }
+
+        if (!this.appRoot) {
+            this.appRoot = window.location.pathname;
+        }
+
+        if (this.urlTemplate) {
+            registry.configure(this.urlTemplate, this.appRoot);
         }
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');

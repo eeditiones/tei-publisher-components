@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbMixin, waitOnce } from "./pb-mixin.js";
+import { getEmittedChannels, pbMixin, waitOnce } from "./pb-mixin.js";
+import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import { loadStylesheets, themableMixin } from "./theming.js";
@@ -381,22 +382,39 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         }
 
         if (!this.disableHistory) {
-            const id = this.getParameter('id');
-            if (id && !this.xmlId) {
-                this.xmlId = id;
+            if (registry.state.id && !this.xmlId) {
+                this.xmlId = registry.state.id;
             }
 
-            const action = this.getParameter('action');
-            if (action && action === 'search') {
+            if (registry.state.action && registry.state.action === 'search') {
                 this.highlight = true;
             }
 
-            const nodeId = this.getParameter('root');
             if (this.view === 'single') {
                 this.nodeId = null;
-            } else if (nodeId && !this.nodeId) {
-                this.nodeId = nodeId;
+            } else if (registry.state.root && !this.nodeId) {
+                this.nodeId = registry.state.root;
             }
+
+            const initialState = {
+                id: this.xmlId,
+                root: this.nodeId,
+                view: this.getView(),
+                odd: this.getOdd(),
+                path: this.getDocument().path
+            };
+            registry.replace(this, initialState);
+
+            this.subscribeTo('pb-popstate', () => {
+                const chs = getEmittedChannels(this);
+                const channel = chs.length === 0 ? '__default__' : chs[0];
+                const state = registry.channelStates[channel];
+                this.xmlId = state.id;
+                this.nodeId = state.root;
+                this.odd = state.odd;
+                this.getDocument().path = state.path;
+                this._refresh();
+            }, []);
         }
         if (!this.waitFor) {
             this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
@@ -749,11 +767,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        if (!this.disableHistory && this.xmlId && !this.map) {
-            //this.setParameter('root', this.nodeId);
-            this.setParameter('id', this.xmlId);
-            this.pushHistory('Navigate to xml:id');
-        }
+        // if (!this.disableHistory && this.xmlId && !this.map) {
+        //     //this.setParameter('root', this.nodeId);
+        //     this.setParameter('id', this.xmlId);
+        //     this.pushHistory('Navigate to xml:id');
+        // }
         this.xmlId = null;
 
         this.updateComplete.then(() => {
@@ -1056,28 +1074,39 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
      * @param {string} direction either `backward` or `forward`
      */
     navigate(direction) {
+        // in single view mode there should be no navigation
+        if (this.getView() === 'single') {
+            return;
+        }
+
         this.lastDirection = direction;
 
         if (direction === 'backward') {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
+                    const newState = {};
                     if (this.previousId) {
-                        this.setParameter('id', this.previousId);
+                        newState.id = this.previousId;
+                        newState.root = null;
                     } else {
-                        this.setParameter('root', this.previous);
+                        newState.root = this.previous;
+                        newState.id = null;
                     }
-                    this.pushHistory('Navigate backward');
+                    registry.commit(this, newState, false);
                 }
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
+                const newState = {};
                 if (this.nextId) {
-                    this.setParameter('id', this.nextId);
+                    newState.id = this.nextId;
+                    newState.root = null;
                 } else {
-                    this.setParameter('root', this.next);
+                    newState.root = this.next;
+                    newState.id = null;
                 }
-                this.pushHistory('Navigate forward');
+                registry.commit(this, newState, false);
             }
             this._load(this.next, direction);
         }
