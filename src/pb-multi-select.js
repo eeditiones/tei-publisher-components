@@ -80,7 +80,6 @@ export class PbMultiSelect extends pbMixin(LitElement) {
                 options.valueField = 'value';
                 options.searchField = ['text', 'value'];
                 options.preload = this.preload;
-                options.closeAfterSelect = this.closeAfterSelect;
                 options.load = (query, callback) => {
                     fetch(`${url}?query=${encodeURIComponent(query)}`, {
                         method: 'GET',
@@ -99,6 +98,9 @@ export class PbMultiSelect extends pbMixin(LitElement) {
                     item: this.renderFunction
                 };
             }
+            options.closeAfterSelect = this.closeAfterSelect;
+            options.onBlur = () => this.emitTo('pb-multi-select-blur');
+            options.onChange = () => this.emitTo('pb-multi-select-change');
             this._select = new TomSelect(input, options);
         });
     }
