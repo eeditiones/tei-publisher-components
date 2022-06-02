@@ -159,7 +159,7 @@
   "pb-custom-form": {
     "demo/pb-custom-form.html": "Demo"
   },
-  "pb-multi-select": {
-    "demo/pb-multi-select.html": "Demo"
+  "pb-combo-box": {
+    "demo/pb-combo-box.html": "Demo"
   }
 }

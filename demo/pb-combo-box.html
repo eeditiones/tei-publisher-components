@@ -8,7 +8,7 @@
         <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
         <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-multi-select.js"></script>
+        <script type="module" src="../src/pb-combo-box.js"></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <!--/scripts-->
     </head>
@@ -19,15 +19,21 @@
                     <h2>Using pb-multi-select with a standard HTML form</h2>
                     <form id="form" action="">
                         <fieldset>
-                            <p>Select options from a remote data source</p>
-                            <pb-multi-select source="select.json" close-after-select="" preload="">
-                                <select placeholder="Pick language..." name="lang" multiple="">
+                            <p>Select single option from a remote data source</p>
+                            <pb-combo-box source="select.json" close-after-select preload>
+                                <select placeholder="Pick language..." name="lang">
                                 </select>
-                            </pb-multi-select>
+                            </pb-combo-box>
+                        </fieldset>
+                        <fieldset>
+                            <p>Select options from a remote data source</p>
+                            <pb-combo-box source="select.json" close-after-select preload>
+                                <input placeholder="Pick language..." name="lang"></input>
+                            </pb-combo-box>
                         </fieldset>
                         <fieldset>
                             <p>Select from a fixed set of options:</p>
-                            <pb-multi-select>
+                            <pb-combo-box>
                                 <select placeholder="Pick a state" name="state" multiple>
                                     <option value="">Select a state...</option>
                                     <option value="AL">Alabama</option>
@@ -82,7 +88,7 @@
                                     <option value="WI">Wisconsin</option>
                                     <option value="WY" selected>Wyoming</option>
                                 </select>
-                            </pb-multi-select>
+                            </pb-combo-box>
                         </fieldset>
                         <button type="submit"><paper-button>Submit</paper-button></button>
                     </form>
