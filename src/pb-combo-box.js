@@ -94,8 +94,8 @@ export class PbComboBox extends pbMixin(LitElement) {
         this.closeAfterSelect = false;
         this.preload = false;
         this.renderFunction = renderDefault;
-        this.onBlur = 'pb-multi-select-blur';
-        this.onChange = 'pb-multi-select-change';
+        this.onBlur = 'pb-combo-box-blur';
+        this.onChange = 'pb-combo-box-change';
     }
 
     connectedCallback() {
