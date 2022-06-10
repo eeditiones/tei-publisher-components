@@ -96,6 +96,10 @@ export default [
                     {
                         src: './node_modules/leaflet.markercluster/dist/*.css',
                         dest: './css/leaflet'
+                    },
+                    {
+                        src: './node_modules/tom-select/dist/css/*.min.css',
+                        dest: './css/tom-select'
                     }
                 ]
             })

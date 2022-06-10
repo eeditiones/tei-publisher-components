@@ -229,6 +229,15 @@ class PbPage extends pbMixin(LitElement) {
             return;
         }
 
+        const slot = this.shadowRoot.querySelector('slot');
+        slot.addEventListener('slotchange', () => {
+            const ev = new CustomEvent('pb-page-loaded', {
+                bubbles: true,
+                composed: true
+            });
+            this.dispatchEvent(ev);
+        }, { once: true });
+
         const defaultLocales = resolveURL('../i18n/') + '{{ns}}/{{lng}}.json';
         console.log('<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
             defaultLocales, this.locales, this._localeFallbacks);
