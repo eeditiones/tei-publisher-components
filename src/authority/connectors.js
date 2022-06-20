@@ -1,6 +1,7 @@
 import { Metagrid } from './metagrid.js';
 import { GeoNames } from './geonames.js';
 import { Airtable } from './airtable.js';
+import { MZP } from './mzp.js';
 import { GND } from './gnd.js';
 import { KBGA } from './kbga.js';
 import { GF } from './gf.js';
@@ -21,6 +22,9 @@ export function createConnectors(endpoint, root) {
         break;
       case 'Airtable':
         instance = new Airtable(configElem);
+        break;
+      case 'MZP':
+        instance = new MZP(configElem);
         break;
       case 'KBGA':
         instance = new KBGA(configElem);
