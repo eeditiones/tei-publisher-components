@@ -1,3 +1,10 @@
+## [1.38.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.0...v1.38.1) (2022-06-21)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** copy demo marker icons to build ([4f91fe1](https://github.com/eeditiones/tei-publisher-components/commit/4f91fe19369e72cb9c7daf72e131af5e8bf944b5))
+
 # [1.38.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.37.0...v1.38.0) (2022-06-21)
 
 
