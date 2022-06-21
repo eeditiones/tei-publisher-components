@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.37.0...v1.38.0) (2022-06-21)
+
+
+### Features
+
+* **pb-leaflet-map:** allow map marker icons to be configured via nested pb-map-icon elements ([45b6045](https://github.com/eeditiones/tei-publisher-components/commit/45b604514caaf2447d9eaf4172bcd6389cb53bcc))
+
 # [1.37.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.3...v1.37.0) (2022-06-10)
 
 
