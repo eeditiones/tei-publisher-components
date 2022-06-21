@@ -145,7 +145,7 @@ export default [
                             replaceDemo(contents, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
                     },
                     {
-                        src: ['demo/*.json', 'demo/*.css'],
+                        src: ['demo/*.json', 'demo/*.css', 'demo/*.png'],
                         dest: 'dist/demo'
                     },
                     {
