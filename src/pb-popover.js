@@ -74,7 +74,7 @@ export function loadTippyStyles(root, theme) {
  * unless defined otherwise; clicking anywhere on the page will close the popup.
  * @prop {"click" | "mouseenter" | "focus" | "focusin"} trigger - Defines one or more actions (space separated) which should cause
  * the popover to show. If property `persistent` is set, `trigger` will by default be set to `click`.
- * @prop {String} poupClass - Additional class names which will be added to the popup element.
+ * @prop {String} popupClass - Additional class names which will be added to the popup element.
  * Use this to apply a specific style to certain popovers, but not others.
  * @prop {String} remote - An optional URL to asynchronously load the popover's content from. Content will
  * be loaded after the popover is displayed. The downloaded HTML content will replace the text set via the alternate slot.

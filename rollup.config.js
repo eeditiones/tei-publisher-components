@@ -96,6 +96,10 @@ export default [
                     {
                         src: './node_modules/leaflet.markercluster/dist/*.css',
                         dest: './css/leaflet'
+                    },
+                    {
+                        src: './node_modules/tom-select/dist/css/*.min.css',
+                        dest: './css/tom-select'
                     }
                 ]
             })
@@ -141,7 +145,7 @@ export default [
                             replaceDemo(contents, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
                     },
                     {
-                        src: ['demo/*.json', 'demo/*.css'],
+                        src: ['demo/*.json', 'demo/*.css', 'demo/*.png'],
                         dest: 'dist/demo'
                     },
                     {

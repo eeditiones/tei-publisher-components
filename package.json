@@ -1,6 +1,6 @@
 {
   "name": "@teipublisher/pb-components",
-  "version": "1.36.3",
+  "version": "1.38.1",
   "description": "Collection of webcomponents underlying TEI Publisher",
   "repository": "https://github.com/eeditiones/tei-publisher-components.git",
   "main": "index.html",
@@ -83,6 +83,7 @@
     "openseadragon": "^2.4.2",
     "prismjs": "^1.21.0",
     "tippy.js": "^6.2.7",
+    "tom-select": "^2.0.2",
     "uniqolor": "^1.0.1",
     "web-animations-js": "^2.3.2"
   },

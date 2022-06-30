@@ -1,3 +1,32 @@
+## [1.38.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.0...v1.38.1) (2022-06-21)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** copy demo marker icons to build ([4f91fe1](https://github.com/eeditiones/tei-publisher-components/commit/4f91fe19369e72cb9c7daf72e131af5e8bf944b5))
+
+# [1.38.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.37.0...v1.38.0) (2022-06-21)
+
+
+### Features
+
+* **pb-leaflet-map:** allow map marker icons to be configured via nested pb-map-icon elements ([45b6045](https://github.com/eeditiones/tei-publisher-components/commit/45b604514caaf2447d9eaf4172bcd6389cb53bcc))
+
+# [1.37.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.3...v1.37.0) (2022-06-10)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** also rename events ([0ef89fe](https://github.com/eeditiones/tei-publisher-components/commit/0ef89fe3850326abb5a97f12312ad236bbb13938))
+* **pb-popover:** typo in docs ([d81742e](https://github.com/eeditiones/tei-publisher-components/commit/d81742e1c09b0492281007fd2330f0df78b48282))
+
+
+### Features
+
+* **pb-multi-select:** emit blur and change events ([81d1cae](https://github.com/eeditiones/tei-publisher-components/commit/81d1cae18de69d2859953df0ca54a410852b29de))
+* **pb-multi-select:** new select component with autocomplete ([d86c488](https://github.com/eeditiones/tei-publisher-components/commit/d86c4889649e28e2fd0b28ac22d9de040601c7d6))
+* **pb-page:** emit pb-page-loaded once when slotted elements are ready ([639ad14](https://github.com/eeditiones/tei-publisher-components/commit/639ad14d2a81f15959d99d14c6f213dda00d5f67))
+
 ## [1.36.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.2...v1.36.3) (2022-04-06)
 
 
