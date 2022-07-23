@@ -857,7 +857,7 @@ export class PbView extends pbMixin(LitElement) {
         if (this.columnSeparator) {
             const cbs = elem.querySelectorAll(this.columnSeparator);
             // use last separator only
-            if (cbs.length > 0) {
+            if (cbs.length > 1) {
                 cb = cbs[cbs.length - 1];
             }
         }
