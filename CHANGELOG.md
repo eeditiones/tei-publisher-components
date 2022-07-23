@@ -1,3 +1,10 @@
+## [1.38.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.3...v1.38.4) (2022-07-23)
+
+
+### Bug Fixes
+
+* **pb-view:** trigger two column view mode only if there are at least two cb ([0402c50](https://github.com/eeditiones/tei-publisher-components/commit/0402c507b7f4721544707e7214c8bf57233418a7))
+
 ## [1.38.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.2...v1.38.3) (2022-07-22)
 
 
