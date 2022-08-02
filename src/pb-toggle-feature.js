@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
-import { pbMixin } from './pb-mixin';
 import '@polymer/paper-checkbox';
+import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 
 /**
  * Enable or disable a particular display feature by setting a predefined or custom parameter.
@@ -153,6 +154,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
     constructor() {
         super();
         this.default = 'on';
+        this.on = 'on';
+        this.off = 'off';
         this.action = 'toggle';
         this.propertiesOn = {};
         this.propertiesOff = {};
@@ -168,58 +171,35 @@ export class PbToggleFeature extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        if (this.initFromView) {
-            const initHandler = this.subscribeTo('pb-update', (ev) => {
-                if (this.name === 'infiniteScroll') {
-                    this.checked = ev.detail.infiniteScroll === this.propertiesOn[this.name];
-                } else if (this.name === 'view' || this.name === 'odd' || this.name === 'xpath') {
-                    this.checked = ev.detail.data[this.name] === this.propertiesOn[this.name];
-                }
-                initHandler.forEach((handler) => document.removeEventListener('pb-update', handler));
-            });
-            this.waitForChannel(() => {
-                const params = {
-                    selectors: [{
-                        selector: this.selector,
-                        command: this.action,
-                        state: this.checked
-                    }],
-                    properties: {},
-                    action: 'init'
-                };
-                this.emitTo('pb-toggle', params);
-                this.signalReady();
-            });
-        } else {
-            const param = this.getParameter(this.name);
+        registry.subscribe(this, (state) => {
+            const param = state[this.name];
             if (typeof param !== 'undefined') {
-                this.checked = param === 'on';
+                this.checked = param === this.on;
             } else {
-                this.checked = this.default === 'on';
+                this.checked = this.default === this.on;
             }
-            this.waitForChannel(() => {
-                const params = {
-                    selectors: [{
-                        selector: this.selector,
-                        command: this.action,
-                        state: this.checked
-                    }],
-                    properties: this.checked ? this.propertiesOn : this.propertiesOff,
-                    action: 'init'
-                };
-                this.emitTo('pb-toggle', params);
-                this.signalReady();
-            });
+        });
+
+        const param = registry.state[this.name];
+        if (typeof param !== 'undefined') {
+            this.checked = param === this.on;
+        } else {
+            this.checked = this.default === this.on;
         }
+        const newState = {};
+        newState[this.name] = this.checked ? this.on : this.off;
+        registry.replace(this, newState);
+        this._saveState();
+        this.signalReady();
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
         super.attributeChangedCallback(name, oldVal, newVal);
         switch (name) {
-            case 'on':
+            case this.on:
                 this.propertiesOn[this.name] = newVal;
                 break;
-            case 'off':
+            case this.off:
                 this.propertiesOff[this.name] = newVal;
                 break;
             default:
@@ -229,21 +209,23 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
     _changed() {
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
-        if (this.name) {
-            this.setParameter(this.name, this.checked ? 'on' : 'off');
-            this.pushHistory('toggle feature ' + this.name);
-        }
 
-        const params = {
-            selectors: [{
+        this._saveState();
+        this.emitTo('pb-toggle', {refresh: !this.selector});
+    }
+
+    _saveState() {
+        const state = registry.getState(this);
+        state[this.name] = this.checked ? this.on : this.off;
+        Object.assign(state, this.checked ? this.propertiesOn : this.propertiesOff);
+        if (this.selector) {
+            state.selectors = state.selectors || [];
+            state.selectors.push({
                 selector: this.selector,
                 command: this.action,
                 state: this.checked
-            }],
-            properties: this.checked ? this.propertiesOn : this.propertiesOff,
-            action: 'refresh'
-        };
-        this.emitTo('pb-toggle', params);
+            });
+        }
     }
 }
 

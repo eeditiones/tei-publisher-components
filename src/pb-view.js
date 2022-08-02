@@ -347,7 +347,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.beforeUpdate = null;
         this.noScroll = false;
         this._features = {};
-        this._selector = new Map();
+        this._selector = {};
         this._chunks = [];
         this._scrollTarget = null;
         this.static = null;
@@ -396,25 +396,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 this.nodeId = registry.state.root;
             }
 
-            const initialState = {
+            registry.replace(this, {
                 id: this.xmlId,
                 root: this.nodeId,
                 view: this.getView(),
                 odd: this.getOdd(),
                 path: this.getDocument().path
-            };
-            registry.replace(this, initialState);
+            });
 
-            this.subscribeTo('pb-popstate', () => {
-                const chs = getEmittedChannels(this);
-                const channel = chs.length === 0 ? '__default__' : chs[0];
-                const state = registry.channelStates[channel];
-                this.xmlId = state.id;
-                this.nodeId = state.root;
-                this.odd = state.odd;
-                this.getDocument().path = state.path;
+            registry.subscribe(this, (state) => {
+                this._setState(state);
                 this._refresh();
-            }, []);
+            });
         }
         if (!this.waitFor) {
             this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
@@ -437,6 +430,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             const needsRefresh = this._features.language && this._features.language !== ev.detail.language;
             this._features.language = ev.detail.language;
             if (this.useLanguage && needsRefresh) {
+                this._setState(registry.getState(this));
                 this._refresh();
             }
         }, []);
@@ -498,7 +492,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 if (data && data.language) {
                     this._features.language = data.language;
                 }
-                this.wait(() => this._refresh());
+                this.wait(() => {
+                    this._setState(registry.getState(this));
+                    this._refresh();
+                });
             });
         }
     }
@@ -583,10 +580,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 this.nodeId = null;
             }
             // clear nodeId if set to null
-            if (ev.detail.position === null) {
+            if (ev.detail.root === null) {
                 this.nodeId = null;
             } else {
-                this.nodeId = ev.detail.position || this.nodeId;
+                this.nodeId = ev.detail.root || this.nodeId;
             }
             if (!this.noScroll) {
                 this._scrollTarget = ev.detail.hash;
@@ -1030,10 +1027,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     _applyToggles(elem) {
-        if (this._selector.size === 0) {
-            return;
-        }
-        this._selector.forEach((setting, selector) => {
+        for (const [selector, setting] of Object.entries(this._selector)) {
             elem.querySelectorAll(selector).forEach(node => {
                 const command = setting.command || 'toggle';
                 if (node.command) {
@@ -1045,7 +1039,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                     node.classList.remove(command);
                 }
             });
-        });
+        }
     }
 
     /**
@@ -1084,29 +1078,19 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (direction === 'backward') {
             if (this.previous) {
                 if (!this.disableHistory && !this.map) {
-                    const newState = {};
-                    if (this.previousId) {
-                        newState.id = this.previousId;
-                        newState.root = null;
-                    } else {
-                        newState.root = this.previous;
-                        newState.id = null;
-                    }
-                    registry.commit(this, newState, false);
+                    registry.commit(this, {
+                        id: this.previousId || null,
+                        root: this.previousId ? null : this.previous
+                    });
                 }
                 this._load(this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
-                const newState = {};
-                if (this.nextId) {
-                    newState.id = this.nextId;
-                    newState.root = null;
-                } else {
-                    newState.root = this.next;
-                    newState.id = null;
-                }
-                registry.commit(this, newState, false);
+                registry.commit(this, {
+                    id: this.nextId || null,
+                    root: this.nextId ? null : this.next
+                });
             }
             this._load(this.next, direction);
         }
@@ -1158,12 +1142,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     toggleFeature(ev) {
-        const applyToggles = () => {
+        const properties = registry.getState(this);
+        if (properties) {
+            this._setState(properties);
+            
+        }
+
+        if (ev.detail.refresh) {
+            this._updateStyles();
+            this._load();
+        } else {
             const view = this.shadowRoot.getElementById('view');
             this._applyToggles(view);
         }
+        registry.commit(this, properties);
+    }
 
-        const properties = ev.detail.properties;
+    _setState(properties) {
         for (const [key, value] of Object.entries(properties)) {
             switch (key) {
                 case 'odd':
@@ -1171,48 +1166,47 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 case 'columnSeparator':
                 case 'xpath':
                 case 'nodeId':
+                case 'path':
+                case 'root':
                     break;
                 default:
                     this._features[key] = value;
                     break;
             }
         }
-        if (properties) {
-            if (properties.odd) {
-                this.odd = properties.odd;
-            }
-            if (properties.view) {
-                this.view = properties.view;
-                if (this.view === 'single') {
-                    // when switching to single view, clear current node id
-                    this.nodeId = null;
-                } else {
-                    // otherwise use value for alternate view returned from server
-                    this.nodeId = this.switchView;
-                }
-            }
-            if (properties.xpath) {
-                this.xpath = properties.xpath;
-            }
-            if (properties.hasOwnProperty('columnSeparator')) {
-                this.columnSeparator = properties.columnSeparator;
+        if (properties.odd) {
+            this.odd = properties.odd;
+        }
+        if (properties.view) {
+            this.view = properties.view;
+            if (this.view === 'single') {
+                // when switching to single view, clear current node id
+                this.nodeId = null;
+            } else {
+                // otherwise use value for alternate view returned from server
+                this.nodeId = this.switchView;
             }
         }
-        if (ev.detail.selectors) {
-            ev.detail.selectors.forEach(sc => {
-                this._selector.set(sc.selector, {
+        if (properties.xpath) {
+            this.xpath = properties.xpath;
+        }
+        if (properties.hasOwnProperty('columnSeparator')) {
+            this.columnSeparator = properties.columnSeparator;
+        }
+        this.xmlId = properties.id || this.xmlId;
+        this.nodeId = properties.root || null;
+
+        if (properties.path) {
+            this.getDocument().path = properties.path;
+        }
+
+        if (properties.selectors) {
+            properties.selectors.forEach(sc => {
+                this._selector[sc.selector] = {
                     state: sc.state,
                     command: sc.command || 'toggle'
-                });
+                };
             });
-        }
-        if (ev.detail.action === 'refresh') {
-            if (Object.keys(properties).length > 0) {
-                this._updateStyles();
-                this._load();
-            } else {
-                applyToggles();
-            }
         }
     }
 
