@@ -20,13 +20,23 @@ function stateToJson(action, state) {
 class Registry {
     
     constructor() {
+        /**
+         * Records current state as determined from parsing the URL.
+         * This should be used to initialize components.
+         */
         this.state = {};
+        /**
+         * Used to record state for a given channel. Will be updated
+         * if a component calls commit or replace.
+         */
         this.channelStates = {};
+        this._listeners = [];
     }
 
     configure(template, rootPath = '') {
         this.urlTemplate = new UriTemplate(`${rootPath}${template}`);
 
+        // determine initial state of the registry by parsing current URL
         const initialState = this._stateFromURL();
         if (!initialState) {
             console.error('<registry> failed to parse URL');
@@ -38,18 +48,40 @@ class Registry {
         log('template: %s; initial state: %o', `${rootPath}${template}`, this.state);
 
         window.addEventListener('popstate', (ev) => {
-            console.log(ev.state);
-            this.state = this._stateFromURL();
             this.channelStates = JSON.parse(ev.state);
-            log('popstate: %o %d', this.channelStates, window.history.length);
+            this.state = this._stateFromURL();
+            log('popstate: %o', this.channelStates);
+
+            this._listeners.forEach((entry) => {
+                entry.callback(this.getState(entry.component));
+            });
 
             PbEvents.emit('pb-popstate', null, this.channelStates);
+        });
+    }
+
+    subscribe(component, callback) {
+        this._listeners.push({
+            component,
+            callback
         });
     }
 
     _stateFromURL() {
         const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         return this.urlTemplate.fromUri(absPath);
+    }
+
+    getState(component) {
+        const chs = getEmittedChannels(component);
+        const channel = chs.length === 0 ? '__default__' : chs[0];
+        return this.channelStates[channel];
+    }
+
+    setState(component, newState) {
+        const chs = getEmittedChannels(component);
+        const channel = chs.length === 0 ? '__default__' : chs[0];
+        this.channelStates[channel] = Object.assign(this.channelStates[channel], newState);
     }
 
     get(path, defaultValue) {
@@ -91,7 +123,6 @@ class Registry {
 
     _commit(elem, newState, overwrite, replace) {
         this.state = overwrite ? newState : Object.assign(this.state, newState);
-
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);
         
@@ -106,7 +137,6 @@ class Registry {
         });
 
         const json = this.toJSON();
-        console.log(json);
         if (replace) {
             window.history.replaceState(json, '', resolved);
             log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
