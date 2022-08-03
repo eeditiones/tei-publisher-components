@@ -64,12 +64,12 @@
                 display: block;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-template="{?path,root,odd,plain,norm}">
                 <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
                 <div class="toolbar">
-                    <pb-toggle-feature name="highlight2" selector=".tei-foreign,pb-highlight,pb-popover"
+                    <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover"
                         action="disable" default="off" emit="ex2" subscribe="ex2">Plain Reading View</pb-toggle-feature>
-                    <pb-toggle-feature name="norm2" selector=".choice,.choice-alternate,br" emit="ex2" subscribe="ex2">
+                    <pb-toggle-feature name="norm" selector=".choice,.choice-alternate,br" emit="ex2" subscribe="ex2">
                         Normalized View</pb-toggle-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
