@@ -75,7 +75,12 @@ class Registry {
     getState(component) {
         const chs = getEmittedChannels(component);
         const channel = chs.length === 0 ? '__default__' : chs[0];
-        return this.channelStates[channel];
+        const state = this.channelStates[channel];
+        if (!state) {
+            this.channelStates[channel] = {};
+            return this.channelStates[channel];
+        }
+        return state;
     }
 
     setState(component, newState) {
