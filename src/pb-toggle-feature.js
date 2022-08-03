@@ -4,6 +4,19 @@ import { pbMixin } from './pb-mixin.js';
 import { registry } from "./urls.js";
 
 /**
+ * @param {{ selector: any; command: string; state: boolean; }} newConfig
+ * @param {any[]} configs
+ */
+ export function addSelector(newConfig, configs) {
+    const idx = configs.findIndex((item) => item.selector === newConfig.selector);
+    if (idx > -1) {
+        configs[idx] = newConfig;
+    } else {
+        configs.push(newConfig);
+    }
+}
+
+/**
  * Enable or disable a particular display feature by setting a predefined or custom parameter.
  * Toggling display features can be done server-side or client-side.
  * 
@@ -173,24 +186,25 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
         registry.subscribe(this, (state) => {
             const param = state[this.name];
-            if (typeof param !== 'undefined') {
-                this.checked = param === this.on;
-            } else {
-                this.checked = this.default === this.on;
-            }
+            this._setChecked(param);
         });
 
         const param = registry.state[this.name];
-        if (typeof param !== 'undefined') {
-            this.checked = param === this.on;
-        } else {
-            this.checked = this.default === this.on;
-        }
+        this._setChecked(param);
+        
         const newState = {};
         newState[this.name] = this.checked ? this.on : this.off;
         registry.replace(this, newState);
         this._saveState();
         this.signalReady();
+    }
+
+    _setChecked(param) {
+        if (typeof param !== 'undefined') {
+            this.checked = param === this.on;
+        } else {
+            this.checked = this.default === this.on;
+        }
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -220,11 +234,11 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         Object.assign(state, this.checked ? this.propertiesOn : this.propertiesOff);
         if (this.selector) {
             state.selectors = state.selectors || [];
-            state.selectors.push({
+            addSelector({
                 selector: this.selector,
                 command: this.action,
                 state: this.checked
-            });
+            }, state.selectors);
         }
     }
 }
