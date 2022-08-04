@@ -8,15 +8,6 @@ function log(...args) {
     console.log.apply(null, args);
 }
 
-function stateToJson(action, state) {
-    const cleanState = {};
-    Object.keys(state).filter(key => key !== '_source').forEach(key => { cleanState[key] = state[key] });
-    return JSON.stringify({
-        action,
-        state: cleanState
-    });
-}
-
 class Registry {
     
     constructor() {
