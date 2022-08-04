@@ -81,8 +81,7 @@ export class PbView extends pbMixin(LitElement) {
             * or the `.odd` suffix.
             */
             odd: {
-                type: String,
-                reflect: true
+                type: String
             },
             /**
             * The view type to use for paginating the document. Either `page`, `div` or `single`.
@@ -95,8 +94,7 @@ export class PbView extends pbMixin(LitElement) {
             * `single` | do not paginate but display entire content at once
             */
             view: {
-                type: String,
-                reflect: true
+                type: String
             },
             /**
             * An eXist nodeId. If specified, selects the root of the fragment of the document
@@ -104,7 +102,6 @@ export class PbView extends pbMixin(LitElement) {
             */
             nodeId: {
                 type: String,
-                reflect: true,
                 attribute: 'node-id'
             },
             /**
@@ -113,7 +110,6 @@ export class PbView extends pbMixin(LitElement) {
             */
             xmlId: {
                 type: Array,
-                reflect: true,
                 attribute: 'xml-id'
             },
             /**
@@ -125,8 +121,7 @@ export class PbView extends pbMixin(LitElement) {
             * If the `map` property is used, it may change scope for the displayed fragment.
             */
             xpath: {
-                type: String,
-                reflect: true
+                type: String
             },
             /**
             * If defined denotes the local name of an XQuery function in `modules/map.xql`, which will be called
@@ -186,8 +181,7 @@ export class PbView extends pbMixin(LitElement) {
             */
             suppressHighlight: {
                 type: Boolean,
-                attribute: 'suppress-highlight',
-                reflect: true
+                attribute: 'suppress-highlight'
             },
             /**
             * CSS selector to find column breaks in the content returned
@@ -428,7 +422,10 @@ export class PbView extends pbMixin(LitElement) {
         this.signalReady();
 
         if (this.onUpdate) {
-            this.subscribeTo('pb-update', this._refresh.bind(this));
+            this.subscribeTo('pb-update', () => {
+                this._setState(registry.getState(this));
+                this._refresh();
+            });
         }
     }
 
@@ -483,7 +480,7 @@ export class PbView extends pbMixin(LitElement) {
                     this._features.language = data.language;
                 }
                 this.wait(() => {
-                    this._setState(registry.getState(this));
+                    this._setState(registry.state);
                     this._refresh();
                 });
             });
@@ -1176,10 +1173,10 @@ export class PbView extends pbMixin(LitElement) {
                     break;
             }
         }
-        if (properties.odd) {
+        if (properties.odd && !this.getAttribute('odd')) {
             this.odd = properties.odd;
         }
-        if (properties.view) {
+        if (properties.view && !this.getAttribute('view')) {
             this.view = properties.view;
             if (this.view === 'single') {
                 // when switching to single view, clear current node id
@@ -1189,14 +1186,14 @@ export class PbView extends pbMixin(LitElement) {
                 this.nodeId = this.switchView;
             }
         }
-        if (properties.xpath) {
+        if (properties.xpath && !this.getAttribute('xpath')) {
             this.xpath = properties.xpath;
         }
         if (properties.hasOwnProperty('columnSeparator')) {
             this.columnSeparator = properties.columnSeparator;
         }
-        this.xmlId = properties.id || this.xmlId;
-        this.nodeId = properties.root || null;
+        this.xmlId = (!this.getAttribute('xml-id') && properties.id) || this.xmlId;
+        this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
 
         if (properties.path) {
             this.getDocument().path = properties.path;
