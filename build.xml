@@ -24,7 +24,7 @@
                 <include name="css/**"/>
             </fileset>
             <zipfileset dir="demo" prefix="" includes="*.xml"/>
-            <zipfileset dir="demo" prefix="" includes="*.xql"/>
+            <zipfileset dir="demo" prefix="" includes="*.xq"/>
         </zip>
     </target>
     

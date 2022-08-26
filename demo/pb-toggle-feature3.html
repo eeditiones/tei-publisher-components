@@ -58,12 +58,12 @@
 
                 <div class="toolbar">
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter -->
-                    <!-- note that we have to prefix the parameter with 'user.' because that's how components.xql expects it -->
+                    <!-- note that we have to prefix the parameter with 'user.' because that's how the parts API expects it -->
                     <pb-toggle-feature id="toggle2" emit="loader" subscribe="loader" name="user.mode"
                         on="diplomatic" off="norm" default="on">Diplomatic View</pb-toggle-feature>
                 </div>
                 <main>
-                    <!-- call components.xql to retrieve the full source text -->
+                    <!-- call parts API to retrieve the full source text -->
                     <pb-load url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
                         src="document3" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
                 </main>
