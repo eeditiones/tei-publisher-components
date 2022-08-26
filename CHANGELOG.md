@@ -1,3 +1,10 @@
+## [1.38.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.4...v1.38.5) (2022-08-26)
+
+
+### Bug Fixes
+
+* **pb-grid:** fix panel restore when using RTL; state not preserved when changing panel view ([78c18f6](https://github.com/eeditiones/tei-publisher-components/commit/78c18f64eb3cb5a4215b464ce9d3a89ff1051819))
+
 ## [1.38.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.3...v1.38.4) (2022-07-23)
 
 
