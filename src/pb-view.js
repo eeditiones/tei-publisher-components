@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { getEmittedChannels, pbMixin } from "./pb-mixin.js";
+import { pbMixin } from "./pb-mixin.js";
 import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
