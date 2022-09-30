@@ -1,6 +1,6 @@
 import { UriTemplate } from 'uri-templates-es';
 import { PbEvents } from "./pb-events.js";
-import { getEmittedChannels } from "./pb-mixin.js";
+import { getSubscribedChannels } from "./pb-mixin.js";
 
 function log(...args) {
     args[0] = `%c<registry>%c ${args[0]}`;
@@ -64,7 +64,7 @@ class Registry {
     }
 
     getState(component) {
-        const chs = getEmittedChannels(component);
+        const chs = getSubscribedChannels(component);
         const channel = chs.length === 0 ? '__default__' : chs[0];
         const state = this.channelStates[channel];
         if (!state) {
@@ -75,7 +75,7 @@ class Registry {
     }
 
     setState(component, newState) {
-        const chs = getEmittedChannels(component);
+        const chs = getSubscribedChannels(component);
         const channel = chs.length === 0 ? '__default__' : chs[0];
         this.channelStates[channel] = Object.assign(this.channelStates[channel], newState);
     }
@@ -122,7 +122,7 @@ class Registry {
         const newUrl = this.urlTemplate.fill(this.state);
         const resolved = new URL(newUrl, window.location.href);
         
-        const channels = getEmittedChannels(elem);
+        const channels = getSubscribedChannels(elem);
         const chs = channels.length === 0 ? ['__default__'] : channels;
         chs.forEach((channel) => {
             if (overwrite || !this.channelStates[channel]) {
