@@ -65,6 +65,23 @@ export function getEmittedChannels(elem) {
 }
 
 /**
+ * Get the list of channels this element subscribes to.
+ *
+ * @returns an array of channel names
+ */
+export function getSubscribedChannels(elem) {
+    const chs = [];
+    if (elem.subscribeConfig) {
+        Object.keys(elem.subscribeConfig).forEach((key) => {
+            chs.push(key);
+        });
+    } else if (elem.subscribe) {
+        chs.push(elem.subscribe);
+    }
+    return chs;
+}
+
+/**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
  *
@@ -284,30 +301,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     /**
-     * Get the list of channels this element subscribes to.
-     *
-     * @returns an array of channel names
-     */
-    getSubscribedChannels() {
-        const chs = [];
-        if (this.subscribeConfig) {
-            Object.keys(this.subscribeConfig).forEach((key) => {
-                chs.push(key);
-            });
-        } else if (this.subscribe) {
-            chs.push(this.subscribe);
-        }
-        return chs;
-    }
-
-    /**
      * Check if the other element emits to one of the channels this
      * element subscribes to.
      *
      * @param {Element} other the other element to compare with
      */
     emitsOnSameChannel(other) {
-        const myChannels = this.getSubscribedChannels();
+        const myChannels = getSubscribedChannels(this);
         const otherChannels = getEmittedChannels(other);
         if (myChannels.length === 0 && otherChannels.length === 0) {
             // both emit to the default channel
@@ -328,7 +328,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      */
     subscribeTo(type, listener, channels) {
         let handlers;
-        const chs = channels || this.getSubscribedChannels();
+        const chs = channels || getSubscribedChannels(this);
         if (chs.length === 0) {
             // no channel defined: listen for all events not targetted at a channel
             const handle = (ev) => {
