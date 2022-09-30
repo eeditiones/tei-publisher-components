@@ -35,9 +35,12 @@ import { addSelector } from "./pb-toggle-feature.js";
  * ```
  * 
  * Each item in the `selectors` property above defines either a state or a command. *state* will simply add
- * a css class `.toggled` to the target element when true. If *command* is set to 'disable', it will entirely disable
+ * a css class `.toggle` to the target element when true. If *command* is set to 'disable', it will entirely disable
  * the functionality of selected elements - provided that they are
  * publisher components implementing the corresponding `command` method of `pb-mixin`.
+ * 
+ * Client-side you may also pass an optional property `"global": true` to toggle the state of elements which reside
+ * in the surrounding HTML context below `pb-page` (means: elements which are not inside a `pb-view` or `pb-load`).
  * 
  * @fires pb-toggle - Fired when a feature is selected from the dropdown and sends the selected properties
  */
@@ -131,11 +134,15 @@ export class PbSelectFeature extends pbMixin(LitElement) {
                 state.selectors = [];
             }
             this.items[current].selectors.forEach((config) => {
-                addSelector({
-                    selector: config.selector,
-                    state: config.state,
-                    command: config.command
-                }, state.selectors);
+                if (config.global) {
+                    this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }));
+                } else {
+                    addSelector({
+                        selector: config.selector,
+                        state: config.state,
+                        command: config.command
+                    }, state.selectors);
+                }
             });
         }
         return this.items[current].properties instanceof Object
