@@ -320,8 +320,8 @@ class PbPage extends pbMixin(LitElement) {
         });
 
 
-        this.subscribeTo('pb-toggle', this._toggleFeatures.bind(this));
-
+        // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
+        this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
         this.unresolved = false;
 
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
@@ -352,21 +352,18 @@ class PbPage extends pbMixin(LitElement) {
      * and dispatch actions to the elements on the page.
      */
     _toggleFeatures(ev) {
-        if (ev.detail.selectors) {
-            ev.detail.selectors.forEach(sc => {
-                this.querySelectorAll(sc.selector).forEach(node => {
-                    const command = sc.command || 'toggle';
-                    if (node.command) {
-                        node.command(command, sc.state);
-                    }
-                    if (sc.state) {
-                        node.classList.add(command);
-                    } else {
-                        node.classList.remove(command);
-                    }
-                });
-            });
-        }
+        const sc = ev.detail;
+        this.querySelectorAll(sc.selector).forEach(node => {
+            const command = sc.command || 'toggle';
+            if (node.command) {
+                node.command(command, sc.state);
+            }
+            if (sc.state) {
+                node.classList.add(command);
+            } else {
+                node.classList.remove(command);
+            }
+        });
     }
 
     render() {
