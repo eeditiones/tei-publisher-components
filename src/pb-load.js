@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -141,10 +142,7 @@ export class PbLoad extends pbMixin(LitElement) {
             if (this.history && ev.detail && ev.detail.params) {
                 const start = ev.detail.params.start;
                 if (start) {
-                    this.setParameter('start', start);
-                    this.pushHistory('pagination', {
-                        start: start
-                    });
+                    registry.commit(this, { start });
                 }
             }
             PbLoad.waitOnce('pb-page-ready', () => {
@@ -153,13 +151,14 @@ export class PbLoad extends pbMixin(LitElement) {
         });
 
         if (this.history) {
-            window.addEventListener('popstate', (ev) => {
-                ev.preventDefault();
-                if (ev.state && ev.state.start && ev.state.start !== this.start) {
-                    this.start = ev.state.start;
+            this.userParams = registry.state;
+            registry.subscribe(this, (state) => {
+                if (state.start) {
+                    this.start = state.start;
                     this.load();
                 }
             });
+            registry.replace(this, this.userParams);
         }
 
         this.subscribeTo('pb-toggle', ev => {
@@ -179,7 +178,7 @@ export class PbLoad extends pbMixin(LitElement) {
 
     firstUpdated() {
         if (this.auto) {
-            this.start = this.getParameter('start', this.start);
+            this.start = registry.state.start || 1;
             PbLoad.waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
@@ -246,9 +245,12 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     toggleFeature(ev) {
-        this.userParams = ev.detail.properties;
+        this.userParams = registry.getState(this);
         console.log('<pb-load> toggle feature %o', this.userParams);
-        if (ev.detail.action === 'refresh') {
+        if (ev.detail.refresh) {
+            if (this.history) {
+                registry.commit(this, this.userParams);
+            }
             this.load();
         }
     }

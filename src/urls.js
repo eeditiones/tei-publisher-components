@@ -30,7 +30,7 @@ class Registry {
         // determine initial state of the registry by parsing current URL
         const initialState = this._stateFromURL();
         if (!initialState) {
-            console.error('<registry> failed to parse URL');
+            console.error('<registry> failed to parse URL: %s using template %s', window.location, this.urlTemplate);
         } else {
             this.state = initialState;
         }
