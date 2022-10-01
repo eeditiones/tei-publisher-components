@@ -53,19 +53,19 @@
                 color: #888888;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-template="{?path,user.mode}">
                 <pb-document id="document3" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter -->
                     <!-- note that we have to prefix the parameter with 'user.' because that's how components.xql expects it -->
                     <pb-toggle-feature id="toggle2" emit="loader" subscribe="loader" name="user.mode"
-                        on="diplomatic" off="norm" default="on">Diplomatic View</pb-toggle-feature>
+                        on="diplomatic" off="norm" default="diplomatic">Diplomatic View</pb-toggle-feature>
                 </div>
                 <main>
                     <!-- call components.xql to retrieve the full source text -->
                     <pb-load url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
-                        src="document3" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
+                        src="document3" auto subscribe="loader" emit="loader" history="history">Loading document ...</pb-load>
                 </main>
             </pb-page>
         </template>
