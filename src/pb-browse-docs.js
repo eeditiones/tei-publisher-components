@@ -10,6 +10,7 @@ import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 import { cmpVersion } from './utils.js';
+import { registry } from "./urls.js";
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -134,21 +135,39 @@ export class PbBrowseDocs extends PbLoad {
     connectedCallback() {
         super.connectedCallback();
 
-        const sortParam = this.getParameter('sort');
-        if (sortParam) {
-            this.sortBy = sortParam;
-        }
+        PbLoad.waitOnce('pb-page-ready', () => {
+            if (registry.state.sort) {
+                this.sortBy = registry.state.sort;
+            }
 
-        const filterParam = this.getParameter('filter');
-        if (filterParam) {
-            this.filter = filterParam;
-            this.filterBy = this.getParameter('filterBy', this.filterBy);
-        }
+            if (registry.state.filter) {
+                this.filter = registry.state.filter;
+                this.filterBy = registry.state.filterBy || this.filterBy;
+            }
 
-        this.facets = this.getParametersMatching(/^facet-.*$/);
+            this.facets = {};
+            Object.keys(registry.state).forEach((key) => {
+                if (/^facet-.*$/.test(key)) {
+                    const param = registry.state[key];
+                    if (param) {
+                        this.facets.push(param);
+                    } else {
+                        this.facets[key] = [param];
+                    }
+                }
+            });
 
-        this.collection = this.getParameter('collection');
+            this.collection = registry.state.collection;
 
+            registry.replace(this, {
+                collection: this.collection
+            });
+            registry.subscribe(this, (state) => {
+                this.collection = state.collection;
+                this.load();
+            });
+        });
+        
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
         this.subscribeTo('pb-login', (ev) => {
             if (ev.detail.userChanged) {
@@ -441,8 +460,7 @@ export class PbBrowseDocs extends PbLoad {
                 ev.preventDefault();
                 this.collection = link.getAttribute('data-collection');
                 this.start = 1;
-                this.setParameter('collection', this.collection);
-                this.pushHistory('browse collection');
+                registry.commit(this, { collection: this.collection });
                 console.log('<pb-browse-docs> loading collection %s', this.collection);
                 this.load();
             });

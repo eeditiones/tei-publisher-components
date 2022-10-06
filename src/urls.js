@@ -39,7 +39,15 @@ class Registry {
         log('template: %s; initial state: %o', `${rootPath}${template}`, this.state);
 
         window.addEventListener('popstate', (ev) => {
-            this.channelStates = JSON.parse(ev.state);
+            if (ev.state) {
+                try {
+                    this.channelStates = JSON.parse(ev.state);
+                } catch (e) {
+                    console.error('<registry> error restoring state: %s', e.toString());
+                }
+            } else {
+                this.channelStates = {};
+            }
             this.state = this._stateFromURL();
             log('popstate: %o', this.channelStates);
 

@@ -561,7 +561,7 @@ export class PbView extends pbMixin(LitElement) {
             if (ev.detail.columnSeparator !== undefined) {
                 this.columnSeparator = ev.detail.columnSeparator;
             }
-            this.view = ev.detail.view || this.view;
+            this.view = ev.detail.view || this.getView();
             if (ev.detail.xpath) {
                 this.xpath = ev.detail.xpath;
                 this.nodeId = null;
