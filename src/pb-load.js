@@ -139,27 +139,26 @@ export class PbLoad extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo(this.event, (ev) => {
-            if (this.history && ev.detail && ev.detail.params) {
-                const start = ev.detail.params.start;
-                if (start) {
-                    registry.commit(this, { start });
-                }
-            }
             PbLoad.waitOnce('pb-page-ready', () => {
+                if (this.history) {
+                    if (ev.detail && ev.detail.params) {
+                        const start = ev.detail.params.start;
+                        if (start) {
+                            registry.commit(this, { start });
+                        }
+                    }
+                    this.userParams = registry.state;
+                    registry.subscribe(this, (state) => {
+                        if (state.start) {
+                            this.start = state.start;
+                            this.load();
+                        }
+                    });
+                    registry.replace(this, this.userParams);
+                }
                 this.load(ev);
             });
         });
-
-        if (this.history) {
-            this.userParams = registry.state;
-            registry.subscribe(this, (state) => {
-                if (state.start) {
-                    this.start = state.start;
-                    this.load();
-                }
-            });
-            registry.replace(this, this.userParams);
-        }
 
         this.subscribeTo('pb-toggle', ev => {
             this.toggleFeature(ev);
@@ -172,6 +171,12 @@ export class PbLoad extends pbMixin(LitElement) {
                 this.load();
             }
         }, []);
+
+        registry.subscribe(this, (state) => {
+            this.start = state.start;
+            this.userParams = state;
+            this.load();
+        });
 
         this.signalReady();
     }
