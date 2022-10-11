@@ -48,20 +48,20 @@ export function waitOnce(name, callback) {
  * @returns an array of channel names
  */
 export function getEmittedChannels(elem) {
-   const chs = [];
-   const emitConfig = elem.getAttribute('emit-config');
-   if (emitConfig) {
-       const json = JSON.parse(emitConfig);
-       Object.keys(json).forEach(key => {
-           chs.push(key);
-       });
-   } else {
-       const emitAttr = elem.getAttribute('emit');
-       if (emitAttr) {
-           chs.push(emitAttr);
-       }
-   }
-   return chs;
+    const chs = [];
+    const emitConfig = elem.getAttribute('emit-config');
+    if (emitConfig) {
+        const json = JSON.parse(emitConfig);
+        Object.keys(json).forEach(key => {
+            chs.push(key);
+        });
+    } else {
+        const emitAttr = elem.getAttribute('emit');
+        if (emitAttr) {
+            chs.push(emitAttr);
+        }
+    }
+    return chs;
 }
 
 /**
@@ -71,12 +71,17 @@ export function getEmittedChannels(elem) {
  */
 export function getSubscribedChannels(elem) {
     const chs = [];
-    if (elem.subscribeConfig) {
-        Object.keys(elem.subscribeConfig).forEach((key) => {
+    const subscribeConfig = elem.getAttribute('subscribe-config');
+    if (subscribeConfig) {
+        const json = JSON.parse(subscribeConfig);
+        Object.keys(json).forEach((key) => {
             chs.push(key);
         });
-    } else if (elem.subscribe) {
-        chs.push(elem.subscribe);
+    } else {
+        const subscribeAttr = elem.getAttribute('subscribe');
+        if (subscribeAttr) {
+            chs.push(subscribeAttr);
+        }
     }
     return chs;
 }
@@ -426,7 +431,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
         if (params && params.length == 1) {
             return params[0];
-        }else if (params && params.length > 1) {
+        } else if (params && params.length > 1) {
             return params
         }
         return fallback;
@@ -518,7 +523,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         let base;
         if (endpoint === '.') {
             base = new URL(window.location.href);
-        // loaded in iframe
+            // loaded in iframe
         } else if (window.location.protocol === 'about:') {
             base = document.baseURI
         } else {
