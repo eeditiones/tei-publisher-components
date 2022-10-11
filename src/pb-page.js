@@ -38,9 +38,9 @@ class PbPage extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'app-root'
             },
-            urlTemplate: {
+            urlPath: {
                 type: String,
-                attribute: 'url-template'
+                attribute: 'url-path'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -143,7 +143,7 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
-        this.urlTemplate = `/{+path}{?root,odd}{#id}`;
+        this.urlPath = 'path';
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this._localeFallbacks = [];
@@ -184,9 +184,7 @@ class PbPage extends pbMixin(LitElement) {
             this.appRoot = window.location.pathname;
         }
 
-        if (this.urlTemplate) {
-            registry.configure(this.urlTemplate, this.appRoot);
-        }
+        registry.configure(this.urlPath === 'path', this.appRoot);
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');

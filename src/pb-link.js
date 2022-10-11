@@ -37,6 +37,9 @@ export class PbLink extends pbMixin(LitElement) {
             odd: {
                 type: String
             },
+            view: {
+                type: String
+            },
             /**
              * Modify browser history: if set, clicking this
              * element will generate a new history entry in the browser's history.

@@ -159,9 +159,11 @@ export class PbBrowseDocs extends PbLoad {
 
             this.collection = registry.state.collection;
 
-            registry.replace(this, {
-                collection: this.collection
-            });
+            if (this.collection) {
+                registry.replace(this, {
+                    collection: this.collection
+                });
+            }
             registry.subscribe(this, (state) => {
                 this.collection = state.collection;
                 this.load();
