@@ -1,4 +1,3 @@
-import { UriTemplate } from 'uri-templates-es';
 import { PbEvents } from "./pb-events.js";
 import { getSubscribedChannels } from "./pb-mixin.js";
 
@@ -11,6 +10,7 @@ function log(...args) {
 class Registry {
     
     constructor() {
+        this.rootPath = '';
         /**
          * Records current state as determined from parsing the URL.
          * This should be used to initialize components.
@@ -24,8 +24,9 @@ class Registry {
         this._listeners = [];
     }
 
-    configure(template, rootPath = '') {
-        this.urlTemplate = new UriTemplate(`${rootPath}${template}`);
+    configure(usePath = true, rootPath = '') {
+        this.rootPath = rootPath;
+        this.usePath = usePath;
 
         // determine initial state of the registry by parsing current URL
         const initialState = this._stateFromURL();
@@ -36,8 +37,6 @@ class Registry {
         }
         window.history.replaceState(null, '');
         
-        log('template: %s; initial state: %o', `${rootPath}${template}`, this.state);
-
         window.addEventListener('popstate', (ev) => {
             if (ev.state) {
                 try {
@@ -67,8 +66,22 @@ class Registry {
     }
 
     _stateFromURL() {
-        const absPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        return this.urlTemplate.fromUri(absPath);
+        const params = {};
+        if (window.location.hash.length > 0) {
+            params.id = window.location.hash.substring(1);
+        }
+        if (this.usePath) {
+            params.path = window.location.pathname.replace(new RegExp(`^${this.rootPath}/?`), '');
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.forEach((value, key) => {
+            if (this.usePath && key === 'path') {
+                return;
+            }
+            params[key] = value;
+        });
+        console.log('root: %s; window: %s, rel: %s', this.rootPath, window.location.pathname, params.path);
+        return params;
     }
 
     getState(component) {
@@ -127,7 +140,25 @@ class Registry {
 
     _commit(elem, newState, overwrite, replace) {
         this.state = overwrite ? newState : Object.assign(this.state, newState);
-        const newUrl = this.urlTemplate.fill(this.state);
+        const newUrl = new URL(window.location.href);
+        Object.keys(this.state)
+            .filter((param) => !(param === 'path' || param === 'id'))
+            .forEach((param) => {
+                if (this.state[param] !== null) {
+                    newUrl.searchParams.set(param, this.state[param]);
+                }
+            });
+        if (this.usePath) {
+            newUrl.pathname = `${this.rootPath}/${this.state.path}`;
+        } else {
+            newUrl.searchParams.set('path', this.state.path);
+        }
+        if (this.state.id) {
+            newUrl.hash = `#${this.state.id}`;
+        } else {
+            newUrl.hash = '';
+        }
+
         const resolved = new URL(newUrl, window.location.href);
         
         const channels = getSubscribedChannels(elem);
@@ -156,3 +187,6 @@ class Registry {
 }
 
 export const registry = new Registry();
+if (!window.pbRegistry) {
+    window.pbRegistry = registry;
+}
