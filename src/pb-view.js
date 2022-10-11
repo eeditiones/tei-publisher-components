@@ -390,13 +390,17 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 this.nodeId = registry.state.root;
             }
 
-            registry.replace(this, {
+            const newState = {
                 id: this.xmlId,
-                root: this.nodeId,
                 view: this.getView(),
                 odd: this.getOdd(),
                 path: this.getDocument().path
-            });
+            };
+            if (this.view !== 'single') {
+                newState.root = this.nodeId;
+            }
+            console.log('id: %s; state: %o', this.id, newState);
+            registry.replace(this, newState);
 
             registry.subscribe(this, (state) => {
                 this._setState(state);
@@ -490,7 +494,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                     this._features.language = data.language;
                 }
                 this.wait(() => {
-                    this._setState(registry.state);
+                    if (!this.disableHistory) {
+                        this._setState(registry.state);
+                    }
                     this._refresh();
                 });
             });
