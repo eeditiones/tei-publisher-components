@@ -7,6 +7,7 @@ import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -36,6 +37,10 @@ class PbPage extends pbMixin(LitElement) {
             appRoot: {
                 type: String,
                 attribute: 'app-root'
+            },
+            urlPath: {
+                type: String,
+                attribute: 'url-path'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -138,6 +143,7 @@ class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlPath = 'path';
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this._localeFallbacks = [];
@@ -173,6 +179,12 @@ class PbPage extends pbMixin(LitElement) {
         if (this.disabled) {
             return;
         }
+
+        if (!this.appRoot) {
+            this.appRoot = window.location.pathname;
+        }
+
+        registry.configure(this.urlPath === 'path', this.appRoot);
 
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');
@@ -306,8 +318,8 @@ class PbPage extends pbMixin(LitElement) {
         });
 
 
-        this.subscribeTo('pb-toggle', this._toggleFeatures.bind(this));
-
+        // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
+        this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
         this.unresolved = false;
 
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
@@ -338,21 +350,18 @@ class PbPage extends pbMixin(LitElement) {
      * and dispatch actions to the elements on the page.
      */
     _toggleFeatures(ev) {
-        if (ev.detail.selectors) {
-            ev.detail.selectors.forEach(sc => {
-                this.querySelectorAll(sc.selector).forEach(node => {
-                    const command = sc.command || 'toggle';
-                    if (node.command) {
-                        node.command(command, sc.state);
-                    }
-                    if (sc.state) {
-                        node.classList.add(command);
-                    } else {
-                        node.classList.remove(command);
-                    }
-                });
-            });
-        }
+        const sc = ev.detail;
+        this.querySelectorAll(sc.selector).forEach(node => {
+            const command = sc.command || 'toggle';
+            if (node.command) {
+                node.command(command, sc.state);
+            }
+            if (sc.state) {
+                node.classList.add(command);
+            } else {
+                node.classList.remove(command);
+            }
+        });
     }
 
     render() {

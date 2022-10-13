@@ -52,7 +52,7 @@
                 color: #888888;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
@@ -63,7 +63,7 @@
                 </div>
                 <main>
                     <pb-load id="load" url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
-                        src="document1" auto subscribe="loader" emit="loader">Loading document ...</pb-load>
+                        src="document1" auto subscribe="loader" emit="loader" history>Loading document ...</pb-load>
                 </main>
             </pb-page>
         </template>

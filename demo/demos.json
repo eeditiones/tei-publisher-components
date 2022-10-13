@@ -2,7 +2,8 @@
   "pb-view": {
     "demo/pb-view.html": "View TEI document",
     "demo/pb-view2.html": "Docbook document",
-    "demo/pb-view3.html": "Manipulating content via JS"
+    "demo/pb-view3.html": "Manipulating content via JS",
+    "demo/pb-view4.html": "Navigating links"
   },
   "pb-document": {
     "demo/pb-document.html": "Demo"

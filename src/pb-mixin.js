@@ -23,6 +23,50 @@ export function clearPageEvents() {
 }
 
 /**
+* Get the list of channels this element emits to.
+*
+* @returns an array of channel names
+*/
+export function getEmittedChannels(elem) {
+    const chs = [];
+    const emitConfig = elem.getAttribute('emit-config');
+    if (emitConfig) {
+        const json = JSON.parse(emitConfig);
+        Object.keys(json).forEach(key => {
+            chs.push(key);
+        });
+    } else {
+        const emitAttr = elem.getAttribute('emit');
+        if (emitAttr) {
+            chs.push(emitAttr);
+        }
+    }
+    return chs;
+}
+
+/**
+ * Get the list of channels this element subscribes to.
+ *
+ * @returns an array of channel names
+ */
+export function getSubscribedChannels(elem) {
+    const chs = [];
+    const subscribeConfig = elem.getAttribute('subscribe-config');
+    if (subscribeConfig) {
+        const json = JSON.parse(subscribeConfig);
+        Object.keys(json).forEach((key) => {
+            chs.push(key);
+        });
+    } else {
+        const subscribeAttr = elem.getAttribute('subscribe');
+        if (subscribeAttr) {
+            chs.push(subscribeAttr);
+        }
+    }
+    return chs;
+}
+
+/**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
  *
@@ -250,58 +294,19 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
     }
 
     /**
-     * Get the list of channels this element subscribes to.
-     *
-     * @returns an array of channel names
-     */
-    getSubscribedChannels() {
-        const chs = [];
-        if (this.subscribeConfig) {
-            Object.keys(this.subscribeConfig).forEach((key) => {
-                chs.push(key);
-            });
-        } else if (this.subscribe) {
-            chs.push(this.subscribe);
-        }
-        return chs;
-    }
-
-    /**
      * Check if the other element emits to one of the channels this
      * element subscribes to.
      *
      * @param {Element} other the other element to compare with
      */
     emitsOnSameChannel(other) {
-        const myChannels = this.getSubscribedChannels();
-        const otherChannels = PbMixin.getEmittedChannels(other);
+        const myChannels = getSubscribedChannels(this);
+        const otherChannels = getEmittedChannels(other);
         if (myChannels.length === 0 && otherChannels.length === 0) {
             // both emit to the default channel
             return true;
         }
         return myChannels.some((channel) => otherChannels.includes(channel));
-    }
-
-    /**
-     * Get the list of channels this element emits to.
-     *
-     * @returns an array of channel names
-     */
-    static getEmittedChannels(elem) {
-        const chs = [];
-        const emitConfig = elem.getAttribute('emit-config');
-        if (emitConfig) {
-            const json = JSON.parse(emitConfig);
-            Object.keys(json).forEach(key => {
-                chs.push(key);
-            });
-        } else {
-            const emitAttr = elem.getAttribute('emit');
-            if (emitAttr) {
-                chs.push(emitAttr);
-            }
-        }
-        return chs;
     }
 
     /**
@@ -316,7 +321,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      */
     subscribeTo(type, listener, channels) {
         let handlers;
-        const chs = channels || this.getSubscribedChannels();
+        const chs = channels || getSubscribedChannels(this);
         if (chs.length === 0) {
             // no channel defined: listen for all events not targetted at a channel
             const handle = (ev) => {
@@ -353,7 +358,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {
-        const chs = channels || PbMixin.getEmittedChannels(this);
+        const chs = channels || getEmittedChannels(this);
         if (chs.length == 0) {
             if (type === 'pb-ready') {
                 readyEventsFired.add('__default__');
@@ -414,7 +419,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
         if (params && params.length == 1) {
             return params[0];
-        }else if (params && params.length > 1) {
+        } else if (params && params.length > 1) {
             return params
         }
         return fallback;
@@ -506,7 +511,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         let base;
         if (endpoint === '.') {
             base = new URL(window.location.href);
-        // loaded in iframe
+            // loaded in iframe
         } else if (window.location.protocol === 'about:') {
             base = document.baseURI
         } else {
