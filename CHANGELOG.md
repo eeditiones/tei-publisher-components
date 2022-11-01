@@ -1,3 +1,10 @@
+## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
+
+
+### Bug Fixes
+
+* globally disable automatic loading of Roboto font ([64b393b](https://github.com/eeditiones/tei-publisher-components/commit/64b393b057420506ec79a509e2d392efbd814c94))
+
 ## [1.38.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.5...v1.38.6) (2022-10-13)
 
 
