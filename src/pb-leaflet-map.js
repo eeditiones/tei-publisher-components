@@ -110,7 +110,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.crs = 'EPSG3857';
         this.accessToken = '';
         this.imagesPath = '../images/leaflet/';
-        this.cssPath = '../css/leaflet/';
+        this.cssPath = '../css/leaflet';
         this.toggle = false;
         this.noScroll = false;
         this.disabled = true;

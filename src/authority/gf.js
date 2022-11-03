@@ -8,13 +8,14 @@ export class GF extends Registry {
     constructor(configElem) {
         super(configElem);
         this._api = configElem.getAttribute('api');
+        this._limit = configElem.getAttribute('limit') || 999999;
     }
 
     async query(key) {
         const results = [];
      
         const register = this.getRegister();
-        const url = `https://archives.georgfischer.com/api/${register}?search=${encodeURIComponent(key)}`;
+        const url = `https://archives.georgfischer.com/api/${register}?search=${encodeURIComponent(key)}&perPage=${this._limit}`;
         const label = this.getLabelField();
         return new Promise((resolve) => {
             fetch(url)

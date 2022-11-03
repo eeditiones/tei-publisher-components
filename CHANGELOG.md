@@ -1,3 +1,45 @@
+## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
+
+
+### Bug Fixes
+
+* globally disable automatic loading of Roboto font ([64b393b](https://github.com/eeditiones/tei-publisher-components/commit/64b393b057420506ec79a509e2d392efbd814c94))
+
+## [1.38.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.5...v1.38.6) (2022-10-13)
+
+
+### Bug Fixes
+
+* **pb-formula:** Fix font loading issue for mathematical formulas ([b2d41ca](https://github.com/eeditiones/tei-publisher-components/commit/b2d41cacf2aa86dfe9ea10060ebaa0ef190fd0fe))
+
+## [1.38.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.4...v1.38.5) (2022-08-26)
+
+
+### Bug Fixes
+
+* **pb-grid:** fix panel restore when using RTL; state not preserved when changing panel view ([78c18f6](https://github.com/eeditiones/tei-publisher-components/commit/78c18f64eb3cb5a4215b464ce9d3a89ff1051819))
+
+## [1.38.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.3...v1.38.4) (2022-07-23)
+
+
+### Bug Fixes
+
+* **pb-view:** trigger two column view mode only if there are at least two cb ([0402c50](https://github.com/eeditiones/tei-publisher-components/commit/0402c507b7f4721544707e7214c8bf57233418a7))
+
+## [1.38.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.2...v1.38.3) (2022-07-22)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** omit extra slash from CSS path to avoid issues with CDN ([5dde12a](https://github.com/eeditiones/tei-publisher-components/commit/5dde12a38f8765bd198512937e306f07988e5b19))
+
+## [1.38.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.1...v1.38.2) (2022-07-19)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup, kbga, gf:** add 'limit' parameter to control how many entries are shown when searching the authority ([213fb91](https://github.com/eeditiones/tei-publisher-components/commit/213fb91d7f7e3797724df8e8d0fd4e3fe82a0bf5))
+
 ## [1.38.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.0...v1.38.1) (2022-06-21)
 
 
