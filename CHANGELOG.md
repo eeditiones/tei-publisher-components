@@ -1,3 +1,17 @@
+## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
+
+
+### Bug Fixes
+
+* globally disable automatic loading of Roboto font ([64b393b](https://github.com/eeditiones/tei-publisher-components/commit/64b393b057420506ec79a509e2d392efbd814c94))
+
+## [1.38.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.5...v1.38.6) (2022-10-13)
+
+
+### Bug Fixes
+
+* **pb-formula:** Fix font loading issue for mathematical formulas ([b2d41ca](https://github.com/eeditiones/tei-publisher-components/commit/b2d41cacf2aa86dfe9ea10060ebaa0ef190fd0fe))
+
 ## [1.38.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.4...v1.38.5) (2022-08-26)
 
 
