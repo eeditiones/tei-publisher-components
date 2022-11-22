@@ -202,7 +202,12 @@ class PbPage extends pbMixin(LitElement) {
                 return fetch(`${this.endpoint}/api/version`)
                     .then((res2) => res2.json());
             })
-            .catch(() => null)
+            .catch((error) => {
+                if (error.response.status === 404) {
+                    return fetch(`${this.endpoint}/api/version`)
+                        .then((res2) => res2.json());
+                }
+            });
             
             if (json) {
                 this.apiVersion = json.api;
