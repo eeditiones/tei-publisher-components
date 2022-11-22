@@ -1,3 +1,16 @@
+# [1.39.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.7...v1.39.0) (2022-11-22)
+
+
+### Bug Fixes
+
+* **Dockerfile:** update to match TEI Publisher master with newer roaster ([2ca4d37](https://github.com/eeditiones/tei-publisher-components/commit/2ca4d37a56df8054d1f29446163e694cba69e73f))
+* **pb-page:** don't send pb-page-ready until both: i18n language and api version are correctly reported ([41c02cd](https://github.com/eeditiones/tei-publisher-components/commit/41c02cd4e0cec066901c0bdf47790ad610143e59))
+
+
+### Features
+
+* **pb-code-highlight:** allow theme to be set via CSS variable; load CSS only once ([6d4e2fe](https://github.com/eeditiones/tei-publisher-components/commit/6d4e2fe51664b8325de75b785bf5026336239697))
+
 ## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
 
 
