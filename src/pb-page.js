@@ -174,6 +174,8 @@ class PbPage extends pbMixin(LitElement) {
             return;
         }
 
+        this.endpoint = this.endpoint.replace(/\/+$/, '');
+        
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');
         }
@@ -223,6 +225,13 @@ class PbPage extends pbMixin(LitElement) {
                 endpoint: this.endpoint,
                 template: this.template,
                 apiVersion: this.apiVersion
+            });
+        } else if (this._i18nInstance) {
+            this.signalReady('pb-page-ready', {
+                endpoint: this.endpoint,
+                apiVersion: this.apiVersion,
+                template: this.template,
+                language: this._i18nInstance.language
             });
         }
     }
@@ -292,7 +301,7 @@ class PbPage extends pbMixin(LitElement) {
             // initialized and ready to go!
             this._updateI18n(t);
             this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
-            if (this.requireLanguage) {
+            if (this.requireLanguage && this.apiVersion) {
                 this.signalReady('pb-page-ready', {
                     endpoint: this.endpoint,
                     apiVersion: this.apiVersion,
