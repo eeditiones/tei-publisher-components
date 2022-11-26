@@ -87,12 +87,30 @@ export class PbLoad extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'use-language'
             },
+            /**
+             * Indicates whether or not cross-site Access-Control requests should be made.
+             * Default is false.
+             */
+            noCredentials: {
+                type: Boolean,
+                attribute: 'no-credentials'
+            },
+            /**
+             * Indicates if the parameters of the request made should be saved to the browser
+             * history and URL. Default: false.
+             */
             history: {
                 type: Boolean
             },
+            /**
+             * The event which will trigger a new request to be sent. Default is 'pb-load'.
+             */
             event: {
                 type: String
             },
+            /**
+             * Additional, user-defined parameters to be sent with the request.
+             */
             userParams: {
                 type: Object
             }
@@ -107,6 +125,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.event = 'pb-load';
         this.loaded = false;
         this.language = null;
+        this.noCredentials = true;
     }
 
     connectedCallback() {
@@ -169,6 +188,23 @@ export class PbLoad extends pbMixin(LitElement) {
         }
     }
 
+    attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if (oldValue && oldValue !== newValue) {
+            switch (name) {
+                case 'url':
+                case 'userParams':
+                case 'start':
+                    PbLoad.waitOnce('pb-page-ready', () => {
+                        this.load();
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     render() {
         return html`
             <slot></slot>
@@ -177,7 +213,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
-                with-credentials
+                ?with-credentials="${!this.noCredentials}"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
