@@ -1,3 +1,10 @@
+## [1.40.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.0...v1.40.1) (2022-11-26)
+
+
+### Bug Fixes
+
+* **pb-load:** fix errors if no-credentials option is set ([0bdb718](https://github.com/eeditiones/tei-publisher-components/commit/0bdb718cfd125f7e38d6f1a075209548f7093a7c))
+
 # [1.40.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.39.0...v1.40.0) (2022-11-26)
 
 
