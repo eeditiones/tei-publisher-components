@@ -1,3 +1,10 @@
+# [1.40.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.39.0...v1.40.0) (2022-11-26)
+
+
+### Features
+
+* **pb-load:** refresh when url, start or userParams attribute is changed; add attribute 'no-credentials' to disable attempting a cross-site request ([6f55e85](https://github.com/eeditiones/tei-publisher-components/commit/6f55e8533360adfcdb9862d8f4eda871345564da))
+
 # [1.39.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.7...v1.39.0) (2022-11-22)
 
 
