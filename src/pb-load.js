@@ -195,9 +195,11 @@ export class PbLoad extends pbMixin(LitElement) {
                 case 'url':
                 case 'userParams':
                 case 'start':
-                    PbLoad.waitOnce('pb-page-ready', () => {
-                        this.load();
-                    });
+                    if (this.auto && this.loader) {
+                        PbLoad.waitOnce('pb-page-ready', () => {
+                            this.wait(() => this.load());
+                        });
+                    }
                     break;
                 default:
                     break;
@@ -378,16 +380,16 @@ export class PbLoad extends pbMixin(LitElement) {
         // Try to determine number of pages and current position
         // Search for data-pagination-* attributes first and if they
         // can't be found, check HTTP headers
-        function getPaginationParam(type) {
+        function getPaginationParam(type, noHeaders) {
             const elem = content.querySelector(`[data-pagination-${type}]`);
             if (elem) {
                 return elem.getAttribute(`data-pagination-${type}`);
             }
-            return xhr.getResponseHeader(`pb-${type}`);
+            return noHeaders ? 0 : xhr.getResponseHeader(`pb-${type}`);
         }
 
-        const total = getPaginationParam('total');
-        const start = getPaginationParam('start');
+        const total = getPaginationParam('total', this.noCredentials);
+        const start = getPaginationParam('start', this.noCredentials);
 
         if (this.start !== start) {
             this.start = parseInt(start);
