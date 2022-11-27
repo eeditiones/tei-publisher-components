@@ -113,6 +113,12 @@ export class PbLoad extends pbMixin(LitElement) {
              */
             userParams: {
                 type: Object
+            },
+            /**
+             * If set, silently ignore errors when sending the request.
+             */
+            silent: {
+                type: Boolean
             }
         };
     }
@@ -126,6 +132,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.loaded = false;
         this.language = null;
         this.noCredentials = true;
+        this.silent = false;
     }
 
     connectedCallback() {
@@ -364,6 +371,10 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
         const { response } = loader.lastError;
+        if (this.silent) {
+            console.error('Request failed: %s', response ? response.description : '');
+            return;
+        }
         let message;
         if (response) {
             message = response.description;
