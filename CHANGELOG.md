@@ -1,3 +1,10 @@
+## [1.40.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.1...v1.40.2) (2022-11-27)
+
+
+### Bug Fixes
+
+* **pb-load:** add option to silently ignore network errors ([3695b28](https://github.com/eeditiones/tei-publisher-components/commit/3695b282d13e1bb127ec411fbb359ddd394a72a3))
+
 ## [1.40.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.0...v1.40.1) (2022-11-26)
 
 
