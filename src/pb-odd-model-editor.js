@@ -14,11 +14,11 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/color.js';
 import '@polymer/iron-collapse/iron-collapse.js';
+import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
 
 import { cmpVersion } from './utils.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';
-import './pb-code-editor.js';
 import './pb-message.js';
 
 import { get as i18n, translate } from "./pb-i18n.js";
@@ -211,8 +211,15 @@ export class PbOddModelEditor extends LitElement {
                 background:var(--paper-grey-200);
             }
             
-            pb-code-editor {
+            .editor {
                 margin-bottom: 20px;
+            }
+
+            .editor label {
+                margin-bottom:5px;
+                font-size: 12px;
+                font-weight: 400;
+                color: var(--paper-grey-500);
             }
 
             .horizontal {
@@ -465,14 +472,15 @@ export class PbOddModelEditor extends LitElement {
                 <paper-input id="desc" .value="${this.desc}" placeholder="${translate('odd.editor.model.description-placeholder')}"
                     label="Description" @change="${this._inputDesc}"></paper-input>
 
-                <pb-code-editor id="predicate"
-                     code="${this.predicate}"   
-                     mode="xquery"
-                     linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') < 0 ? 'modules/editor.xql' : 'api/lint'}"
-                     label="Predicate"
-                     placeholder="${translate('odd.editor.model.predicate-placeholder')}"
-                     @code-changed="${this._updatePredicate}"
-                     apiVersion="${this.apiVersion}"></pb-code-editor>
+                <div class="editor">
+                    <label>Predicate</label>
+                    <jinn-codemirror id="predicate"
+                        code="${this.predicate}"   
+                        mode="xquery"
+                        linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') < 0 ? 'modules/editor.xql' : 'api/lint'}"
+                        placeholder="${translate('odd.editor.model.predicate-placeholder')}"
+                        @update="${this._updatePredicate}"></jinn-codemirror>
+                </div>
                
                 ${this._isModel()
                 ? html`
@@ -498,14 +506,16 @@ export class PbOddModelEditor extends LitElement {
                                 placeholder="${translate('odd.editor.model.css-class-placeholder')}"
                                 label="CSS Class"
                                 @change="${this._inputCss}"></paper-input>
-                                
-                            <pb-code-editor id="template"
-                                             code="${this.template}"
-                                             mode="${this.output === 'latex' ? 'stex' : 'xml'}"
-                                             label="Template"
-                                             placeholder="${translate('odd.editor.model.template-placeholder')}"
-                                             @code-changed="${this._updateTemplate}"
-                                             apiVersion="${this.apiVersion}"></pb-code-editor>
+                            
+                            <div class="editor">
+                                <label>Template</label>
+                                <jinn-codemirror id="template"
+                                                 code="${this.template}"
+                                                 mode="${this.output === 'latex' ? 'stex' : 'xml'}"
+                                                 placeholder="${translate('odd.editor.model.template-placeholder')}"
+                                                 @update="${this._updateTemplate}">
+                                </jinn-codemirror>
+                            </div>
                         </div>
         
                         <div class="parameters">
@@ -605,11 +615,11 @@ export class PbOddModelEditor extends LitElement {
 
     refreshEditors() {
         console.log('refreshEditors');
-        this.shadowRoot.getElementById('predicate').refresh();
+        // this.shadowRoot.getElementById('predicate').refresh();
 
         if (this._isGroupOrSequence()) { return console.log("asfdfa"); }
 
-        this.shadowRoot.getElementById('template').refresh();
+        // this.shadowRoot.getElementById('template').refresh();
 
         const models = this.shadowRoot.querySelectorAll('pb-odd-model-editor');
         for (let i = 0; i < models.length; i++) {
@@ -842,8 +852,8 @@ export class PbOddModelEditor extends LitElement {
         this._fireModelChanged('output', this.output);
     }
 
-    _updatePredicate(ev) {
-        this.predicate = this.shadowRoot.getElementById('predicate').getSource();
+    _updatePredicate() {
+        this.predicate = this.shadowRoot.getElementById('predicate').value;
         console.log('_updatePredicate ', this.predicate);
         this._fireModelChanged('predicate', this.predicate);
     }
@@ -864,7 +874,7 @@ export class PbOddModelEditor extends LitElement {
     }
 
     _updateTemplate(ev) {
-        this.template = this.shadowRoot.getElementById('template').getSource();
+        this.template = this.shadowRoot.getElementById('template').value;
         this._fireModelChanged('template', this.template);
     }
 

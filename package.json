@@ -13,8 +13,8 @@
     "litelement"
   ],
   "scripts": {
-    "build": "npm run clean && npm run codemirror && rollup -c rollup.config.js",
-    "build:production": "npm run clean && npm run codemirror && rollup -c rollup.config.js --environment BUILD:production",
+    "build": "npm run clean && rollup -c rollup.config.js",
+    "build:production": "npm run clean && rollup -c rollup.config.js --environment BUILD:production",
     "start": "npm run build && npm run docs && es-dev-server",
     "test": "karma start",
     "test:watch": "karma start --auto-watch=true --single-run=false",
@@ -29,7 +29,6 @@
     "format": "npm run format:eslint && npm run format:prettier",
     "clean": "rimraf dist lib css images/leaflet images/openseadragon demo/build",
     "prepare": "npm run docs && npm run build:production",
-    "codemirror": "rollup -c codemirror.rollup.config.js",
     "semantic-release": "semantic-release"
   },
   "author": "Wolfgang Meier",
@@ -37,6 +36,7 @@
   "dependencies": {
     "@babel/runtime": "7.11.2",
     "@cwmr/paper-autocomplete": "^4.0.0",
+    "@jinntec/jinn-codemirror": "^1.6.3",
     "@lrnwebcomponents/es-global-bridge": "^2.7.10",
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
@@ -67,7 +67,6 @@
     "@vaadin/vaadin-upload": "^4.4.0",
     "@webcomponents/webcomponentsjs": "latest",
     "animejs": "^3.2.0",
-    "codemirror": "^5.58.1",
     "gridjs": "^5.0.2",
     "hotkeys-js": "^3.8.1",
     "i18next": "19.8.1",

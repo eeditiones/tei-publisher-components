@@ -7,10 +7,9 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@cwmr/paper-autocomplete/paper-autocomplete';
+import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
 
 import { cmpVersion } from './utils.js';
-import './pb-code-editor.js';
-
 import { get as i18n, translate } from "./pb-i18n.js";
 
 /**
@@ -41,6 +40,13 @@ export class PbOddParameterEditor extends LitElement {
                 align-self: center;
                 margin-top: 16px;
             }
+
+            .editor label {
+                margin-bottom:5px;
+                font-size: 12px;
+                font-weight: 400;
+                color: var(--paper-grey-500);
+            }
         `;
     }
 
@@ -51,12 +57,13 @@ export class PbOddParameterEditor extends LitElement {
             <paper-autocomplete id="combo" text="${this.name}" placeholder="${translate('odd.editor.model.param-name-placeholder')}" label="Name" 
                 .source="${this._currentParameters}"></paper-autocomplete>
 
-            <pb-code-editor id="editor"
-                        label="Parameter"
+            <div class="editor">
+                <label>Parameter</label>
+                <jinn-codemirror id="editor"
                         mode="xquery"
                         code="${this.value}"
-                        linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') ? 'modules/editor.xql' : 'api/lint'}"
-                        apiVersion="${this.apiVersion}"></pb-code-editor>
+                        linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') ? 'modules/editor.xql' : 'api/lint'}"></jinn-codemirror>
+            </div>
             <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}">${translate('odd.editor.model.set-param')}</paper-checkbox>
             <paper-icon-button @click="${this._delete}" icon="delete" title="delete this parameter"></paper-icon-button>
         </div>
@@ -165,14 +172,14 @@ export class PbOddParameterEditor extends LitElement {
         this.requestUpdate();
 
         this.shadowRoot.getElementById('combo').addEventListener('focused-changed', this._handleCodeChange.bind(this));
-        this.shadowRoot.getElementById('editor').addEventListener('code-changed', this._handleCodeChange.bind(this));
+        this.shadowRoot.getElementById('editor').addEventListener('update', this._handleCodeChange.bind(this));
     }
 
     refreshEditor() {
         // console.log('parameters refresh');
         const editor = this.shadowRoot.getElementById('editor');
         if (!editor) { return; }
-        editor.refresh();
+        // editor.refresh();
     }
 
 
@@ -193,7 +200,8 @@ export class PbOddParameterEditor extends LitElement {
 
     _handleCodeChange(e) {
         console.log('_handleCodeChange ', e);
-        this.value = this.shadowRoot.getElementById('editor').getSource();
+        this.value = this.shadowRoot.getElementById('editor').content || '';
+        console.log('value %s', this.value);
         this.name = this.shadowRoot.getElementById('combo').text;
         this.setParam = this.shadowRoot.getElementById('set').checked;
         this.dispatchEvent(new CustomEvent('parameter-changed', { composed: true, bubbles: true, detail: { name: this.name, value: this.value, set: this.setParam } }));

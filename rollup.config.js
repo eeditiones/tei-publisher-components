@@ -79,10 +79,6 @@ export default [
                         dest: './css/prismjs'
                     },
                     {
-                        src: './node_modules/codemirror/theme/*',
-                        dest: './css/codemirror'
-                    },
-                    {
                         src: './node_modules/leaflet/dist/leaflet-src.js',
                         dest: './lib'
                     },

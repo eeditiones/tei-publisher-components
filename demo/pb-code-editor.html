@@ -7,9 +7,12 @@
         <link rel="stylesheet" href="demo.css">
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-code-editor.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
+        <script type="module" src="../src/pb-lang.js"></script>
+        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
         <!--/scripts-->
     </head>
 
@@ -20,7 +23,11 @@
                     <style>
                     pb-code-editor { margin-bottom: 32px; }
                     </style>
-                    <pb-page>
+                    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
+                        <pb-lang label="language" selected="en">
+                            <paper-item value="de">Deutsch</paper-item>
+                            <paper-item value="en">English</paper-item>
+                        </pb-lang>
                         <!-- using old API endpoint for linter; old API is due for deprecation with Publisher 8
                             <pb-code-editor label="XQuery code, ambiance theme" code="for $i in (1, 2) return $i * 6" mode="xquery"
                             theme="ambiance"
@@ -35,8 +42,8 @@ font-decoration: underline;" mode="css" theme="oceanic-next"></pb-code-editor>
         &lt;param name="content" value="correspAction[@type=&apos;sent&apos;]"/&gt;
     &lt;/model&gt;
 &lt;/elementSpec&gt;' mode="xml" theme="ambiance"></pb-code-editor>
-                        <pb-code-editor label="LaTeX, lucario theme" code="\documentclass[10pt,a4paper,fromalign=right]{scrlttr2}" theme="lucario" mode="stex"></pb-code-editor>
-                        <pb-code-editor label="Empty editor, default theme" code=""></pb-code-editor>
+                        <pb-code-editor label="LaTeX, lucario theme" code="\documentclass[10pt,a4paper,fromalign=right]{scrlttr2}" theme="lucario" mode="stex"></pb-code-editor-->
+                        <pb-code-editor label="Empty editor, default theme" placeholder="mycomponent.info"></pb-code-editor>
                     </pb-page>
                 </template>
             </pb-demo-snippet>
