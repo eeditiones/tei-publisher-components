@@ -14,7 +14,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/color.js';
 import '@polymer/iron-collapse/iron-collapse.js';
-import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
+import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 
 import { cmpVersion } from './utils.js';
 import './pb-odd-rendition-editor.js';

@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
-import { get as i18n, translate } from './pb-i18n.js';
+import { translate } from './pb-i18n.js';
 import { pbMixin } from "./pb-mixin.js";
 
 
@@ -73,9 +73,9 @@ export class PbCodeEditor extends pbMixin(LitElement) {
         super.firstUpdated();
 
         this._editor = this.shadowRoot.getElementById('editor');
-        this._editor.addEventListener('update', () => {
-            this._setCode(this._editor.content);
-        })
+        // this._editor.addEventListener('update', () => {
+        //     this._setCode(this._editor.content);
+        // })
     }
 
     render() {
@@ -92,9 +92,8 @@ export class PbCodeEditor extends pbMixin(LitElement) {
         return this._editor.value;
     }
 
-    _setCode(value) {
-        this.code = value
-        this.dispatchEvent(new CustomEvent('code-changed', { composed: true, bubbles: true, detail: { code: this.code } }));
+    _setCode() {
+        this.dispatchEvent(new CustomEvent('code-changed', { composed: true, bubbles: true, detail: { code: this.getSource() } }));
     }
 
     refresh() {

@@ -23,7 +23,8 @@ export default [
             'src/pb-components-bundle.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
-            'src/pb-edit-app.js'
+            'src/pb-edit-app.js',
+            'src/pb-code-editor.js'
         ],
         output: {
             dir: 'dist',

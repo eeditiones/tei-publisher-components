@@ -7,7 +7,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/iron-icons.js';
 
-import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
+import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 
 
 /**

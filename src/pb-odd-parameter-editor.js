@@ -7,7 +7,7 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@cwmr/paper-autocomplete/paper-autocomplete';
-import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
+import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 
 import { cmpVersion } from './utils.js';
 import { get as i18n, translate } from "./pb-i18n.js";
