@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import "@jinntec/jinn-codemirror/dist/jinn-codemirror-bundle";
+import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 import { translate } from './pb-i18n.js';
 import { pbMixin } from "./pb-mixin.js";
 

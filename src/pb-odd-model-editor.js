@@ -511,7 +511,7 @@ export class PbOddModelEditor extends LitElement {
                                 <label>Template</label>
                                 <jinn-codemirror id="template"
                                                  code="${this.template}"
-                                                 mode="${this.output === 'latex' ? 'stex' : 'xml'}"
+                                                 mode="${this.output === 'latex' ? 'tex' : 'xml'}"
                                                  placeholder="${translate('odd.editor.model.template-placeholder')}"
                                                  @update="${this._updateTemplate}">
                                 </jinn-codemirror>
