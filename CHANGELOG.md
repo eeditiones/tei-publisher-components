@@ -1,3 +1,16 @@
+# [1.41.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.2...v1.41.0) (2022-12-30)
+
+
+### Bug Fixes
+
+* **pb-code-editor:** wrong import ([47bcbb3](https://github.com/eeditiones/tei-publisher-components/commit/47bcbb3c242ea8b7317c0a399d540692b0efb023))
+
+
+### Features
+
+* update pb-code-editor and pb-odd-editor to use codemirror 6 (instead of 5) as editor ([cc319ba](https://github.com/eeditiones/tei-publisher-components/commit/cc319baf322c9443a6282ffb0ddcf546369e9b40))
+* **pb-code-editor:** update to new @jinntec/jinn-codemirror based on codemirror 6 ([b1df9a3](https://github.com/eeditiones/tei-publisher-components/commit/b1df9a35197fa7a62a39013a85302f07d293c679))
+
 ## [1.40.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.1...v1.40.2) (2022-11-27)
 
 
