@@ -1,3 +1,10 @@
+## [1.41.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.0...v1.41.1) (2022-12-31)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** use correct editing mode for code editors ([9e6aa09](https://github.com/eeditiones/tei-publisher-components/commit/9e6aa09d861c3b22c294c7ca137f80473f3541ff))
+
 # [1.41.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.2...v1.41.0) (2022-12-30)
 
 
