@@ -65,7 +65,7 @@ export class PbOddRenditionEditor extends LitElement {
                 <jinn-codemirror
                     id="editor"
                     label="Rendition"
-                    code="${this.css}"
+                    code="${this.css || ''}"
                     mode="css"
                     @update="${this._handleCodeChange}"></jinn-codemirror>
             </div>

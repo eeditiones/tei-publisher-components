@@ -403,6 +403,26 @@ export class PbOddModelEditor extends LitElement {
     }
 
     render() {
+        let tmplSyntax;
+        switch (this.output) {
+            case 'web':
+            case 'epub':
+                tmplSyntax = 'html';
+                break;
+            case 'latex':
+                tmplSyntax = 'tex';
+                break;
+            case 'plain':
+                tmplSyntax = 'default';
+                break;
+            case 'fo':
+            case 'print':
+                tmplSyntax = 'xml';
+                break;
+            default:
+                tmplSyntax = 'html';
+                break;
+        }
         return html`
         <form>
             <header> 
@@ -511,9 +531,24 @@ export class PbOddModelEditor extends LitElement {
                                 <label>Template</label>
                                 <jinn-codemirror id="template"
                                                  code="${this.template}"
-                                                 mode="${this.output === 'latex' ? 'tex' : 'xml'}"
+                                                 mode="${tmplSyntax}"
                                                  placeholder="${translate('odd.editor.model.template-placeholder')}"
                                                  @update="${this._updateTemplate}">
+                                    <div slot="toolbar">
+                                        <paper-button data-mode="xml" data-command="selectElement" data-key="mod-e mod-s"
+                                            title="Select element around current cursor position">&lt;|></paper-button>
+                                        <paper-button data-mode="xml" data-command="encloseWith" data-key="mod-e mod-e"
+                                            title="Enclose selection in new element">&lt;...&gt;</paper-button>
+                                        <paper-button data-mode="xml" data-command="removeEnclosing" title="Remove enclosing tags" 
+                                            data-key="mod-e mod-r" class="sep">&lt;X></paper-button>
+                                        <paper-button data-mode="html" data-command="selectElement" data-key="mod-e mod-s"
+                                            title="Select element around current cursor position">&lt;|></paper-button>
+                                        <paper-button data-mode="html" data-command="encloseWith" data-key="mod-e mod-e"
+                                            title="Enclose selection in new element">&lt;...&gt;</paper-button>
+                                        <paper-button data-mode="html" data-command="removeEnclosing" title="Remove enclosing tags" 
+                                            data-key="mod-e mod-r" class="sep">&lt;X></paper-button>
+                                        <paper-button data-key="mod-e mod-p" data-command="snippet" data-params="[[\${_}]]" title="Insert template variable">[[...]]</paper-button>
+                                    </div>
                                 </jinn-codemirror>
                             </div>
                         </div>
@@ -874,7 +909,7 @@ export class PbOddModelEditor extends LitElement {
     }
 
     _updateTemplate(ev) {
-        this.template = this.shadowRoot.getElementById('template').value;
+        this.template = this.shadowRoot.getElementById('template').content;
         this._fireModelChanged('template', this.template);
     }
 
