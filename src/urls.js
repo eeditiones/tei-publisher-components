@@ -7,6 +7,31 @@ function log(...args) {
     console.log.apply(null, args);
 }
 
+/**
+ * Central class for tracking state. We distinguish between
+ * 
+ * 1. the initial state of the application as determined by the URL first opened in the browser
+ * 2. state changes in components occurring while the user interacts with the application or moves back in history
+ * 
+ * 1) is relevant if a user accesses a particular URL by following a link, entering an address into the location bar or 
+ * opening a bookmark. In this case the components on the page will be in a fresh, empty state. However, they may react
+ * to URL parameters and initiate specific properties of their state accordingly. Users expect that navigating to a given URL will 
+ * consistently result in the same display (i.e. restore a certain state). If users bookmark a specific page of a document shown in
+ * TEI Publisher's pb-view, they expect that the same page is displayed when they open the bookmark again. Thus the document path and 
+ * the page need to be tracked in the URL.
+ * 
+ * 2) applies while the user interacts with the application, i.e. triggers actions, which cause components to change state. Some
+ * actions may lead to a new page load, but many – like navigating pages in a `pb-view` – will only change the state of one or more components.
+ * From a user's point of view this should be irrelevant: moving back or forward in browser history should consistently restore the 
+ * previous or following state.
+ * 
+ * Components should thus comply with the following guidelines:
+ * 
+ * - if the component initializes itself, it should retrieve needed parameters from `registry.state`
+ * - it may call `registry.replace` to make sure that all parameters required to later restore its initial state are present in the current URL
+ * - it should register a listener with `registry.subscribe` to be informed when the user moves back in history (without reloading the page)
+ * - it must call `registry.commit` after changing its current state
+ */
 class Registry {
     
     constructor() {
