@@ -1,3 +1,10 @@
+## [1.41.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.1...v1.41.2) (2023-01-03)
+
+
+### Bug Fixes
+
+* **pb-link:** allow 'view' mode to be set via pb-link ([f08eb68](https://github.com/eeditiones/tei-publisher-components/commit/f08eb68942ae01e68d37be86f8bf421de37f0dca))
+
 ## [1.41.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.0...v1.41.1) (2022-12-31)
 
 
