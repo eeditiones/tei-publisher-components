@@ -10,8 +10,8 @@ function log(...args) {
 /**
  * Central class for tracking state. We distinguish between
  * 
- * 1. the initial state of the application as determined by the URL first opened in the browser
- * 2. state changes in components occurring while the user interacts with the application or moves back in history
+ * 1. the initial state of the application as determined by the URL opened in the browser
+ * 2. state changes in components occurring while the user interacts with the page
  * 
  * 1) is relevant if a user accesses a particular URL by following a link, entering an address into the location bar or 
  * opening a bookmark. In this case the components on the page will be in a fresh, empty state. However, they may react
