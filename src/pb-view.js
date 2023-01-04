@@ -437,7 +437,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
         if (this.onUpdate) {
             this.subscribeTo('pb-update', () => {
-                this._setState(registry.getState(this));
                 this._refresh();
             });
         }
