@@ -1,3 +1,10 @@
+# [1.42.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.2...v1.42.0) (2023-01-04)
+
+
+### Features
+
+* **pb-print-preview:** new component for a print CSS preview ([3222f08](https://github.com/eeditiones/tei-publisher-components/commit/3222f08f40ed2f5e3d4e03bbb7665bab35e1fff9))
+
 ## [1.41.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.1...v1.41.2) (2023-01-03)
 
 
