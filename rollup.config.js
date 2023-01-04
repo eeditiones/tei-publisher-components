@@ -24,7 +24,8 @@ export default [
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
-            'src/pb-code-editor.js'
+            'src/pb-code-editor.js',
+            'src/pb-print-preview.js'
         ],
         output: {
             dir: 'dist',
@@ -98,6 +99,10 @@ export default [
                     {
                         src: './node_modules/tom-select/dist/css/*.min.css',
                         dest: './css/tom-select'
+                    },
+                    {
+                        src: './src/assets/pagedjs/*.css',
+                        dest: './css/pagedjs'
                     }
                 ]
             })

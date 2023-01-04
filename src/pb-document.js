@@ -86,6 +86,10 @@ class PbDocument extends pbMixin(LitElement) {
         return this.path.replace(/^.*?([^\/]+)$/, '$1');
     }
 
+    getCollection() {
+        return this.path.replace(/^(.*?)\/[^\/]+$/, '$1');
+    }
+
     /**
      * Returns the full path to the document.
 
