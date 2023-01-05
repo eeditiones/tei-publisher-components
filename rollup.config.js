@@ -24,8 +24,7 @@ export default [
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
-            'src/pb-code-editor.js',
-            'src/pb-print-preview.js'
+            'src/pb-code-editor.js'
         ],
         output: {
             dir: 'dist',
@@ -103,6 +102,10 @@ export default [
                     {
                         src: './src/assets/pagedjs/*.css',
                         dest: './css/pagedjs'
+                    },
+                    {
+                        src: './node_modules/pagedjs/dist/paged.polyfill.js',
+                        dest: 'lib'
                     }
                 ]
             })
