@@ -1,3 +1,10 @@
+## [1.42.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.1...v1.42.2) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** use iframe for preview ([d8d93f2](https://github.com/eeditiones/tei-publisher-components/commit/d8d93f210cf70dfa837b4fc863ff49ecdd1d3ac8))
+
 ## [1.42.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.0...v1.42.1) (2023-01-05)
 
 
