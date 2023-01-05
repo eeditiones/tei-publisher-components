@@ -1,3 +1,10 @@
+## [1.42.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.0...v1.42.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** missing interface.cs ([aed8716](https://github.com/eeditiones/tei-publisher-components/commit/aed87160d8b133f0554db81245019e7df31f3277))
+
 # [1.42.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.2...v1.42.0) (2023-01-04)
 
 
