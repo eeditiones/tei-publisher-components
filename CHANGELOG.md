@@ -1,3 +1,10 @@
+## [1.42.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.2...v1.42.3) (2023-01-06)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** fix CORS issue with embedded iframe ([e070bf8](https://github.com/eeditiones/tei-publisher-components/commit/e070bf8c0db9a8c0511efdbe5f5e3062c9a4c141))
+
 ## [1.42.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.1...v1.42.2) (2023-01-05)
 
 
