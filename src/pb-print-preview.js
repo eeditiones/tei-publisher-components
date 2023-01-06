@@ -56,7 +56,13 @@ export class PbPrintPreview extends pbMixin(LitElement) {
         super.firstUpdated();
 
         this._iframe = this.shadowRoot.querySelector('iframe');
-        this._iframe.addEventListener('load', this._preview.bind(this));
+        this._iframe.addEventListener('load', () => {
+            if (this._iframe.src === 'about:blank') {
+                return;
+            }
+            this._iframe.className = '';
+            this.emitTo('pb-end-update');
+        });
 
         PbPrintPreview.waitOnce('pb-page-ready', () => {
             this.refresh();
@@ -80,13 +86,17 @@ export class PbPrintPreview extends pbMixin(LitElement) {
 
         const doc = this.getDocument();
         const params = new URLSearchParams();
-        params.set('wc', false);
+        params.set('wc', 'false');
         if (doc.odd) {
             params.set('odd', `${doc.odd}.odd`);
         }
-        params.set('base', `${this.getEndpoint()}/${doc.getCollection()}`);
-
+        params.set('base', `${this.getEndpoint()}/${doc.getCollection()}/`);
+        if (!this.raw) {
+            params.set('script', resolveURL('../lib/paged.polyfill.js'));
+        }
+        this._getCustomStyles().forEach((href) => params.append('style', href));
         this.url = `${this.getEndpoint()}/api/document/${encodeURIComponent(doc.path)}/print?${params.toString()}`;
+
         this._iframe.src = this.url;
     }
 
@@ -96,51 +106,15 @@ export class PbPrintPreview extends pbMixin(LitElement) {
         `;
     }
 
-    _preview() {
-        const idoc = this._iframe.contentDocument;
-        if (!idoc.body.firstElementChild) {
-            return;
-        }
-        
-        this.emitTo('pb-end-update');
-        idoc.body.className = 'content';
-
-        const customStyles = this._getCustomStyles();
-        const firstLink = idoc.head.querySelector('link');
-        if (firstLink) {
-            customStyles.reverse();
-        }
-        customStyles.forEach((style) => {
-            const link = idoc.createElement('link');
-            link.rel = 'Stylesheet';
-            link.type = 'text/css';
-            link.href = style;
-            if (firstLink) {
-                firstLink.before(link);
-            } else {
-                idoc.head.appendChild(link);
-            }
-        });
-
-        if (!this.raw) {
-            const script = idoc.createElement('script');
-            script.src = resolveURL('../lib/paged.polyfill.js');
-            idoc.head.appendChild(script);
-        }
-        this._iframe.className = '';
-    }
-
     _getCustomStyles() {
         let customStyles = [];
-        if (this.getEndpoint()) {
-            const doc = this.getDocument();
-            if (this.styles) {
-                customStyles = this.styles.split(/\s*,\s*/).map((href) => 
-                    this.toAbsoluteURL(href, this.getEndpoint())
-                );
-            }
+        if (this.styles) {
+            customStyles = this.styles.split(/\s*,\s*/);
         }
-        customStyles.push(resolveURL('../css/pagedjs/interface.css'));
+
+        if (!this.raw) {
+            customStyles.push(resolveURL('../css/pagedjs/interface.css'));
+        }
         return customStyles;
     }
 
