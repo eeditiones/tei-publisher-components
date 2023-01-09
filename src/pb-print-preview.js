@@ -28,7 +28,8 @@ export class PbPrintPreview extends pbMixin(LitElement) {
             },
             /**
              * The generated API URL from which the HTML content will be loaded.
-             * Readonly.
+             * Readonly. This excludes the paged.js styles and scripts, so you can
+             * use the URL with other tools.
              */
             url: {
                 type: String,
@@ -86,18 +87,21 @@ export class PbPrintPreview extends pbMixin(LitElement) {
 
         const doc = this.getDocument();
         const params = new URLSearchParams();
-        params.set('wc', 'false');
         if (doc.odd) {
             params.set('odd', `${doc.odd}.odd`);
         }
         params.set('base', `${this.getEndpoint()}/${doc.getCollection()}/`);
-        if (!this.raw) {
-            params.set('script', resolveURL('../lib/paged.polyfill.js'));
-        }
         this._getCustomStyles().forEach((href) => params.append('style', href));
-        this.url = `${this.getEndpoint()}/api/document/${encodeURIComponent(doc.path)}/print?${params.toString()}`;
-
-        this._iframe.src = this.url;
+        const urlParams = params.toString();
+        this.url = `${this.getEndpoint()}/api/document/${encodeURIComponent(doc.path)}/print?${urlParams}`;
+        
+        const iParams = new URLSearchParams(urlParams);
+        iParams.set('wc', 'true');
+        if (!this.raw) {
+            iParams.set('script', resolveURL('../lib/paged.polyfill.js'));
+            iParams.append('style', resolveURL('../css/pagedjs/interface.css'));
+        }
+        this._iframe.src = `${this.getEndpoint()}/api/document/${encodeURIComponent(doc.path)}/print?${iParams.toString()}`;
     }
 
     render() {
@@ -110,10 +114,6 @@ export class PbPrintPreview extends pbMixin(LitElement) {
         let customStyles = [];
         if (this.styles) {
             customStyles = this.styles.split(/\s*,\s*/);
-        }
-
-        if (!this.raw) {
-            customStyles.push(resolveURL('../css/pagedjs/interface.css'));
         }
         return customStyles;
     }
