@@ -1,3 +1,10 @@
+## [1.42.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.3...v1.42.4) (2023-01-09)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** reveal raw URL without paged.js in url attribute ([0c90240](https://github.com/eeditiones/tei-publisher-components/commit/0c9024046a3b13a12af17af5e26ce5cb04c0ea7e))
+
 ## [1.42.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.2...v1.42.3) (2023-01-06)
 
 
