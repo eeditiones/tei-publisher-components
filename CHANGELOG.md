@@ -1,3 +1,10 @@
+## [1.42.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.4...v1.42.5) (2023-01-10)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** update to jinn-codemirror 1.11.2 ([ac912c4](https://github.com/eeditiones/tei-publisher-components/commit/ac912c44943917b26b259c249233ae7a1e354dce))
+
 ## [1.42.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.3...v1.42.4) (2023-01-09)
 
 
