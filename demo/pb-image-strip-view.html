@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-document Demo</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-document.js"></script>
+    <script type="module" src="../src/pb-view.js"></script>
+    <script type="module" src="../src/pb-facsimile.js"></script>
+    <script type="module" src="../src/pb-image-strip.js"></script>
+    <script type="module" src="../src/pb-facs-link.js"></script>
+    <script type="module" src="../src/pb-events.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+            pb-facsimile {
+                flex: 1 0;
+                min-width: 400px;
+                --pb-facsimile-border: 4px solid rgba(0, 128, 90, 0.5);
+                margin-right: 20px;
+            }
+
+            main > div {
+                display: flex;
+                height: 70vh;
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+            [slot="after"] {
+                margin-top: 5px;
+                padding-top: 10px;
+                border-top: 1px solid #606060;
+            }
+            [slot="before"] {
+                padding-bottom: 10px;
+                margin-bottom: 5px;
+                border-bottom: 1px solid #606060;
+            }
+            </style>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <!-- Display facsimile -->
+                <pb-document id="document1" path="test/cortes_to_dantiscus_Mexico.xml" odd="dantiscus"></pb-document>
+                <main>
+                    <pb-view id="view1" src="document1" view="page"></pb-view>
+                    <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+                            default-zoom-level="0" show-navigator
+                            show-navigation-control show-home-control show-rotation-control>
+                        <div slot="after">Status: <span id="status"></span></div>
+                    </pb-facsimile>
+                    <pb-image-strip base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"></pb-image-strip>
+                </main>
+                <script>
+                    window.addEventListener('load', () => {
+                        const viewer = document.querySelector('pb-facsimile');
+                        const status = document.getElementById('status');
+                        window.pbEvents.subscribe('pb-facsimile-status', null, (ev) => {
+                            if (ev.detail.status === 'fail') {
+                                viewer.style.visibility = 'hidden';
+                            } else {
+                                viewer.style.visibility = 'visible';
+                                status.innerHTML = ev.detail.status;
+                            }
+                        });
+                    });
+                </script>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

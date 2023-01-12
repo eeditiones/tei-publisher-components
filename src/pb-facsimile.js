@@ -165,7 +165,11 @@ export class PbFacsimile extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo('pb-start-update', this._clearAll.bind(this));
-        this.subscribeTo('pb-update', this._fragmentUpdateListener.bind(this));
+        this.subscribeTo('pb-load-facsimile', (e) => {
+            const { url } = e.detail
+            this._facsimiles.push(url)
+            this._facsimileObserver()
+        });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
     }
 
@@ -239,7 +243,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
         this.viewer.addHandler('open', () => {
             this.resetZoom();
-            this.emitTo('pb-facsimile-status', { status: 'loaded' });
+            this.emitTo('pb-facsimile-status', { status: 'loaded', facsimiles: this._facsimiles });
         });
         this.viewer.addHandler('open-failed', (ev) => {
             console.error('<pb-facsimile> open failed: %s', ev.message);
@@ -281,22 +285,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.resetZoom();
         this.viewer.clearOverlays();
         this.facsimiles = [];
-    }
-
-    _fragmentUpdateListener(event) {
-        this.facsimiles = this._getFacsimilesFromData(event.detail.root)
-        this._facsimileObserver();
-    }
-
-    _getFacsimilesFromData(elem) {
-        const facsimiles = [];
-        elem.querySelectorAll('pb-facs-link').forEach(cb => {
-            if (cb.facs) {
-                facsimiles.push(cb.facs);
-            }
-        });
-        console.log('<pb-facsimile> _getFacsimilesFromData', facsimiles);
-        return facsimiles;
     }
 
     _showAnnotationListener(event) {
