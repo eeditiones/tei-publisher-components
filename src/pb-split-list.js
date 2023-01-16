@@ -142,7 +142,7 @@ export class PbSplitList extends pbMixin(LitElement) {
                     html`
                         <a part="${this.selected === cat.category ? 'active-category' : 'category'}" href="#${cat.category}" title="${cat.count}" class="${this.selected === cat.category ? 'active' : ''}"
                             @click="${(ev) => this._selectCategory(ev, cat.category)}">
-                            ${cat.category}
+                            ${unsafeHTML(cat.category)}
                         </a>
                     `
                 )
