@@ -362,7 +362,6 @@ export class PbOddModelEditor extends LitElement {
 
         this.outputs = ["",
             "web",
-            "printcss",
             "print",
             "epub",
             "fo",
