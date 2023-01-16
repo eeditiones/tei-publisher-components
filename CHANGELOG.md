@@ -1,3 +1,12 @@
+## [1.42.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.5...v1.42.6) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** Expose underlying map object ([0660fc0](https://github.com/eeditiones/tei-publisher-components/commit/0660fc05e64d419750f708d3584e928173a6c3b6))
+* **pb-odd-editor:** output mode "printcss" is now called "print" ([5075713](https://github.com/eeditiones/tei-publisher-components/commit/507571321e1e5d51c5e642613d843300eb12d0e6))
+* **pb-split-list:** allow HTML in category names ([b55e254](https://github.com/eeditiones/tei-publisher-components/commit/b55e254c656bcf8a037efedc861d4a853df1fd7a))
+
 ## [1.42.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.4...v1.42.5) (2023-01-10)
 
 
