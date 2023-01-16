@@ -1,3 +1,10 @@
+## [1.42.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.6...v1.42.7) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-split-list:** allow category name to be internationalized ([ffafde4](https://github.com/eeditiones/tei-publisher-components/commit/ffafde4ed9cf8dd467690cf9ed5477de5ab9d368))
+
 ## [1.42.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.5...v1.42.6) (2023-01-16)
 
 
