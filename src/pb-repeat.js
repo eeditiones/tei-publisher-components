@@ -82,7 +82,11 @@ export class PbRepeat extends pbMixin(LitElement) {
         const wrapper = document.createElement('div');
         wrapper.appendChild(clone);
         wrapper.querySelectorAll('[name]').forEach(input => {
-            const name = `${input.name}[${idx}]`;
+            //during inicialization of the default first instance
+            // name property is not available (defined), 
+            // but can be reached as the attribute value
+            // see https://github.com/eeditiones/tei-publisher-components/issues/29
+            const name = (input.name === undefined) ? `${input.attributes.getNamedItem("name").nodeValue}[${idx}]` : `${input.name}[${idx}]`;
             if (params && params[name]) {
                 if (input.type === 'checkbox' || input.type === 'radio') {
                     input.checked = params[name] === input.value;
