@@ -1,3 +1,10 @@
+## [1.43.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.0...v1.43.1) (2023-01-18)
+
+
+### Bug Fixes
+
+* **theming:** try loading theme css from library as well as endpoint; make more components themable. ([3bf8848](https://github.com/eeditiones/tei-publisher-components/commit/3bf88485c4de2724b436a33bf31ab2211c44bfe7))
+
 # [1.43.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.7...v1.43.0) (2023-01-18)
 
 
