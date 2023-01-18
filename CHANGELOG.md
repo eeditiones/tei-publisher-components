@@ -1,3 +1,10 @@
+# [1.43.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.7...v1.43.0) (2023-01-18)
+
+
+### Features
+
+* add support for component theming ([f618127](https://github.com/eeditiones/tei-publisher-components/commit/f6181279a25476e7b6e1494d774c54dc6e2ee236))
+
 ## [1.42.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.6...v1.42.7) (2023-01-16)
 
 
