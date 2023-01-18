@@ -4,6 +4,7 @@ import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import { resolveURL, getCSSProperty } from './utils.js';
+import { themableMixin } from "./theming.js";
 
 const PRISM_THEMES = new Map();
 
@@ -37,7 +38,7 @@ function loadTheme(theme) {
  * @cssprop [--pb-code-highlight-white-space=pre] - configures line wrapping
  * @cssprop [--pb-code-highlight-theme=default] - configures the default theme to be used
  */
-export class PbCodeHighlight extends LitElement {
+export class PbCodeHighlight extends themableMixin(LitElement) {
     static get properties() {
         return {
             /**

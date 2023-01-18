@@ -22,8 +22,8 @@
                         --pb-code-highlight-theme: "solarizedlight";
                     }
                 </style>
-                <pb-page>
-                    <pb-code-highlight language="xquery" line-numbers>
+                <pb-page theme="components.css">
+                    <pb-code-highlight class="code-white-bg" language="xquery" line-numbers>
                         for $i in $root//tei:placeName
                         order by $i descending
                         return

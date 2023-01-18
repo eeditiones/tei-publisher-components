@@ -5,6 +5,7 @@ import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { loadStylesheet } from "./theming.js";
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 
@@ -25,7 +26,7 @@ let _instance;
  * @fires pb-i18n-language - when received, changes the language to the one passed in the event and proceeds to pb-i18-update
  * @fires pb-toggle - when received, dispatch state changes to the elements on the page (see `pb-toggle-feature`, `pb-select-feature`)
  */
-class PbPage extends pbMixin(LitElement) {
+export class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
         return {
@@ -130,6 +131,9 @@ class PbPage extends pbMixin(LitElement) {
             unresolved: {
                 type: Boolean,
                 reflect: true
+            },
+            theme: {
+                type: String
             }
         };
     }
@@ -140,6 +144,7 @@ class PbPage extends pbMixin(LitElement) {
         this.endpoint = ".";
         this.apiVersion = undefined;
         this.requireLanguage = false;
+        this.theme = null;
         this._localeFallbacks = [];
         this._i18nInstance = null;
 
@@ -191,6 +196,12 @@ class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
+        if (this.theme) {
+            const url = this.toAbsoluteURL(this.theme, this.endpoint);
+            console.log('<pb-page> Loading component theme stylesheet from %s', url);
+            this._themeSheet = await loadStylesheet(url);
+        }
+
         // try to figure out what version of TEI Publisher the server is running
         if (!this.apiVersion) {
             // first check if it has a login endpoint, i.e. runs a version < 7
@@ -204,12 +215,9 @@ class PbPage extends pbMixin(LitElement) {
                 return fetch(`${this.endpoint}/api/version`)
                     .then((res2) => res2.json());
             })
-            .catch((error) => {
-                if (error.response.status === 404) {
-                    return fetch(`${this.endpoint}/api/version`)
-                        .then((res2) => res2.json());
-                }
-            });
+            .catch(() => fetch(`${this.endpoint}/api/version`)
+                    .then((res2) => res2.json())
+            );
             
             if (json) {
                 this.apiVersion = json.api;
@@ -345,6 +353,10 @@ class PbPage extends pbMixin(LitElement) {
                 m = regex.exec(targets);
             }
         });
+    }
+
+    get stylesheet() {
+        return this._themeSheet;
     }
 
     /**

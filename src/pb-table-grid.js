@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { Grid } from "gridjs";
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { loadStylesheet, importStyles } from "./theming.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/iron-icons';
 import '@polymer/iron-form';
@@ -91,7 +92,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
         this.fixedHeader = false;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', (ev) => {
@@ -112,6 +113,14 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 this.height = 'auto';
             }
         }
+
+        const gridjsTheme = await loadStylesheet(`${resolveURL(this.cssPath)}/mermaid.min.css`);
+        const theme = importStyles(this);
+        const sheets = [...this.shadowRoot.adoptedStyleSheets, gridjsTheme];
+        if (theme) {
+            sheets.push(theme);
+        }
+        this.shadowRoot.adoptedStyleSheets = sheets;
     }
 
     firstUpdated() {
@@ -180,9 +189,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     }
 
     render() {
-        const themes = resolveURL(this.cssPath);
         return html`
-            <link href="${themes}/mermaid.min.css" rel="stylesheet">
             ${ 
                 this.search ? html`
                     <iron-form id="form">

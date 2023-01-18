@@ -1,0 +1,12 @@
+.table-grid thead th.gridjs-th {
+    color: #CC9900;
+    text-align: center;
+}
+
+.code-white-bg pre {
+    background-color: white;
+}
+
+.code-white-bg .token.keyword {
+    color: purple;
+}

@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
+import { themableMixin } from "./theming.js";
 
 /**
  * Implements a list which is split into different categories 
@@ -23,7 +24,7 @@ import { pbMixin } from './pb-mixin.js';
  * @fires pb-start-update - sent before the element sends the request to the server
  * @fires pb-end-update - sent after new content has been received
  */
-export class PbSplitList extends pbMixin(LitElement) {
+export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             /**

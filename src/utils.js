@@ -1,4 +1,3 @@
-
 export function resolveURL(relPath) {
     const src = document.querySelector('script[src*=pb-components]');
     if (src) {
