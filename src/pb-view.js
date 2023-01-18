@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { pbMixin } from "./pb-mixin.js";
+import { pbMixin, waitOnce } from "./pb-mixin.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { loadStylesheets, themableMixin } from "./theming.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -57,7 +58,7 @@ import '@polymer/paper-dialog-scrollable';
  * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
  * @fires pb-toggle - When received, toggle content properties
  */
-export class PbView extends pbMixin(LitElement) {
+export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     static get properties() {
         return {
@@ -362,6 +363,15 @@ export class PbView extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
+        if (this.loadCss) {
+            waitOnce('pb-page-ready', () => {
+                loadStylesheets([this.toAbsoluteURL(this.loadCss)])
+                .then((theme) => {
+                    this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+                });
+            });
+        }
 
         if (this.infiniteScroll) {
             this.columnSeparator = null;
@@ -905,8 +915,6 @@ export class PbView extends pbMixin(LitElement) {
     }
 
     _updateStyles() {
-        const links = [];
-
         let link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
@@ -915,17 +923,7 @@ export class PbView extends pbMixin(LitElement) {
         } else {
             link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
         }
-        links.push(link);
-
-        if (this.loadCss) {
-            link = document.createElement('link');
-            link.setAttribute('rel', 'stylesheet');
-            link.setAttribute('type', 'text/css');
-            link.setAttribute('href', this.toAbsoluteURL(this.loadCss));
-            links.push(link);
-        }
-
-        this._style = links;
+        this._style = link;
     }
 
     _fixLinks(content) {

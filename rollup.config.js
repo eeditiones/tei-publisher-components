@@ -106,6 +106,10 @@ export default [
                     {
                         src: './node_modules/pagedjs/dist/paged.polyfill.js',
                         dest: 'lib'
+                    },
+                    {
+                        src: './src/assets/components.css',
+                        dest: 'css'
                     }
                 ]
             })

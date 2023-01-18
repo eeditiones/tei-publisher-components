@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { Grid } from "gridjs";
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
-import { loadStylesheet, importStyles } from "./theming.js";
+import { loadStylesheets, importStyles } from "./theming.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/iron-icons';
 import '@polymer/iron-form';
@@ -114,7 +114,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
             }
         }
 
-        const gridjsTheme = await loadStylesheet(`${resolveURL(this.cssPath)}/mermaid.min.css`);
+        const gridjsTheme = await loadStylesheets([`${resolveURL(this.cssPath)}/mermaid.min.css`]);
         const theme = importStyles(this);
         const sheets = [...this.shadowRoot.adoptedStyleSheets, gridjsTheme];
         if (theme) {

@@ -5,7 +5,7 @@ import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
-import { loadStylesheet } from "./theming.js";
+import { loadStylesheets } from "./theming.js";
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 
@@ -196,11 +196,14 @@ export class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
+        const stylesheetURLs = [
+            resolveURL('../css/components.css')
+        ];
         if (this.theme) {
-            const url = this.toAbsoluteURL(this.theme, this.endpoint);
-            console.log('<pb-page> Loading component theme stylesheet from %s', url);
-            this._themeSheet = await loadStylesheet(url);
+            stylesheetURLs.push(this.toAbsoluteURL(this.theme, this.endpoint));
         }
+        console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
+        this._themeSheet = await loadStylesheets(stylesheetURLs);
 
         // try to figure out what version of TEI Publisher the server is running
         if (!this.apiVersion) {

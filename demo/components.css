@@ -4,9 +4,23 @@
 }
 
 .code-white-bg pre {
-    background-color: white;
+    background-color: darkseagreen;
+}
+
+.code-white-bg code {
+    font-family: 'Arial', Arial, Helvetica, sans-serif;
 }
 
 .code-white-bg .token.keyword {
     color: purple;
+}
+
+@media (min-width: 1024px) {
+    .code-white-bg pre {
+        background-color: white;
+    }
+}
+
+pb-browse-docs .toolbar > div {
+    display: none;
 }
