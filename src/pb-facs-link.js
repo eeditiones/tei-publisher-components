@@ -47,10 +47,16 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        this.emitTo('pb-load-facsimile', {
-            url: this.getImage(),
-            element: this
-        })
+
+        if (!this.waitFor) {
+            this.waitFor = 'pb-facsimile,pb-image-strip';
+        }
+        this.wait(() => {
+            this.emitTo('pb-load-facsimile', {
+                url: this.getImage(),
+                element: this
+            });
+        });
     }
 
     getImage() {
