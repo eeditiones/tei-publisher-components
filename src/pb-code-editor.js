@@ -9,7 +9,8 @@ import { pbMixin } from "./pb-mixin.js";
  * [@jinntec/jinn-codemirror](https://github.com/JinnElements/jinn-codemirror),
  * mainly for backwards compatibility.
  *
- * @demo demo/pb-code-editor.html
+ * @deprecated directly use `jinn-codemirror` instead, which is included in the tei-publisher-components 
+ * bundle.
  */
 export class PbCodeEditor extends pbMixin(LitElement) {
 
