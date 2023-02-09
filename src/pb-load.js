@@ -131,7 +131,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.event = 'pb-load';
         this.loaded = false;
         this.language = null;
-        this.noCredentials = true;
+        this.noCredentials = false;
         this.silent = false;
     }
 
@@ -391,6 +391,8 @@ export class PbLoad extends pbMixin(LitElement) {
         // Try to determine number of pages and current position
         // Search for data-pagination-* attributes first and if they
         // can't be found, check HTTP headers
+        // 
+        // However, if noCredentials is set, we won't be able to access the headers
         function getPaginationParam(type, noHeaders) {
             const elem = content.querySelector(`[data-pagination-${type}]`);
             if (elem) {
