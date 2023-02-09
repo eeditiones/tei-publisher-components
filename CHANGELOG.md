@@ -1,3 +1,10 @@
+## [1.43.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.1...v1.43.2) (2023-02-09)
+
+
+### Bug Fixes
+
+* **pb-load:** wrong initial setting for noCredentials broke pagination ([6433e07](https://github.com/eeditiones/tei-publisher-components/commit/6433e078900d713b6f489e54850ffcb9bdc08163))
+
 ## [1.43.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.0...v1.43.1) (2023-01-18)
 
 
