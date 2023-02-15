@@ -1,3 +1,10 @@
+## [1.43.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.2...v1.43.3) (2023-02-15)
+
+
+### Bug Fixes
+
+* **pb-popover:** add property to stop propagation, thus avoiding multiple nested pb-popover to all appear at once ([d015797](https://github.com/eeditiones/tei-publisher-components/commit/d015797084838f9d9007f6bb47a3af9313b7622a))
+
 ## [1.43.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.1...v1.43.2) (2023-02-09)
 
 
