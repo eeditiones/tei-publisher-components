@@ -79,6 +79,8 @@ export function loadTippyStyles(root, theme) {
  * Use this to apply a specific style to certain popovers, but not others.
  * @prop {String} remote - An optional URL to asynchronously load the popover's content from. Content will
  * be loaded after the popover is displayed. The downloaded HTML content will replace the text set via the alternate slot.
+ * @prop {Boolean} stopPropagation - If you have nested pb-popover, set this property to
+ * only show the innermost popover when triggered
  * 
  * @slot default - the content to show for the trigger. If not specified, this will fall back to the unnamed slot.
  * @slot alternate - the content to show in the popup
@@ -126,6 +128,10 @@ export class PbPopover extends pbMixin(LitElement) {
             },
             remote: {
                 type: String
+            },
+            stopPropagation: {
+                type: Boolean,
+                attribute: 'stop-propagation'
             }
         };
     }
@@ -139,6 +145,7 @@ export class PbPopover extends pbMixin(LitElement) {
         this.placement = null;
         this.fallbackPlacement = null;
         this.popupClass = null;
+        this.stopPropagation = false;
         this._tippy = null;
         this._content = null;
     }
@@ -297,6 +304,11 @@ export class PbPopover extends pbMixin(LitElement) {
                 hideOnClick: false,
                 trigger: this.trigger
             };
+            if (this.stopPropagation) {
+                options.onTrigger = (instance, ev) => {
+                    ev.stopPropagation();
+                }
+            }
             if (this.persistent) {
                 options.onClickOutside = (instance, ev) => {
                     instance.hideWithInteractivity(ev);
@@ -329,7 +341,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 } else {
                     instance.setContent(this._getContent());
                 }
-                this.emitTo('pb-popover-show', { source: this });
+                this.emitTo('pb-popover-show', { source: this, popup: instance });
             };
 
             this._tippy = tippy(target, options);
