@@ -146,7 +146,7 @@ export class PbEditApp extends pbMixin(LitElement) {
                         <legend>${translate('document.selectODD')}</legend>
                         ${ this.odds.map(odd => html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`)}
                     </fieldset>
-                    <paper-input name="uri" type="url" required placeholder="http://exist-db.org/apps/my-simple-app"
+                    <paper-input name="uri" type="url" required placeholder="https://e-editiones.org/apps/my-simple-app"
                         label="${translate('appgen.uri')}" auto-validate></paper-input>
                     <paper-input id="abbrev" name="abbrev" pattern="[a-zA-Z0-9-_]+" required placeholder="${translate('appgen.abbrev.placeholder')}"
                         label="${translate('appgen.abbrev.label')}" auto-validate></paper-input>
