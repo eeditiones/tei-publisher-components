@@ -21,6 +21,9 @@ export class PbFacsLink extends pbMixin(LitElement) {
             label: {
                 type: String
             },
+            order: {
+                type: Number
+            },
             /** 
              * Type of event which should trigger the facsimile to display. 
              * Either 'click' or 'mouseover' (default). */
@@ -43,6 +46,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         super();
         this.trigger = 'mouseover';
         this.label = '';
+        this.order = 0;
     }
 
     connectedCallback() {
@@ -65,6 +69,10 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
     getLabel() {
         return this.label
+    }
+
+    getOrder() {
+        return this.order
     }
 
     firstUpdated() {

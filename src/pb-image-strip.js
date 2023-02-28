@@ -53,7 +53,10 @@ export class PbImageStrip extends pbMixin(LitElement) {
             const url = element.getImage()
             if (this.urls.has(url)) { return }
             this.urls.add(url)
-            this.items.push(element)
+            const oldItems = this.items
+            oldItems.push(element)
+            oldItems.sort((a, b) => a.getOrder() - b.getOrder())
+            this.items = oldItems
             this.requestUpdate()
         });
     }
