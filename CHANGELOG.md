@@ -1,3 +1,10 @@
+## [1.43.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.4...v1.43.5) (2023-03-01)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** fix editor issues by updating to jinn-codemirror 1.11.6 ([5ada4b8](https://github.com/eeditiones/tei-publisher-components/commit/5ada4b81d20a638d0e6e3b1781436ff2b6cf9dca))
+
 ## [1.43.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.3...v1.43.4) (2023-02-27)
 
 
