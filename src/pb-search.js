@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox';
@@ -72,6 +73,16 @@ export class PbSearch extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', this._doSearch.bind(this));
+
+        registry.subscribe(this, (state) => {
+            this.value = state.query;
+            if (this.submitOnLoad) {
+                this.emitTo('pb-load', {
+                    "url": this.action,
+                    "params": state
+                });
+            }
+        });
     }
 
     firstUpdated() {
@@ -93,7 +104,8 @@ export class PbSearch extends pbMixin(LitElement) {
         });
 
         if (this.submitOnLoad) {
-            const params = this.getParameters();
+            const params = registry.state;
+            registry.replace(this, params);
             this.emitTo('pb-load', {
                 "url": this.action,
                 "params": params
@@ -176,8 +188,7 @@ export class PbSearch extends pbMixin(LitElement) {
         if (this.redirect) {
             window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
-            this.setParameters(json);
-            this.pushHistory('search');
+            registry.commit(this, json);
             // always start on first result after submitting new search
             json.start = 1;
             this.emitTo('pb-load', {
