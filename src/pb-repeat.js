@@ -1,5 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import '@polymer/iron-icons';
 import '@polymer/paper-icon-button';
 
@@ -42,7 +43,7 @@ export class PbRepeat extends pbMixin(LitElement) {
 
         this.template = this.querySelector('template');
 
-        const params = this.getParameters();
+        const params = registry.state;
         this._computeInitial(params);
         if (this._instances.length === 0) {
             for (let i = 0; i < this.initial; i++) {
