@@ -7,6 +7,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
 import "@polymer/iron-ajax";
 import "web-animations-js";
 import "@polymer/neon-animation";
+import {registry} from "./urls.js";
 
 /**
  * `pb-select-odd`: Switch between available ODDs.
@@ -15,7 +16,7 @@ import "@polymer/neon-animation";
  *
  * @fires pb-refresh - Fires a refresh event to subscribed views after a different ODD has been selected for display.
  * @fires pb-update - When received, resets the ODD selected to the one passed in the event
- * 
+ *
  */
 export class PbSelectOdd extends pbMixin(LitElement) {
     static get properties() {
@@ -66,7 +67,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
     render() {
         return html`
             <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}">
-                <paper-listbox id="odds" slot="dropdown-content" class="dropdown-content" selected="${this.odd}" 
+                <paper-listbox id="odds" slot="dropdown-content" class="dropdown-content" selected="${this.odd}"
                     attr-for-selected="value" @selected-item-changed="${this._selected}">
                     ${this.odds.map((item) => html`<paper-item value="${item.name}">${item.label}</paper-item>`)}
                 </paper-listbox>
@@ -106,8 +107,8 @@ export class PbSelectOdd extends pbMixin(LitElement) {
         if (doc) {
             doc.odd = this.odd;
         }
-        this.setParameter('odd', this.odd + '.odd');
-        this.pushHistory('changed odd', { odd: this.odd });
+        registry.commit(this,{odd: this.odd});
+
         this.emitTo('pb-refresh', {
             odd: this.odd
         });
