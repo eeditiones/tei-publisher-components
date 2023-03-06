@@ -46,7 +46,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         super();
         this.trigger = 'mouseover';
         this.label = '';
-        this.order = 0;
+        this.order = Number.POSITIVE_INFINITY;
         this.waitFor = 'pb-facsimile,pb-image-strip';
         this.default = '';
     }
@@ -107,6 +107,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
     _trigger() {
         console.log("<facs-link> %s %o", this.facs, this.coordinates);
         this.emitTo('pb-show-annotation', {
+            element: this,
             file: this.facs,
             coordinates: this.coordinates
         });

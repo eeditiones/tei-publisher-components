@@ -49,20 +49,25 @@ export class PbImageStrip extends pbMixin(LitElement) {
             this.requestUpdate(this.items)
         });
         this.subscribeTo('pb-load-facsimile', e => {
-            const { element } = e.detail
+            const { element, order } = e.detail
             const url = element.getImage()
             if (this.urls.has(url)) { return }
+
             this.urls.add(url)
-            const oldItems = this.items
-            oldItems.push(element)
-            oldItems.sort((a, b) => a.getOrder() - b.getOrder())
-            this.items = oldItems
+            const itemOrder = this.items.map(item => item.getOrder())  
+            const insertAt = itemOrder.reduce((result, next, index) => {
+                if (order < next) return result;
+                if (order === next) return index;
+                return index + 1;
+            }, 0)
+            
+            this.items.splice(insertAt, 0, element)
             this.requestUpdate()
         });
     }
 
-    showIt(item) {
-        this.emitTo('pb-show-annotation', { file: item.getImage() })
+    showIt(element) {
+        this.emitTo('pb-show-annotation', { file: element.getImage(), element })
     }
 
     renderItem(item) {
