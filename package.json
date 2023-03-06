@@ -30,7 +30,7 @@
     "clean": "rimraf dist lib css images/leaflet images/openseadragon demo/build docs",
     "prepare": "npm run docs && npm run build:production",
     "semantic-release": "semantic-release",
-    "gh-pages": "npm run build:production && node gh-pages.js"
+    "gh-pages": "node gh-pages.js"
   },
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",

@@ -8,7 +8,9 @@ const json = JSON.parse(pkg);
 if (!fs.existsSync('docs')) {
     fs.mkdirSync('docs');
 }
-copy('dist', path.join('docs', json.version));
+const dir = path.join('docs', json.version);
+console.log('[gh-pages] Copying dist to %s', dir);
+copy('dist', dir);
 
 const index = fs.readFileSync(path.join('demo', 'redirect.html'), 'utf-8');
 const updated = index.toString().replace(/\$version/, json.version);
