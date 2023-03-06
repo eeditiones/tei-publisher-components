@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import './pb-panel.js';
+import {registry} from "./urls.js";
 
 /**
  * A component to create a column layout based upon CSS grid. It offers methods for dynamically changing
@@ -54,6 +55,7 @@ export class PbGrid extends pbMixin(LitElement) {
 
     constructor() {
         super();
+        this.panels = [];
         this.direction = 'ltr';
         this.animated = 'pb-view';
         this.animation = false;
@@ -68,29 +70,32 @@ export class PbGrid extends pbMixin(LitElement) {
                 console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
                 this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
 
-                localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-                this.setParameter('panels', this.panels.join('.'));
-                this.pushHistory('added panel');
+                const panelString = this.panels.join('.');
+                registry.commit(this,{panels:panelString})
             }
         });
-        const panelsParam = this.getParameter('panels');
+
+        // const panelsParam = this.getParameter('panels');
+        const panelsParam = registry.get('panels');
         if (panelsParam) {
             this.panels = panelsParam.split('.').map(param => parseInt(param));
-            localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        } else {
-            const panelsStored = localStorage.getItem('pb-grid.panels');
-            if (panelsStored) {
-                this.panels = panelsStored.split('.').map(param => parseInt(param));
-            }
         }
 
+        registry.subscribe(this, (state) => {
+            // this.panels = state.panels;
+            const newState = state?.panels.split('.');
+            this.panels = newState;
+            this.innerHTML=''; // hard reset of child DOM
+            this.panels.forEach(panelNum => this._insertPanel(panelNum));
+            this._update();
+        });
         this._columns = this.panels.length;
         this.template = this.querySelector('template');
     }
 
     firstUpdated() {
         this.panels.forEach(panelNum => this._insertPanel(panelNum));
-
+        registry.commit(this,{panels:this.panels.join('.')})
         this._animate();
         this._update();
     }
@@ -145,14 +150,10 @@ export class PbGrid extends pbMixin(LitElement) {
         this._columns++;
         this.panels.push(initial);
 
-        localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        this.setParameter('panels', this.panels.join('.'));
-        this.pushHistory('added panel');
-
+        const panelString = this.panels.join('.');
         this._insertPanel(initial);
-
+        registry.commit(this, {panels:panelString})
         this._update();
-
         this.emitTo('pb-refresh', null);
     }
 
@@ -161,12 +162,9 @@ export class PbGrid extends pbMixin(LitElement) {
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
-        this.setParameter('panels', this.panels.join('.'));
-        localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        this.pushHistory('removed panel');
-
         panel.parentNode.removeChild(panel);
         this._columns--;
+        registry.commit(this, {panels:this.panels.join('.')})
         this._update();
     }
 
@@ -214,4 +212,6 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
 }
-customElements.define('pb-grid', PbGrid);
+if (!customElements.get('pb-grid')) {
+    customElements.define('pb-grid', PbGrid);
+}
