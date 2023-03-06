@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-toggle-feature Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <h1>Toggling features without content reload</h1>
+    <p>This demo demonstrates possibility of toggling certain features entirely client-side. <i>Plain Reading View</i>
+        toggle behaves exactly like in previous example but <i>Normalized View</i> functionality is equivalent to the
+        <i>Diplomatic View</i> from the previous example but avoids making a request to the server. This result is
+        achieved by toggling CSS classes on selected elements (see <code>pb-toggle-feature name="norm2"</code> for
+        configuration). Please note that results of the PM transformations via ODD need to be prepared in a way that
+        returns content required by both toggle states and matching CSS specifications need to be also passed (see
+        "dantiscus.odd" treatment of e.g. <code>.choice</code>, <code>.choice-alternate</code> and <code>br</code>).
+    </p>
+    <p>
+        <i>Diplomatic View</i> toggles between two values for the <code>mode</code> parameter ("norm" and "diplomatic").
+        This parameter is passed on to the server and available in the ODD to inform PM transformations - as a result
+        treatment of choice elements changes, e.g. abbreviations are expanded ("<i>V.S./Vuestra Señoria</i>").
+        Similarly, <i>Page View</i> switches between whole document ("single") or paged view. <i>Translation</i>
+        switches between the transcription and translation parts of the text (note that translation view makes no sense
+        with the "Page" switch on for our example as the pages were not encoded in the translation).
+        Three last toggles all influence server-side processing thus require making a request to the server when
+        the setting is changed. Client-side toggles ("Plain Reading View" in this case) are applied afterwards to the
+        results returned from the server.
+    </p>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+                <div class="toolbar">
+                    <pb-toggle-feature name="highlight2" selector=".tei-foreign,pb-highlight,pb-popover"
+                        action="disable" default="off" emit="ex2" subscribe="ex2">Plain Reading View</pb-toggle-feature>
+                    <pb-toggle-feature name="norm2" selector=".choice,.choice-alternate,br" emit="ex2" subscribe="ex2">
+                        Normalized View</pb-toggle-feature>
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
+                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                    </pb-navigation>
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right" emit="ex2" subscribe="ex2">
+                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                    </pb-navigation>
+                </div>
+                <main>
+                    <pb-view id="view2" src="document2" xpath="//text[@type='source']" emit="ex2" subscribe="ex2">
+                    </pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
