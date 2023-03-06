@@ -47,17 +47,17 @@ export class PbFacsLink extends pbMixin(LitElement) {
         this.trigger = 'mouseover';
         this.label = '';
         this.order = 0;
+        this.waitFor = 'pb-facsimile,pb-image-strip';
+        this.default = '';
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        if (!this.waitFor) {
-            this.waitFor = 'pb-facsimile,pb-image-strip';
-        }
         this.wait(() => {
             this.emitTo('pb-load-facsimile', {
                 url: this.getImage(),
+                order: this.getOrder(),
                 element: this
             });
         });
@@ -77,21 +77,14 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
     firstUpdated() {
         const link = this.shadowRoot.querySelector('a');
-        switch (this.trigger) {
-            case 'click':
-                link.addEventListener('click', this._linkListener.bind(this));
-                break;
-            default:
-                link.addEventListener('mouseover', this._linkListener.bind(this));
-                break;
-        }
+        link.addEventListener(this.trigger, this._linkListener.bind(this));
         if (this.emitOnLoad) {
             this._trigger();
         }
     }
 
     render() {
-        return html`<a href="#"><slot></slot></a>`;
+        return html`<a href="javascript:;"><slot>${this.default}</slot></a>`;
     }
 
     static get styles() {
