@@ -27,7 +27,7 @@
     "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
-    "clean": "rimraf dist lib css images/leaflet images/openseadragon demo/build",
+    "clean": "rimraf dist lib css images/leaflet images/openseadragon demo/build docs",
     "prepare": "npm run docs && npm run build:production",
     "semantic-release": "semantic-release"
   },

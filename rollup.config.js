@@ -165,6 +165,16 @@ export default [
                     {
                         src: ['images/*.png', 'images/*.ico', 'images/*.svg'],
                         dest: 'dist/images'
+                    },
+                    {
+                        src: 'dist',
+                        dest: `docs/${pkg.version}`
+                    },
+                    {
+                        src: 'demo/index.html',
+                        dest: 'docs',
+                        transform: (contents) =>
+                            contents.toString().replace(/\$version/, pkg.version)
                     }
                 ]
             })
