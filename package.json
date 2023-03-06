@@ -29,7 +29,8 @@
     "format": "npm run format:eslint && npm run format:prettier",
     "clean": "rimraf dist lib css images/leaflet images/openseadragon demo/build docs",
     "prepare": "npm run docs && npm run build:production",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "gh-pages": "npm run build:production && node gh-pages.js"
   },
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
@@ -103,6 +104,7 @@
     "eslint": "^7.10.0",
     "karma": "^5.2.3",
     "lint-staged": "^10.4.0",
+    "recursive-copy": "^2.0.14",
     "rimraf": "^3.0.2",
     "rollup": "^1.21.0",
     "rollup-plugin-analyzer": "^3.2.3",
