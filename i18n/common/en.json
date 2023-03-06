@@ -173,7 +173,9 @@
     "show": "Show top 50",
     "genre": "Genre",
     "language": "Language",
-    "feature": "Feature"
+    "feature": "Feature",
+    "form": "Form",
+    "period": "Period"
   },
   "appgen": {
     "account": {
