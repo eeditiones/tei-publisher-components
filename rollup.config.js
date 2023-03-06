@@ -167,7 +167,7 @@ export default [
                         dest: 'dist/images'
                     },
                     {
-                        src: 'dist',
+                        src: ['dist/*.js', 'pb-elements.json'],
                         dest: `docs/${pkg.version}`
                     },
                     {
@@ -175,7 +175,38 @@ export default [
                         dest: 'docs',
                         transform: (contents) =>
                             contents.toString().replace(/\$version/, pkg.version)
-                    }
+                    },
+                    {
+                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html'],
+                        dest: `docs/${pkg.version}/demo`,
+                        transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
+                    },
+                    {
+                        src: 'demo/pb-odd-editor.html',
+                        dest: `docs/${pkg.version}/demo`,
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-leaflet-map.html', 'demo/pb-leaflet-map2.html', 'demo/pb-leaflet-map3.html'],
+                        dest: `docs/${pkg.version}/demo`,
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
+                    },
+                    {
+                        src: 'api.html',
+                        dest: `docs/${pkg.version}`,
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
+                    },
+                    {
+                        src: ['demo/*.json', 'demo/*.css', 'demo/*.png'],
+                        dest: `docs/${pkg.version}/demo`,
+                    },
+                    {
+                        src: ['images/*.png', 'images/*.ico', 'images/*.svg'],
+                        dest: `docs/${pkg.version}/images`
+                    },
                 ]
             })
         ]
