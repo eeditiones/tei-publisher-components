@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-popover Demo</title>
+        <link rel="stylesheet" href="demo.css">
+
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                    body {
+                        /* Default theme to use unless specified via property */
+                        --pb-popover-theme: "light-border";
+                        --pb-popover-font-size: 14px;
+                        --pb-popover-max-width: 480px;
+                        --pb-popover-placement: "bottom";
+                        --pb-popover-fallback-placement: "top right";
+                    }
+
+                    pb-popover, .trigger {
+                        color: rgb(224, 140, 13);
+                        text-decoration: underline;
+                    }
+
+                    pb-popover[for="dolore"] {
+                        --pb-popover-trigger: 'click';
+                        --pb-popover-persistent: true;
+                    }
+                    #dolore {
+                        cursor: pointer;
+                    }
+
+                    /* Address a specific popup (popup-class="info")*/
+                    .info {
+                        --pb-popover-font-size: 18px;
+                    }
+
+                    .note {
+                        font-style: italic;
+                    }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                    <main>
+                        <p>Qui veniam ipsum officia consequat aute nostrud sunt proident ut incididunt amet<br/>
+                            <span class="trigger" id="dolore">dolore</span>.</p>
+                        <p>Lorem <pb-popover theme="material">
+                            <span slot="default">ipsum dolor sit amet</span>
+                            <template slot="alternate">
+                                <p>At vero eos et <strong>accusam</strong> et justo duo dolores<br> 
+                                et ea rebum.</p></template></pb-popover>, consetetur sadipscing elitr,<br>
+                            sed diam nonumy eirmod tempor invidunt ut labore et dolore<br>
+                            magna <span class="trigger" id="aliquyam">aliquyam erat</span>, sed diam voluptua. At vero eos et accusam<br> 
+                            et justo duo dolores et ea "<pb-popover theme="light">rebum<template slot="alternate">Popup</template></pb-popover>". Stet clita kasd gubergren,<br> 
+                            no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem<br>
+                            ipsum dolor sit amet, consetetur sadipscing elitr, sed diam<br>
+                            nonumy eirmod "<pb-popover theme="translucent" persistent>tempor invidunt<br> ut labore<template slot="alternate">This is a persistent tooltip</template></pb-popover>" et dolore magna aliquyam<br> 
+                            erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
+                            et ea rebum. <pb-popover persistent theme="light-border">Stet clita kasd gubergren<template slot="alternate"><p>A persistent tooltip</p></template></pb-popover>, no sea takimata sanctus est<br>
+                            <span class="trigger" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
+                        <p>You can also load popover content asynchronously from a
+                            <pb-popover remote="popover-data.html" trigger="mouseenter focus">remote URL<span slot="alternate">Loading ...</span></pb-popover>.</p>
+                        <p>It is also possible to <pb-popover id="dynamic">set or modify the content of a popup dynamically</pb-popover> by setting the property <code>alternate</code>.</p>
+                        <pb-popover for="aliquyam" popup-class="info">
+                            <blockquote class="note">Popover content using block level elements should either be specified in a HTML <code>template</code> tag or placed outside the text flow using attribute <code>for</code>
+                            to link to an inline trigger element.</blockquote>
+                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                            <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                            <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
+                            <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+                        </pb-popover>
+                        <pb-popover for="lorem">This popover is connected to its trigger element
+                            using the 'for' attribute.</pb-popover>
+                        <pb-popover for="dolore">This is a popover containing a link to 
+                            <pb-popover><span class="trigger" id="nested">a nested popover</span>
+                                <template slot="alternate">
+                                    <p>Nested popovers should be inlined in the containing popover. Don't use <code>for</code>
+                                    in this case.</p>
+                                </template>
+                            </pb-popover>.
+                        </pb-popover>
+                        <script>
+                            window.addEventListener('WebComponentsReady', () => {
+                                document.getElementById('dynamic').alternate = '<p>This was set dynamically</p>';
+                            });
+                        </script>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
