@@ -70,9 +70,7 @@ export class PbGrid extends pbMixin(LitElement) {
                 console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
                 this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
 
-                const panelString = this.panels.join('.');
-                registry.commit(this,{panels:panelString})
-            }
+            registry.commit(this, this._getState())
         });
 
         const panelsParam = registry.get('panels');
@@ -93,7 +91,7 @@ export class PbGrid extends pbMixin(LitElement) {
 
     firstUpdated() {
         this.panels.forEach(panelNum => this._insertPanel(panelNum));
-        registry.commit(this,{panels:this.panels.join('.')})
+        registry.commit(this, this._getState())
         this._animate();
         this._update();
     }
@@ -147,9 +145,8 @@ export class PbGrid extends pbMixin(LitElement) {
         this._columns += 1;
         this.panels.push(value);
 
-        const panelString = this.panels.join('.');
         this._insertPanel(value);
-        registry.commit(this, { panels: panelString })
+        registry.commit(this, this._getState())
         this._update();
         this.emitTo('pb-refresh', null);
     }
@@ -161,7 +158,7 @@ export class PbGrid extends pbMixin(LitElement) {
 
         panel.parentNode.removeChild(panel);
         this._columns -= 1;
-        registry.commit(this, {panels:this.panels.join('.')})
+        registry.commit(this, this._getState() )
         this._update();
     }
 
@@ -196,6 +193,10 @@ export class PbGrid extends pbMixin(LitElement) {
     _getPanelIndex(panel) {
         const panels = Array.from(this.querySelectorAll('._grid_panel'));
         return panels.indexOf(panel);
+    }
+
+    _getState() {
+        return { panels: this.panels.join('.') };
     }
 
     render() {
