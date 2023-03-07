@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import './pb-panel.js';
-import {registry} from "./urls.js";
 
 /**
  * A component to create a column layout based upon CSS grid. It offers methods for dynamically changing
@@ -75,7 +75,6 @@ export class PbGrid extends pbMixin(LitElement) {
             }
         });
 
-        // const panelsParam = this.getParameter('panels');
         const panelsParam = registry.get('panels');
         if (panelsParam) {
             this.panels = panelsParam.split('.').map(param => parseInt(param));
@@ -136,22 +135,21 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     addPanel(initial) {
-        if (!initial) {
-            if (this.panels.length > 0) {
-                const max = this.panels.reduce(function (a, b) {
-                    return Math.max(a, b);
-                });
-                initial = max + 1;
-            } else {
-                initial = 0;
-            }
+        let value = initial
+        if (!initial && !this.panels.length) {
+            value = 0
         }
-        this._columns++;
-        this.panels.push(initial);
+        if (!initial && this.panels.length) {
+            const max = this.panels.reduce((result, next) => Math.max(result, next), 0);
+            value = max + 1;
+        }
+
+        this._columns += 1;
+        this.panels.push(value);
 
         const panelString = this.panels.join('.');
-        this._insertPanel(initial);
-        registry.commit(this, {panels:panelString})
+        this._insertPanel(value);
+        registry.commit(this, { panels: panelString })
         this._update();
         this.emitTo('pb-refresh', null);
     }
@@ -162,7 +160,7 @@ export class PbGrid extends pbMixin(LitElement) {
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
         panel.parentNode.removeChild(panel);
-        this._columns--;
+        this._columns -= 1;
         registry.commit(this, {panels:this.panels.join('.')})
         this._update();
     }
