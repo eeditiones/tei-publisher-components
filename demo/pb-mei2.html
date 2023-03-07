@@ -7,7 +7,7 @@
     <title>pb-mei Demo</title>
     <link rel="stylesheet" href="demo.css">
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script src="../lib/webcomponents-bundle.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
@@ -30,7 +30,7 @@
             </style>
             <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                 <main>
-                    <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
+                    <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei"
                         footer="always">
                         <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
                     </pb-mei>

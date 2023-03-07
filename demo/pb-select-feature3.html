@@ -6,7 +6,7 @@
 
     <title>pb-select-feature Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script src="../lib/webcomponents-bundle.js" defer></script>
     <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
@@ -57,7 +57,7 @@
 
                 <div class="toolbar">
                     <pb-select-feature id="select-view2" name="view2" label="View" items='[
-                    {"name": "Diplomatic View", "properties": {"user.mode": "diplomatic"}}, 
+                    {"name": "Diplomatic View", "properties": {"user.mode": "diplomatic"}},
                     {"name": "Normalized View", "properties": {"user.mode": "norm"}}
                     ]' subscribe="loader" emit="loader"></pb-select-feature>
                 </div>

@@ -6,7 +6,7 @@ const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher";
 
 /**
  * Viewer for demo code.
- * 
+ *
  * @customElement  pb-demo-snippet
  * @polymer
  * @appliesMixin pbMixin
@@ -61,12 +61,10 @@ export class PbDemoSnippet extends LitElement {
             css = style.innerText;
         }
         const cpCss = `
-@import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
-
 body {
     margin: 10px 20px;
     font-size: 16px;
-    font-family: 'Roboto', 'Noto', sans - serif;
+    font-family: 'sans-serif';
     line-height: 1.42857;
     font-weight: 300;
     color: #333333;
@@ -83,9 +81,9 @@ ${PbDemoSnippet.removeIndent(css)}`;
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
         <title>${ this.title}</title>
-        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>
-        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
-        <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-leaflet-map.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2.7.0/webcomponents-loader.min.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@1.43.5/dist/pb-components-bundle.min.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components@1.43.5/dist/pb-leaflet-map.js"></script>
     </head>
 
     <body>

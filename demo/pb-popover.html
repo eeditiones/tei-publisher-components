@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="demo.css">
 
         <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+        <script src="../lib/webcomponents-bundle.js"></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-popover.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
@@ -56,14 +56,14 @@
                         <p>Lorem <pb-popover theme="material">
                             <span slot="default">ipsum dolor sit amet</span>
                             <template slot="alternate">
-                                <p>At vero eos et <strong>accusam</strong> et justo duo dolores<br> 
+                                <p>At vero eos et <strong>accusam</strong> et justo duo dolores<br>
                                 et ea rebum.</p></template></pb-popover>, consetetur sadipscing elitr,<br>
                             sed diam nonumy eirmod tempor invidunt ut labore et dolore<br>
-                            magna <span class="trigger" id="aliquyam">aliquyam erat</span>, sed diam voluptua. At vero eos et accusam<br> 
-                            et justo duo dolores et ea "<pb-popover theme="light">rebum<template slot="alternate">Popup</template></pb-popover>". Stet clita kasd gubergren,<br> 
+                            magna <span class="trigger" id="aliquyam">aliquyam erat</span>, sed diam voluptua. At vero eos et accusam<br>
+                            et justo duo dolores et ea "<pb-popover theme="light">rebum<template slot="alternate">Popup</template></pb-popover>". Stet clita kasd gubergren,<br>
                             no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem<br>
                             ipsum dolor sit amet, consetetur sadipscing elitr, sed diam<br>
-                            nonumy eirmod "<pb-popover theme="translucent" persistent>tempor invidunt<br> ut labore<template slot="alternate">This is a persistent tooltip</template></pb-popover>" et dolore magna aliquyam<br> 
+                            nonumy eirmod "<pb-popover theme="translucent" persistent>tempor invidunt<br> ut labore<template slot="alternate">This is a persistent tooltip</template></pb-popover>" et dolore magna aliquyam<br>
                             erat, sed diam voluptua. At vero eos et accusam et justo duo dolores<br>
                             et ea rebum. <pb-popover persistent theme="light-border">Stet clita kasd gubergren<template slot="alternate"><p>A persistent tooltip</p></template></pb-popover>, no sea takimata sanctus est<br>
                             <span class="trigger" id="lorem">Lorem ipsum</span> dolor sit amet.</p>
@@ -80,7 +80,7 @@
                         </pb-popover>
                         <pb-popover for="lorem">This popover is connected to its trigger element
                             using the 'for' attribute.</pb-popover>
-                        <pb-popover for="dolore">This is a popover containing a link to 
+                        <pb-popover for="dolore">This is a popover containing a link to
                             <pb-popover><span class="trigger" id="nested">a nested popover</span>
                                 <template slot="alternate">
                                     <p>Nested popovers should be inlined in the containing popover. Don't use <code>for</code>
