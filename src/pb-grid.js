@@ -65,7 +65,7 @@ export class PbGrid extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-panel', ev => {
-            const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(ev.detail.panel);
+            const idx = this._getPanelIndex(ev.detail.panel);
             if (idx > -1) {
                 console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
                 this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
@@ -155,7 +155,7 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     removePanel(panel) {
-        const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(panel);
+        const idx = this._getPanelIndex(panel);
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
@@ -191,6 +191,11 @@ export class PbGrid extends pbMixin(LitElement) {
             }
         });
         this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
+    }
+
+    _getPanelIndex(panel) {
+        const panels = Array.from(this.querySelectorAll('._grid_panel'));
+        return panels.indexOf(panel);
     }
 
     render() {
