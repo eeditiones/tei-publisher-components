@@ -66,9 +66,11 @@ export class PbGrid extends pbMixin(LitElement) {
 
         this.subscribeTo('pb-panel', ev => {
             const idx = this._getPanelIndex(ev.detail.panel);
-            if (idx > -1) {
-                console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
-                this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
+            if (idx < 0) {
+                return // panel not found
+            }
+            console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
+            this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
 
             registry.commit(this, this._getState())
         });
@@ -174,19 +176,16 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     _update() {
-        const widths = [];
-        Array.from(this.children).forEach((child) => {
-            if (child instanceof HTMLTemplateElement) {
-                return;
-            }
-            const styles = window.getComputedStyle(child);
-            const width = styles.getPropertyValue('max-width');
-            if (width && width !== 'none') {
-                widths.push(width);
-            } else {
-                widths.push('1fr');
-            }
-        });
+        const widths = Array.from(this.children)
+            .filter(child => !(child instanceof HTMLTemplateElement))
+            .map(child => {
+                const styles = window.getComputedStyle(child);
+                const width = styles.getPropertyValue('max-width');
+                if (width && width !== 'none') {
+                    return width;
+                }
+                return '1fr';
+            });
         this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
     }
 
