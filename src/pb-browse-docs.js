@@ -2,6 +2,9 @@ import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
 import { translate } from "./pb-i18n.js";
 import { themableMixin } from "./theming.js";
+import { cmpVersion } from './utils.js';
+import { registry } from "./urls.js";
+
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -10,8 +13,6 @@ import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
-import { cmpVersion } from './utils.js';
-import { registry } from "./urls.js";
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -405,10 +406,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         if (typeof filter !== 'undefined') {
             console.log('<pb-browse-docs> Filter by %s', filter);
             this.filter = filter;
-            this.setParameter('filter', filter);
-            this.setParameter('filterBy', filterBy);
-            this.pushHistory('filter docs');
-
+            registry.commit(this, { filter, filterBy })
             this.load();
         }
     }
@@ -426,8 +424,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         if (sortBy && sortBy !== this.sortBy) {
             console.log('<pb-browse-docs> Sorting by %s', sortBy);
             this.sortBy = sortBy;
-            this.setParameter('sort', sortBy);
-            this.pushHistory('sort docs');
+            registry.commit(this, { sort: sortBy })
 
             this.load();
         }
@@ -436,12 +433,9 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     _facets(ev) {
         if (ev.detail && ev.detail.params) {
             this.clearParametersMatching(/^(all-|facet-).*/);
-            for (let param in ev.detail.params) {
-                this.setParameter(param, ev.detail.params[param]);
-            }
             this.facets = ev.detail.params;
             this.start = 1;
-            this.pushHistory('facets');
+            registry.commit(this, ev.detail.params)
         }
         this.load();
     }
