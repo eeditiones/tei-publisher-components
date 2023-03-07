@@ -82,8 +82,7 @@ export class PbGrid extends pbMixin(LitElement) {
         }
 
         registry.subscribe(this, (state) => {
-            // this.panels = state.panels;
-            const newState = state?.panels.split('.');
+            const newState = state.panels ? state.panels.split('.') : [];
             this.panels = newState;
             this.innerHTML=''; // hard reset of child DOM
             this.panels.forEach(panelNum => this._insertPanel(panelNum));
