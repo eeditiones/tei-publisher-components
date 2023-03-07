@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import './pb-panel.js';
-import {registry} from "./urls.js";
 
 /**
  * A component to create a column layout based upon CSS grid. It offers methods for dynamically changing
@@ -65,7 +65,7 @@ export class PbGrid extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-panel', ev => {
-            const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(ev.detail.panel);
+            const idx = this._getPanelIndex(ev.detail.panel);
             if (idx > -1) {
                 console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
                 this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
@@ -75,15 +75,13 @@ export class PbGrid extends pbMixin(LitElement) {
             }
         });
 
-        // const panelsParam = this.getParameter('panels');
         const panelsParam = registry.get('panels');
         if (panelsParam) {
             this.panels = panelsParam.split('.').map(param => parseInt(param));
         }
 
         registry.subscribe(this, (state) => {
-            // this.panels = state.panels;
-            const newState = state?.panels.split('.');
+            const newState = state.panels ? state.panels.split('.') : [];
             this.panels = newState;
             this.innerHTML=''; // hard reset of child DOM
             this.panels.forEach(panelNum => this._insertPanel(panelNum));
@@ -137,33 +135,32 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     addPanel(initial) {
-        if (!initial) {
-            if (this.panels.length > 0) {
-                const max = this.panels.reduce(function (a, b) {
-                    return Math.max(a, b);
-                });
-                initial = max + 1;
-            } else {
-                initial = 0;
-            }
+        let value = initial
+        if (!initial && !this.panels.length) {
+            value = 0
         }
-        this._columns++;
-        this.panels.push(initial);
+        if (!initial && this.panels.length) {
+            const max = this.panels.reduce((result, next) => Math.max(result, next), 0);
+            value = max + 1;
+        }
+
+        this._columns += 1;
+        this.panels.push(value);
 
         const panelString = this.panels.join('.');
-        this._insertPanel(initial);
-        registry.commit(this, {panels:panelString})
+        this._insertPanel(value);
+        registry.commit(this, { panels: panelString })
         this._update();
         this.emitTo('pb-refresh', null);
     }
 
     removePanel(panel) {
-        const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(panel);
+        const idx = this._getPanelIndex(panel);
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
         panel.parentNode.removeChild(panel);
-        this._columns--;
+        this._columns -= 1;
         registry.commit(this, {panels:this.panels.join('.')})
         this._update();
     }
@@ -194,6 +191,11 @@ export class PbGrid extends pbMixin(LitElement) {
             }
         });
         this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
+    }
+
+    _getPanelIndex(panel) {
+        const panels = Array.from(this.querySelectorAll('._grid_panel'));
+        return panels.indexOf(panel);
     }
 
     render() {
