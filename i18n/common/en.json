@@ -172,7 +172,10 @@
   "facets": {
     "show": "Show top 50",
     "genre": "Genre",
-    "language": "Language"
+    "language": "Language",
+    "feature": "Feature",
+    "form": "Form",
+    "period": "Period"
   },
   "appgen": {
     "account": {

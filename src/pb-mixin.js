@@ -23,6 +23,27 @@ export function clearPageEvents() {
 }
 
 /**
+ * Wait until the global event identified by name
+ * has been fired once. This is mainly used to wait for initialization
+ * events like `pb-page-ready`.
+ *
+ * @param {string} name
+ * @param {Function} callback
+ */
+export function waitOnce(name, callback) {
+    if (initEventsFired.has(name)) {
+        callback(initEventsFired.get(name));
+    } else {
+        document.addEventListener(name, (ev) => {
+            initEventsFired.set(name, ev.detail);
+            callback(ev.detail);
+        }, {
+            once: true
+        });
+    }
+}
+
+/**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
  *
@@ -111,7 +132,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
 
     connectedCallback() {
         super.connectedCallback();
-        PbMixin.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             this._endpoint = options.endpoint;
             this._apiVersion = options.apiVersion;
         });
@@ -224,18 +245,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *
      * @param {string} name
      * @param {Function} callback
+     * @deprecated Use exported `waitOnce` function
      */
     static waitOnce(name, callback) {
-        if (initEventsFired.has(name)) {
-            callback(initEventsFired.get(name));
-        } else {
-            document.addEventListener(name, (ev) => {
-                initEventsFired.set(name, ev.detail);
-                callback(ev.detail);
-            }, {
-                once: true
-            });
-        }
+        waitOnce(name, callback);
     }
 
     /**

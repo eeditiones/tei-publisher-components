@@ -1,4 +1,4 @@
-ARG EXIST_VERSION=5.3.1
+ARG EXIST_VERSION=6.0.1
 
 # START STAGE 1
 FROM openjdk:8-jdk-slim as builder
@@ -31,9 +31,9 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 
 FROM builder as tei
 
-ARG TEMPLATING_VERSION=1.0.2
-ARG PUBLISHER_LIB_VERSION=2.9.0
-ARG ROUTER_VERSION=0.5.1
+ARG TEMPLATING_VERSION=1.0.4
+ARG PUBLISHER_LIB_VERSION=2.10.1
+ARG ROUTER_VERSION=1.7.3
 ARG PUBLISHER_VERSION=master
 
 # add key
@@ -55,7 +55,7 @@ COPY i18n/common/* resources/i18n/common/
 
 RUN ant
 
-RUN curl -L -o /tmp/oas-router-${ROUTER_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/oas-router-${ROUTER_VERSION}.xar
+RUN curl -L -o /tmp/roaster-${ROUTER_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/roaster-${ROUTER_VERSION}.xar
 RUN curl -L -o /tmp/tei-publisher-lib-${PUBLISHER_LIB_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-${PUBLISHER_LIB_VERSION}.xar
 RUN curl -L -o /tmp/templating-${TEMPLATING_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/templating-${TEMPLATING_VERSION}.xar
 

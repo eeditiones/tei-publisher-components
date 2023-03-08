@@ -87,14 +87,38 @@ export class PbLoad extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'use-language'
             },
+            /**
+             * Indicates whether or not cross-site Access-Control requests should be made.
+             * Default is false.
+             */
+            noCredentials: {
+                type: Boolean,
+                attribute: 'no-credentials'
+            },
+            /**
+             * Indicates if the parameters of the request made should be saved to the browser
+             * history and URL. Default: false.
+             */
             history: {
                 type: Boolean
             },
+            /**
+             * The event which will trigger a new request to be sent. Default is 'pb-load'.
+             */
             event: {
                 type: String
             },
+            /**
+             * Additional, user-defined parameters to be sent with the request.
+             */
             userParams: {
                 type: Object
+            },
+            /**
+             * If set, silently ignore errors when sending the request.
+             */
+            silent: {
+                type: Boolean
             }
         };
     }
@@ -107,6 +131,8 @@ export class PbLoad extends pbMixin(LitElement) {
         this.event = 'pb-load';
         this.loaded = false;
         this.language = null;
+        this.noCredentials = false;
+        this.silent = false;
     }
 
     connectedCallback() {
@@ -169,6 +195,25 @@ export class PbLoad extends pbMixin(LitElement) {
         }
     }
 
+    attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if (oldValue && oldValue !== newValue) {
+            switch (name) {
+                case 'url':
+                case 'userParams':
+                case 'start':
+                    if (this.auto && this.loader) {
+                        PbLoad.waitOnce('pb-page-ready', () => {
+                            this.wait(() => this.load());
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     render() {
         return html`
             <slot></slot>
@@ -177,7 +222,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
-                with-credentials
+                ?with-credentials="${!this.noCredentials}"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
@@ -326,6 +371,10 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
         const { response } = loader.lastError;
+        if (this.silent) {
+            console.error('Request failed: %s', response ? response.description : '');
+            return;
+        }
         let message;
         if (response) {
             message = response.description;
@@ -342,16 +391,18 @@ export class PbLoad extends pbMixin(LitElement) {
         // Try to determine number of pages and current position
         // Search for data-pagination-* attributes first and if they
         // can't be found, check HTTP headers
-        function getPaginationParam(type) {
+        // 
+        // However, if noCredentials is set, we won't be able to access the headers
+        function getPaginationParam(type, noHeaders) {
             const elem = content.querySelector(`[data-pagination-${type}]`);
             if (elem) {
                 return elem.getAttribute(`data-pagination-${type}`);
             }
-            return xhr.getResponseHeader(`pb-${type}`);
+            return noHeaders ? 0 : xhr.getResponseHeader(`pb-${type}`);
         }
 
-        const total = getPaginationParam('total');
-        const start = getPaginationParam('start');
+        const total = getPaginationParam('total', this.noCredentials);
+        const start = getPaginationParam('start', this.noCredentials);
 
         if (this.start !== start) {
             this.start = parseInt(start);

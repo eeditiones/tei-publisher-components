@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { themableMixin } from "./theming.js";
 import '@polymer/paper-icon-button';
 import '@polymer/iron-icons';
 
@@ -10,7 +11,7 @@ import '@polymer/iron-icons';
  *  
  * @slot content - contains the actual content to copy to the clipboard
  */
-export class PbClipboard extends pbMixin(LitElement) {
+export class PbClipboard extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             /**

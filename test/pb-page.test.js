@@ -11,6 +11,7 @@ describe('initializes', () => {
         let initDetails;
         document.addEventListener('pb-page-ready', (ev) => {
             initDetails = ev.detail;
+            console.log(initDetails);
         }, { once: true });
         await fixture(`
             <pb-page endpoint="${ __karma__.config.endpoint }" 
@@ -18,7 +19,7 @@ describe('initializes', () => {
         `);
 
         await waitUntil(() => initDetails, 'waiting for pb-page-ready', { timeout: 5000 });
-
+        expect(initDetails.apiVersion).to.exist;
         expect(initDetails.language).to.equal('de');
         expect(initDetails.endpoint).to.equal(__karma__.config.endpoint);
     });

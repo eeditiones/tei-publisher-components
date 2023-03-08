@@ -36,6 +36,10 @@ export class PbLink extends pbMixin(LitElement) {
             odd: {
                 type: String
             },
+            /** Control the view mode, i.e. 'page', 'div', 'single'  */
+            view: {
+                type: String
+            },
             /**
              * Modify browser history: if set, clicking this
              * element will generate a new history entry in the browser's history.
@@ -101,6 +105,10 @@ export class PbLink extends pbMixin(LitElement) {
         if (this.odd) {
             params.odd = this.odd;
             this.history && this.setParameter('odd', this.odd);
+        }
+        if (this.view) {
+            params.view = this.view;
+            this.history && this.setParameter('view', this.view);
         }
         if (this.hash){
             params.hash = this.hash;

@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { getCSSProperty } from "./utils.js";
 import '@vaadin/vaadin-upload';
 import '@polymer/paper-button';
 import '@polymer/paper-icon-button';
@@ -108,8 +109,8 @@ export class PbUpload extends pbMixin(LitElement) {
     }
 
     render() {
-        const uploadIcon = this._getCSSProperty('--pb-upload-button-icon', 'icons:file-upload');
-        const dropLabelIcon = this._getCSSProperty('--pb-upload-drop-icon', null);
+        const uploadIcon = getCSSProperty(this, '--pb-upload-button-icon', 'icons:file-upload');
+        const dropLabelIcon = getCSSProperty(this, '--pb-upload-drop-icon', null);
         return html`
             <vaadin-upload id="uploader" accept="${this.accept}" method="post" tabindex="-1" form-data-name="files[]"
                 with-credentials>
@@ -168,18 +169,6 @@ export class PbUpload extends pbMixin(LitElement) {
     clearList() {
         this._files.clear();
         this.requestUpdate();
-    }
-
-    _getCSSProperty(name, defaultValue) {
-        const property = getComputedStyle(this).getPropertyValue(name);
-        if (property) {
-            try {
-                return JSON.parse(property);
-            } catch (e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
     }
 
     static get styles() {

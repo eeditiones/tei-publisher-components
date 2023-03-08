@@ -5,6 +5,7 @@ import XHR from 'i18next-xhr-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { loadStylesheets } from "./theming.js";
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 
@@ -25,7 +26,7 @@ let _instance;
  * @fires pb-i18n-language - when received, changes the language to the one passed in the event and proceeds to pb-i18-update
  * @fires pb-toggle - when received, dispatch state changes to the elements on the page (see `pb-toggle-feature`, `pb-select-feature`)
  */
-class PbPage extends pbMixin(LitElement) {
+export class PbPage extends pbMixin(LitElement) {
 
     static get properties() {
         return {
@@ -130,6 +131,9 @@ class PbPage extends pbMixin(LitElement) {
             unresolved: {
                 type: Boolean,
                 reflect: true
+            },
+            theme: {
+                type: String
             }
         };
     }
@@ -140,6 +144,7 @@ class PbPage extends pbMixin(LitElement) {
         this.endpoint = ".";
         this.apiVersion = undefined;
         this.requireLanguage = false;
+        this.theme = null;
         this._localeFallbacks = [];
         this._i18nInstance = null;
 
@@ -174,6 +179,8 @@ class PbPage extends pbMixin(LitElement) {
             return;
         }
 
+        this.endpoint = this.endpoint.replace(/\/+$/, '');
+        
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
             this._localeFallbacks.push('app');
         }
@@ -189,6 +196,15 @@ class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
+        const stylesheetURLs = [
+            resolveURL('../css/components.css')
+        ];
+        if (this.theme) {
+            stylesheetURLs.push(this.toAbsoluteURL(this.theme, this.endpoint));
+        }
+        console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
+        this._themeSheet = await loadStylesheets(stylesheetURLs);
+
         // try to figure out what version of TEI Publisher the server is running
         if (!this.apiVersion) {
             // first check if it has a login endpoint, i.e. runs a version < 7
@@ -202,7 +218,9 @@ class PbPage extends pbMixin(LitElement) {
                 return fetch(`${this.endpoint}/api/version`)
                     .then((res2) => res2.json());
             })
-            .catch(() => null)
+            .catch(() => fetch(`${this.endpoint}/api/version`)
+                    .then((res2) => res2.json())
+            );
             
             if (json) {
                 this.apiVersion = json.api;
@@ -218,6 +236,13 @@ class PbPage extends pbMixin(LitElement) {
                 endpoint: this.endpoint,
                 template: this.template,
                 apiVersion: this.apiVersion
+            });
+        } else if (this._i18nInstance) {
+            this.signalReady('pb-page-ready', {
+                endpoint: this.endpoint,
+                apiVersion: this.apiVersion,
+                template: this.template,
+                language: this._i18nInstance.language
             });
         }
     }
@@ -287,7 +312,7 @@ class PbPage extends pbMixin(LitElement) {
             // initialized and ready to go!
             this._updateI18n(t);
             this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
-            if (this.requireLanguage) {
+            if (this.requireLanguage && this.apiVersion) {
                 this.signalReady('pb-page-ready', {
                     endpoint: this.endpoint,
                     apiVersion: this.apiVersion,
@@ -331,6 +356,10 @@ class PbPage extends pbMixin(LitElement) {
                 m = regex.exec(targets);
             }
         });
+    }
+
+    get stylesheet() {
+        return this._themeSheet;
     }
 
     /**

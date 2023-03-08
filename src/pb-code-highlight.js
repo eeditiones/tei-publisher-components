@@ -3,7 +3,31 @@ import "prismjs/prism";
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import { resolveURL } from './utils.js';
+import { resolveURL, getCSSProperty } from './utils.js';
+import { themableMixin } from "./theming.js";
+
+const PRISM_THEMES = new Map();
+
+function loadTheme(theme) {
+    const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
+    if (PRISM_THEMES.has(themeName)) {
+        console.log('Using cached theme: %s', themeName);
+        return PRISM_THEMES.get(themeName);
+    }
+
+    const promise = new Promise((resolve) => {
+        const resource = resolveURL('../css/prismjs/') + themeName;
+        console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
+        fetch(resource)
+            .then(response => response.text())
+            .catch(() => resolve(''))
+            .then(text => {
+                resolve(html`<style>${text}</style>`);
+            });
+    });
+    PRISM_THEMES.set(themeName, promise);
+    return promise;
+}
 
 /**
  * Highlight a code snippet. The snippet may either be passed in a template child
@@ -12,8 +36,9 @@ import { resolveURL } from './utils.js';
  * pass the code to be highlighted in the `code` property.
  *
  * @cssprop [--pb-code-highlight-white-space=pre] - configures line wrapping
+ * @cssprop [--pb-code-highlight-theme=default] - configures the default theme to be used
  */
-export class PbCodeHighlight extends LitElement {
+export class PbCodeHighlight extends themableMixin(LitElement) {
     static get properties() {
         return {
             /**
@@ -41,7 +66,7 @@ export class PbCodeHighlight extends LitElement {
                 type: Boolean,
                 attribute: 'line-numbers'
             },
-            _styles: {
+            _themeStyles: {
                 type: String
             }
         };
@@ -52,13 +77,15 @@ export class PbCodeHighlight extends LitElement {
         this.language = 'xml';
         this.theme = 'default';
         this.lineNumbers = false;
+        this._themeStyles = null;
     }
 
     connectedCallback() {
         super.connectedCallback();
-        const theme = this.getAttribute('theme');
+        let theme = this.getAttribute('theme');
         if (theme === null) {
-            this.setAttribute('theme', 'default');
+            theme = getCSSProperty(this, '--pb-code-highlight-theme', 'default');
+            this.setAttribute('theme', theme);
         }
     }
 
@@ -79,8 +106,8 @@ export class PbCodeHighlight extends LitElement {
         super.attributeChangedCallback(name, oldValue, newValue);
         switch (name) {
             case 'theme':
-                PbCodeHighlight.loadTheme(newValue).then((styles) => {
-                    this._styles = styles;
+                loadTheme(newValue).then(loadedStyles => {
+                    this._themeStyles = loadedStyles;
                 });
                 break;
             default:
@@ -102,21 +129,11 @@ export class PbCodeHighlight extends LitElement {
     render() {
         if (this.code) {
             return html`
-                ${this._styles}
+                ${this._themeStyles}
                 <pre class="${this.lineNumbers ? 'line-numbers' : ''} language-${this.language}"><code>${this.code}</code></pre>
             `;
         }
         return html`<pre class="line-numbers"><code><code></pre>`;
-    }
-
-    static async loadTheme(theme) {
-        const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
-        const resource = resolveURL('../css/prismjs/') + themeName;
-        console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
-
-        const fetchedStyles = await fetch(resource).then(async response => response.text()).catch(e => '');
-
-        return html`<style>${fetchedStyles}</style>`;
     }
 
     static get styles() {

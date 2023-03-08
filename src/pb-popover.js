@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
+import { getCSSProperty } from "./utils.js";
 import * as themes from './pb-popover-themes.js';
 
 function _injectStylesheet(root, name, cssCode) {
@@ -78,6 +79,8 @@ export function loadTippyStyles(root, theme) {
  * Use this to apply a specific style to certain popovers, but not others.
  * @prop {String} remote - An optional URL to asynchronously load the popover's content from. Content will
  * be loaded after the popover is displayed. The downloaded HTML content will replace the text set via the alternate slot.
+ * @prop {Boolean} stopPropagation - If you have nested pb-popover, set this property to
+ * only show the innermost popover when triggered
  * 
  * @slot default - the content to show for the trigger. If not specified, this will fall back to the unnamed slot.
  * @slot alternate - the content to show in the popup
@@ -125,6 +128,10 @@ export class PbPopover extends pbMixin(LitElement) {
             },
             remote: {
                 type: String
+            },
+            stopPropagation: {
+                type: Boolean,
+                attribute: 'stop-propagation'
             }
         };
     }
@@ -138,6 +145,7 @@ export class PbPopover extends pbMixin(LitElement) {
         this.placement = null;
         this.fallbackPlacement = null;
         this.popupClass = null;
+        this.stopPropagation = false;
         this._tippy = null;
         this._content = null;
     }
@@ -161,32 +169,20 @@ export class PbPopover extends pbMixin(LitElement) {
 
     _checkCSSProperties() {
         if (!this.theme && this.theme !== 'none') {
-            this.theme = this._getCSSProperty('--pb-popover-theme', 'none');
+            this.theme = getCSSProperty(this, '--pb-popover-theme', 'none');
         }
         if (!this.placement) {
-            this.placement = this._getCSSProperty('--pb-popover-placement', 'auto');
+            this.placement = getCSSProperty(this, '--pb-popover-placement', 'auto');
         }
         if (!this.fallbackPlacement) {
-            this.fallbackPlacement = this._getCSSProperty('--pb-popover-fallback-placement', null);
+            this.fallbackPlacement = getCSSProperty(this, '--pb-popover-fallback-placement', null);
         }
         if (!this.persistent) {
-            this.persistent = this._getCSSProperty('--pb-popover-persistent', false);
+            this.persistent = getCSSProperty(this, '--pb-popover-persistent', false);
         }
         if (!this.trigger) {
-            this.trigger = this._getCSSProperty('--pb-popover-trigger', null);
+            this.trigger = getCSSProperty(this, '--pb-popover-trigger', null);
         }
-    }
-
-    _getCSSProperty(name, defaultValue) {
-        const property = getComputedStyle(this).getPropertyValue(name);
-        if (property) {
-            try {
-                return JSON.parse(property);
-            } catch (e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
     }
 
     _injectStyles() {
@@ -308,6 +304,11 @@ export class PbPopover extends pbMixin(LitElement) {
                 hideOnClick: false,
                 trigger: this.trigger
             };
+            if (this.stopPropagation) {
+                options.onTrigger = (instance, ev) => {
+                    ev.stopPropagation();
+                }
+            }
             if (this.persistent) {
                 options.onClickOutside = (instance, ev) => {
                     instance.hideWithInteractivity(ev);
@@ -340,7 +341,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 } else {
                     instance.setContent(this._getContent());
                 }
-                this.emitTo('pb-popover-show', { source: this });
+                this.emitTo('pb-popover-show', { source: this, popup: instance });
             };
 
             this._tippy = tippy(target, options);

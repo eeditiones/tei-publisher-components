@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { themableMixin } from "./theming.js";
 import '@polymer/iron-icon';
 import '@polymer/iron-icons';
 import '@polymer/iron-collapse';
@@ -24,7 +25,7 @@ import '@polymer/iron-collapse';
  * @cssprop [--pb-collapse-icon-padding=0 4px 0 0] - padding in px for the "caret-down" icon left to the collapsible item
  * @fires pb-collapse-open - Fires opening the collapsed section
  */
-export class PbCollapse extends pbMixin(LitElement) {
+export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             ...super.properties,

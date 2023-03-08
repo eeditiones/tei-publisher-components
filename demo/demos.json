@@ -161,5 +161,8 @@
   },
   "pb-combo-box": {
     "demo/pb-combo-box.html": "Demo"
+  },
+  "pb-print-preview": {
+    "demo/pb-print-preview.html": "Demo"
   }
 }

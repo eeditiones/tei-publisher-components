@@ -1,6 +1,7 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
 import { translate } from "./pb-i18n.js";
+import { themableMixin } from "./theming.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -34,7 +35,7 @@ import { cmpVersion } from './utils.js';
  * @csspart filter-dropdown - dropdown for filtering
  * @csspart filter-input - input for filtering
  */
-export class PbBrowseDocs extends PbLoad {
+export class PbBrowseDocs extends themableMixin(PbLoad) {
 
     static get properties() {
         return {

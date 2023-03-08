@@ -7,11 +7,12 @@ node_modules
 !.vscode
 analysis.json
 pb-elements.json
-assets
+./assets
 images/leaflet
 images/openseadragon
 css/
 dist
 build
 lib/
+docs/
 *.iml

@@ -23,7 +23,8 @@ export default [
             'src/pb-components-bundle.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
-            'src/pb-edit-app.js'
+            'src/pb-edit-app.js',
+            'src/pb-code-editor.js'
         ],
         output: {
             dir: 'dist',
@@ -79,10 +80,6 @@ export default [
                         dest: './css/prismjs'
                     },
                     {
-                        src: './node_modules/codemirror/theme/*',
-                        dest: './css/codemirror'
-                    },
-                    {
                         src: './node_modules/leaflet/dist/leaflet-src.js',
                         dest: './lib'
                     },
@@ -101,6 +98,18 @@ export default [
                     {
                         src: './node_modules/tom-select/dist/css/*.min.css',
                         dest: './css/tom-select'
+                    },
+                    {
+                        src: './src/assets/pagedjs/*.css',
+                        dest: './css/pagedjs'
+                    },
+                    {
+                        src: './node_modules/pagedjs/dist/paged.polyfill.js',
+                        dest: 'lib'
+                    },
+                    {
+                        src: './src/assets/components.css',
+                        dest: 'css'
                     }
                 ]
             })

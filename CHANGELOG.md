@@ -1,3 +1,164 @@
+## [1.43.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.4...v1.43.5) (2023-03-01)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** fix editor issues by updating to jinn-codemirror 1.11.6 ([5ada4b8](https://github.com/eeditiones/tei-publisher-components/commit/5ada4b81d20a638d0e6e3b1781436ff2b6cf9dca))
+
+## [1.43.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.3...v1.43.4) (2023-02-27)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** update to latest jinn-codemirror to fix potential concurrency issues ([f16b260](https://github.com/eeditiones/tei-publisher-components/commit/f16b260b31ce022be716df5efb34fb71348d8cc7))
+
+## [1.43.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.2...v1.43.3) (2023-02-15)
+
+
+### Bug Fixes
+
+* **pb-popover:** add property to stop propagation, thus avoiding multiple nested pb-popover to all appear at once ([d015797](https://github.com/eeditiones/tei-publisher-components/commit/d015797084838f9d9007f6bb47a3af9313b7622a))
+
+## [1.43.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.1...v1.43.2) (2023-02-09)
+
+
+### Bug Fixes
+
+* **pb-load:** wrong initial setting for noCredentials broke pagination ([6433e07](https://github.com/eeditiones/tei-publisher-components/commit/6433e078900d713b6f489e54850ffcb9bdc08163))
+
+## [1.43.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.0...v1.43.1) (2023-01-18)
+
+
+### Bug Fixes
+
+* **theming:** try loading theme css from library as well as endpoint; make more components themable. ([3bf8848](https://github.com/eeditiones/tei-publisher-components/commit/3bf88485c4de2724b436a33bf31ab2211c44bfe7))
+
+# [1.43.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.7...v1.43.0) (2023-01-18)
+
+
+### Features
+
+* add support for component theming ([f618127](https://github.com/eeditiones/tei-publisher-components/commit/f6181279a25476e7b6e1494d774c54dc6e2ee236))
+
+## [1.42.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.6...v1.42.7) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-split-list:** allow category name to be internationalized ([ffafde4](https://github.com/eeditiones/tei-publisher-components/commit/ffafde4ed9cf8dd467690cf9ed5477de5ab9d368))
+
+## [1.42.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.5...v1.42.6) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** Expose underlying map object ([0660fc0](https://github.com/eeditiones/tei-publisher-components/commit/0660fc05e64d419750f708d3584e928173a6c3b6))
+* **pb-odd-editor:** output mode "printcss" is now called "print" ([5075713](https://github.com/eeditiones/tei-publisher-components/commit/507571321e1e5d51c5e642613d843300eb12d0e6))
+* **pb-split-list:** allow HTML in category names ([b55e254](https://github.com/eeditiones/tei-publisher-components/commit/b55e254c656bcf8a037efedc861d4a853df1fd7a))
+
+## [1.42.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.4...v1.42.5) (2023-01-10)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** update to jinn-codemirror 1.11.2 ([ac912c4](https://github.com/eeditiones/tei-publisher-components/commit/ac912c44943917b26b259c249233ae7a1e354dce))
+
+## [1.42.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.3...v1.42.4) (2023-01-09)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** reveal raw URL without paged.js in url attribute ([0c90240](https://github.com/eeditiones/tei-publisher-components/commit/0c9024046a3b13a12af17af5e26ce5cb04c0ea7e))
+
+## [1.42.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.2...v1.42.3) (2023-01-06)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** fix CORS issue with embedded iframe ([e070bf8](https://github.com/eeditiones/tei-publisher-components/commit/e070bf8c0db9a8c0511efdbe5f5e3062c9a4c141))
+
+## [1.42.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.1...v1.42.2) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** use iframe for preview ([d8d93f2](https://github.com/eeditiones/tei-publisher-components/commit/d8d93f210cf70dfa837b4fc863ff49ecdd1d3ac8))
+
+## [1.42.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.0...v1.42.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** missing interface.cs ([aed8716](https://github.com/eeditiones/tei-publisher-components/commit/aed87160d8b133f0554db81245019e7df31f3277))
+
+# [1.42.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.2...v1.42.0) (2023-01-04)
+
+
+### Features
+
+* **pb-print-preview:** new component for a print CSS preview ([3222f08](https://github.com/eeditiones/tei-publisher-components/commit/3222f08f40ed2f5e3d4e03bbb7665bab35e1fff9))
+
+## [1.41.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.1...v1.41.2) (2023-01-03)
+
+
+### Bug Fixes
+
+* **pb-link:** allow 'view' mode to be set via pb-link ([f08eb68](https://github.com/eeditiones/tei-publisher-components/commit/f08eb68942ae01e68d37be86f8bf421de37f0dca))
+
+## [1.41.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.0...v1.41.1) (2022-12-31)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** use correct editing mode for code editors ([9e6aa09](https://github.com/eeditiones/tei-publisher-components/commit/9e6aa09d861c3b22c294c7ca137f80473f3541ff))
+
+# [1.41.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.2...v1.41.0) (2022-12-30)
+
+
+### Bug Fixes
+
+* **pb-code-editor:** wrong import ([47bcbb3](https://github.com/eeditiones/tei-publisher-components/commit/47bcbb3c242ea8b7317c0a399d540692b0efb023))
+
+
+### Features
+
+* update pb-code-editor and pb-odd-editor to use codemirror 6 (instead of 5) as editor ([cc319ba](https://github.com/eeditiones/tei-publisher-components/commit/cc319baf322c9443a6282ffb0ddcf546369e9b40))
+* **pb-code-editor:** update to new @jinntec/jinn-codemirror based on codemirror 6 ([b1df9a3](https://github.com/eeditiones/tei-publisher-components/commit/b1df9a35197fa7a62a39013a85302f07d293c679))
+
+## [1.40.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.1...v1.40.2) (2022-11-27)
+
+
+### Bug Fixes
+
+* **pb-load:** add option to silently ignore network errors ([3695b28](https://github.com/eeditiones/tei-publisher-components/commit/3695b282d13e1bb127ec411fbb359ddd394a72a3))
+
+## [1.40.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.0...v1.40.1) (2022-11-26)
+
+
+### Bug Fixes
+
+* **pb-load:** fix errors if no-credentials option is set ([0bdb718](https://github.com/eeditiones/tei-publisher-components/commit/0bdb718cfd125f7e38d6f1a075209548f7093a7c))
+
+# [1.40.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.39.0...v1.40.0) (2022-11-26)
+
+
+### Features
+
+* **pb-load:** refresh when url, start or userParams attribute is changed; add attribute 'no-credentials' to disable attempting a cross-site request ([6f55e85](https://github.com/eeditiones/tei-publisher-components/commit/6f55e8533360adfcdb9862d8f4eda871345564da))
+
+# [1.39.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.7...v1.39.0) (2022-11-22)
+
+
+### Bug Fixes
+
+* **Dockerfile:** update to match TEI Publisher master with newer roaster ([2ca4d37](https://github.com/eeditiones/tei-publisher-components/commit/2ca4d37a56df8054d1f29446163e694cba69e73f))
+* **pb-page:** don't send pb-page-ready until both: i18n language and api version are correctly reported ([41c02cd](https://github.com/eeditiones/tei-publisher-components/commit/41c02cd4e0cec066901c0bdf47790ad610143e59))
+
+
+### Features
+
+* **pb-code-highlight:** allow theme to be set via CSS variable; load CSS only once ([6d4e2fe](https://github.com/eeditiones/tei-publisher-components/commit/6d4e2fe51664b8325de75b785bf5026336239697))
+
 ## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
 
 

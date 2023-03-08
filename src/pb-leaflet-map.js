@@ -223,6 +223,16 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         });
     }
 
+    /**
+     * The underlying leafletjs map. Can be used for custom scripts.
+     * 
+     * Will be null until the component is fully loaded. Listen to `pb-ready` on the component to
+     * be sure it has initialized. 
+     */
+    get map() {
+        return this._map;
+    }
+
     setMarkerIcon(layer) {
         if (this._icons && this._icons.default) {
             layer.setIcon(this._icons.default);
