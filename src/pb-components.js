@@ -8,6 +8,7 @@ import './pb-link.js';
 import './pb-facs-link.js';
 import './pb-collapse.js';
 import './pb-browse-docs.js';
+import './pb-browse.js';
 import './pb-document.js';
 import './pb-load.js';
 import './pb-navigation.js';
