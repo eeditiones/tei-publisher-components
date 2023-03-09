@@ -1,4 +1,5 @@
 import { waitOnce } from "./pb-mixin.js";
+import 'construct-style-sheets-polyfill';
 
 /**
  * Maps theme selector to CSSStyleSheet or null.
