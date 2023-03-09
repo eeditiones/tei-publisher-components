@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-popover Demo</title>
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                main {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                    <main>
+                        <pb-media-query query="(min-width:1024px)">
+                            <aside>
+                                <h3>Aside should hide on screens &lt; 1024px wide</h3>
+                                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, 
+                                sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+                                magna aliquyam erat, sed diam voluptua. At vero eos et accusam 
+                                et justo duo dolores et ea rebum. Stet clita kasd gubergren, 
+                                no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                            </aside>
+                        </pb-media-query>
+                        <section>
+                            <h3>Lorem Ipsum</h3>
+                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, 
+                                sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+                                magna aliquyam erat, sed diam voluptua. At vero eos et accusam 
+                                et justo duo dolores et ea rebum. Stet clita kasd gubergren, 
+                                no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
+                                ipsum dolor sit amet, consetetur sadipscing elitr, sed diam 
+                                nonumy eirmod tempor invidunt ut labore
+                                et dolore magna aliquyam 
+                                erat, sed diam voluptua. At vero eos et accusam et justo duo dolores 
+                                et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est 
+                                Lorem ipsum dolor sit amet.</p>
+                        </section>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

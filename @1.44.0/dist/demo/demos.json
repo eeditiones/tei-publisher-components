@@ -1,0 +1,168 @@
+{
+  "pb-view": {
+    "demo/pb-view.html": "View TEI document",
+    "demo/pb-view2.html": "Docbook document",
+    "demo/pb-view3.html": "Manipulating content via JS"
+  },
+  "pb-document": {
+    "demo/pb-document.html": "Demo"
+  },
+  "pb-browse-docs": {
+    "demo/pb-browse-docs.html": "Demo",
+    "demo/pb-browse-docs2.html": "Passing parameters from a custom form"
+  },
+  "pb-code-editor": {
+    "demo/pb-code-editor.html": "Demo"
+  },
+  "pb-code-highlight": {
+    "demo/pb-code-highlight.html": "Demo"
+  },
+  "pb-codepen": {
+    "demo/pb-codepen.html": "Demo"
+  },
+  "pb-collapse": {
+    "demo/pb-collapse.html": "Demo",
+    "demo/pb-collapse2.html": "Custom Event Wiring"
+  },
+  "pb-download": {
+    "demo/pb-download.html": "Demo"
+  },
+  "pb-ajax": {
+    "demo/pb-download.html": "Demo"
+  },
+  "pb-drawer": {
+    "demo/pb-drawer.html": "Demo",
+    "demo/pb-drawer2.html": "Toggling drawer from custom event"
+  },
+  "pb-edit-xml": {
+    "demo/pb-edit-xml.html": "Demo"
+  },
+  "pb-facsimile": {
+    "demo/pb-facsimile.html": "Demo",
+    "demo/pb-facsimile-2.html": "Align text page with facsimile"
+  },
+  "pb-grid": {
+    "demo/pb-grid.html": "Demo"
+  },
+  "pb-highlight": {
+    "demo/pb-highlight.html": "Demo"
+  },
+  "pb-i18n": {
+    "demo/pb-i18n.html": "Demo"
+  },
+  "pb-lang": {
+    "demo/pb-i18n.html": "Demo"
+  },
+  "pb-leaflet-map": {
+    "demo/pb-leaflet-map.html": "Demo",
+    "demo/pb-leaflet-map2.html": "Show map on demand",
+    "demo/pb-leaflet-map3.html": "Map with layers"
+  },
+  "pb-link": {
+    "demo/pb-link.html": "Demo"
+  },
+  "pb-load": {
+    "demo/pb-load.html": "Demo"
+  },
+  "pb-odd-editor": {
+    "demo/pb-odd-editor.html": "Demo"
+  },
+  "pb-login": {
+    "demo/pb-login.html": "Demo"
+  },
+  "pb-restricted": {
+    "demo/pb-login.html": "Demo"
+  },
+  "pb-manage-odds": {
+    "demo/pb-manage-odds.html": "Demo"
+  },
+  "pb-media-query": {
+    "demo/pb-media-query.html": "Demo"
+  },
+  "pb-message": {
+    "demo/pb-message.html": "Demo"
+  },
+  "pb-popover": {
+    "demo/pb-popover.html": "Demo"
+  },
+  "pb-progress": {
+    "demo/pb-progress.html": "Demo"
+  },
+  "pb-repeat": {
+    "demo/pb-repeat.html": "Demo"
+  },
+  "pb-search": {
+    "demo/pb-search.html": "Demo",
+    "demo/pb-search2.html": "With nested pb-select"
+  },
+  "pb-select-feature": {
+    "demo/pb-select-feature.html": "Server-side",
+    "demo/pb-select-feature2.html": "Client-side",
+    "demo/pb-select-feature3.html": "Server-side with pb-load"
+  },
+  "pb-select-odd": {
+    "demo/pb-select-odd.html": "Demo"
+  },
+  "pb-svg": {
+    "demo/pb-svg.html": "Demo"
+  },
+  "pb-tabs": {
+    "demo/pb-tabs.html": "Demo"
+  },
+  "pb-timeline": {
+    "demo/pb-timeline.html": "Demo"
+  },
+  "pb-toggle-feature": {
+    "demo/pb-toggle-feature.html": "Server-side with pb-view",
+    "demo/pb-toggle-feature2.html": "Client-side",
+    "demo/pb-toggle-feature3.html": "Server-side with pb-load"
+  },
+  "pb-zoom": {
+    "demo/pb-zoom.html": "Demo"
+  },
+  "dts-client": {
+    "demo/dts-client.html": "Demo"
+  },
+  "pb-edit-app": {
+    "demo/pb-edit-app.html": "Generate Application"
+  },
+  "pb-markdown": {
+    "demo/pb-markdown.html": "Demo"
+  },
+  "pb-version": {
+    "demo/pb-version.html": "Demo"
+  },
+  "pb-mei": {
+    "demo/pb-mei.html": "Demo",
+    "demo/pb-mei2.html": "Extended Features"
+  },
+  "pb-autocomplete": {
+    "demo/pb-autocomplete.html": "Demo",
+    "demo/pb-autocomplete2.html": "Search with autocomplete",
+    "demo/pb-autocomplete3.html": "Preloaded, static autocomplete list"
+  },
+  "pb-select": {
+    "demo/pb-select.html": "Demo",
+    "demo/pb-select2.html": "Read options from remote datasource",
+    "demo/pb-select3.html": "Combined filter options",
+    "demo/pb-select-i18n.html": "Use with i18n"
+  },
+  "pb-clipboard": {
+    "demo/pb-clipboard.html": "Clipboard Demo"
+  },
+  "pb-formula": {
+    "demo/pb-formula.html": "Demo"
+  },
+  "pb-table-grid": {
+    "demo/pb-table-grid.html": "Demo"
+  },
+  "pb-custom-form": {
+    "demo/pb-custom-form.html": "Demo"
+  },
+  "pb-combo-box": {
+    "demo/pb-combo-box.html": "Demo"
+  },
+  "pb-print-preview": {
+    "demo/pb-print-preview.html": "Demo"
+  }
+}

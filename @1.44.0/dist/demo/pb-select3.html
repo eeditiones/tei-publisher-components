@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Using pb-select</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+        </style>
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+    <body>
+        <h1>Using pb-select with a remote data source</h1>
+        
+        <pb-demo-snippet>
+            <template>
+                <p>Reads the items to be shown from a JSON file:</p>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                    <iron-form id="form">
+                        <form action="">
+                            <pb-select label="Title" name="title" source="api/search/autocomplete?query=s">
+                                <pb-select label="Field" name="field" slot="subform" value="title">
+                                    <paper-item value="title">Title</paper-item>
+                                    <paper-item value="author">Author</paper-item>
+                                </pb-select>
+                            </pb-select>
+                            <button type="submit"><paper-button>Submit</paper-button></button>
+                        </form>
+                    </iron-form>
+                    <p>Parameters which would be sent: <code id="output"></code></p>
+                </pb-page>
+                <script>
+                    const form = document.getElementById('form');
+                    form.addEventListener('iron-form-submit', (ev) => {
+                        ev.preventDefault();
+                        const data = JSON.stringify(form.serializeForm());
+                        document.getElementById('output').innerHTML = data;
+                    });
+                </script>
+            </template>
+        </pb-demo-snippet>
+       
+    </body>
+</html>

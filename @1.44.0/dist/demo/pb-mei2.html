@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-mei Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                pb-mei {
+                    max-width: 1024px;
+                    width: 100%;
+                    margin: 40px 0;
+                    padding: 20px 0;
+                    border-bottom: 1px solid #919191;
+                    border-top: 1px solid #919191;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <main>
+                    <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
+                        footer="always">
+                        <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
+                    </pb-mei>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
