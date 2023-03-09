@@ -111,7 +111,9 @@
     "reset": "Reset",
     "placeholder": "Enter Query",
     "sections": "Search sections",
-    "headings": "Search headings"
+    "headings": "Search headings",
+    "title": "Search titles",
+    "content": "Search content"
   },
   "dts": {
     "endpoint": "Select Endpoint",
