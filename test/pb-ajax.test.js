@@ -31,7 +31,7 @@ describe('recompile ODD', () => {
 
         await oneEvent(document, 'pb-end-update');
 
-        const message = ajax.shadowRoot.querySelector('paper-dialog-scrollable');
-        expect(message).to.contain.text('graves-web.xql');
+        const message = ajax.shadowRoot.querySelector('pb-message');
+        expect(message.message).to.contain('graves-web.xql');
     });
 });
