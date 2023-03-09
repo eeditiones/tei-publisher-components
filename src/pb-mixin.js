@@ -437,51 +437,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return fallback;
     }
 
-    getParameterValues(name) {
-        return TeiPublisher.url.searchParams.getAll(name);
-    }
-
-    setParameter(name, value) {
-        if (typeof value === 'undefined') {
-            TeiPublisher.url.searchParams.delete(name);
-        } else if (Array.isArray(value)) {
-            TeiPublisher.url.searchParams.delete(name);
-            value.forEach(function (val) {
-                TeiPublisher.url.searchParams.append(name, val);
-            });
-        } else {
-            TeiPublisher.url.searchParams.set(name, value);
-        }
-    }
-
-    setParameters(obj) {
-        TeiPublisher.url.search = '';
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                this.setParameter(key, obj[key]);
-            }
-        }
-    }
-
     getParameters() {
         const params = {};
         for (let key of TeiPublisher.url.searchParams.keys()) {
             params[key] = this.getParameter(key);
-        }
-        return params;
-    }
-
-    getParametersMatching(regex) {
-        const params = {};
-        for (let pair of TeiPublisher.url.searchParams.entries()) {
-            if (regex.test(pair[0])) {
-                const param = params[pair[0]];
-                if (param) {
-                    param.push(pair[1]);
-                } else {
-                    params[pair[0]] = [pair[1]];
-                }
-            }
         }
         return params;
     }
@@ -494,21 +453,8 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         }
     }
 
-    setPath(path) {
-        const page = document.querySelector('pb-page');
-        if (page) {
-            const appRoot = page.appRoot;
-
-            this.getUrl().pathname = appRoot + '/' + path;
-        }
-    }
-
     getUrl() {
         return TeiPublisher.url;
-    }
-
-    pushHistory(msg, state) {
-        history.pushState(state, msg, TeiPublisher.url.toString());
     }
 
     getEndpoint() {
