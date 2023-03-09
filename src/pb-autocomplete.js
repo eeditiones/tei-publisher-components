@@ -233,7 +233,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         loader.url = this.toAbsoluteURL(this.source);
 
         const params = this._getParameters();
-        params['query'] = query;
+        params.query = query;
         loader.params = params;
         //console.log('send request for %s with %o', loaderId, params);
 
@@ -286,18 +286,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     }
 
     _autocompleteSelected(ev) {
-        this.lastSelected = ev.detail.text;
+        const { text, value } = ev.detail;
+        this.lastSelected = text;
         const input = this.shadowRoot.getElementById('search');
-        input.value = ev.detail.text;
-        this.value = ev.detail.value;
+        input.value = text;
+        this.value = value;
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
 
-        this.emitTo('pb-autocomplete-selected', {
-            text: ev.detail.text,
-            value: ev.detail.value
-        });
+        this.emitTo('pb-autocomplete-selected', { text, value });
     }
 
     _setInput(ev) {
