@@ -643,22 +643,26 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 loadContent.url = url;
                 loadContent.generateRequest();
             });
-        } else {
-            if (!this.url) {
-                if (this.minApiVersion('1.0.0')) {
-                    this.url = "api/parts";
-                } else {
-                    this.url = "modules/lib/components.xql";
-                }
-            }
-            if (this.minApiVersion('1.0.0')) {
-                loadContent.url = `${this.getEndpoint()}/${this.url}/${encodeURIComponent(this.getDocument().path)}/json`;
-            } else {
-                loadContent.url = `${this.getEndpoint()}/${this.url}`;
-            }
-            loadContent.params = params;
-            loadContent.generateRequest();
+            return;
         }
+
+        if (!this.url) {
+            if (this.minApiVersion('1.0.0')) {
+                this.url = "api/parts";
+            } else {
+                this.url = "modules/lib/components.xql";
+            }
+        }
+
+        let url = `${this.getEndpoint()}/${this.url}`;
+
+        if (this.minApiVersion('1.0.0')) {
+            url += `/${encodeURIComponent(this.getDocument().path)}/json`;
+        }
+
+        loadContent.url = url;
+        loadContent.params = params;
+        loadContent.generateRequest();
     }
 
     /**
@@ -766,11 +770,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        // if (!this.disableHistory && this.xmlId && !this.map) {
-        //     //this.setParameter('root', this.nodeId);
-        //     this.setParameter('id', this.xmlId);
-        //     this.pushHistory('Navigate to xml:id');
-        // }
         this.xmlId = null;
 
         this.updateComplete.then(() => {
