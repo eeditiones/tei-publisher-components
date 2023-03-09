@@ -1,3 +1,10 @@
+# [1.44.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.5...v1.44.0) (2023-03-09)
+
+
+### Features
+
+* **pb-browse:** pb-browse is a stripped-down and simplified replacement for pb-browse-docs ([df165b6](https://github.com/eeditiones/tei-publisher-components/commit/df165b6e9347b9bd603eea06a647bd76e800e097))
+
 ## [1.43.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.4...v1.43.5) (2023-03-01)
 
 
