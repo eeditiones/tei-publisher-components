@@ -37,6 +37,12 @@ export class PbUpload extends pbMixin(LitElement) {
             },
             _files: {
                 type: Object
+            },
+            /**
+             * the event to emit when the upload has completed (default: 'pb-load')
+             */
+            event: {
+                type: String
             }
         };
     }
@@ -44,6 +50,7 @@ export class PbUpload extends pbMixin(LitElement) {
     constructor() {
         super();
         this._files = new Map();
+        this.event = 'pb-load';
     }
 
     connectedCallback() {
@@ -93,7 +100,7 @@ export class PbUpload extends pbMixin(LitElement) {
             });
             if (done) {
                 this.emitTo('pb-end-update');
-                this.emitTo('pb-load');
+                this.emitTo(this.event);
                 if (oddsUploaded.length > 0) {
                     this.emitTo('pb-refresh-odds', { 'odds': oddsUploaded });
                 }
