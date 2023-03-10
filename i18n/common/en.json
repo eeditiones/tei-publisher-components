@@ -113,7 +113,8 @@
     "sections": "Search sections",
     "headings": "Search headings",
     "title": "Search titles",
-    "content": "Search content"
+    "content": "Search content",
+    "scope": "Query scope"
   },
   "dts": {
     "endpoint": "Select Endpoint",
