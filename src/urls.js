@@ -110,19 +110,17 @@ class Registry {
     }
 
     getState(component) {
-        const chs = getSubscribedChannels(component);
-        const channel = chs.length === 0 ? '__default__' : chs[0];
+        const channel = getSubscribedChannels(component)[0];
         const state = this.channelStates[channel];
-        if (!state) {
-            this.channelStates[channel] = {};
-            return this.channelStates[channel];
+        if (state) {
+            return state;
         }
-        return state;
+        this.channelStates[channel] = {};
+        return this.channelStates[channel];
     }
 
     setState(component, newState) {
-        const chs = getSubscribedChannels(component);
-        const channel = chs.length === 0 ? '__default__' : chs[0];
+        const channel = getSubscribedChannels(component)[0];
         this.channelStates[channel] = Object.assign(this.channelStates[channel], newState);
     }
 
@@ -186,8 +184,7 @@ class Registry {
 
         const resolved = new URL(newUrl, window.location.href);
         
-        const channels = getSubscribedChannels(elem);
-        const chs = channels.length === 0 ? ['__default__'] : channels;
+        const chs = getSubscribedChannels(elem);
         chs.forEach((channel) => {
             if (overwrite || !this.channelStates[channel]) {
                 this.channelStates[channel] = newState;

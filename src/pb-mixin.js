@@ -42,48 +42,45 @@ export function waitOnce(name, callback) {
         });
     }
 }
-/*
+
+/**
  * Get the list of channels this element emits to.
  *
- * @returns an array of channel names
+ * @param {HTMLElement} elem the emitting element
+ * @returns {String[]} an array of channel names
  */
 export function getEmittedChannels(elem) {
-    const chs = [];
     const emitConfig = elem.getAttribute('emit-config');
     if (emitConfig) {
         const json = JSON.parse(emitConfig);
-        Object.keys(json).forEach(key => {
-            chs.push(key);
-        });
-    } else {
-        const emitAttr = elem.getAttribute('emit');
-        if (emitAttr) {
-            chs.push(emitAttr);
-        }
+        return Object.keys(json);
     }
-    return chs;
+
+    const emitAttr = elem.getAttribute('emit');
+    if (emitAttr) {
+        return [emitAttr]
+    }
+
+    return [defaultChannel];
 }
 
 /**
  * Get the list of channels this element subscribes to.
  *
- * @returns an array of channel names
+ * @param {HTMLElement} elem the subscribing element
+ * @returns {String[]} an array of channel names
  */
 export function getSubscribedChannels(elem) {
-    const chs = [];
     const subscribeConfig = elem.getAttribute('subscribe-config');
     if (subscribeConfig) {
         const json = JSON.parse(subscribeConfig);
-        Object.keys(json).forEach((key) => {
-            chs.push(key);
-        });
-    } else {
-        const subscribeAttr = elem.getAttribute('subscribe');
-        if (subscribeAttr) {
-            chs.push(subscribeAttr);
-        }
+        return Object.keys(json);
     }
-    return chs;
+    const subscribeAttr = elem.getAttribute('subscribe');
+    if (subscribeAttr) {
+        return [subscribeAttr];
+    }
+    return [defaultChannel];
 }
 
 /**
@@ -328,33 +325,21 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *
      * @param {String} type Name of the event, usually starting with `pb-`
      * @param {Function} listener Callback function
-     * @param {Array} [channels] Optional: explicitely specify the channels to emit to. This overwrites
+     * @param {String[]} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the emit property. Pass empty array to target the default channel.
      */
-    subscribeTo(type, listener, channels) {
-        let handlers;
-        const chs = channels || getSubscribedChannels(this);
-        if (chs.length === 0) {
-            // no channel defined: listen for all events not targetted at a channel
-            const handle = (ev) => {
-                if (ev.detail && ev.detail.key) {
+    subscribeTo(type, listener, channels = []) {
+        const chs = channels && channels.length ? channels : getSubscribedChannels(this);
+        const handlers = chs.map(key => {
+            const handle = ev => {
+                if (!ev.detail || !ev.detail.key || ev.detail.key !== key) {
                     return;
                 }
                 listener(ev);
             };
             document.addEventListener(type, handle);
-            handlers = [handle];
-        } else {
-            handlers = chs.map(key => {
-                const handle = ev => {
-                    if (ev.detail && ev.detail.key && ev.detail.key === key) {
-                        listener(ev);
-                    }
-                };
-                document.addEventListener(type, handle);
-                return handle;
-            });
-        }
+            return handle;
+        });
         // add new handlers to list of active subscriptions
         this._subscriptions.set(type, handlers);
         return handlers;
@@ -366,50 +351,27 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *
      * @param {String} type Name of the event, usually starting with `pb-`
      * @param {Object} [options] Options to be passed in ev.detail
-     * @param {Array} [channels] Optional: explicitely specify the channels to emit to. This overwrites
+     * @param {String[]} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
-    emitTo(type, options, channels) {
-        const chs = channels || getEmittedChannels(this);
-        if (chs.length == 0) {
-            if (type === 'pb-ready') {
-                readyEventsFired.add('__default__');
-            }
-            if (options) {
-                options = Object.assign({ _source: this }, options);
-            } else {
-                options = { _source: this };
-            }
-            const ev = new CustomEvent(type, {
-                detail: options,
-                composed: true,
-                bubbles: true
-            });
-            this.dispatchEvent(ev);
-        } else {
-            chs.forEach(key => {
-                const detail = {
-                    key: key,
-                    _source: this
-                };
-                if (options) {
-                    for (const opt in options) {
-                        if (options.hasOwnProperty(opt)) {
-                            detail[opt] = options[opt];
-                        }
-                    }
-                }
-                if (type === 'pb-ready') {
-                    readyEventsFired.add(key);
-                }
-                const ev = new CustomEvent(type, {
-                    detail: detail,
-                    composed: true,
-                    bubbles: true
-                });
-                this.dispatchEvent(ev);
-            });
+    emitTo(type, options, channels = []) {
+        const chs = channels && channels.length ? channels : getEmittedChannels(this);
+        chs.forEach(ch => this._emit(ch, type, options));
+    }
+
+    _emit(key, type, options) {
+        if (type === 'pb-ready') {
+            readyEventsFired.add(key);
         }
+
+        // eslint-disable-next-line prefer-object-spread
+        const detail = Object.assign({ key, _source: this }, options);
+        const ev = new CustomEvent(type, {
+            detail,
+            composed: true,
+            bubbles: true
+        });
+        this.dispatchEvent(ev);
     }
 
     /**
