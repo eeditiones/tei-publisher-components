@@ -417,6 +417,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-results-received', {
             "count": total ? parseInt(total, 10) : 0,
             "start": this.start,
+            "content": content,
             "params": this.shadowRoot.getElementById('loadContent').params
         });
     }
