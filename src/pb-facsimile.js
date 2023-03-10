@@ -10,13 +10,13 @@ import { resolveURL } from './utils.js';
  * @fires pb-update - Checks the contents received for pb-facs-links
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
  * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
- * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
+ * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed;
  * `fail` - image could not be loaded.
- * 
+ *
  * @cssprop --pb-facsimile-height=auto - Max. height of the image viewer
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
  * @csspart image - exposes the inner div hosting the image viewer
- * 
+ *
  * @slot before - use for content which should be shown above the facsimile viewer
  * @slot after - use for content which should be shown below the facsimile viewer
  */
@@ -246,6 +246,28 @@ export class PbFacsimile extends pbMixin(LitElement) {
             this.loaded = false;
             this.emitTo('pb-facsimile-status', { status: 'fail' });
         });
+
+        /*
+        handling of full-screen view requires to hide/unhide the content of body to allow full screen viewer
+        to full-page functionality. Standard OSD completely deletes all body children disconnecting all event-handlers
+        that have been there. This solution just uses style.display to hide/show. Former display value of pb-page
+        will be preserved.
+
+        Current limitation: this solution assumes that a pb-page element exists and is an immediate child of body.
+         */
+        this.ownerPage = this.closest('pb-page');
+        if(this.ownerPage){
+            this.pbPageDisplay = window.getComputedStyle(this.ownerPage).getPropertyValue('display');
+            this.viewer.addHandler('full-screen', (ev) => {
+                if(ev.fullScreen){
+                    this.ownerPage.style.display = 'none';
+                }else{
+                    this.viewer.clearOverlays();
+                    this.emitTo('pb-refresh');
+                    this.ownerPage.style.display = this.pbPageDisplay;
+                }
+            });
+        }
         this._facsimileObserver();
 
         this.signalReady();
