@@ -101,6 +101,7 @@ class Registry {
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.forEach((value, key) => {
             if (this.usePath && key === 'path') {
+                console.warn("Found path parameter in query, but usePath is set to true");
                 return;
             }
             params[key] = value;
@@ -138,19 +139,23 @@ class Registry {
     }
 
     set(path, value) {
-        const components = path.split('.');
-        if (components.length > 1) {
-            const last = components.slice(0, components.length - 1)
-                .reduce((result, component) => {
-                    if (!result[component]) {
-                        result[component] = {};
-                    }
-                    return result[component];
-                }, this.state);
-            last[components[components.length - 1]] = value;
-        } else {
+        if (!path.contains('.')) {
             this.state[path] = value;
+            return;
         }
+        const components = path.split('.');
+        const lastPart = components.pop()
+        // make sure all intermediate steps are available
+        const lastIntermediate = components.reduce((result, nextComponent) => {
+                if (!result[nextComponent]) {
+                    // eslint-disable-next-line no-param-reassign
+                    result[nextComponent] = {};
+                }
+                return result[nextComponent];
+            },
+            this.state
+        );
+        lastIntermediate[lastPart] = value;
     }
 
     commit(elem, newState, overwrite = false) {
