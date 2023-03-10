@@ -1,6 +1,7 @@
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'
   workflow_dispatch:
 name: Deploy to GitHub Pages
 jobs:
