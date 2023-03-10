@@ -395,4 +395,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
 
 }
-customElements.define('pb-facsimile', PbFacsimile);
+if (!customElements.get('pb-facsimile')) {
+    customElements.define('pb-facsimile', PbFacsimile);
+}
