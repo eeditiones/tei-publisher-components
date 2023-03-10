@@ -78,6 +78,10 @@
       "title": "Markdown Sample",
       "description": "An example of using markdown for static content."
     },
+    "annotate": {
+      "title": "Annotation Samples",
+      "description": "Another playground for annotating documents."
+    },
     "up": "Go to parent"
   },
   "upload": {
