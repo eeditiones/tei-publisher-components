@@ -21,3 +21,4 @@ copy('src', path.join(dir, 'src'));
 const index = fs.readFileSync(path.join('demo', 'redirect.html'), 'utf-8');
 const updated = index.toString().replace(/\$version/, versionTag);
 fs.writeFileSync(path.join('docs', 'index.html'), updated, { encoding: 'utf-8' });
+fs.writeFileSync(path.join('docs', 'api.html'), updated, { encoding: 'utf-8' });
