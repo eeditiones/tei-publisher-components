@@ -210,41 +210,42 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * to signal that they are ready to respond to events. Only wait for elements which
      * emit to one of the channels this component subscribes to.
      *
-     * @param callback function to be called when all components are ready
+     * @param {Function} callback function to be called when all components are ready
      */
     wait(callback) {
-        if (this.waitFor) {
-            const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
-            const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
-            const targetCount = targets.length;
-            if (targetCount === 0) {
-                // selector did not return any targets
-                return callback();
+        if (!this.waitFor) {
+            callback();
+            return;
+        }
+        const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
+        const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
+        const targetCount = targets.length;
+        if (targetCount === 0) {
+            // selector did not return any targets
+            callback();
+            return;
+        }
+        let count = targetCount;
+        targets.forEach((target) => {
+            if (target._isReady) {
+                count -= 1;
+                if (count === 0) {
+                    callback();
+                }
+                return;
             }
-            let count = 0;
-            targets.forEach((target) => {
-                if (target._isReady) {
-                    count++;
-                    if (targetCount === count) {
-                        callback();
-                    }
-                } else {
-                    const handler = target.addEventListener('pb-ready', (ev) => {
-                        if (ev.detail.source == this) {
-                            // same source: ignore
-                            return;
-                        }
-                        count++;
-                        if (targetCount === count) {
-                            target.removeEventListener('pb-ready', handler);
-                            callback();
-                        }
-                    });
+            const handler = target.addEventListener('pb-ready', (ev) => {
+                if (ev.detail.source === this) {
+                    // same source: ignore
+                    return;
+                }
+                count -= 1;
+                if (count === 0) {
+                    target.removeEventListener('pb-ready', handler);
+                    callback();
                 }
             });
-        } else {
-            callback();
-        }
+        });
     }
 
     /**
