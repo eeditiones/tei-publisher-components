@@ -185,6 +185,8 @@ export class PbSearch extends pbMixin(LitElement) {
     _doSearch() {
         let json = this.shadowRoot.getElementById('ironform').serializeForm();
         json = this._paramsFromSubforms(json);
+        // remove unnecessary param added by autocomplete
+        delete json['autocomplete-custom-template'];
         if (this.redirect) {
             window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
