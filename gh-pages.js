@@ -18,6 +18,9 @@ copy('lib', path.join(dir, 'lib'));
 copy('css', path.join(dir, 'css'));
 copy('src', path.join(dir, 'src'));
 
+const redirect = fs.readFileSync(path.join('demo', 'redirect.js'), 'utf-8');
+fs.writeFileSync(path.join('docs', 'redirect.js'), redirect, { encoding: 'utf-8' });
+
 const index = fs.readFileSync(path.join('demo', 'redirect.html'), 'utf-8');
 const updated = index.toString().replace(/\$version/, versionTag);
 fs.writeFileSync(path.join('docs', 'index.html'), updated, { encoding: 'utf-8' });
