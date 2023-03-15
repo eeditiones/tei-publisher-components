@@ -337,8 +337,8 @@ export class PbPage extends pbMixin(LitElement) {
         this.subscribeTo('pb-i18n-language', ev => {
             const { language } = ev.detail;
             this._i18nInstance.changeLanguage(language).then(t => {
-            this._updateI18n(t);
-            this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
+                this._updateI18n(t);
+                this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
             }, []);
         });
 
