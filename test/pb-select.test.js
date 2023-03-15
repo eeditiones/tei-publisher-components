@@ -1,17 +1,13 @@
-import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { expect, waitUntil } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import '../src/pb-select.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
 import '@polymer/iron-form';
 
-
-
-
 describe('simple select', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('submits in form', async () => {
         const el = (
             await waitForPage(`
@@ -91,9 +87,8 @@ describe('simple select', () => {
 });
 
 describe('select initialized from remote data source', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('submits in form', async () => {
         const el = await waitForPage(`
                 <pb-page endpoint="." api-version="1.0.0">

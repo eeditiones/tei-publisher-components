@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, expect, fixtureCleanup } from '@open-wc/testing';
+import { fixture, expect } from '@open-wc/testing';
+import { cleanup } from './util.js';
+
 import '../src/pb-search.js';
 
 // TODO: this test has to be rewritten to use the URL registry or other means
 describe.skip('serialize URL parameters', () => {
-  after(() => {
-    fixtureCleanup();
-  });
+  after(cleanup);
 
   it('pb-search setParameters and getParameters', async () => {
     const el = await fixture(`

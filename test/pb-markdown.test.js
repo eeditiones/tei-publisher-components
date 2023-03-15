@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-expressions */
-import { expect, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import '../src/pb-page.js';
 import '../src/pb-markdown.js';
 
 describe('render markdown', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('renders markdown passed as content', async () => {
         const el = await waitForPage(`
                 <pb-page endpoint="${__karma__.config.endpoint}">

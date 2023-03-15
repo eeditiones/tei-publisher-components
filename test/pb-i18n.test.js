@@ -1,13 +1,12 @@
-import { oneEvent, expect, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { oneEvent, expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import { defaultChannel } from '../src/pb-mixin.js';
 import '../src/pb-page.js';
 import '../src/pb-i18n.js';
 
 describe('translate labels', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('uses default translations', async () => {
         const el = await waitForPage(`
                 <pb-page require-language language="en" api-version="1.0.0">

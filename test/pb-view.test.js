@@ -1,15 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, expect, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { oneEvent, expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import { defaultChannel } from '../src/pb-mixin.js';
+
 import '../src/pb-document.js';
 import '../src/pb-page.js';
 import '../src/pb-view.js';
 
 describe('initialize and refresh view', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
 
     it('emits and receives events', async () => {
         // this.timeout(10000);

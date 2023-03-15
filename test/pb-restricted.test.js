@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-expressions */
 import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
+import { cleanup } from './util.js';
 
 import '../src/pb-page.js';
 import '../src/pb-restricted.js';
 import '../src/pb-login.js';
 
 describe('restricted sections', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+    
     it('should show restricted section', async () => {
         const el = (
             await fixture(`

@@ -1,11 +1,9 @@
-import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from "./util.js";
+import { fixture, expect, waitUntil } from '@open-wc/testing';
+import { waitForPage, cleanup } from "./util.js";
 import '../src/pb-page.js';
 
 describe('initializes', () => {
-    afterEach(() => {
-        fixtureCleanup();
-    });
+    afterEach(cleanup);
     
     it('reports endpoint and language', async () => {
         let initDetails;

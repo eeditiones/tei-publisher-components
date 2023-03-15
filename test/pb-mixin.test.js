@@ -1,13 +1,12 @@
-import { expect, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import '../src/pb-page.js';
 import { getEmittedChannels, getSubscribedChannels, defaultChannel } from "../src/pb-mixin.js";
 import "../src/pb-navigation.js";
 
 describe('emits and subscribes', () => {
-    afterEach(() => {
-        fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('emits to channel', async () => {
         const el =
             await waitForPage(`
