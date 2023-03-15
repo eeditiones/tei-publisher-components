@@ -907,9 +907,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (this.noScroll) {
             return;
         }
-        const { hash } = this.getUrl();
-        if (hash) {
-            const target = this.shadowRoot.getElementById(hash.substring(1));
+        if (registry.state.id) {
+            const target = this.shadowRoot.getElementById(registry.state.id);
             console.log('hash target: %o', target);
             if (target) {
                 window.requestAnimationFrame(() =>
