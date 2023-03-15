@@ -1,3 +1,10 @@
+## [1.44.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.1...v1.44.2) (2023-03-15)
+
+
+### Bug Fixes
+
+* **OSD full-screen:** fixes detached eventlisteners after fullscreen view ([0d1cfb9](https://github.com/eeditiones/tei-publisher-components/commit/0d1cfb9c13af5f6a026e18919fb8768892d2eeb0))
+
 ## [1.44.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.0...v1.44.1) (2023-03-15)
 
 
