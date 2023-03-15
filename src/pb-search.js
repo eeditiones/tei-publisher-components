@@ -32,8 +32,14 @@ export class PbSearch extends pbMixin(LitElement) {
             action: {
                 type: String
             },
+            name: {
+                type: String
+            },
             value: {
                 type: String
+            },
+            start: {
+                type: Number
             },
             placeHolder: {
                 type: String,
@@ -62,20 +68,27 @@ export class PbSearch extends pbMixin(LitElement) {
 
     constructor() {
         super();
+        this.name = 'query';
         this.value = '';
         this.redirect = false;
         this.submitOnLoad = false;
         this.placeHolder = 'search.placeholder';
         this.disableAutocomplete = false;
+        this.start = 1;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', this._doSearch.bind(this));
+        this.subscribeTo('pb-paginate', (ev) => {
+            this.start = ev.detail.params.start;
+            this._doSearch(true);
+        });
 
         registry.subscribe(this, (state) => {
             this.value = state.query;
+            this.start = state.start;
             if (this.submitOnLoad) {
                 this.emitTo('pb-load', {
                     "url": this.action,
@@ -182,17 +195,17 @@ export class PbSearch extends pbMixin(LitElement) {
         `;
     }
 
-    _doSearch() {
+    _doSearch(pagination = false) {
         let json = this.shadowRoot.getElementById('ironform').serializeForm();
         json = this._paramsFromSubforms(json);
         // remove unnecessary param added by autocomplete
         delete json['autocomplete-custom-template'];
+        // always start on first result after submitting new search
+        json.start = pagination ? this.start : 1;
         if (this.redirect) {
             window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
             registry.commit(this, json);
-            // always start on first result after submitting new search
-            json.start = 1;
             this.emitTo('pb-load', {
                 "url": this.action,
                 "params": json
