@@ -1,3 +1,10 @@
+## [1.44.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.0...v1.44.1) (2023-03-15)
+
+
+### Bug Fixes
+
+* **cdn:** dynamic redirect for publisher cdn ([16b3d51](https://github.com/eeditiones/tei-publisher-components/commit/16b3d51e0997a4f114b4a8c524602e583c458c3e))
+
 # [1.44.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.5...v1.44.0) (2023-03-09)
 
 
