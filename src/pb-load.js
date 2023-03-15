@@ -172,11 +172,13 @@ export class PbLoad extends pbMixin(LitElement) {
             }
         }, []);
 
-        registry.subscribe(this, (state) => {
-            this.start = state.start;
-            this.userParams = state;
-            this.load();
-        });
+        if (this.history) {
+            registry.subscribe(this, (state) => {
+                this.start = state.start;
+                this.userParams = state;
+                this.load();
+            });
+        }
 
         this.signalReady();
     }
