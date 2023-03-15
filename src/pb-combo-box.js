@@ -1,6 +1,6 @@
 import { LitElement } from 'lit-element';
 import TomSelect from "tom-select";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 
 function importTheme(theme) {
@@ -114,7 +114,7 @@ export class PbComboBox extends pbMixin(LitElement) {
         }
         input.autocomplete = false;
 
-        PbComboBox.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             const options = {};
             if (this.source) {
                 const url = this.toAbsoluteURL(this.source);

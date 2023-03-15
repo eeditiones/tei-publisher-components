@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
@@ -80,7 +80,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        PbSelectFeature.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             registry.subscribe(this, (state) => {
                 const param = state[this.name];
                 if (typeof param !== 'undefined') {

@@ -1,5 +1,5 @@
-import {LitElement, html, css} from 'lit-element';
-import {pbMixin} from './pb-mixin.js';
+import { LitElement, html, css } from 'lit-element';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 
 /**
  * This component queries the blacklab API of TEI-Publisher for a list of text matches
@@ -108,7 +108,7 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
          * waiting for the page to be ready before storing a reference to the shadowDOM of the view element this
          * component is attached to via the 'view' attribute.
          */
-        PbBlacklabHighlight.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.viewElement = document.getElementById(this.view);
             if (!this.viewElement) {
                 console.error(`${this}: view element with id ${this.view} does not exist`);

@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { Grid } from "gridjs";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from "./theming.js";
 import '@polymer/paper-input/paper-input';
@@ -130,7 +130,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
         const pbColumns = this.querySelectorAll('pb-table-column');
         const columns = [];
         pbColumns.forEach((column) => columns.push(column.data()));
-        PbTableGrid.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this._params = registry.state;
             const url = this.toAbsoluteURL(this.source);
             const config = {

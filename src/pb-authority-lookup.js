@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { createConnectors } from "./authority/connectors.js";
 import '@polymer/paper-input/paper-input';
@@ -66,7 +66,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         this._query();
     });
 
-    PbAuthorityLookup.waitOnce('pb-page-ready', () => {
+    waitOnce('pb-page-ready', () => {
       const connectors = createConnectors(this.getEndpoint(), this);
       connectors.forEach(connector => { this._authorities[connector.register] = connector });
     });

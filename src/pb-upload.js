@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { getCSSProperty } from "./utils.js";
 import '@vaadin/vaadin-upload';
@@ -106,7 +106,7 @@ export class PbUpload extends pbMixin(LitElement) {
                 }
             }
         });
-        PbUpload.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             if (this.minApiVersion('1.0.0')) {
                 uploader.target = `${this.getEndpoint()}/api/upload/`;
             } else {

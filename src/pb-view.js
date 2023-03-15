@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
-import { getEmittedChannels, pbMixin, waitOnce } from "./pb-mixin.js";
+import { pbMixin, waitOnce } from "./pb-mixin.js";
 import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
@@ -488,7 +488,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             });
         }
         if (!this.onUpdate) {
-            PbView.waitOnce('pb-page-ready', (data) => {
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this._features.language = data.language;
                 }

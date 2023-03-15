@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin, waitOnce } from './pb-mixin';
 import { translate } from './pb-i18n';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-ajax';
@@ -140,12 +140,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             if (this.substring) {
                 autocomplete.queryFn = _query;
             }
-            PbAutocomplete.waitOnce('pb-page-ready', () => {
+            waitOnce('pb-page-ready', () => {
                 this._sendRequest();
             });
         } else if (this.value) {
             if (this.source) {
-                PbAutocomplete.waitOnce('pb-page-ready', () => {
+                waitOnce('pb-page-ready', () => {
                     //console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
                     this._sendRequest(this.value);
                 });

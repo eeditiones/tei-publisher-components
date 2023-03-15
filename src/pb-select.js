@@ -4,7 +4,7 @@ import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/iron-label/iron-label.js";
 import { translate } from "./pb-i18n.js";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 
 
 /**
@@ -108,7 +108,7 @@ export class PbSelect extends pbMixin(LitElement) {
                 });
             });
         }
-        PbSelect.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this._loadRemote();
         });
     }

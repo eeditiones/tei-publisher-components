@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from "./theming.js";
 import { registry } from "./urls.js";
 
@@ -66,7 +66,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     connectedCallback() {
         super.connectedCallback();
 
-        PbSplitList.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.selected = registry.state.category || this.selected;
 
             registry.subscribe(this, (state) => {
@@ -82,7 +82,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     firstUpdated() {
         super.firstUpdated();
         
-        PbSplitList.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.load();
         });
     }

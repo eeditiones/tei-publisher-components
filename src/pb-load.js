@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import { registry } from "./urls.js";
@@ -139,7 +139,7 @@ export class PbLoad extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo(this.event, (ev) => {
-            PbLoad.waitOnce('pb-page-ready', () => {
+            waitOnce('pb-page-ready', () => {
                 if (this.history) {
                     if (ev.detail && ev.detail.params) {
                         const start = ev.detail.params.start;
@@ -186,14 +186,14 @@ export class PbLoad extends pbMixin(LitElement) {
     firstUpdated() {
         if (this.auto) {
             this.start = registry.state.start || 1;
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
                 this.wait(() => this.load());
             });
         } else {
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
@@ -209,7 +209,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 case 'userParams':
                 case 'start':
                     if (this.auto && this.loader) {
-                        PbLoad.waitOnce('pb-page-ready', () => {
+                        waitOnce('pb-page-ready', () => {
                             this.wait(() => this.load());
                         });
                     }

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
@@ -59,7 +59,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
     firstUpdated() {
         super.firstUpdated();
-        PbSelectOdd.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this._refresh();
         });
     }

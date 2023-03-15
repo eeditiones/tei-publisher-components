@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import 'js-cookie/src/js.cookie.js';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 
 /**
  * Generate a link to download a resource. Optionally shows a dialog during the download.
@@ -104,7 +104,7 @@ export class PbDownload extends pbMixin(LitElement) {
                 this._href = this._computeURL();
             }
         });
-        PbDownload.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this._target = this._computeTarget();
             this._href = this._computeURL();
         });

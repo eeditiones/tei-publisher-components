@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-tabs';
 import '@polymer/iron-pages';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from "./urls.js";
 
 
@@ -33,7 +33,7 @@ export class PbTabs extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        PbTabs.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.selected = registry.state.tab || 0;
 
             registry.subscribe(this, (state) => {
