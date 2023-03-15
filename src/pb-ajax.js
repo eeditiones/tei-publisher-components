@@ -161,8 +161,8 @@ export class PbAjax extends pbMixin(LitElement) {
         } else {
             this._message = msg;
         }
-        const dialog = this.shadowRoot.getElementById('messageDialog');
-        dialog.open();
+        const dialog = this.shadowRoot.getElementById('confirmDialog');
+        dialog.show(i18n('dialogs.error'), this._message);
         this.emitTo('pb-end-update');
     }
 
