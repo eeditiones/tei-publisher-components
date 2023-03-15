@@ -139,7 +139,7 @@ export class PbSelect extends pbMixin(LitElement) {
         }
 
         let url = this.toAbsoluteURL(this.source);
-        url += url.contains('?') ? '&' : '?';
+        url += url.includes('?') ? '&' : '?';
         url += this._getParameters();
 
         console.log('<pb-select> loading items from %s', url);
