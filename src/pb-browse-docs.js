@@ -432,7 +432,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
 
     _facets(ev) {
         if (ev.detail && ev.detail.params) {
-            this.clearParametersMatching(/^(all-|facet-).*/);
+            registry.clearParametersMatching(this, /^(all-|facet-).*/);
             this.facets = ev.detail.params;
             this.start = 1;
             registry.commit(this, ev.detail.params)

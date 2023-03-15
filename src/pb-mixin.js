@@ -410,14 +410,6 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         return params;
     }
 
-    clearParametersMatching(regex) {
-        for (let pair of TeiPublisher.url.searchParams.entries()) {
-            if (regex.test(pair[0])) {
-                TeiPublisher.url.searchParams.delete(pair[0]);
-            }
-        }
-    }
-
     getUrl() {
         return TeiPublisher.url;
     }

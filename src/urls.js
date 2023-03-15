@@ -125,6 +125,16 @@ class Registry {
         this.channelStates[channel] = Object.assign(this.channelStates[channel], newState);
     }
 
+    clearParametersMatching (component, regex) {
+        const {state} = this
+
+        for (const key of Object.keys(state)) {
+            if (regex.test(key)) {
+                state[key] = null
+            }
+        }
+    }
+
     get(path, defaultValue) {
         if (!this.state) {
             return undefined;
@@ -168,27 +178,8 @@ class Registry {
 
     _commit(elem, newState, overwrite, replace) {
         this.state = overwrite ? newState : Object.assign(this.state, newState);
-        const newUrl = new URL(window.location.href);
-        Object.keys(this.state)
-            .filter((param) => !(param === 'path' || param === 'id'))
-            .forEach((param) => {
-                if (this.state[param] !== null) {
-                    newUrl.searchParams.set(param, this.state[param]);
-                }
-            });
-        if (this.usePath) {
-            newUrl.pathname = `${this.rootPath}/${this.state.path}`;
-        } else {
-            newUrl.searchParams.set('path', this.state.path);
-        }
-        if (this.state.id) {
-            newUrl.hash = `#${this.state.id}`;
-        } else {
-            newUrl.hash = '';
-        }
+        const resolved = this.urlFromState();
 
-        const resolved = new URL(newUrl, window.location.href);
-        
         const chs = getSubscribedChannels(elem);
         chs.forEach((channel) => {
             if (overwrite || !this.channelStates[channel]) {
@@ -206,6 +197,29 @@ class Registry {
             window.history.pushState(json, '', resolved);
             log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
         }
+    }
+
+    urlFromState() {
+        const newUrl = new URL(window.location.href);
+        for (const [param, value] of Object.entries(this.state)) {
+            if (( param !== 'path' || !this.usePath )
+                    && param !== 'id') {
+                if (value === null) {
+                    newUrl.searchParams.delete(param)
+                } else {
+                    newUrl.searchParams.set(param, value)
+                }
+            }
+        }
+
+        if (this.usePath) {
+            newUrl.pathname = `${this.rootPath}/${this.state.path}`;
+        }
+
+        newUrl.hash = this.state.id ? `#${this.state.id}` : '';
+
+        console.log('urlFromState', newUrl.searchParams.toString())
+        return newUrl;
     }
 
     toJSON() {
