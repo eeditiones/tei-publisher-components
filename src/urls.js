@@ -101,7 +101,7 @@ class Registry {
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.forEach((value, key) => {
             if (this.usePath && key === 'path') {
-                console.warn("Found path parameter in query, but usePath is set to true");
+                console.warn("Found path parameter in query, but usePath is set to true. The path parameter will be ignored.");
                 return;
             }
             params[key] = value;
