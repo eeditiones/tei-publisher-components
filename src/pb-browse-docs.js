@@ -149,11 +149,13 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
             }
 
             this.facets = {};
+            // registry get state by regex
+            // this.facets = registry.getParametersMatching(this, /^facet-.*$/)
             Object.keys(registry.state).forEach((key) => {
                 if (/^facet-.*$/.test(key)) {
                     const param = registry.state[key];
-                    if (param) {
-                        this.facets.push(param);
+                    if (this.facets[key]) {
+                        this.facets[key].push(param);
                     } else {
                         this.facets[key] = [param];
                     }
