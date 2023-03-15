@@ -32,7 +32,8 @@ module.exports = config => {
         mocha: {
           timeout: 10000
         }
-      }
+      },
+      hostname: '127.0.0.1'
     })
   );
   return config;
