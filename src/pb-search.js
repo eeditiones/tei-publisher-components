@@ -87,8 +87,8 @@ export class PbSearch extends pbMixin(LitElement) {
         });
 
         registry.subscribe(this, (state) => {
-            this.value = state.query;
-            this.start = state.start;
+            this.value = state.query || '';
+            this.start = state.start || 1;
             if (this.submitOnLoad) {
                 this.emitTo('pb-load', {
                     "url": this.action,
