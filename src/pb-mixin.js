@@ -18,7 +18,7 @@ const readyEventsFired = new Set();
  */
 const initEventsFired = new Map();
 
-const defaultChannel = '__default__';
+export const defaultChannel = '__default__';
 
 export function clearPageEvents() {
     initEventsFired.clear();

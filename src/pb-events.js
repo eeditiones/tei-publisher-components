@@ -1,3 +1,5 @@
+import { defaultChannel } from "./pb-mixin.js";
+
 /**
  * Utility class to plug into TEI Publisher's event system from custom javascript.
  */
@@ -15,6 +17,9 @@ export class PbEvents {
         if (channels && !Array.isArray(channels)) {
             // eslint-disable-next-line no-param-reassign
             channels = [channels];
+        }
+        if (!channels || !channels.length) {
+            channels = [defaultChannel];
         }
         const handler = document.addEventListener(name, (/** @type {CustomEvent} */ ev) => {
             if ((!channels && !(ev.detail && ev.detail.key)) || 
@@ -40,6 +45,9 @@ export class PbEvents {
         if (channels && !Array.isArray(channels)) {
             // eslint-disable-next-line no-param-reassign
             channels = [channels];
+        }
+        if (!channels || !channels.length) {
+            channels = [defaultChannel];
         }
         return new Promise((resolve) => {
             document.addEventListener(name, (/** @type {CustomEvent} */ ev) => {
