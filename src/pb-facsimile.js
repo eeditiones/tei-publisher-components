@@ -42,6 +42,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'show-navigator'
             },
+            
+            /** If true then the 'previous" and 'next' button is displayed switch between images. */
+            showSequenceMode: {
+                type: Boolean,
+                attribute: 'show-sequence-control'
+            },
+
             /** If true then the 'Go home' button is displayed to go back to the original zoom and pan. */
             showHomeControl: {
                 type: Boolean,
@@ -143,6 +150,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.type = 'iiif';
         this.visibilityRatio = 1;
         this.defaultZoomLevel = 0;
+        this.sequenceMode = false;
         this.showHomeControl = false;
         this.showNavigator = false;
         this.showNavigationControl = false;
@@ -217,9 +225,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
         const options = {
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,
-            preserveViewport: true,
-            sequenceMode: true,
+            preserveViewport: true,            
             showZoomControl: true,
+            sequenceMode: this.showSequenceMode,
             showHomeControl: this.showHomeControl,
             showFullPageControl: this.showFullPageControl,
             showNavigator: this.showNavigator,
