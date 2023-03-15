@@ -1,5 +1,6 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
+import { waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { themableMixin } from "./theming.js";
 import { cmpVersion } from './utils.js';
@@ -137,7 +138,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     connectedCallback() {
         super.connectedCallback();
 
-        PbLoad.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             if (registry.state.sort) {
                 this.sortBy = registry.state.sort;
             }
@@ -193,7 +194,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     }
 
     firstUpdated() {
-        PbBrowseDocs.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             if (cmpVersion(options.apiVersion, '1.0.0') >= 0) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
