@@ -530,7 +530,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     }
 
     _handleEnter(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             this._filter();
         }
     }
