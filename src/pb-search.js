@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
@@ -107,7 +107,7 @@ export class PbSearch extends pbMixin(LitElement) {
         ironform.addEventListener('iron-form-response', (event) =>
             event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
         );
-        PbSearch.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             if (this.minApiVersion('1.0.0')) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
