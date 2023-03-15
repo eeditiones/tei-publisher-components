@@ -23,13 +23,12 @@ describe('initializes', () => {
     });
 
     it('allows only one pb-page', async () => {
-        const el =
-            await waitForPage(`
-                <div>
-                    <pb-page id="p1" endpoint="${ __karma__.config.endpoint }"></pb-page>
-                    <pb-page id="p2" endpoint="https://teipublisher.com/exist/apps/van-gogh"></pb-page>
-                </div>
-            `);
+        const el = await waitForPage(`
+            <div>
+                <pb-page id="p1" endpoint="${ __karma__.config.endpoint }"></pb-page>
+                <pb-page id="p2" endpoint="https://teipublisher.com/exist/apps/van-gogh"></pb-page>
+            </div>
+        `);
 
         const disabled = el.querySelectorAll('pb-page[disabled]');
         expect(disabled.length).to.equal(1);

@@ -11,8 +11,6 @@ describe('initialize and refresh view', () => {
     afterEach(cleanup);
 
     it('emits and receives events', async () => {
-        // this.timeout(10000);
-
         const el = await waitForPage(`
             <pb-page endpoint="${ __karma__.config.endpoint }">
                 <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>

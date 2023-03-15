@@ -13,16 +13,16 @@ describe('recompile ODD', () => {
         this.timeout(20000);
         let loggedIn = false;
         document.addEventListener('pb-login', () => { loggedIn = true; }, { once: true });
-        const el = (
-            await fixture(`
-                <pb-page endpoint="${ __karma__.config.endpoint }">
-                    <pb-ajax url="api/odd?odd=graves.odd" method="post">
+
+        const el = await fixture(`
+            <pb-page endpoint="${ __karma__.config.endpoint }">
+                <pb-ajax url="api/odd?odd=graves.odd" method="post">
                     Recompile<span slot="title">Recompile ODD</span>
-                    </pb-ajax>
-                    <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>
-                </pb-page>
-            `)
-        );
+                </pb-ajax>
+                <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>
+            </pb-page>
+        `);
+
         await waitUntil(() => loggedIn, 'waiting for pb-login', { timeout: 15000 });
 
         const ajax = el.querySelector('pb-ajax');

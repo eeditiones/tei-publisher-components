@@ -13,7 +13,7 @@ export async function waitForPage(template, type = 'pb-page-ready') {
         initDone = true;
     }, { once: true });
 
-    const el = (await fixture(template));
+    const el = await fixture(template);
 
     await waitUntil(() => initDone, 'waiting for pb-page-ready', { timeout: 5000 });
 
