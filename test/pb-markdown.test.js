@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, expect, fixtureCleanup, waitUntil } from '@open-wc/testing';
+import { expect, fixtureCleanup } from '@open-wc/testing';
 import { waitForPage } from './util.js';
 import '../src/pb-page.js';
 import '../src/pb-markdown.js';
