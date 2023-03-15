@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { oneEvent, expect, fixtureCleanup } from '@open-wc/testing';
 import { waitForPage } from './util.js';
+import { defaultChannel } from '../src/pb-mixin.js';
 import '../src/pb-document.js';
 import '../src/pb-page.js';
 import '../src/pb-view.js';
@@ -11,8 +12,8 @@ describe('initialize and refresh view', () => {
     });
 
     it('emits and receives events', async () => {
-        this.timeout(10000);
-        
+        // this.timeout(10000);
+
         const el = await waitForPage(`
             <pb-page endpoint="${ __karma__.config.endpoint }">
                 <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
@@ -31,7 +32,12 @@ describe('initialize and refresh view', () => {
         expect(h1).to.exist;
         expect(h1).to.have.text('Introduction');
 
-        setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', { detail: { id: 'installation' } })));
+        setTimeout(() => document.dispatchEvent(new CustomEvent('pb-refresh', { 
+            detail: { 
+                id: 'installation',
+                key: defaultChannel
+            }
+        })));
         await oneEvent(document, 'pb-end-update');
 
         const h2 = view.shadowRoot.querySelector('h2');
@@ -42,7 +48,8 @@ describe('initialize and refresh view', () => {
             detail: {
                 path: 'test/graves6.xml',
                 odd: 'graves',
-                position: null
+                position: null,
+                key: defaultChannel
             }
         })));
         await oneEvent(document, 'pb-end-update');
