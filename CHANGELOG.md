@@ -1,3 +1,63 @@
+# [2.0.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.2...v2.0.0) (2023-03-16)
+
+
+### Bug Fixes
+
+* **pb-ajax:** partial fix for test failure ([2699c4c](https://github.com/eeditiones/tei-publisher-components/commit/2699c4c684068f4384811b724e4dbd4c380f85cd))
+* **pb-browse:** respect history property to disable pushing to history ([b5f8c28](https://github.com/eeditiones/tei-publisher-components/commit/b5f8c28a3ad343f0f1f18bbbba593414eb2de33e))
+* **pb-browse-docs:** add history support ([5698237](https://github.com/eeditiones/tei-publisher-components/commit/569823737cf4d40c992eaae5b70776ec222b957a))
+* **pb-browse-docs:** pick up facets when connected ([a4eb4f2](https://github.com/eeditiones/tei-publisher-components/commit/a4eb4f238d569c5d94a4d1327307f0f773364c44))
+* **pb-events:** defaultChannel handling ([a16ce6f](https://github.com/eeditiones/tei-publisher-components/commit/a16ce6f87fe017497076044074da894d820f2d45))
+* **pb-events:** subscribe to defaultChannel if channel is null or empty array ([5c59613](https://github.com/eeditiones/tei-publisher-components/commit/5c5961377891419ea5027420195b28bc78c7a1c4))
+* **pb-grid:** do not use es6 operator ([dedbf14](https://github.com/eeditiones/tei-publisher-components/commit/dedbf14edb8007fa47be6ddc0767be0c6aa96428))
+* **pb-load:** also pass content in pb-results-received ([2947281](https://github.com/eeditiones/tei-publisher-components/commit/2947281c13da3c374522d08cd5a8aeb68db73916))
+* **pb-load:** subscribe to browser history only if enabled by user ([3771c27](https://github.com/eeditiones/tei-publisher-components/commit/3771c27c86027910253d1447497c69954e97a3c7))
+* **pb-mixin:** add defaultChannel constant ([ab84bea](https://github.com/eeditiones/tei-publisher-components/commit/ab84beaca9bbd1b5487269ab41f0dab838e74c06))
+* **pb-search:** browser history navigation ([4aa9b76](https://github.com/eeditiones/tei-publisher-components/commit/4aa9b76d88c907c780960c005dc28ad6e6b02ab6))
+* **pb-search:** strip out the 'autocomplete-custom-template' parameter added by the autcomplete subcomponent ([12e1e5c](https://github.com/eeditiones/tei-publisher-components/commit/12e1e5c0cc09712b6e711a0422d387616f4f7e61))
+* **pb-search,pb-paginate:** pb-search now keeps track of pagination position ([1700af0](https://github.com/eeditiones/tei-publisher-components/commit/1700af053dc0227de41bfcf6782014cf3d78c8fa))
+* **pb-select:** use correct string function ([13ebfbb](https://github.com/eeditiones/tei-publisher-components/commit/13ebfbbbd9e49a0b5360c14744069a24e03729df))
+* **pb-select-feature:** (re-)allow state to be toggled on elements which reside in the HTML context, but are not part of a pb-view or pb-load ([1260e9b](https://github.com/eeditiones/tei-publisher-components/commit/1260e9bb1f4aa8107cfa173c74dac12300cb1240))
+* **pb-select-feature:** update to mirror pb-toggle-feature ([9606688](https://github.com/eeditiones/tei-publisher-components/commit/96066880d4fafd99f7b629f7a1cf50695dfca62a))
+* **pb-split-list,pb-table-grid:** update to support browser history ([1b72351](https://github.com/eeditiones/tei-publisher-components/commit/1b723516a97c15ce93a3dc308f397beb5983e51d))
+* **pb-tabs:** update to support browser history ([e205279](https://github.com/eeditiones/tei-publisher-components/commit/e20527914037addd6a49040d79f76105c3202633))
+* **pb-toggle-feature:** refactor for history support ([27d7638](https://github.com/eeditiones/tei-publisher-components/commit/27d7638c78bcfb62be9fb10a23001a373ab44cb8))
+* **pb-view:** fix on-update ([814f4bb](https://github.com/eeditiones/tei-publisher-components/commit/814f4bbf08bd0bdb34c00782dbdd58fd6b607892))
+* **pb-view:** ignore external params if property is specified as attribute ([77851d2](https://github.com/eeditiones/tei-publisher-components/commit/77851d2f038c97c1050b9dfa5fad79f517d37a02))
+* **theming:** add polyfill for constructable stylesheets ([0056e94](https://github.com/eeditiones/tei-publisher-components/commit/0056e94bc29bd46b4c7183704b74a2f4ca12d9c9))
+* **theming:** line endings ([cf029ed](https://github.com/eeditiones/tei-publisher-components/commit/cf029ede1490c283627ffef9a799e9d410ad5875))
+* **urls:** improve warning message ([9832a53](https://github.com/eeditiones/tei-publisher-components/commit/9832a53150dd46f619b03dbf0d88b4b82c72b4f1))
+* drop url-templates in favour of simpler mechanism ([d0f6d01](https://github.com/eeditiones/tei-publisher-components/commit/d0f6d01d920220147d53a70e511ede14ad4a2b7f))
+* state should be saved by subscribed, not emitted channels ([1f93be9](https://github.com/eeditiones/tei-publisher-components/commit/1f93be9a19e6678e2e6f0f8d3fa57e1e2ae31a1f))
+
+
+### Code Refactoring
+
+* **pb-mixin:** remove unused methods ([b21bfae](https://github.com/eeditiones/tei-publisher-components/commit/b21bfae717052167ac3e539216e4de20cc73ab57))
+
+
+### Features
+
+* **dts-client:** use URL registry ([cea7336](https://github.com/eeditiones/tei-publisher-components/commit/cea733680aaf3d52b9fc42445eca8d26bf0b1b86))
+* **dts-select-endpoint:** use URL registry ([b6df38f](https://github.com/eeditiones/tei-publisher-components/commit/b6df38f4cb4064eb105a424ef9070d7ffd129eba))
+* **pb-browse-docs:** use URL registry ([07a20ff](https://github.com/eeditiones/tei-publisher-components/commit/07a20ffd83e49468acfb62e3d93a8c3af4a9fc82))
+* **pb-load:** use new URL registry ([5e8030d](https://github.com/eeditiones/tei-publisher-components/commit/5e8030de30d634ea37812b3731bf0f67f0b6ebe8))
+* **pb-select-template:** use URL registry ([82fc98b](https://github.com/eeditiones/tei-publisher-components/commit/82fc98b85b42ec576a5b8e1bae3a5607b7567410))
+* **pb-upload:** make the event emitted on finish configurable ([f1a0aca](https://github.com/eeditiones/tei-publisher-components/commit/f1a0aca552324ef972443c890ffa50d2372c1dcb))
+
+
+### BREAKING CHANGES
+
+* **pb-mixin:** Several methods are no longer used since the
+introduction of the URL registry.
+
+- getParameterValues
+- setParameter
+- setParameters
+- getParametersMatching
+- setPath
+- pushHistory
+
 ## [1.44.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.1...v1.44.2) (2023-03-15)
 
 
