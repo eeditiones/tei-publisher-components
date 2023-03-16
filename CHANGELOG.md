@@ -1,3 +1,19 @@
+# [2.1.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.0.0...v2.1.0) (2023-03-16)
+
+
+### Bug Fixes
+
+* **pb-facs-link:** wait for pb-facsimile or pb-image-strip to be ready ([93da282](https://github.com/eeditiones/tei-publisher-components/commit/93da282ddcafd9c28bc87bb4efeefd13ecf73a51))
+
+
+### Features
+
+* **pb-facsimile:** respect facs-link order ([8754768](https://github.com/eeditiones/tei-publisher-components/commit/87547680da8c4a539a13e3283d234d121bec6571))
+* **pb-image-strip:** reverse default order ([ea12409](https://github.com/eeditiones/tei-publisher-components/commit/ea12409fed2051ac2ed9132b81c5644a679e4296))
+* pb-facs-link, pb-image-strip ([f667176](https://github.com/eeditiones/tei-publisher-components/commit/f667176b7561a824c63ecacdb8ee0ed454997907))
+* ** pb-image-strip:** sort items by order ([d0baa51](https://github.com/eeditiones/tei-publisher-components/commit/d0baa5193b6f6cb1ea1abe54a27f811aa272d4cc))
+* **pb-image-strip:** add new component ([9143856](https://github.com/eeditiones/tei-publisher-components/commit/9143856b5877da9d896ca6c4cef8e3f8deff8c97)), closes [#85](https://github.com/eeditiones/tei-publisher-components/issues/85)
+
 # [2.0.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.2...v2.0.0) (2023-03-16)
 
 
