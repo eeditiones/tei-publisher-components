@@ -1,35 +1,25 @@
 /* eslint-disable no-unused-expressions */
-import { oneEvent, fixture, expect, waitUntil } from '@open-wc/testing';
-import { cleanup } from './util.js';
+import { oneEvent, expect } from '@open-wc/testing';
+import { cleanup, waitForPage } from './util.js';
 
 import '../src/pb-document.js';
 import '../src/pb-page.js';
 import '../src/pb-ajax.js';
 import '../src/pb-login.js';
-import { PbEvents } from '../src/pb-events.js';
 
 describe('recompile ODD', () => {
     afterEach(cleanup);
 
     it('recompiles and shows message', async function() {
         this.timeout(20000);
-        let loggedIn = false;
-        PbEvents.subscribeOnce('pb-login')
-            .then((ev) => {
-                console.log(`logged in as ${ev.detail.user}`);
-                loggedIn = true;
-            });
 
-        const el = (await fixture(`
+        const el = (await waitForPage(`
             <pb-page endpoint="${ __karma__.config.endpoint }">
-                <pb-ajax url="api/odd?odd=graves.odd" method="post">
-                    Recompile<span slot="title">Recompile ODD</span>
+                <pb-ajax url="api/version">
+                    <paper-button raised>Version</paper-button><span slot="title">Version</span>
                 </pb-ajax>
-                <pb-login user="tei" password="${__karma__.config.passwd}"></pb-login>
             </pb-page>
         `));
-
-        await waitUntil(() => loggedIn, 'waiting for pb-login', { timeout: 15000 });
 
         const ajax = el.querySelector('pb-ajax');
 
@@ -38,6 +28,6 @@ describe('recompile ODD', () => {
         await oneEvent(document, 'pb-end-update');
 
         const message = ajax.shadowRoot.querySelector('pb-message');
-        expect(message.message).to.contain('graves-web.xql');
+        expect(message.message).to.contain('"eXist"');
     });
 });
