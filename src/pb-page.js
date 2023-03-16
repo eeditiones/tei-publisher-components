@@ -8,6 +8,7 @@ import { resolveURL } from './utils.js';
 import { loadStylesheets } from "./theming.js";
 import { initTranslation } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 
 /**
  * Make sure there's only one instance of pb-page active at any time.
@@ -37,6 +38,10 @@ export class PbPage extends pbMixin(LitElement) {
             appRoot: {
                 type: String,
                 attribute: 'app-root'
+            },
+            urlPath: {
+                type: String,
+                attribute: 'url-path'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -142,6 +147,7 @@ export class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlPath = 'path';
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this.theme = null;
@@ -179,6 +185,12 @@ export class PbPage extends pbMixin(LitElement) {
             return;
         }
 
+        if (!this.appRoot) {
+            this.appRoot = window.location.pathname;
+        }
+
+        registry.configure(this.urlPath === 'path', this.appRoot);
+
         this.endpoint = this.endpoint.replace(/\/+$/, '');
         
         if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
@@ -186,12 +198,12 @@ export class PbPage extends pbMixin(LitElement) {
         }
         this._localeFallbacks.push('common');
 
-        const target = this.getParameter('_target');
+        const target = registry.state._target;
         if (target) {
             this.endpoint = target;
         }
 
-        const apiVersion = this.getParameter('_api');
+        const apiVersion = registry.state._api;
         if (apiVersion) {
             this.apiVersion = apiVersion;
         }
@@ -325,14 +337,14 @@ export class PbPage extends pbMixin(LitElement) {
         this.subscribeTo('pb-i18n-language', ev => {
             const { language } = ev.detail;
             this._i18nInstance.changeLanguage(language).then(t => {
-            this._updateI18n(t);
-            this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
+                this._updateI18n(t);
+                this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
             }, []);
         });
 
 
-        this.subscribeTo('pb-toggle', this._toggleFeatures.bind(this));
-
+        // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
+        this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
         this.unresolved = false;
 
         console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
@@ -367,21 +379,18 @@ export class PbPage extends pbMixin(LitElement) {
      * and dispatch actions to the elements on the page.
      */
     _toggleFeatures(ev) {
-        if (ev.detail.selectors) {
-            ev.detail.selectors.forEach(sc => {
-                this.querySelectorAll(sc.selector).forEach(node => {
-                    const command = sc.command || 'toggle';
-                    if (node.command) {
-                        node.command(command, sc.state);
-                    }
-                    if (sc.state) {
-                        node.classList.add(command);
-                    } else {
-                        node.classList.remove(command);
-                    }
-                });
-            });
-        }
+        const sc = ev.detail;
+        this.querySelectorAll(sc.selector).forEach(node => {
+            const command = sc.command || 'toggle';
+            if (node.command) {
+                node.command(command, sc.state);
+            }
+            if (sc.state) {
+                node.classList.add(command);
+            } else {
+                node.classList.remove(command);
+            }
+        });
     }
 
     render() {

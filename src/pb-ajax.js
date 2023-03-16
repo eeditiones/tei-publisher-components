@@ -121,8 +121,8 @@ export class PbAjax extends pbMixin(LitElement) {
         if (this.confirm) {
             const dialog = this.shadowRoot.getElementById('confirmDialog');
             dialog.confirm(this._dialogTitle, i18n(this.confirm))
-            .then(() => this.trigger())
-            .catch(() => console.log('<pb-ajax> Action cancelled'));
+                .then(() => this.trigger())
+                .catch(() => console.log('<pb-ajax> Action cancelled'));
         } else {
             this.trigger();
         }
@@ -161,8 +161,8 @@ export class PbAjax extends pbMixin(LitElement) {
         } else {
             this._message = msg;
         }
-        const dialog = this.shadowRoot.getElementById('messageDialog');
-        dialog.open();
+        const dialog = this.shadowRoot.getElementById('confirmDialog');
+        dialog.show(i18n('dialogs.error'), this._message);
         this.emitTo('pb-end-update');
     }
 

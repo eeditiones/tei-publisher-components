@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 
 /**
@@ -65,7 +65,7 @@ export class PbPrintPreview extends pbMixin(LitElement) {
             this.emitTo('pb-end-update');
         });
 
-        PbPrintPreview.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.refresh();
         });
     }

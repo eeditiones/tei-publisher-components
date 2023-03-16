@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -138,29 +139,26 @@ export class PbLoad extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo(this.event, (ev) => {
-            if (this.history && ev.detail && ev.detail.params) {
-                const start = ev.detail.params.start;
-                if (start) {
-                    this.setParameter('start', start);
-                    this.pushHistory('pagination', {
-                        start: start
+            waitOnce('pb-page-ready', () => {
+                if (this.history) {
+                    if (ev.detail && ev.detail.params) {
+                        const start = ev.detail.params.start;
+                        if (start) {
+                            registry.commit(this, { start });
+                        }
+                    }
+                    this.userParams = registry.state;
+                    registry.subscribe(this, (state) => {
+                        if (state.start) {
+                            this.start = state.start;
+                            this.load();
+                        }
                     });
+                    registry.replace(this, this.userParams);
                 }
-            }
-            PbLoad.waitOnce('pb-page-ready', () => {
                 this.load(ev);
             });
         });
-
-        if (this.history) {
-            window.addEventListener('popstate', (ev) => {
-                ev.preventDefault();
-                if (ev.state && ev.state.start && ev.state.start !== this.start) {
-                    this.start = ev.state.start;
-                    this.load();
-                }
-            });
-        }
 
         this.subscribeTo('pb-toggle', ev => {
             this.toggleFeature(ev);
@@ -174,20 +172,28 @@ export class PbLoad extends pbMixin(LitElement) {
             }
         }, []);
 
+        if (this.history) {
+            registry.subscribe(this, (state) => {
+                this.start = state.start;
+                this.userParams = state;
+                this.load();
+            });
+        }
+
         this.signalReady();
     }
 
     firstUpdated() {
         if (this.auto) {
-            this.start = this.getParameter('start', this.start);
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            this.start = registry.state.start || 1;
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
                 this.wait(() => this.load());
             });
         } else {
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
@@ -203,7 +209,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 case 'userParams':
                 case 'start':
                     if (this.auto && this.loader) {
-                        PbLoad.waitOnce('pb-page-ready', () => {
+                        waitOnce('pb-page-ready', () => {
                             this.wait(() => this.load());
                         });
                     }
@@ -246,9 +252,12 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     toggleFeature(ev) {
-        this.userParams = ev.detail.properties;
+        this.userParams = registry.getState(this);
         console.log('<pb-load> toggle feature %o', this.userParams);
-        if (ev.detail.action === 'refresh') {
+        if (ev.detail.refresh) {
+            if (this.history) {
+                registry.commit(this, this.userParams);
+            }
             this.load();
         }
     }
@@ -410,6 +419,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-results-received', {
             "count": total ? parseInt(total, 10) : 0,
             "start": this.start,
+            "content": content,
             "params": this.shadowRoot.getElementById('loadContent').params
         });
     }

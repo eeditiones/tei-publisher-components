@@ -1,12 +1,12 @@
-import { oneEvent, fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { oneEvent, expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
+import { defaultChannel } from '../src/pb-mixin.js';
 import '../src/pb-page.js';
 import '../src/pb-i18n.js';
 
 describe('translate labels', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('uses default translations', async () => {
         const el = await waitForPage(`
                 <pb-page require-language language="en" api-version="1.0.0">
@@ -31,15 +31,18 @@ describe('translate labels', () => {
     });
 
     it('reacts to language change', async () => {
-        const el = (
-            await waitForPage(`
+        const el = await waitForPage(`
                 <pb-page require-language api-version="1.0.0">
                     <span data-i18n="document.contents">unset</span>
                 </pb-page>
-            `, 'pb-i18n-update')
+            `,
+            'pb-i18n-update'
         );
-
-        document.dispatchEvent(new CustomEvent('pb-i18n-language', { detail: { "language": "de" }}));
+        const detail = {
+            language: 'de',
+            key: defaultChannel
+        };
+        document.dispatchEvent(new CustomEvent('pb-i18n-language', { detail }));
         await oneEvent(document, 'pb-i18n-update');
 
         const node = el.querySelector('span');

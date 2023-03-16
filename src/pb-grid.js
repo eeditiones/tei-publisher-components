@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import './pb-panel.js';
 
 /**
@@ -54,6 +55,7 @@ export class PbGrid extends pbMixin(LitElement) {
 
     constructor() {
         super();
+        this.panels = [];
         this.direction = 'ltr';
         this.animated = 'pb-view';
         this.animation = false;
@@ -63,34 +65,35 @@ export class PbGrid extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-panel', ev => {
-            const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(ev.detail.panel);
-            if (idx > -1) {
-                console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
-                this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
-
-                localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-                this.setParameter('panels', this.panels.join('.'));
-                this.pushHistory('added panel');
+            const idx = this._getPanelIndex(ev.detail.panel);
+            if (idx < 0) {
+                return // panel not found
             }
+            console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
+            this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
+
+            registry.commit(this, this._getState())
         });
-        const panelsParam = this.getParameter('panels');
+
+        const panelsParam = registry.get('panels');
         if (panelsParam) {
             this.panels = panelsParam.split('.').map(param => parseInt(param));
-            localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        } else {
-            const panelsStored = localStorage.getItem('pb-grid.panels');
-            if (panelsStored) {
-                this.panels = panelsStored.split('.').map(param => parseInt(param));
-            }
         }
 
+        registry.subscribe(this, (state) => {
+            const newState = state.panels ? state.panels.split('.') : [];
+            this.panels = newState;
+            this.innerHTML=''; // hard reset of child DOM
+            this.panels.forEach(panelNum => this._insertPanel(panelNum));
+            this._update();
+        });
         this._columns = this.panels.length;
         this.template = this.querySelector('template');
     }
 
     firstUpdated() {
         this.panels.forEach(panelNum => this._insertPanel(panelNum));
-
+        registry.commit(this, this._getState())
         this._animate();
         this._update();
     }
@@ -132,41 +135,32 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     addPanel(initial) {
-        if (!initial) {
-            if (this.panels.length > 0) {
-                const max = this.panels.reduce(function (a, b) {
-                    return Math.max(a, b);
-                });
-                initial = max + 1;
-            } else {
-                initial = 0;
-            }
+        let value = initial
+        if (!initial && !this.panels.length) {
+            value = 0
         }
-        this._columns++;
-        this.panels.push(initial);
+        if (!initial && this.panels.length) {
+            const max = this.panels.reduce((result, next) => Math.max(result, next), 0);
+            value = max + 1;
+        }
 
-        localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        this.setParameter('panels', this.panels.join('.'));
-        this.pushHistory('added panel');
+        this._columns += 1;
+        this.panels.push(value);
 
-        this._insertPanel(initial);
-
+        this._insertPanel(value);
+        registry.commit(this, this._getState())
         this._update();
-
         this.emitTo('pb-refresh', null);
     }
 
     removePanel(panel) {
-        const idx = Array.from(this.querySelectorAll('._grid_panel')).indexOf(panel);
+        const idx = this._getPanelIndex(panel);
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
-        this.setParameter('panels', this.panels.join('.'));
-        localStorage.setItem('pb-grid.panels', this.panels.join('.'));
-        this.pushHistory('removed panel');
-
         panel.parentNode.removeChild(panel);
-        this._columns--;
+        this._columns -= 1;
+        registry.commit(this, this._getState() )
         this._update();
     }
 
@@ -182,20 +176,26 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     _update() {
-        const widths = [];
-        Array.from(this.children).forEach((child) => {
-            if (child instanceof HTMLTemplateElement) {
-                return;
-            }
-            const styles = window.getComputedStyle(child);
-            const width = styles.getPropertyValue('max-width');
-            if (width && width !== 'none') {
-                widths.push(width);
-            } else {
-                widths.push('1fr');
-            }
-        });
+        const widths = Array.from(this.children)
+            .filter(child => !(child instanceof HTMLTemplateElement))
+            .map(child => {
+                const styles = window.getComputedStyle(child);
+                const width = styles.getPropertyValue('max-width');
+                if (width && width !== 'none') {
+                    return width;
+                }
+                return '1fr';
+            });
         this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
+    }
+
+    _getPanelIndex(panel) {
+        const panels = Array.from(this.querySelectorAll('._grid_panel'));
+        return panels.indexOf(panel);
+    }
+
+    _getState() {
+        return { panels: this.panels.join('.') };
     }
 
     render() {
@@ -214,4 +214,6 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
 }
-customElements.define('pb-grid', PbGrid);
+if (!customElements.get('pb-grid')) {
+    customElements.define('pb-grid', PbGrid);
+}

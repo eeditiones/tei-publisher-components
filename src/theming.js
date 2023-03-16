@@ -1,4 +1,5 @@
 import { waitOnce } from "./pb-mixin.js";
+import 'construct-style-sheets-polyfill';
 
 /**
  * Maps theme selector to CSSStyleSheet or null.
@@ -17,7 +18,7 @@ const themeMap = new Map();
  */
 export async function loadStylesheets(urls) {
     const output = [];
-    for(let url of urls) {
+    for (const url of urls) {
         const css = await loadResource(url);
         if (css) {
             output.push(css);
@@ -39,9 +40,7 @@ function loadResource(url) {
             console.warn('<theming> Component stylesheet not found: %s', url);
             return null;
         })
-        .then(text => {
-            return text;
-        })
+        .then(text => text)
         .catch(error => {
             console.error('<theming> Error loading stylesheet %s: %o', url, error);
             return null;
@@ -65,7 +64,7 @@ export function importStyles(elem) {
         // no component styles defined
         return null;
     }
-    
+
     const selectors = getSelectors(elem).join('|');
     if (themeMap.has(selectors)) {
         return themeMap.get(selectors);

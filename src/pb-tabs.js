@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-tabs';
 import '@polymer/iron-pages';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
+import { registry } from "./urls.js";
 
 
 /**
@@ -18,9 +19,6 @@ export class PbTabs extends pbMixin(LitElement) {
             selected: {
                 type: Number,
                 reflect: true
-            },
-            _initial: {
-                type: Number
             }
         };
     }
@@ -28,21 +26,40 @@ export class PbTabs extends pbMixin(LitElement) {
     constructor() {
         super();
 
-        this._initial = this.getParameter('tab', 0);
-        this.selected = this._initial;
+        this.selected = 0;
+        this._initialized = false;
+    }
+    
+    connectedCallback() {
+        super.connectedCallback();
+
+        waitOnce('pb-page-ready', () => {
+            this.selected = registry.state.tab || 0;
+
+            registry.subscribe(this, (state) => {
+                this.selected = state.tab;
+            });
+
+        });
     }
 
     _switchTab(ev) {
-        this.selected = ev.detail.value;
-        this.setParameter('tab', this.selected);
-        this.pushHistory('browse', {
-            tab: this.selected
-        });
+        const current = parseInt(ev.detail.value, 10);
+        if (this.selected === current) {
+            return;
+        }
+        this.selected = current;
+        if (this._initialized) {
+            registry.commit(this, { tab: this.selected });
+        } else {
+            registry.replace(this, { tab: this.selected });
+        }
+        this._initialized = true;
     }
 
     render() {
         return html`
-            <paper-tabs id="tabs" selected="${this._initial}" @selected-changed="${this._switchTab}">
+            <paper-tabs id="tabs" selected="${this.selected || 0 }" @selected-changed="${this._switchTab}">
                 <slot name="tab"></slot>
             </paper-tabs>
             <iron-pages part="pages" selected="${this.selected}">

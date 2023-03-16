@@ -1,14 +1,13 @@
-import { expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { expect, waitUntil } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import '../src/pb-page.js';
 import '../src/pb-document.js';
 import '../src/pb-view.js';
 import '../src/pb-formula.js';
 
 describe('format mathematical formulas', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('formats TeX math in display mode', async () => {
         const el = await waitForPage(`
             <pb-page api-version="1.0.0">
@@ -83,9 +82,8 @@ describe('format mathematical formulas', () => {
 });
 
 describe('mathematical formulas in pb-view', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('shows formulas after loading text via pb-view', async () => {
         const el =
             await waitForPage(`

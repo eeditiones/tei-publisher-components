@@ -1,7 +1,11 @@
 import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
+import { waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { themableMixin } from "./theming.js";
+import { cmpVersion } from './utils.js';
+import { registry } from "./urls.js";
+
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -10,7 +14,6 @@ import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-ajax';
 import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
-import { cmpVersion } from './utils.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -135,21 +138,43 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     connectedCallback() {
         super.connectedCallback();
 
-        const sortParam = this.getParameter('sort');
-        if (sortParam) {
-            this.sortBy = sortParam;
-        }
+        waitOnce('pb-page-ready', () => {
+            if (registry.state.sort) {
+                this.sortBy = registry.state.sort;
+            }
 
-        const filterParam = this.getParameter('filter');
-        if (filterParam) {
-            this.filter = filterParam;
-            this.filterBy = this.getParameter('filterBy', this.filterBy);
-        }
+            if (registry.state.filter) {
+                this.filter = registry.state.filter;
+                this.filterBy = registry.state.filterBy || this.filterBy;
+            }
 
-        this.facets = this.getParametersMatching(/^facet-.*$/);
+            this.facets = {};
+            // registry get state by regex
+            // this.facets = registry.getParametersMatching(this, /^facet-.*$/)
+            Object.keys(registry.state).forEach((key) => {
+                if (/^facet-.*$/.test(key)) {
+                    const param = registry.state[key];
+                    if (this.facets[key]) {
+                        this.facets[key].push(param);
+                    } else {
+                        this.facets[key] = [param];
+                    }
+                }
+            });
 
-        this.collection = this.getParameter('collection');
+            this.collection = registry.state.collection;
 
+            if (this.collection) {
+                registry.replace(this, {
+                    collection: this.collection
+                });
+            }
+            registry.subscribe(this, (state) => {
+                this.collection = state.collection;
+                this.load();
+            });
+        });
+        
         this.subscribeTo('pb-search-resubmit', this._facets.bind(this));
         this.subscribeTo('pb-login', (ev) => {
             if (ev.detail.userChanged) {
@@ -171,7 +196,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     }
 
     firstUpdated() {
-        PbBrowseDocs.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             if (cmpVersion(options.apiVersion, '1.0.0') >= 0) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
@@ -384,10 +409,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         if (typeof filter !== 'undefined') {
             console.log('<pb-browse-docs> Filter by %s', filter);
             this.filter = filter;
-            this.setParameter('filter', filter);
-            this.setParameter('filterBy', filterBy);
-            this.pushHistory('filter docs');
-
+            registry.commit(this, { filter, filterBy })
             this.load();
         }
     }
@@ -405,8 +427,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         if (sortBy && sortBy !== this.sortBy) {
             console.log('<pb-browse-docs> Sorting by %s', sortBy);
             this.sortBy = sortBy;
-            this.setParameter('sort', sortBy);
-            this.pushHistory('sort docs');
+            registry.commit(this, { sort: sortBy })
 
             this.load();
         }
@@ -414,13 +435,10 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
 
     _facets(ev) {
         if (ev.detail && ev.detail.params) {
-            this.clearParametersMatching(/^(all-|facet-).*/);
-            for (let param in ev.detail.params) {
-                this.setParameter(param, ev.detail.params[param]);
-            }
+            registry.clearParametersMatching(this, /^(all-|facet-).*/);
             this.facets = ev.detail.params;
             this.start = 1;
-            this.pushHistory('facets');
+            registry.commit(this, ev.detail.params)
         }
         this.load();
     }
@@ -442,8 +460,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
                 ev.preventDefault();
                 this.collection = link.getAttribute('data-collection');
                 this.start = 1;
-                this.setParameter('collection', this.collection);
-                this.pushHistory('browse collection');
+                registry.commit(this, { collection: this.collection });
                 console.log('<pb-browse-docs> loading collection %s', this.collection);
                 this.load();
             });
@@ -513,7 +530,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     }
 
     _handleEnter(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             this._filter();
         }
     }

@@ -4,8 +4,6 @@
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
         <title>pb-view Demo</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
-        <link rel="Stylesheet" href="demo.css">
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
@@ -36,19 +34,16 @@
                     display: grid;
                     height: calc(100vh - 128px);
                     grid-template-columns: 360px 1fr;
-                    grid-template-rows: auto 1fr auto;
+                    grid-template-rows: 1fr auto;
                 }
 
-                .breadcrumbs {
-                    font-family: var(--pb-base-font-family);
-                    --pb-view-max-width: auto;
-                    grid-column: 2 / 2;
-                    grid-row: 1 / 1;
+                ul {
+                    grid-row: 1 / 2;
                 }
 
                 #view1 {
                     grid-column: 2 / 2;
-                    grid-row: 2 / 2;
+                    grid-row: 1 / 1;
                     overflow: auto;
                     font-family: var(--pb-base-font-family);
                     font-size: 20px;
@@ -57,63 +52,12 @@
 
                 footer {
                     grid-column: 2 / 2;
-                    grid-row: 3 / 3;
+                    grid-row: 2 / 2;
                     background-color: var(--pb-toolbar-background-color);
                 }
 
                 footer pb-navigation[direction=forward] {
                     float: right;
-                }
-
-                .toc {
-                    grid-column: 1 / 1;
-                    grid-row: 1 / span 3;
-                    overflow: auto;
-                    font-size: var(--pb-base-font-size);
-                    background-color: var(--pb-drawer-background-color);
-                }
-
-                .toc [slot="collapse-trigger"] pb-link {
-                    display: block;
-                }
-
-                .toc pb-link a {
-                    text-decoration: none;
-                    color: #101010;
-                }
-
-                .toc li pb-link {
-                    display: block;
-                    font-family: var(--pb-base-font-family);
-                    --pb-link-font-family: var(--pb-base-font-family);
-                    margin-left: 0;
-                }
-
-                .toc li pb-link.active a {
-                    color: #d07f00;
-                    text-decoration: underline;
-                }
-
-                .toc ul li {
-                    font-weight: bold;
-                }
-
-                .toc ul {
-                    list-style-type: none;
-                    margin: 0;
-                    padding: 0;
-                }
-
-                .toc ul ul {
-                    margin-left: 0;
-                }
-
-                .toc ul ul li {
-                    font-weight: normal;
-                }
-
-                .toc ul ul {
-                    margin-left: 14px;
                 }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
@@ -121,22 +65,29 @@
 
                     <pb-progress></pb-progress>
                     <main>
-                        <aside class="toc">
-                            <pb-load url="api/document/{doc}/contents?target=transcription&icons=false" expand src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
-                        </aside>
-                        <pb-view class="breadcrumbs" src="document1">
-                            <pb-param name="mode" value="breadcrumbs"/>
-                        </pb-view>
-                        <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription" subscribe="transcription"></pb-view>
+                        <ul>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" odd="docbook" view="div">Documentation</pb-link>
+                            </li>
+                            <li>
+                                <pb-link path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page">Kant chapter</pb-link>
+                            </li>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook" view="div">Link by xml:id
+                                </pb-link>
+                            </li>
+                        </ul>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links
+                            load-css="odd/docbook.css"></pb-view>
                         <footer>
                             <!-- Navigate to next page -->
-                            <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">
+                            <pb-navigation direction="forward" keyboard="right">
                                 <paper-button>
                                     <iron-icon icon="icons:chevron-right"></iron-icon>
                                 </paper-button>
                             </pb-navigation>
                             <!-- Navigate to previous page -->
-                            <pb-navigation direction="backward" keyboard="left" emit="transcription" subscribe="transcription">
+                            <pb-navigation direction="backward" keyboard="left">
                                 <paper-button>
                                     <iron-icon icon="icons:chevron-left"></iron-icon>
                                 </paper-button>

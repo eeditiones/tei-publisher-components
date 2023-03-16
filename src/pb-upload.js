@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { getCSSProperty } from "./utils.js";
 import '@vaadin/vaadin-upload';
@@ -37,6 +37,12 @@ export class PbUpload extends pbMixin(LitElement) {
             },
             _files: {
                 type: Object
+            },
+            /**
+             * the event to emit when the upload has completed (default: 'pb-load')
+             */
+            event: {
+                type: String
             }
         };
     }
@@ -44,6 +50,7 @@ export class PbUpload extends pbMixin(LitElement) {
     constructor() {
         super();
         this._files = new Map();
+        this.event = 'pb-load';
     }
 
     connectedCallback() {
@@ -93,13 +100,13 @@ export class PbUpload extends pbMixin(LitElement) {
             });
             if (done) {
                 this.emitTo('pb-end-update');
-                this.emitTo('pb-load');
+                this.emitTo(this.event);
                 if (oddsUploaded.length > 0) {
                     this.emitTo('pb-refresh-odds', { 'odds': oddsUploaded });
                 }
             }
         });
-        PbUpload.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             if (this.minApiVersion('1.0.0')) {
                 uploader.target = `${this.getEndpoint()}/api/upload/`;
             } else {

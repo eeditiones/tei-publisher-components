@@ -1,11 +1,9 @@
-import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from "./util.js";
+import { fixture, expect, waitUntil } from '@open-wc/testing';
+import { waitForPage, cleanup } from "./util.js";
 import '../src/pb-page.js';
 
 describe('initializes', () => {
-    afterEach(() => {
-        fixtureCleanup();
-    });
+    afterEach(cleanup);
     
     it('reports endpoint and language', async () => {
         let initDetails;
@@ -25,13 +23,12 @@ describe('initializes', () => {
     });
 
     it('allows only one pb-page', async () => {
-        const el =
-            await waitForPage(`
-                <div>
-                    <pb-page id="p1" endpoint="${ __karma__.config.endpoint }"></pb-page>
-                    <pb-page id="p2" endpoint="https://teipublisher.com/exist/apps/van-gogh"></pb-page>
-                </div>
-            `);
+        const el = await waitForPage(`
+            <div>
+                <pb-page id="p1" endpoint="${ __karma__.config.endpoint }"></pb-page>
+                <pb-page id="p2" endpoint="https://teipublisher.com/exist/apps/van-gogh"></pb-page>
+            </div>
+        `);
 
         const disabled = el.querySelectorAll('pb-page[disabled]');
         expect(disabled.length).to.equal(1);

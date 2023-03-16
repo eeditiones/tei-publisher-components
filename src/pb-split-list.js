@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from "./theming.js";
+import { registry } from "./urls.js";
 
 /**
  * Implements a list which is split into different categories 
@@ -98,17 +98,20 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
         this._params = {};
         this.selected = null;
         this.subforms = null;
+        this._initialized = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        this.selected = this.getParameter('category', this.selected);
-        
-        window.addEventListener('popstate', (ev) => {
-            console.log('<pb-split-list> popstate: %o', ev);
-            this.selected = ev.state.category;
-            this.submit();
+        waitOnce('pb-page-ready', () => {
+            this.selected = registry.state.category || this.selected;
+
+            registry.subscribe(this, (state) => {
+                console.log('<pb-split-list> popstate: %o', state);
+                this.selected = state.category;
+                this.submit();
+            });
         });
 
         this.subscribeTo('pb-submit', this.load.bind(this));
@@ -117,7 +120,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     firstUpdated() {
         super.firstUpdated();
         
-        PbSplitList.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.load();
         });
     }
@@ -128,8 +131,12 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
 
     load() {
         const formParams = this._paramsFromSubforms({ category: this.selected });
-        this.setParameters(formParams);
-        this.pushHistory('pb-split-list', formParams);
+        if (!this._initialized) {
+            registry.replace(this, formParams);    
+        } else {
+            registry.commit(this, formParams);
+        }
+        this._initialized = true;
 
         const params = new URLSearchParams(formParams);
 
