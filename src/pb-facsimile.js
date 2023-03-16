@@ -173,7 +173,19 @@ export class PbFacsimile extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo('pb-start-update', this._clearAll.bind(this));
-        this.subscribeTo('pb-update', this._fragmentUpdateListener.bind(this));
+        this.subscribeTo('pb-load-facsimile', (e) => {
+            const { element, order } = e.detail
+            const itemOrder = this._facsimiles.map(item => item.getOrder ? item.getOrder() : Number.POSITIVE_INFINITY )  
+            const insertAt = itemOrder.reduce((result, next, index) => {
+                if (order < next) return result;
+                if (order === next) return index;
+                return index + 1;
+            }, 0)
+            
+            this._facsimiles.splice(insertAt, 0, element)
+
+            this._facsimileObserver()
+        });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
     }
 
@@ -247,7 +259,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
         this.viewer.addHandler('open', () => {
             this.resetZoom();
-            this.emitTo('pb-facsimile-status', { status: 'loaded' });
+            this.emitTo('pb-facsimile-status', { status: 'loaded', facsimiles: this._facsimiles });
         });
         this.viewer.addHandler('open-failed', (ev) => {
             console.error('<pb-facsimile> open failed: %s', ev.message);
@@ -285,17 +297,19 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (!this.viewer) {
             return;
         }
-        if (this._facsimiles.length === 0) { return this.viewer.close() }
-        const uris = this._facsimiles.map(fac => {
+        if (this._facsimiles.length === 0) {
+            return this.viewer.close()
+        }
+        const uris = this._facsimiles.map(facsLink => {
+            const url = this.baseUri + (facsLink.getImage ? facsLink.getImage() : facsLink)
             if (this.type === 'iiif') {
-                return `${this.baseUri}${fac}/info.json`;
-            } else {
-                return {
-                    tileSource: {
-                        type: 'image',
-                        url: `${this.baseUri}${fac}`,
-                        buildPyramid: false
-                    }
+                return `${url}/info.json`;
+            }
+            return {
+                tileSource: {
+                    type: 'image',
+                    url,
+                    buildPyramid: false
                 }
             }
         });
@@ -311,22 +325,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.resetZoom();
         this.viewer.clearOverlays();
         this.facsimiles = [];
-    }
-
-    _fragmentUpdateListener(event) {
-        this.facsimiles = this._getFacsimilesFromData(event.detail.root)
-        this._facsimileObserver();
-    }
-
-    _getFacsimilesFromData(elem) {
-        const facsimiles = [];
-        elem.querySelectorAll('pb-facs-link').forEach(cb => {
-            if (cb.facs) {
-                facsimiles.push(cb.facs);
-            }
-        });
-        console.log('<pb-facsimile> _getFacsimilesFromData', facsimiles);
-        return facsimiles;
     }
 
     _showAnnotationListener(event) {
@@ -352,7 +350,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         }
 
         // find page to show
-        const page = this._pageIndexByUrl(event.detail.file)
+        const page = event.detail.element ? this._pageByElement(event.detail.element) : this._pageIndexByUrl(event.detail.file);
 
         if (page < 0) {
             return console.error('page not found', event.detail)
@@ -376,7 +374,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }
 
             // create new overlay
-            const overlay = this.overlay = document.createElement('div');
+            const overlay = document.createElement('div');
+            this.overlay = overlay
             overlay.id = overlayId;
 
             // place marker
@@ -389,8 +388,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
         }
     }
 
+    _pageByElement(element) {
+        return this._facsimiles.indexOf(element);
+    }
+
     _pageIndexByUrl(file) {
-        return this._facsimiles.indexOf(file);
+        return this._facsimiles.findIndex(element => element.getImage() === file);
     }
 
     // reset zoom

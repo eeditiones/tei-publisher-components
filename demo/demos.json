@@ -42,6 +42,10 @@
     "demo/pb-facsimile.html": "Demo",
     "demo/pb-facsimile-2.html": "Align text page with facsimile"
   },
+  "pb-image-strip": {
+    "demo/pb-image-strip-view.html": "Demo with pb-view",
+    "demo/pb-image-strip-standalone.html": "Standalone Demo"
+  },
   "pb-grid": {
     "demo/pb-grid.html": "Demo"
   },

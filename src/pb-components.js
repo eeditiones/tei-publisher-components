@@ -6,6 +6,7 @@ import './pb-popover.js';
 import './pb-highlight.js';
 import './pb-link.js';
 import './pb-facs-link.js';
+import './pb-image-strip.js';
 import './pb-collapse.js';
 import './pb-browse-docs.js';
 import './pb-browse.js';
