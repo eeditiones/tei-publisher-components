@@ -25,6 +25,7 @@
                     [slot=collapse-content] {
                         margin: 10px 20px;
                     }
+                    }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                     <pb-document id="document1" path="test/osinski.xml" odd="osinski"></pb-document>
@@ -34,8 +35,8 @@
                             <pb-param name="mode" value="metadata"/>
                         </pb-view>
                     </pb-collapse>
-                    <pb-collapse toggles>
-                        <div slot="collapse-trigger">Content</div>
+                    <pb-collapse class="icon-right" toggles>
+                        <div slot="collapse-trigger">Content with icon right</div>
                         <pb-view slot="collapse-content" src="document1" view="page"></pb-view>
                     </pb-collapse>
                 </pb-page>

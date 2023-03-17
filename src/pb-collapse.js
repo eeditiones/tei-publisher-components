@@ -10,7 +10,7 @@ import '@polymer/iron-collapse';
  * A collapsible block: in collapsed state it only shows a header and expands if clicked.
  * The header should go into slot `collapse-trigger`, the content into `collapse-content`.
  * Example:
- * 
+ *
  * ```html
  * <pb-collapse>
  *   <div slot="collapse-trigger">
@@ -164,15 +164,20 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
         return css`
             :host {
                 display: block;
+                position:relative;
             }
 
             #trigger {
                 display: table-row;
             }
 
-            #trigger iron-icon {
+            iron-icon {
                 display: table-cell;
                 padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
+            }
+            :host(.icon-right) iron-icon{
+                position: absolute;
+                right:1rem;
             }
 
             slot[name="collapse-trigger"] {
