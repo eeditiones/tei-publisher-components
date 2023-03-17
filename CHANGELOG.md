@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.1.0...v2.1.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** include static version of patched openseadragon to avoid build issues ([de663f3](https://github.com/eeditiones/tei-publisher-components/commit/de663f3bbe58d2a08b60906f5c350f624f385ecd))
+
 # [2.1.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.0.0...v2.1.0) (2023-03-16)
 
 
