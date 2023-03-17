@@ -177,7 +177,7 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
             }
             :host(.icon-right) iron-icon{
                 position: absolute;
-                right:1rem;
+                right:0;
             }
 
             slot[name="collapse-trigger"] {
