@@ -9,10 +9,10 @@ analysis.json
 pb-elements.json
 ./assets
 images/leaflet
-images/openseadragon
 css/
 dist
 build
-lib/
+lib/*
+!lib/openseadragon.min.js
 docs/
 *.iml
