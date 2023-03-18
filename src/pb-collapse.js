@@ -162,28 +162,31 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
 
     static get styles() {
         return css`
-            :host {
-                display: block;
-                position:relative;
-            }
+          :host {
+            display: block;
+            position: relative;
+          }
 
-            #trigger {
-                display: table-row;
-            }
+          #trigger {
+            display: table-row;
+          }
 
-            iron-icon {
-                display: table-cell;
-                padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
-            }
-            :host(.icon-right) iron-icon{
-                position: absolute;
-                right:0;
-            }
+          iron-icon {
+            display: table-cell;
+            padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
+          }
 
-            slot[name="collapse-trigger"] {
-                display: table-cell;
-            }
+          :host(.icon-right) iron-icon {
+            position: absolute;
+            right: 0;
+          }
+
+          slot[name="collapse-trigger"] {
+            display: table-cell;
+          }
         `;
     }
 }
-customElements.define('pb-collapse', PbCollapse);
+if(!customElements.get('pb-collapse')){
+    customElements.define('pb-collapse', PbCollapse);
+}
