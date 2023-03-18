@@ -20,6 +20,11 @@ import '@polymer/iron-collapse';
  * </pb-collapse>
  * ```
  *
+ * By adding a CSS 'icon-right' to a `pb-collapse` the icon can be placed on the right side
+ * ```
+ * <pb-collapse class='icon-right'>
+ * ```
+ *
  * @slot collapse-trigger - trigger toggling collapsed content on/off
  * @slot collapse-content - content to be collapsed
  * @cssprop [--pb-collapse-icon-padding=0 4px 0 0] - padding in px for the "caret-down" icon left to the collapsible item
