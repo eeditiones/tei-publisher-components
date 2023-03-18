@@ -5,6 +5,7 @@ node_modules
 !.npmignore
 !.gitignore
 !.vscode
+!.github
 analysis.json
 pb-elements.json
 ./assets
