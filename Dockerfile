@@ -1,11 +1,11 @@
-ARG EXIST_VERSION=6.0.1
+ARG EXIST_VERSION=6.2.0
 
 # START STAGE 1
 FROM openjdk:8-jdk-slim as builder
 
 USER root
 
-ENV ANT_VERSION 1.10.12
+ENV ANT_VERSION 1.10.13
 ENV ANT_HOME /etc/ant-${ANT_VERSION}
 
 WORKDIR /tmp
@@ -25,15 +25,15 @@ RUN curl -L -o apache-ant-${ANT_VERSION}-bin.tar.gz http://www.apache.org/dist/a
 
 ENV PATH ${PATH}:${ANT_HOME}/bin
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs \
     && curl -L https://www.npmjs.com/install.sh | sh
 
 FROM builder as tei
 
-ARG TEMPLATING_VERSION=1.0.4
-ARG PUBLISHER_LIB_VERSION=2.10.1
-ARG ROUTER_VERSION=1.7.3
+ARG TEMPLATING_VERSION=1.1.0
+ARG PUBLISHER_LIB_VERSION=3.0.0
+ARG ROUTER_VERSION=1.8.0
 ARG PUBLISHER_VERSION=master
 
 # add key
