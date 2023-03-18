@@ -1,6 +1,6 @@
-import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
-import { themableMixin } from "./theming.js";
+import {LitElement, html, css} from 'lit-element';
+import {pbMixin} from './pb-mixin.js';
+import {themableMixin} from "./theming.js";
 import '@polymer/iron-icon';
 import '@polymer/iron-icons';
 import '@polymer/iron-collapse';
@@ -114,8 +114,8 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
     }
 
     /**
-             * opens the collapsible section
-             */
+     * opens the collapsible section
+     */
     open() {
         if (this.opened) {
             return;
@@ -148,10 +148,10 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
         return html`
             <div id="trigger" @click="${this.toggle}" class="collapse-trigger">
                 ${
-            !this.noIcons ?
+                    !this.noIcons ?
                 html`<iron-icon icon="${this.opened ? this.collapseIcon : this.expandIcon}"></iron-icon>` :
-                null
-            }
+                        null
+                }
                 <slot id="collapseTrigger" name="collapse-trigger"></slot>
             </div>
             <iron-collapse id="collapse" horizontal="${this.horizontal}" no-animation="${this.noAnimation}" .opened="${this.opened}">
@@ -162,31 +162,31 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
 
     static get styles() {
         return css`
-          :host {
-            display: block;
-            position: relative;
-          }
+            :host {
+                display: block;
+                position: relative;
+            }
 
-          #trigger {
-            display: table-row;
-          }
+            #trigger {
+                display: table-row;
+            }
 
-          iron-icon {
-            display: table-cell;
-            padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
-          }
+            iron-icon {
+                display: table-cell;
+                padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
+            }
 
-          :host(.icon-right) iron-icon {
-            position: absolute;
-            right: 0;
-          }
+            :host(.icon-right) iron-icon {
+                position: absolute;
+                right: 0;
+            }
 
-          slot[name="collapse-trigger"] {
-            display: table-cell;
-          }
+            slot[name="collapse-trigger"] {
+                display: table-cell;
+            }
         `;
     }
 }
-if(!customElements.get('pb-collapse')){
+if (!customElements.get('pb-collapse')) {
     customElements.define('pb-collapse', PbCollapse);
 }
