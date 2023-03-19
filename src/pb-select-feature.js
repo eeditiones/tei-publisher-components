@@ -1,9 +1,11 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-item';
+import { registry } from './urls.js';
+import { addSelector } from "./pb-toggle-feature.js";
 
 /**
  * Similar to `pb-toggle-feature` but allows you to choose from a list of defined states instead of a simple
@@ -33,9 +35,12 @@ import '@polymer/paper-item';
  * ```
  * 
  * Each item in the `selectors` property above defines either a state or a command. *state* will simply add
- * a css class `.toggled` to the target element when true. If *command* is set to 'disable', it will entirely disable
+ * a css class `.toggle` to the target element when true. If *command* is set to 'disable', it will entirely disable
  * the functionality of selected elements - provided that they are
  * publisher components implementing the corresponding `command` method of `pb-mixin`.
+ * 
+ * Client-side you may also pass an optional property `"global": true` to toggle the state of elements which reside
+ * in the surrounding HTML context below `pb-page` (means: elements which are not inside a `pb-view` or `pb-load`).
  * 
  * @fires pb-toggle - Fired when a feature is selected from the dropdown and sends the selected properties
  */
@@ -74,17 +79,31 @@ export class PbSelectFeature extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        const param = this.getParameter(this.name);
-        if (typeof param !== 'undefined') {
-            this.selected = parseInt(param, 10);
-        } else if (this.items.length > 0) {
-            this.selected = 0;
-        }
-        this.waitForChannel(() => {
-            if (this.selected && this.selected < this.items.length) {
-                this._emit('init', this.selected);
+
+        waitOnce('pb-page-ready', () => {
+            registry.subscribe(this, (state) => {
+                const param = state[this.name];
+                if (typeof param !== 'undefined') {
+                    this.selected = parseInt(param, 10);
+                } else {
+                    this.selected = 0;
+                }
+                this.shadowRoot.getElementById('list').selected = this.selected;
+            });
+
+            const param = registry.state[this.name];
+            if (typeof param !== 'undefined') {
+                this.selected = parseInt(param, 10);
+            } else if (this.items.length > 0) {
+                this.selected = 0;
             }
-            this.initializing = false;
+
+            this.shadowRoot.getElementById('list').selected = this.selected;
+
+            const newState = {};
+            newState[this.name] = this.selected;
+            registry.replace(this, newState);
+
             this.signalReady();
         });
     }
@@ -92,43 +111,47 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
 
-        this.shadowRoot.getElementById('menu').addEventListener('selected-item-changed', this._selectionChanged.bind(this));
+        this.shadowRoot.getElementById('menu').addEventListener('iron-select', this._selectionChanged.bind(this));
     }
-
-    // updated(changedProperties) {
-    //     super.updated();
-    //     if (changedProperties.has('items')) {
-    //         const current = this.shadowRoot.getElementById('list').selectedItem;
-    //         if (!current && this.items.length > 0) {
-    //             this.selected = 0;
-    //             this._emit('refresh');
-    //         }
-    //         console.log('selected: %o', this.selected);
-    //     }
-    // }
 
     _selectionChanged() {
-        const current = this.shadowRoot.getElementById('list').selected;
-        this.setParameter(this.name, current);
-        this.pushHistory('toggle feature ' + this.name);
-        console.log('<pb-select-feature> Setting features: %o', this.items[current]);
-        this._emit('refresh', current);
+        const refresh = this._saveState();
+        if (this.initializing) {
+            this.initializing = false;
+        } else {
+            this.emitTo('pb-toggle', { refresh });
+        }
     }
 
-    _emit(action, index) {
-        const item = this.items[index];
-        const params = {
-            properties: item.properties || {},
-            selectors: item.selectors,
-            action
-        };
-        this.emitTo('pb-toggle', params);
+    _saveState() {
+        const current = this.shadowRoot.getElementById('list').selected;
+
+        const state = registry.getState(this);
+        state[this.name] = current;
+        Object.assign(state, this.items[current].properties);
+        if (this.items[current].selectors) {
+            if (!state.selectors) {
+                state.selectors = [];
+            }
+            this.items[current].selectors.forEach((config) => {
+                if (config.global) {
+                    this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }));
+                } else {
+                    addSelector({
+                        selector: config.selector,
+                        state: config.state,
+                        command: config.command
+                    }, state.selectors);
+                }
+            });
+        }
+        return this.items[current].properties instanceof Object
     }
 
     render() {
         return html`
             <paper-dropdown-menu id="menu" label="${translate(this.label)}" .disabled="${this.disabled}">
-                <paper-listbox id="list" slot="dropdown-content" selected="${this.selected}">
+                <paper-listbox id="list" slot="dropdown-content" .selected="${this.selected}">
                     ${this.items.map((item) => html`<paper-item>${item.name}</paper-item>`)}
                 </paper-listbox>
             </paper-dropdown-menu>

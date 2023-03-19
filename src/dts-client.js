@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
-import { translate } from "./pb-i18n.js";
+import { translate } from './pb-i18n.js';
+import { registry } from './urls.js';
+
 import '@polymer/iron-ajax';
 import '@polymer/iron-icon';
 import '@polymer/iron-icons';
@@ -61,8 +63,8 @@ export class DtsClient extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.collection = this.getParameter('id');
-        this.page = this.getParameter('page');
+        this.collection = registry.state.id;
+        this.page = registry.state.page;
 
         this.subscribeTo('dts-endpoint', (ev) => {
             this._setEndpoint(ev.detail.endpoint, ev.detail.collection, ev.detail.reload);
@@ -163,19 +165,16 @@ export class DtsClient extends pbMixin(LitElement) {
 
     _update() {
         this.emitTo('pb-start-update');
-        const params = {};
+        const newState = {};
         if (this.collection) {
-            params.id = this.collection;
-
-            this.setParameter('id', this.collection);
-        };
-        if (this.page) {
-            params.page = this.page + 1;
-            this.setParameter('page', this.page);
+            newState.id = this.collection;
         }
-        this.pushHistory('dts-client-navigate');
+        if (this.page) {
+            newState.page = this.page + 1;
+        }
+        registry.commit(this, newState);
 
-        this.queryAPI.params = params;
+        this.queryAPI.params = newState;
         this.queryAPI.url = this._collectionEndpoint;
         this.queryAPI.generateRequest();
     }
@@ -205,7 +204,8 @@ export class DtsClient extends pbMixin(LitElement) {
         const json = this.documentsAPI.lastResponse;
         this.emitTo('pb-end-update');
         const url = new URL(json.path, window.location.href);
-        window.location = url;
+        // use registry here?
+        window.location.replace(url);
     }
 
     _handleError(ev) {
@@ -284,7 +284,7 @@ export class DtsClient extends pbMixin(LitElement) {
     }
 
     _renderMember(member) {
-        if (member['@type'] == 'Collection') {
+        if (member['@type'] === 'Collection') {
             return html`
                 <iron-icon icon="icons:folder-open"></iron-icon>
                 <div class="details">

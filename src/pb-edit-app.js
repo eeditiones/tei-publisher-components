@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button';
@@ -62,7 +62,7 @@ export class PbEditApp extends pbMixin(LitElement) {
             indexListbox.selected = undefined;
             indexListbox.selected = old;
         }, []);
-        PbEditApp.waitOnce('pb-page-ready', (detail) => {
+        waitOnce('pb-page-ready', (detail) => {
             let url;
             if (this.minApiVersion('1.0.0')) {
                 url = `${detail.endpoint}/api/templates`;
@@ -146,7 +146,7 @@ export class PbEditApp extends pbMixin(LitElement) {
                         <legend>${translate('document.selectODD')}</legend>
                         ${ this.odds.map(odd => html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`)}
                     </fieldset>
-                    <paper-input name="uri" type="url" required placeholder="http://exist-db.org/apps/my-simple-app"
+                    <paper-input name="uri" type="url" required placeholder="https://e-editiones.org/apps/my-simple-app"
                         label="${translate('appgen.uri')}" auto-validate></paper-input>
                     <paper-input id="abbrev" name="abbrev" pattern="[a-zA-Z0-9-_]+" required placeholder="${translate('appgen.abbrev.placeholder')}"
                         label="${translate('appgen.abbrev.label')}" auto-validate></paper-input>

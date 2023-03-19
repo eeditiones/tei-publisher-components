@@ -1,3 +1,339 @@
+## [2.1.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.1.0...v2.1.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** include static version of patched openseadragon to avoid build issues ([de663f3](https://github.com/eeditiones/tei-publisher-components/commit/de663f3bbe58d2a08b60906f5c350f624f385ecd))
+
+# [2.1.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.0.0...v2.1.0) (2023-03-16)
+
+
+### Bug Fixes
+
+* **pb-facs-link:** wait for pb-facsimile or pb-image-strip to be ready ([93da282](https://github.com/eeditiones/tei-publisher-components/commit/93da282ddcafd9c28bc87bb4efeefd13ecf73a51))
+
+
+### Features
+
+* **pb-facsimile:** respect facs-link order ([8754768](https://github.com/eeditiones/tei-publisher-components/commit/87547680da8c4a539a13e3283d234d121bec6571))
+* **pb-image-strip:** reverse default order ([ea12409](https://github.com/eeditiones/tei-publisher-components/commit/ea12409fed2051ac2ed9132b81c5644a679e4296))
+* pb-facs-link, pb-image-strip ([f667176](https://github.com/eeditiones/tei-publisher-components/commit/f667176b7561a824c63ecacdb8ee0ed454997907))
+* ** pb-image-strip:** sort items by order ([d0baa51](https://github.com/eeditiones/tei-publisher-components/commit/d0baa5193b6f6cb1ea1abe54a27f811aa272d4cc))
+* **pb-image-strip:** add new component ([9143856](https://github.com/eeditiones/tei-publisher-components/commit/9143856b5877da9d896ca6c4cef8e3f8deff8c97)), closes [#85](https://github.com/eeditiones/tei-publisher-components/issues/85)
+
+# [2.0.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.2...v2.0.0) (2023-03-16)
+
+
+### Bug Fixes
+
+* **pb-ajax:** partial fix for test failure ([2699c4c](https://github.com/eeditiones/tei-publisher-components/commit/2699c4c684068f4384811b724e4dbd4c380f85cd))
+* **pb-browse:** respect history property to disable pushing to history ([b5f8c28](https://github.com/eeditiones/tei-publisher-components/commit/b5f8c28a3ad343f0f1f18bbbba593414eb2de33e))
+* **pb-browse-docs:** add history support ([5698237](https://github.com/eeditiones/tei-publisher-components/commit/569823737cf4d40c992eaae5b70776ec222b957a))
+* **pb-browse-docs:** pick up facets when connected ([a4eb4f2](https://github.com/eeditiones/tei-publisher-components/commit/a4eb4f238d569c5d94a4d1327307f0f773364c44))
+* **pb-events:** defaultChannel handling ([a16ce6f](https://github.com/eeditiones/tei-publisher-components/commit/a16ce6f87fe017497076044074da894d820f2d45))
+* **pb-events:** subscribe to defaultChannel if channel is null or empty array ([5c59613](https://github.com/eeditiones/tei-publisher-components/commit/5c5961377891419ea5027420195b28bc78c7a1c4))
+* **pb-grid:** do not use es6 operator ([dedbf14](https://github.com/eeditiones/tei-publisher-components/commit/dedbf14edb8007fa47be6ddc0767be0c6aa96428))
+* **pb-load:** also pass content in pb-results-received ([2947281](https://github.com/eeditiones/tei-publisher-components/commit/2947281c13da3c374522d08cd5a8aeb68db73916))
+* **pb-load:** subscribe to browser history only if enabled by user ([3771c27](https://github.com/eeditiones/tei-publisher-components/commit/3771c27c86027910253d1447497c69954e97a3c7))
+* **pb-mixin:** add defaultChannel constant ([ab84bea](https://github.com/eeditiones/tei-publisher-components/commit/ab84beaca9bbd1b5487269ab41f0dab838e74c06))
+* **pb-search:** browser history navigation ([4aa9b76](https://github.com/eeditiones/tei-publisher-components/commit/4aa9b76d88c907c780960c005dc28ad6e6b02ab6))
+* **pb-search:** strip out the 'autocomplete-custom-template' parameter added by the autcomplete subcomponent ([12e1e5c](https://github.com/eeditiones/tei-publisher-components/commit/12e1e5c0cc09712b6e711a0422d387616f4f7e61))
+* **pb-search,pb-paginate:** pb-search now keeps track of pagination position ([1700af0](https://github.com/eeditiones/tei-publisher-components/commit/1700af053dc0227de41bfcf6782014cf3d78c8fa))
+* **pb-select:** use correct string function ([13ebfbb](https://github.com/eeditiones/tei-publisher-components/commit/13ebfbbbd9e49a0b5360c14744069a24e03729df))
+* **pb-select-feature:** (re-)allow state to be toggled on elements which reside in the HTML context, but are not part of a pb-view or pb-load ([1260e9b](https://github.com/eeditiones/tei-publisher-components/commit/1260e9bb1f4aa8107cfa173c74dac12300cb1240))
+* **pb-select-feature:** update to mirror pb-toggle-feature ([9606688](https://github.com/eeditiones/tei-publisher-components/commit/96066880d4fafd99f7b629f7a1cf50695dfca62a))
+* **pb-split-list,pb-table-grid:** update to support browser history ([1b72351](https://github.com/eeditiones/tei-publisher-components/commit/1b723516a97c15ce93a3dc308f397beb5983e51d))
+* **pb-tabs:** update to support browser history ([e205279](https://github.com/eeditiones/tei-publisher-components/commit/e20527914037addd6a49040d79f76105c3202633))
+* **pb-toggle-feature:** refactor for history support ([27d7638](https://github.com/eeditiones/tei-publisher-components/commit/27d7638c78bcfb62be9fb10a23001a373ab44cb8))
+* **pb-view:** fix on-update ([814f4bb](https://github.com/eeditiones/tei-publisher-components/commit/814f4bbf08bd0bdb34c00782dbdd58fd6b607892))
+* **pb-view:** ignore external params if property is specified as attribute ([77851d2](https://github.com/eeditiones/tei-publisher-components/commit/77851d2f038c97c1050b9dfa5fad79f517d37a02))
+* **theming:** add polyfill for constructable stylesheets ([0056e94](https://github.com/eeditiones/tei-publisher-components/commit/0056e94bc29bd46b4c7183704b74a2f4ca12d9c9))
+* **theming:** line endings ([cf029ed](https://github.com/eeditiones/tei-publisher-components/commit/cf029ede1490c283627ffef9a799e9d410ad5875))
+* **urls:** improve warning message ([9832a53](https://github.com/eeditiones/tei-publisher-components/commit/9832a53150dd46f619b03dbf0d88b4b82c72b4f1))
+* drop url-templates in favour of simpler mechanism ([d0f6d01](https://github.com/eeditiones/tei-publisher-components/commit/d0f6d01d920220147d53a70e511ede14ad4a2b7f))
+* state should be saved by subscribed, not emitted channels ([1f93be9](https://github.com/eeditiones/tei-publisher-components/commit/1f93be9a19e6678e2e6f0f8d3fa57e1e2ae31a1f))
+
+
+### Code Refactoring
+
+* **pb-mixin:** remove unused methods ([b21bfae](https://github.com/eeditiones/tei-publisher-components/commit/b21bfae717052167ac3e539216e4de20cc73ab57))
+
+
+### Features
+
+* **dts-client:** use URL registry ([cea7336](https://github.com/eeditiones/tei-publisher-components/commit/cea733680aaf3d52b9fc42445eca8d26bf0b1b86))
+* **dts-select-endpoint:** use URL registry ([b6df38f](https://github.com/eeditiones/tei-publisher-components/commit/b6df38f4cb4064eb105a424ef9070d7ffd129eba))
+* **pb-browse-docs:** use URL registry ([07a20ff](https://github.com/eeditiones/tei-publisher-components/commit/07a20ffd83e49468acfb62e3d93a8c3af4a9fc82))
+* **pb-load:** use new URL registry ([5e8030d](https://github.com/eeditiones/tei-publisher-components/commit/5e8030de30d634ea37812b3731bf0f67f0b6ebe8))
+* **pb-select-template:** use URL registry ([82fc98b](https://github.com/eeditiones/tei-publisher-components/commit/82fc98b85b42ec576a5b8e1bae3a5607b7567410))
+* **pb-upload:** make the event emitted on finish configurable ([f1a0aca](https://github.com/eeditiones/tei-publisher-components/commit/f1a0aca552324ef972443c890ffa50d2372c1dcb))
+
+
+### BREAKING CHANGES
+
+* **pb-mixin:** Several methods are no longer used since the
+introduction of the URL registry.
+
+- getParameterValues
+- setParameter
+- setParameters
+- getParametersMatching
+- setPath
+- pushHistory
+
+## [1.44.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.1...v1.44.2) (2023-03-15)
+
+
+### Bug Fixes
+
+* **OSD full-screen:** fixes detached eventlisteners after fullscreen view ([0d1cfb9](https://github.com/eeditiones/tei-publisher-components/commit/0d1cfb9c13af5f6a026e18919fb8768892d2eeb0))
+
+## [1.44.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.44.0...v1.44.1) (2023-03-15)
+
+
+### Bug Fixes
+
+* **cdn:** dynamic redirect for publisher cdn ([16b3d51](https://github.com/eeditiones/tei-publisher-components/commit/16b3d51e0997a4f114b4a8c524602e583c458c3e))
+
+# [1.44.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.5...v1.44.0) (2023-03-09)
+
+
+### Features
+
+* **pb-browse:** pb-browse is a stripped-down and simplified replacement for pb-browse-docs ([df165b6](https://github.com/eeditiones/tei-publisher-components/commit/df165b6e9347b9bd603eea06a647bd76e800e097))
+
+## [1.43.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.4...v1.43.5) (2023-03-01)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** fix editor issues by updating to jinn-codemirror 1.11.6 ([5ada4b8](https://github.com/eeditiones/tei-publisher-components/commit/5ada4b81d20a638d0e6e3b1781436ff2b6cf9dca))
+
+## [1.43.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.3...v1.43.4) (2023-02-27)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** update to latest jinn-codemirror to fix potential concurrency issues ([f16b260](https://github.com/eeditiones/tei-publisher-components/commit/f16b260b31ce022be716df5efb34fb71348d8cc7))
+
+## [1.43.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.2...v1.43.3) (2023-02-15)
+
+
+### Bug Fixes
+
+* **pb-popover:** add property to stop propagation, thus avoiding multiple nested pb-popover to all appear at once ([d015797](https://github.com/eeditiones/tei-publisher-components/commit/d015797084838f9d9007f6bb47a3af9313b7622a))
+
+## [1.43.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.1...v1.43.2) (2023-02-09)
+
+
+### Bug Fixes
+
+* **pb-load:** wrong initial setting for noCredentials broke pagination ([6433e07](https://github.com/eeditiones/tei-publisher-components/commit/6433e078900d713b6f489e54850ffcb9bdc08163))
+
+## [1.43.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.43.0...v1.43.1) (2023-01-18)
+
+
+### Bug Fixes
+
+* **theming:** try loading theme css from library as well as endpoint; make more components themable. ([3bf8848](https://github.com/eeditiones/tei-publisher-components/commit/3bf88485c4de2724b436a33bf31ab2211c44bfe7))
+
+# [1.43.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.7...v1.43.0) (2023-01-18)
+
+
+### Features
+
+* add support for component theming ([f618127](https://github.com/eeditiones/tei-publisher-components/commit/f6181279a25476e7b6e1494d774c54dc6e2ee236))
+
+## [1.42.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.6...v1.42.7) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-split-list:** allow category name to be internationalized ([ffafde4](https://github.com/eeditiones/tei-publisher-components/commit/ffafde4ed9cf8dd467690cf9ed5477de5ab9d368))
+
+## [1.42.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.5...v1.42.6) (2023-01-16)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** Expose underlying map object ([0660fc0](https://github.com/eeditiones/tei-publisher-components/commit/0660fc05e64d419750f708d3584e928173a6c3b6))
+* **pb-odd-editor:** output mode "printcss" is now called "print" ([5075713](https://github.com/eeditiones/tei-publisher-components/commit/507571321e1e5d51c5e642613d843300eb12d0e6))
+* **pb-split-list:** allow HTML in category names ([b55e254](https://github.com/eeditiones/tei-publisher-components/commit/b55e254c656bcf8a037efedc861d4a853df1fd7a))
+
+## [1.42.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.4...v1.42.5) (2023-01-10)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** update to jinn-codemirror 1.11.2 ([ac912c4](https://github.com/eeditiones/tei-publisher-components/commit/ac912c44943917b26b259c249233ae7a1e354dce))
+
+## [1.42.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.3...v1.42.4) (2023-01-09)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** reveal raw URL without paged.js in url attribute ([0c90240](https://github.com/eeditiones/tei-publisher-components/commit/0c9024046a3b13a12af17af5e26ce5cb04c0ea7e))
+
+## [1.42.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.2...v1.42.3) (2023-01-06)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** fix CORS issue with embedded iframe ([e070bf8](https://github.com/eeditiones/tei-publisher-components/commit/e070bf8c0db9a8c0511efdbe5f5e3062c9a4c141))
+
+## [1.42.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.1...v1.42.2) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** use iframe for preview ([d8d93f2](https://github.com/eeditiones/tei-publisher-components/commit/d8d93f210cf70dfa837b4fc863ff49ecdd1d3ac8))
+
+## [1.42.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.42.0...v1.42.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* **pb-print-preview:** missing interface.cs ([aed8716](https://github.com/eeditiones/tei-publisher-components/commit/aed87160d8b133f0554db81245019e7df31f3277))
+
+# [1.42.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.2...v1.42.0) (2023-01-04)
+
+
+### Features
+
+* **pb-print-preview:** new component for a print CSS preview ([3222f08](https://github.com/eeditiones/tei-publisher-components/commit/3222f08f40ed2f5e3d4e03bbb7665bab35e1fff9))
+
+## [1.41.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.1...v1.41.2) (2023-01-03)
+
+
+### Bug Fixes
+
+* **pb-link:** allow 'view' mode to be set via pb-link ([f08eb68](https://github.com/eeditiones/tei-publisher-components/commit/f08eb68942ae01e68d37be86f8bf421de37f0dca))
+
+## [1.41.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.41.0...v1.41.1) (2022-12-31)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** use correct editing mode for code editors ([9e6aa09](https://github.com/eeditiones/tei-publisher-components/commit/9e6aa09d861c3b22c294c7ca137f80473f3541ff))
+
+# [1.41.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.2...v1.41.0) (2022-12-30)
+
+
+### Bug Fixes
+
+* **pb-code-editor:** wrong import ([47bcbb3](https://github.com/eeditiones/tei-publisher-components/commit/47bcbb3c242ea8b7317c0a399d540692b0efb023))
+
+
+### Features
+
+* update pb-code-editor and pb-odd-editor to use codemirror 6 (instead of 5) as editor ([cc319ba](https://github.com/eeditiones/tei-publisher-components/commit/cc319baf322c9443a6282ffb0ddcf546369e9b40))
+* **pb-code-editor:** update to new @jinntec/jinn-codemirror based on codemirror 6 ([b1df9a3](https://github.com/eeditiones/tei-publisher-components/commit/b1df9a35197fa7a62a39013a85302f07d293c679))
+
+## [1.40.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.1...v1.40.2) (2022-11-27)
+
+
+### Bug Fixes
+
+* **pb-load:** add option to silently ignore network errors ([3695b28](https://github.com/eeditiones/tei-publisher-components/commit/3695b282d13e1bb127ec411fbb359ddd394a72a3))
+
+## [1.40.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.40.0...v1.40.1) (2022-11-26)
+
+
+### Bug Fixes
+
+* **pb-load:** fix errors if no-credentials option is set ([0bdb718](https://github.com/eeditiones/tei-publisher-components/commit/0bdb718cfd125f7e38d6f1a075209548f7093a7c))
+
+# [1.40.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.39.0...v1.40.0) (2022-11-26)
+
+
+### Features
+
+* **pb-load:** refresh when url, start or userParams attribute is changed; add attribute 'no-credentials' to disable attempting a cross-site request ([6f55e85](https://github.com/eeditiones/tei-publisher-components/commit/6f55e8533360adfcdb9862d8f4eda871345564da))
+
+# [1.39.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.7...v1.39.0) (2022-11-22)
+
+
+### Bug Fixes
+
+* **Dockerfile:** update to match TEI Publisher master with newer roaster ([2ca4d37](https://github.com/eeditiones/tei-publisher-components/commit/2ca4d37a56df8054d1f29446163e694cba69e73f))
+* **pb-page:** don't send pb-page-ready until both: i18n language and api version are correctly reported ([41c02cd](https://github.com/eeditiones/tei-publisher-components/commit/41c02cd4e0cec066901c0bdf47790ad610143e59))
+
+
+### Features
+
+* **pb-code-highlight:** allow theme to be set via CSS variable; load CSS only once ([6d4e2fe](https://github.com/eeditiones/tei-publisher-components/commit/6d4e2fe51664b8325de75b785bf5026336239697))
+
+## [1.38.7](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.6...v1.38.7) (2022-11-01)
+
+
+### Bug Fixes
+
+* globally disable automatic loading of Roboto font ([64b393b](https://github.com/eeditiones/tei-publisher-components/commit/64b393b057420506ec79a509e2d392efbd814c94))
+
+## [1.38.6](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.5...v1.38.6) (2022-10-13)
+
+
+### Bug Fixes
+
+* **pb-formula:** Fix font loading issue for mathematical formulas ([b2d41ca](https://github.com/eeditiones/tei-publisher-components/commit/b2d41cacf2aa86dfe9ea10060ebaa0ef190fd0fe))
+
+## [1.38.5](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.4...v1.38.5) (2022-08-26)
+
+
+### Bug Fixes
+
+* **pb-grid:** fix panel restore when using RTL; state not preserved when changing panel view ([78c18f6](https://github.com/eeditiones/tei-publisher-components/commit/78c18f64eb3cb5a4215b464ce9d3a89ff1051819))
+
+## [1.38.4](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.3...v1.38.4) (2022-07-23)
+
+
+### Bug Fixes
+
+* **pb-view:** trigger two column view mode only if there are at least two cb ([0402c50](https://github.com/eeditiones/tei-publisher-components/commit/0402c507b7f4721544707e7214c8bf57233418a7))
+
+## [1.38.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.2...v1.38.3) (2022-07-22)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** omit extra slash from CSS path to avoid issues with CDN ([5dde12a](https://github.com/eeditiones/tei-publisher-components/commit/5dde12a38f8765bd198512937e306f07988e5b19))
+
+## [1.38.2](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.1...v1.38.2) (2022-07-19)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup, kbga, gf:** add 'limit' parameter to control how many entries are shown when searching the authority ([213fb91](https://github.com/eeditiones/tei-publisher-components/commit/213fb91d7f7e3797724df8e8d0fd4e3fe82a0bf5))
+
+## [1.38.1](https://github.com/eeditiones/tei-publisher-components/compare/v1.38.0...v1.38.1) (2022-06-21)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** copy demo marker icons to build ([4f91fe1](https://github.com/eeditiones/tei-publisher-components/commit/4f91fe19369e72cb9c7daf72e131af5e8bf944b5))
+
+# [1.38.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.37.0...v1.38.0) (2022-06-21)
+
+
+### Features
+
+* **pb-leaflet-map:** allow map marker icons to be configured via nested pb-map-icon elements ([45b6045](https://github.com/eeditiones/tei-publisher-components/commit/45b604514caaf2447d9eaf4172bcd6389cb53bcc))
+
+# [1.37.0](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.3...v1.37.0) (2022-06-10)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** also rename events ([0ef89fe](https://github.com/eeditiones/tei-publisher-components/commit/0ef89fe3850326abb5a97f12312ad236bbb13938))
+* **pb-popover:** typo in docs ([d81742e](https://github.com/eeditiones/tei-publisher-components/commit/d81742e1c09b0492281007fd2330f0df78b48282))
+
+
+### Features
+
+* **pb-multi-select:** emit blur and change events ([81d1cae](https://github.com/eeditiones/tei-publisher-components/commit/81d1cae18de69d2859953df0ca54a410852b29de))
+* **pb-multi-select:** new select component with autocomplete ([d86c488](https://github.com/eeditiones/tei-publisher-components/commit/d86c4889649e28e2fd0b28ac22d9de040601c7d6))
+* **pb-page:** emit pb-page-loaded once when slotted elements are ready ([639ad14](https://github.com/eeditiones/tei-publisher-components/commit/639ad14d2a81f15959d99d14c6f213dda00d5f67))
+
 ## [1.36.3](https://github.com/eeditiones/tei-publisher-components/compare/v1.36.2...v1.36.3) (2022-04-06)
 
 

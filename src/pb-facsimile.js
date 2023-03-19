@@ -10,13 +10,13 @@ import { resolveURL } from './utils.js';
  * @fires pb-update - Checks the contents received for pb-facs-links
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
  * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
- * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed; 
+ * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed;
  * `fail` - image could not be loaded.
- * 
+ *
  * @cssprop --pb-facsimile-height=auto - Max. height of the image viewer
  * @cssprop --pb-facsimile-border - Style for the annotation highlight border
  * @csspart image - exposes the inner div hosting the image viewer
- * 
+ *
  * @slot before - use for content which should be shown above the facsimile viewer
  * @slot after - use for content which should be shown below the facsimile viewer
  */
@@ -42,6 +42,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'show-navigator'
             },
+            
+            /** If true then the 'previous" and 'next' button is displayed switch between images. */
+            showSequenceMode: {
+                type: Boolean,
+                attribute: 'show-sequence-control'
+            },
+
             /** If true then the 'Go home' button is displayed to go back to the original zoom and pan. */
             showHomeControl: {
                 type: Boolean,
@@ -143,6 +150,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.type = 'iiif';
         this.visibilityRatio = 1;
         this.defaultZoomLevel = 0;
+        this.sequenceMode = false;
         this.showHomeControl = false;
         this.showNavigator = false;
         this.showNavigationControl = false;
@@ -165,7 +173,19 @@ export class PbFacsimile extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo('pb-start-update', this._clearAll.bind(this));
-        this.subscribeTo('pb-update', this._fragmentUpdateListener.bind(this));
+        this.subscribeTo('pb-load-facsimile', (e) => {
+            const { element, order } = e.detail
+            const itemOrder = this._facsimiles.map(item => item.getOrder ? item.getOrder() : Number.POSITIVE_INFINITY )  
+            const insertAt = itemOrder.reduce((result, next, index) => {
+                if (order < next) return result;
+                if (order === next) return index;
+                return index + 1;
+            }, 0)
+            
+            this._facsimiles.splice(insertAt, 0, element)
+
+            this._facsimileObserver()
+        });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
     }
 
@@ -217,9 +237,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
         const options = {
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,
-            preserveViewport: true,
-            sequenceMode: true,
+            preserveViewport: true,            
             showZoomControl: true,
+            sequenceMode: this.showSequenceMode,
             showHomeControl: this.showHomeControl,
             showFullPageControl: this.showFullPageControl,
             showNavigator: this.showNavigator,
@@ -239,13 +259,35 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
         this.viewer.addHandler('open', () => {
             this.resetZoom();
-            this.emitTo('pb-facsimile-status', { status: 'loaded' });
+            this.emitTo('pb-facsimile-status', { status: 'loaded', facsimiles: this._facsimiles });
         });
         this.viewer.addHandler('open-failed', (ev) => {
             console.error('<pb-facsimile> open failed: %s', ev.message);
             this.loaded = false;
             this.emitTo('pb-facsimile-status', { status: 'fail' });
         });
+
+        /*
+        handling of full-screen view requires to hide/unhide the content of body to allow full screen viewer
+        to full-page functionality. Standard OSD completely deletes all body children disconnecting all event-handlers
+        that have been there. This solution just uses style.display to hide/show. Former display value of pb-page
+        will be preserved.
+
+        Current limitation: this solution assumes that a pb-page element exists and is an immediate child of body.
+         */
+        this.ownerPage = this.closest('pb-page');
+        if(this.ownerPage){
+            this.pbPageDisplay = window.getComputedStyle(this.ownerPage).getPropertyValue('display');
+            this.viewer.addHandler('full-screen', (ev) => {
+                if(ev.fullScreen){
+                    this.ownerPage.style.display = 'none';
+                }else{
+                    this.viewer.clearOverlays();
+                    this.emitTo('pb-refresh');
+                    this.ownerPage.style.display = this.pbPageDisplay;
+                }
+            });
+        }
         this._facsimileObserver();
 
         this.signalReady();
@@ -255,17 +297,19 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (!this.viewer) {
             return;
         }
-        if (this._facsimiles.length === 0) { return this.viewer.close() }
-        const uris = this._facsimiles.map(fac => {
+        if (this._facsimiles.length === 0) {
+            return this.viewer.close()
+        }
+        const uris = this._facsimiles.map(facsLink => {
+            const url = this.baseUri + (facsLink.getImage ? facsLink.getImage() : facsLink)
             if (this.type === 'iiif') {
-                return `${this.baseUri}${fac}/info.json`;
-            } else {
-                return {
-                    tileSource: {
-                        type: 'image',
-                        url: `${this.baseUri}${fac}`,
-                        buildPyramid: false
-                    }
+                return `${url}/info.json`;
+            }
+            return {
+                tileSource: {
+                    type: 'image',
+                    url,
+                    buildPyramid: false
                 }
             }
         });
@@ -281,22 +325,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.resetZoom();
         this.viewer.clearOverlays();
         this.facsimiles = [];
-    }
-
-    _fragmentUpdateListener(event) {
-        this.facsimiles = this._getFacsimilesFromData(event.detail.root)
-        this._facsimileObserver();
-    }
-
-    _getFacsimilesFromData(elem) {
-        const facsimiles = [];
-        elem.querySelectorAll('pb-facs-link').forEach(cb => {
-            if (cb.facs) {
-                facsimiles.push(cb.facs);
-            }
-        });
-        console.log('<pb-facsimile> _getFacsimilesFromData', facsimiles);
-        return facsimiles;
     }
 
     _showAnnotationListener(event) {
@@ -322,7 +350,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         }
 
         // find page to show
-        const page = this._pageIndexByUrl(event.detail.file)
+        const page = event.detail.element ? this._pageByElement(event.detail.element) : this._pageIndexByUrl(event.detail.file);
 
         if (page < 0) {
             return console.error('page not found', event.detail)
@@ -346,7 +374,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }
 
             // create new overlay
-            const overlay = this.overlay = document.createElement('div');
+            const overlay = document.createElement('div');
+            this.overlay = overlay
             overlay.id = overlayId;
 
             // place marker
@@ -359,8 +388,12 @@ export class PbFacsimile extends pbMixin(LitElement) {
         }
     }
 
+    _pageByElement(element) {
+        return this._facsimiles.indexOf(element);
+    }
+
     _pageIndexByUrl(file) {
-        return this._facsimiles.indexOf(file);
+        return this._facsimiles.findIndex(element => element.getImage() === file);
     }
 
     // reset zoom
@@ -373,4 +406,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
 
 }
-customElements.define('pb-facsimile', PbFacsimile);
+if (!customElements.get('pb-facsimile')) {
+    customElements.define('pb-facsimile', PbFacsimile);
+}

@@ -7,7 +7,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/iron-icons.js';
 
-import './pb-code-editor.js';
+import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 
 
 /**
@@ -32,6 +32,13 @@ export class PbOddRenditionEditor extends LitElement {
                 margin-bottom:10px;
             }
 
+            .editor label {
+                margin-bottom:5px;
+                font-size: 12px;
+                font-weight: 400;
+                color: var(--paper-grey-500);
+            }
+
             paper-dropdown-menu{
             }
             
@@ -53,12 +60,15 @@ export class PbOddRenditionEditor extends LitElement {
                         `)}
                 </paper-listbox>
             </paper-dropdown-menu>
-            <pb-code-editor
-                id="editor"
-                label="Rendition"
-                code="${this.css}"
-                mode="css"
-                @code-changed="${this._handleCodeChange}"></pb-code-editor>
+            <div class="editor">
+                <label>Rendition</label>
+                <jinn-codemirror
+                    id="editor"
+                    label="Rendition"
+                    code="${this.css || ''}"
+                    mode="css"
+                    @update="${this._handleCodeChange}"></jinn-codemirror>
+            </div>
             <paper-icon-button @click="${this._remove}" icon="delete" title="delete this rendition"></paper-icon-button>
         </div>
 
@@ -113,7 +123,7 @@ export class PbOddRenditionEditor extends LitElement {
         console.log('refreshEditor');
         const editor = this.shadowRoot.getElementById('editor');
         if (!editor) { return; }
-        editor.refresh();
+        // editor.refresh();
     }
 
     _remove(ev) {
@@ -122,7 +132,7 @@ export class PbOddRenditionEditor extends LitElement {
     }
 
     _handleCodeChange() {
-        this.css = this.shadowRoot.getElementById('editor').getSource();
+        this.css = this.shadowRoot.getElementById('editor').value;
         this.dispatchEvent(new CustomEvent('rendition-changed', { composed: true, bubbles: true, detail: { name: this.name, css: this.css, scope: this.scope } }));
     }
 

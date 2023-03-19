@@ -116,7 +116,7 @@
                     margin-left: 14px;
                 }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
                     <pb-progress></pb-progress>
@@ -124,11 +124,10 @@
                         <aside class="toc">
                             <pb-load url="api/document/{doc}/contents?target=transcription&icons=false" expand src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
                         </aside>
-                        <pb-view class="breadcrumbs" src="document1" load-css="odd/docbook.css">
+                        <pb-view class="breadcrumbs" src="document1">
                             <pb-param name="mode" value="breadcrumbs"/>
                         </pb-view>
-                        <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription" subscribe="transcription"
-                            load-css="odd/docbook.css"></pb-view>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription" subscribe="transcription"></pb-view>
                         <footer>
                             <!-- Navigate to next page -->
                             <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">

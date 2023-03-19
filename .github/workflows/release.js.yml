@@ -12,8 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
-        with:
-          node-version: "14.x"
       - name: npm install and build
         run:
           npm ci
@@ -25,7 +23,7 @@ jobs:
       - name: Wait for eXist
         uses: iFaxity/wait-on-action@v1
         with:
-          resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
+          resource: http-get://localhost:8080/exist/apps/tei-publisher/api/version
       - run: npm test
       - run: npx semantic-release
         env:

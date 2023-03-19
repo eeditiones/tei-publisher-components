@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 
 
 /**
@@ -43,7 +43,7 @@ export class PbEditXml extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-        PbEditXml.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             if (options.endpoint === '.') {
                 this._href = '/exist/apps/eXide/';
             } else {

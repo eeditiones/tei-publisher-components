@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { registry } from './urls.js';
+
 import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
@@ -40,7 +42,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        PbSelectTemplate.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             this.template = options.template;
             const loader = this.shadowRoot.getElementById('getTemplates');
             if (this.minApiVersion('1.0.0')) {
@@ -86,8 +88,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
         if (newTemplate === this.template) {
             return;
         }
-        this.setParameter('template', newTemplate);
-        window.location = this.getUrl().toString();
+        registry.commit(this, { template: newTemplate });
     }
 
     _handleTemplatesResponse() {

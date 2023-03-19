@@ -1,3 +1,5 @@
+import { defaultChannel } from "./pb-mixin.js";
+
 /**
  * Utility class to plug into TEI Publisher's event system from custom javascript.
  */
@@ -12,16 +14,10 @@ export class PbEvents {
      * Receives the event as first and the event handler as second parameter.
      */
     static subscribe(name, channels, callback, once=false) {
-        if (channels && !Array.isArray(channels)) {
-            // eslint-disable-next-line no-param-reassign
-            channels = [channels];
-        }
+        const _channels = PbEvents._getChannels(channels)
         const handler = document.addEventListener(name, (/** @type {CustomEvent} */ ev) => {
-            if ((!channels && !(ev.detail && ev.detail.key)) || 
-                (channels && ev.detail && ev.detail.key && channels.indexOf(ev.detail.key) > -1)) {
-                if (callback) {
-                    callback(ev, handler);
-                }
+            if (callback && ev.detail && ev.detail.key && _channels.includes(ev.detail.key)) {
+                callback(ev, handler);
             }
         }, {
             once
@@ -37,20 +33,34 @@ export class PbEvents {
      * @returns {Promise} resolves if event is caught, providing the event as parameter
      */
     static subscribeOnce(name, channels=null) {
-        if (channels && !Array.isArray(channels)) {
-            // eslint-disable-next-line no-param-reassign
-            channels = [channels];
-        }
+        const _channels = PbEvents._getChannels(channels);
         return new Promise((resolve) => {
             document.addEventListener(name, (/** @type {CustomEvent} */ ev) => {
-                if ((!channels && !(ev.detail && ev.detail.key)) || 
-                    (channels && ev.detail && ev.detail.key && channels.indexOf(ev.detail.key) > -1)) {
+                if (ev.detail && ev.detail.key && _channels.includes(ev.detail.key)) {
                     resolve(ev);
                 }
             }, {
                 once: true
             });
         });
+    }
+
+    /**
+     * determine channels to subscribe to
+     * 
+     * @param {string|string[]|null} channels name of a channel, array of channel names or null to target the default channel
+     * @returns {string[]} channels
+     */
+    static _getChannels(channels) {
+        // no channels: null or empty string or empty array
+        if (channels === null || !channels.length) {
+            return [defaultChannel]
+        }
+        // single string
+        if (!Array.isArray(channels)) {
+            return [channels];
+        }
+        return channels;
     }
 
     /**
@@ -62,9 +72,7 @@ export class PbEvents {
      */
     static emit(type, channel=null, detail=null) {
         const options = detail || {};
-        if (channel) {
-            options.key = channel;
-        }
+        options.key = channel || defaultChannel;
         const ev = new CustomEvent(type, {
             detail: options
         });

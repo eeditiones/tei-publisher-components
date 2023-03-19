@@ -8,7 +8,7 @@ import { PbHighlight } from "./pb-highlight.js";
  * 
  * For `pb-leaflet-map` to show markers for `pb-geolocation` elements, make sure that map subscribes to the channel
  * into which `pb-geolocation`s emit and that map is loaded before the emitting component, e.g. `pb-view`, by specifying 
- * `wait-for` property
+ * `wait-for` property.
  *
  * @slot - default unnamed slot for content. May also contain an option `<template>` element for content to be shown in a popup
  * @fires pb-geolocation - Sends geocoordinates
@@ -74,7 +74,8 @@ export class PbGeolocation extends PbHighlight {
                     label: this.label,
                     zoom: this.zoom,
                     popup: this.popup,
-                    element: this
+                    element: this,
+                    event: this.event
                 })
             );
         }

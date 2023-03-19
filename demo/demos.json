@@ -2,7 +2,8 @@
   "pb-view": {
     "demo/pb-view.html": "View TEI document",
     "demo/pb-view2.html": "Docbook document",
-    "demo/pb-view3.html": "Manipulating content via JS"
+    "demo/pb-view3.html": "Manipulating content via JS",
+    "demo/pb-view4.html": "Navigating links"
   },
   "pb-document": {
     "demo/pb-document.html": "Demo"
@@ -40,6 +41,10 @@
   "pb-facsimile": {
     "demo/pb-facsimile.html": "Demo",
     "demo/pb-facsimile-2.html": "Align text page with facsimile"
+  },
+  "pb-image-strip": {
+    "demo/pb-image-strip-view.html": "Demo with pb-view",
+    "demo/pb-image-strip-standalone.html": "Standalone Demo"
   },
   "pb-grid": {
     "demo/pb-grid.html": "Demo"
@@ -158,5 +163,11 @@
   },
   "pb-custom-form": {
     "demo/pb-custom-form.html": "Demo"
+  },
+  "pb-combo-box": {
+    "demo/pb-combo-box.html": "Demo"
+  },
+  "pb-print-preview": {
+    "demo/pb-print-preview.html": "Demo"
   }
 }

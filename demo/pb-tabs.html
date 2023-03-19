@@ -8,6 +8,7 @@
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
+        <script type="module" src="../src/pb-page.js"></script>
         <!--/scripts-->
     </head>
 
@@ -16,9 +17,11 @@
             <template>
                 <!-- Display two document views side by side -->
                 <main>
+                    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                     <pb-tabs>
-                        <paper-tab slot="tab">Local Collection</paper-tab>
-                        <paper-tab slot="tab">Distributed Text Services (Experimental)</paper-tab>
+                        <paper-tab slot="tab">Tab 1</paper-tab>
+                        <paper-tab slot="tab">Tab 2</paper-tab>
+                        <paper-tab slot="tab">Tab 3</paper-tab>
 
                         <div slot="page">
                             <p>This is the first tab.</p>
@@ -26,7 +29,11 @@
                         <div slot="page">
                             <p>And a second tab.</p>
                         </div>
+                        <div slot="page">
+                            <p>The third tab.</p>
+                        </div>
                     </pb-tabs>
+                    </pb-page>
                 </main>
             </template>
         </pb-demo-snippet>

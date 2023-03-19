@@ -43,14 +43,14 @@
                 border-bottom: 1px solid #606060;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                 <!-- Display facsimile -->
                 <main>
                     <div>
                         <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
                             facsimiles='["15929_000_IDL5772_BOss12034_IIIp79.jpg", "15929_000_IDL5772_BOss12034_IIIp80.jpg", "15929_000_IDL5772_BOss12034_IIIp81.jpg", "15929_000_IDL5772_BOss12034_IIIp82.jpg",
                                 "does-not-exist.jpg"]'
-                            default-zoom-level="0" show-navigator reference-strip
+                            default-zoom-level="0" show-navigator show-sequence-control reference-strip
                             show-navigation-control show-home-control show-rotation-control>
                             <h3 slot="before">Facsimile Viewer Test</h3>
                             <div slot="after">Status: <span id="status"></span></div>

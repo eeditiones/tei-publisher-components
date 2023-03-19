@@ -1,5 +1,5 @@
-import { fixture, expect, waitUntil, fixtureCleanup } from '@open-wc/testing';
-import { waitForPage } from './util.js';
+import { expect } from '@open-wc/testing';
+import { waitForPage, cleanup } from './util.js';
 import '../src/pb-autocomplete.js';
 import '../src/pb-page.js';
 import '@polymer/paper-item';
@@ -7,9 +7,8 @@ import '@polymer/iron-form';
 
 
 describe('simple autocomplete with static suggestions', () => {
-    afterEach(() => {
-      fixtureCleanup();
-    });
+    afterEach(cleanup);
+
     it('submits in form', async () => {
         const el = (
             await waitForPage(`

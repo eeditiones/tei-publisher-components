@@ -6,13 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from "./pb-i18n.js";
 
 /**
- * Show a dialog with buttons. Used by editor.
- *
- *
- * todo:confirmation is only partly implemented needs some method to detect which button was clicked
- * @customElement
- * @polymer
- * @demo demo/pb-message.html
+ * Show a dialog with buttons. Used by ODD editor.
  */
 export class PbMessage extends LitElement {
 
@@ -58,14 +52,16 @@ export class PbMessage extends LitElement {
         super();
         this.title = '';
         this.message = '';
-        this.type = 'message'; //defaults to 'message'
+        this.type = 'message'; // defaults to 'message'
     }
 
     render() {
         return html`
         <paper-dialog id="modal">
-            <h2 id="title">${this.title}</h2>
-            <paper-dialog-scrollable id="message" class="message" tabindex="0">${unsafeHTML(this.message)}</paper-dialog-scrollable>
+            <h2 id="title">${unsafeHTML(this.title)}</h2>
+            <paper-dialog-scrollable id="message" class="message" tabindex="0">
+            ${ this.message ? unsafeHTML(this.message) : html`<slot></slot>` }
+            </paper-dialog-scrollable>
 
             <div class="buttons">
                 <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>

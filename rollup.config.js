@@ -19,10 +19,12 @@ function replaceDemo(input, scripts) {
 export default [
     {
         input: [
+            'src/polymer-hack.js',
             'src/pb-components-bundle.js',
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
-            'src/pb-edit-app.js'
+            'src/pb-edit-app.js',
+            'src/pb-code-editor.js'
         ],
         output: {
             dir: 'dist',
@@ -65,21 +67,17 @@ export default [
                         src: './node_modules/leaflet/dist/images/*',
                         dest: './images/leaflet'
                     },
-                    {
-                        src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
-                        dest: './lib'
-                    },
-                    {
-                        src: './node_modules/openseadragon/build/openseadragon/images/*',
-                        dest: './images/openseadragon'
-                    },
+                    // {
+                    //     src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
+                    //     dest: './lib'
+                    // },
+                    // {
+                    //     src: './node_modules/openseadragon/build/openseadragon/images/*',
+                    //     dest: './images/openseadragon'
+                    // },
                     {
                         src: './node_modules/prismjs/themes/*',
                         dest: './css/prismjs'
-                    },
-                    {
-                        src: './node_modules/codemirror/theme/*',
-                        dest: './css/codemirror'
                     },
                     {
                         src: './node_modules/leaflet/dist/leaflet-src.js',
@@ -96,6 +94,22 @@ export default [
                     {
                         src: './node_modules/leaflet.markercluster/dist/*.css',
                         dest: './css/leaflet'
+                    },
+                    {
+                        src: './node_modules/tom-select/dist/css/*.min.css',
+                        dest: './css/tom-select'
+                    },
+                    {
+                        src: './src/assets/pagedjs/*.css',
+                        dest: './css/pagedjs'
+                    },
+                    {
+                        src: './node_modules/pagedjs/dist/paged.polyfill.js',
+                        dest: 'lib'
+                    },
+                    {
+                        src: './src/assets/components.css',
+                        dest: 'css'
                     }
                 ]
             })
@@ -141,7 +155,7 @@ export default [
                             replaceDemo(contents, `${wcloader}<script type="module" src="pb-component-docs.js"></script>`)
                     },
                     {
-                        src: ['demo/*.json', 'demo/*.css'],
+                        src: ['demo/*.json', 'demo/*.css', 'demo/*.png'],
                         dest: 'dist/demo'
                     },
                     {

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
@@ -117,7 +117,7 @@ export class PbLogin extends pbMixin(LitElement) {
                 this._checkLogin.generateRequest();
             }
         });
-        PbLogin.waitOnce('pb-page-ready', (detail) => {
+        waitOnce('pb-page-ready', (detail) => {
             if (minVersion(detail.apiVersion, '1.0.0')) {
                 this._checkLogin.url = `${detail.endpoint}/api/login/`;
             } else {

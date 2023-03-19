@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
+import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -87,14 +88,38 @@ export class PbLoad extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'use-language'
             },
+            /**
+             * Indicates whether or not cross-site Access-Control requests should be made.
+             * Default is false.
+             */
+            noCredentials: {
+                type: Boolean,
+                attribute: 'no-credentials'
+            },
+            /**
+             * Indicates if the parameters of the request made should be saved to the browser
+             * history and URL. Default: false.
+             */
             history: {
                 type: Boolean
             },
+            /**
+             * The event which will trigger a new request to be sent. Default is 'pb-load'.
+             */
             event: {
                 type: String
             },
+            /**
+             * Additional, user-defined parameters to be sent with the request.
+             */
             userParams: {
                 type: Object
+            },
+            /**
+             * If set, silently ignore errors when sending the request.
+             */
+            silent: {
+                type: Boolean
             }
         };
     }
@@ -107,34 +132,33 @@ export class PbLoad extends pbMixin(LitElement) {
         this.event = 'pb-load';
         this.loaded = false;
         this.language = null;
+        this.noCredentials = false;
+        this.silent = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.subscribeTo(this.event, (ev) => {
-            if (this.history && ev.detail && ev.detail.params) {
-                const start = ev.detail.params.start;
-                if (start) {
-                    this.setParameter('start', start);
-                    this.pushHistory('pagination', {
-                        start: start
+            waitOnce('pb-page-ready', () => {
+                if (this.history) {
+                    if (ev.detail && ev.detail.params) {
+                        const start = ev.detail.params.start;
+                        if (start) {
+                            registry.commit(this, { start });
+                        }
+                    }
+                    this.userParams = registry.state;
+                    registry.subscribe(this, (state) => {
+                        if (state.start) {
+                            this.start = state.start;
+                            this.load();
+                        }
                     });
+                    registry.replace(this, this.userParams);
                 }
-            }
-            PbLoad.waitOnce('pb-page-ready', () => {
                 this.load(ev);
             });
         });
-
-        if (this.history) {
-            window.addEventListener('popstate', (ev) => {
-                ev.preventDefault();
-                if (ev.state && ev.state.start && ev.state.start !== this.start) {
-                    this.start = ev.state.start;
-                    this.load();
-                }
-            });
-        }
 
         this.subscribeTo('pb-toggle', ev => {
             this.toggleFeature(ev);
@@ -148,24 +172,51 @@ export class PbLoad extends pbMixin(LitElement) {
             }
         }, []);
 
+        if (this.history) {
+            registry.subscribe(this, (state) => {
+                this.start = state.start;
+                this.userParams = state;
+                this.load();
+            });
+        }
+
         this.signalReady();
     }
 
     firstUpdated() {
         if (this.auto) {
-            this.start = this.getParameter('start', this.start);
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            this.start = registry.state.start || 1;
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
                 this.wait(() => this.load());
             });
         } else {
-            PbLoad.waitOnce('pb-page-ready', (data) => {
+            waitOnce('pb-page-ready', (data) => {
                 if (data && data.language) {
                     this.language = data.language;
                 }
             });
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if (oldValue && oldValue !== newValue) {
+            switch (name) {
+                case 'url':
+                case 'userParams':
+                case 'start':
+                    if (this.auto && this.loader) {
+                        waitOnce('pb-page-ready', () => {
+                            this.wait(() => this.load());
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -177,7 +228,7 @@ export class PbLoad extends pbMixin(LitElement) {
                 verbose
                 handle-as="text"
                 method="get"
-                with-credentials
+                ?with-credentials="${!this.noCredentials}"
                 @response="${this._handleContent}"
                 @error="${this._handleError}"></iron-ajax>
             <paper-dialog id="errorDialog">
@@ -201,9 +252,12 @@ export class PbLoad extends pbMixin(LitElement) {
     }
 
     toggleFeature(ev) {
-        this.userParams = ev.detail.properties;
+        this.userParams = registry.getState(this);
         console.log('<pb-load> toggle feature %o', this.userParams);
-        if (ev.detail.action === 'refresh') {
+        if (ev.detail.refresh) {
+            if (this.history) {
+                registry.commit(this, this.userParams);
+            }
             this.load();
         }
     }
@@ -326,6 +380,10 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-end-update');
         const loader = this.shadowRoot.getElementById('loadContent');
         const { response } = loader.lastError;
+        if (this.silent) {
+            console.error('Request failed: %s', response ? response.description : '');
+            return;
+        }
         let message;
         if (response) {
             message = response.description;
@@ -342,16 +400,18 @@ export class PbLoad extends pbMixin(LitElement) {
         // Try to determine number of pages and current position
         // Search for data-pagination-* attributes first and if they
         // can't be found, check HTTP headers
-        function getPaginationParam(type) {
+        // 
+        // However, if noCredentials is set, we won't be able to access the headers
+        function getPaginationParam(type, noHeaders) {
             const elem = content.querySelector(`[data-pagination-${type}]`);
             if (elem) {
                 return elem.getAttribute(`data-pagination-${type}`);
             }
-            return xhr.getResponseHeader(`pb-${type}`);
+            return noHeaders ? 0 : xhr.getResponseHeader(`pb-${type}`);
         }
 
-        const total = getPaginationParam('total');
-        const start = getPaginationParam('start');
+        const total = getPaginationParam('total', this.noCredentials);
+        const start = getPaginationParam('start', this.noCredentials);
 
         if (this.start !== start) {
             this.start = parseInt(start);
@@ -359,6 +419,7 @@ export class PbLoad extends pbMixin(LitElement) {
         this.emitTo('pb-results-received', {
             "count": total ? parseInt(total, 10) : 0,
             "start": this.start,
+            "content": content,
             "params": this.shadowRoot.getElementById('loadContent').params
         });
     }

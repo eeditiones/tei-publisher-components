@@ -27,12 +27,13 @@ module.exports = config => {
       },
       concurrency: 1,
       client: {
-        endpoint: config.endpoint ? config.endpoint : 'http://localhost:8080/exist/apps/tei-publisher/',
+        endpoint: config.endpoint ? config.endpoint : 'http://localhost:8080/exist/apps/tei-publisher',
         passwd: config.passwd ? config.passwd : 'simple',
         mocha: {
           timeout: 10000
         }
-      }
+      },
+      hostname: '127.0.0.1'
     })
   );
   return config;
