@@ -225,6 +225,14 @@ export class PbSearch extends pbMixin(LitElement) {
     }
 
     _handleEnter(e) {
+
+        /* Snippet from pb-autocomplete.
+        * If no value is not selected from suggested ones,
+        * empty value is send when form is submitted.
+        */
+        const input = this.shadowRoot.getElementById('search');
+        this.value = input.value;
+
         if (e.keyCode === 13) {
             this._doSearch();
         }
