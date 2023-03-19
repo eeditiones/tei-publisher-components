@@ -62,6 +62,18 @@ export class PbSearch extends pbMixin(LitElement) {
             disableAutocomplete: {
                 type: Boolean,
                 attribute: 'disable-autocomplete'
+            },
+            /**
+             * Optional URL to query for suggestions. If relative, it is interpreted
+             * relative to the endpoint defined on a surrounding `pb-page`.
+             * 
+             * Upon autocomplete, the current input by the user will be sent with a query parameter
+             * `query`. The name/values of form controls nested within `pb-search` or subforms will also be
+             * appended to the request as parameters. This allows the server side code to distinguish
+             * different states.
+             */
+            source: {
+                type: String
             }
         };
     }
@@ -109,8 +121,9 @@ export class PbSearch extends pbMixin(LitElement) {
         );
         waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            const url = this.source ?? "api/search/autocomplete";
             if (this.minApiVersion('1.0.0')) {
-                loader.url = `${options.endpoint}/api/search/autocomplete`;
+                loader.url = `${options.endpoint}/${url}`;
             } else {
                 loader.url = `${options.endpoint}/modules/autocomplete.xql`;
             }
