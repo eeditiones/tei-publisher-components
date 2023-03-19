@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
-import { translate } from "./pb-i18n.js";
+import { translate } from './pb-i18n.js';
+import { registry } from './urls.js';
+
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-item';
@@ -53,8 +55,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
-
-        this.endpoint = this.getParameter('endpoint');
+        this.endpoint = registry.state.endpoint;
     }
 
     updated(changedProperties) {
@@ -96,8 +97,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
             return;
         }
         const endpoint = this.endpoints.find((endp) => endp.url === newEndpoint);
-        this.setParameter('endpoint', endpoint.url);
-        this.pushHistory('dts-endpoint');
+        registry.commit(this, { endpoint: endpoint.url });
         console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
         this.emitTo('dts-endpoint', {
             endpoint: endpoint.url,

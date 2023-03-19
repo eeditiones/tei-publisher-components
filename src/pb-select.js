@@ -4,7 +4,7 @@ import "@polymer/paper-listbox";
 import "@polymer/paper-item";
 import "@polymer/iron-label/iron-label.js";
 import { translate } from "./pb-i18n.js";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 
 
 /**
@@ -108,7 +108,7 @@ export class PbSelect extends pbMixin(LitElement) {
                 });
             });
         }
-        PbSelect.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this._loadRemote();
         });
     }
@@ -134,33 +134,36 @@ export class PbSelect extends pbMixin(LitElement) {
     }
 
     _loadRemote() {
-        if (this.source) {
-            let url = this.toAbsoluteURL(this.source);
-            if (url.indexOf('?') > -1) {
-                url = `${url}&${this._getParameters()}`;
-            } else {
-                url = `${url}?${this._getParameters()}`;
-            }
-            console.log('<pb-select> loading items from %s', url);
-            fetch(url, {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'same-origin'
-            })
-                .then((response) => response.json())
-                .then((json) => {
-                    this._clear('slot:not([name])');
-                    const items = [];
-                    json.forEach((item) => {
-                        items.push({label: item.text, value: item.value});
-                    });
-                    console.log('<pb-select> loaded %d items', items.length);
-                    this._items = items;
-                })
-                .catch(() => {
-                    console.error('<pb-select> request to %s failed', url);
-                });
+        if (!this.source) {
+            return // nothing to do
         }
+
+        let url = this.toAbsoluteURL(this.source);
+        url += url.includes('?') ? '&' : '?';
+        url += this._getParameters();
+
+        console.log('<pb-select> loading items from %s', url);
+
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin'
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                this._clear('slot:not([name])');
+                const items = json.map(PbSelect.jsonEntry2item);
+                console.log('<pb-select> loaded %d items', items.length);
+                this._items = items;
+            })
+            .catch(() => console.error('<pb-select> request to %s failed', url));
+    }
+
+    static jsonEntry2item (item) {
+        return {
+            label: item.text,
+            value: item.value
+        };
     }
 
     _getParameters() {

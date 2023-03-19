@@ -18,6 +18,12 @@ export class PbFacsLink extends pbMixin(LitElement) {
             coordinates: {
                 type: Array
             },
+            label: {
+                type: String
+            },
+            order: {
+                type: Number
+            },
             /** 
              * Type of event which should trigger the facsimile to display. 
              * Either 'click' or 'mouseover' (default). */
@@ -39,29 +45,46 @@ export class PbFacsLink extends pbMixin(LitElement) {
     constructor() {
         super();
         this.trigger = 'mouseover';
+        this.label = '';
+        this.order = Number.POSITIVE_INFINITY;
+        this.waitFor = 'pb-facsimile,pb-image-strip';
+        this.default = '';
     }
 
     connectedCallback() {
         super.connectedCallback();
+
+        this.wait(() => {
+            this.emitTo('pb-load-facsimile', {
+                url: this.getImage(),
+                order: this.getOrder(),
+                element: this
+            });
+        });
+    }
+
+    getImage() {
+        return this.facs
+    }
+
+    getLabel() {
+        return this.label
+    }
+
+    getOrder() {
+        return this.order
     }
 
     firstUpdated() {
         const link = this.shadowRoot.querySelector('a');
-        switch (this.trigger) {
-            case 'click':
-                link.addEventListener('click', this._linkListener.bind(this));
-                break;
-            default:
-                link.addEventListener('mouseover', this._linkListener.bind(this));
-                break;
-        }
+        link.addEventListener(this.trigger, this._linkListener.bind(this));
         if (this.emitOnLoad) {
             this._trigger();
         }
     }
 
     render() {
-        return html`<a href="#"><slot></slot></a>`;
+        return html`<a href="javascript:;"><slot>${this.default}</slot></a>`;
     }
 
     static get styles() {
@@ -84,6 +107,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
     _trigger() {
         console.log("<facs-link> %s %o", this.facs, this.coordinates);
         this.emitTo('pb-show-annotation', {
+            element: this,
             file: this.facs,
             coordinates: this.coordinates
         });

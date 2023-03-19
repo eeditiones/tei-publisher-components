@@ -59,13 +59,13 @@
                     float: right;
                 }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                     <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
 
                     <pb-progress subscribe="transcription"></pb-progress>
                     <!-- Output the document title -->
                     <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
-                        subscribe="transcription">
+                        subscribe="transcription" view="single">
                         <pb-param name="header" value="short"/>
                     </pb-view>
                     <pb-view id="view1" src="document1" view="page" append-footnotes animation

@@ -1,18 +1,24 @@
 [
-    {
-        "text": "German",
-        "value": "de"
-    },
-    {
-        "text": "Italian",
-        "value": "it"
-    },
-    {
-        "text": "Polish",
-        "value": "pl"
-    },
-    {
-        "text": "English",
-        "value": "en"
-    }
+    { "value": "bg", "text": "Български"},
+    { "value": "cs", "text": "Česky"},
+    { "value": "zh_CN", "text": "简体中文"},
+    { "value": "zh_TW", "text": "繁體中文"},
+    { "value": "de", "text": "Deutsch"},
+    { "value": "en", "text": "English"},
+    { "value": "es", "text": "Español"},
+    { "value": "el", "text": "ελληνικά"},
+    { "value": "fr", "text": "Français"},
+    { "value": "fi", "text": "Suomi"},
+    { "value": "it", "text": "Italiano"},
+    { "value": "ka", "text": "ქართული"},
+    { "value": "nl", "text": "Nederlands"},
+    { "value": "no", "text": "Norsk"},
+    { "value": "pl", "text": "Polski"},
+    { "value": "pt", "text": "Português"},
+    { "value": "ro", "text": "Română"},
+    { "value": "ru", "text": "русский"},
+    { "value": "sl", "text": "Slovenščina"},
+    { "value": "sv", "text": "Svenska"},
+    { "value": "tr", "text": "Türkçe"},
+    { "value": "uk", "text": "Українська"}
 ]

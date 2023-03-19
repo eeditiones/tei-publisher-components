@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin, waitOnce } from './pb-mixin';
 import { translate } from './pb-i18n';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-ajax';
@@ -140,12 +140,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             if (this.substring) {
                 autocomplete.queryFn = _query;
             }
-            PbAutocomplete.waitOnce('pb-page-ready', () => {
+            waitOnce('pb-page-ready', () => {
                 this._sendRequest();
             });
         } else if (this.value) {
             if (this.source) {
-                PbAutocomplete.waitOnce('pb-page-ready', () => {
+                waitOnce('pb-page-ready', () => {
                     //console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
                     this._sendRequest(this.value);
                 });
@@ -233,7 +233,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         loader.url = this.toAbsoluteURL(this.source);
 
         const params = this._getParameters();
-        params['query'] = query;
+        params.query = query;
         loader.params = params;
         //console.log('send request for %s with %o', loaderId, params);
 
@@ -286,18 +286,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     }
 
     _autocompleteSelected(ev) {
-        this.lastSelected = ev.detail.text;
+        const { text, value } = ev.detail;
+        this.lastSelected = text;
         const input = this.shadowRoot.getElementById('search');
-        input.value = ev.detail.text;
-        this.value = ev.detail.value;
+        input.value = text;
+        this.value = value;
         if (this._hiddenInput) {
             this._hiddenInput.value = this.value;
         }
 
-        this.emitTo('pb-autocomplete-selected', {
-            text: ev.detail.text,
-            value: ev.detail.value
-        });
+        this.emitTo('pb-autocomplete-selected', { text, value });
     }
 
     _setInput(ev) {

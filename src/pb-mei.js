@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import "@lrnwebcomponents/es-global-bridge";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import '@polymer/paper-icon-button';
 import '@polymer/paper-checkbox';
@@ -145,7 +145,7 @@ export class PbMei extends pbMixin(LitElement) {
             .then(() => {
                 this._verovio = new window.verovio.toolkit();
 
-                PbMei.waitOnce('pb-page-ready', () => {
+                waitOnce('pb-page-ready', () => {
                     this.load();
                 });
             });

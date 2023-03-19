@@ -1,5 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import '@polymer/iron-icons';
 import '@polymer/paper-icon-button';
 
@@ -42,7 +43,7 @@ export class PbRepeat extends pbMixin(LitElement) {
 
         this.template = this.querySelector('template');
 
-        const params = this.getParameters();
+        const params = registry.state;
         this._computeInitial(params);
         if (this._instances.length === 0) {
             for (let i = 0; i < this.initial; i++) {
@@ -82,7 +83,11 @@ export class PbRepeat extends pbMixin(LitElement) {
         const wrapper = document.createElement('div');
         wrapper.appendChild(clone);
         wrapper.querySelectorAll('[name]').forEach(input => {
-            const name = `${input.name}[${idx}]`;
+            //during inicialization of the default first instance
+            // name property is not available (defined), 
+            // but can be reached as the attribute value
+            // see https://github.com/eeditiones/tei-publisher-components/issues/29
+            const name = (input.name === undefined) ? `${input.attributes.getNamedItem("name").nodeValue}[${idx}]` : `${input.name}[${idx}]`;
             if (params && params[name]) {
                 if (input.type === 'checkbox' || input.type === 'radio') {
                     input.checked = params[name] === input.value;

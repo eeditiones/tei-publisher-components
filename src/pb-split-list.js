@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
+import { themableMixin } from "./theming.js";
+import { registry } from "./urls.js";
 
 /**
  * Implements a list which is split into different categories 
@@ -18,12 +19,50 @@ import { pbMixin } from './pb-mixin.js';
  * + `items`: an array with the items to be shown for the currently selected
  *  category. Those may contain HTML markup.
  * 
+ * Sample JSON object for pb-split-list
+ * ```javascript
+ * {
+ *    "items": [
+ *        "<span><a href='Abegg-Arter Carl?category=A&amp;view=correspondents&amp;search='>Abegg-Arter, Carl</a><span class='dates'> (1836–1912)</span></span>",
+ *        "<span><a href='Abegg Hans Heinrich?category=A&amp;view=correspondents&amp;search='>Abegg, Hans Heinrich</a><span class='dates'> (1805–1874)</span></span>",
+ *        "<span><a href='Abegg Jakob?category=A&amp;view=correspondents&amp;search='>Abegg, Jakob</a><span class='dates'> (1801–1871)</span></span>",
+ *        "<span><a href='Abys Raget?category=A&amp;view=correspondents&amp;search='>Abys, Raget</a><span class='dates'> (1790–1861)</span></span>",
+ *        "<span><a href='Aebli Johann Peter?category=A&amp;view=correspondents&amp;search='>Aebli, Johann Peter</a><span class='dates'> (1804–1879)</span></span>",
+ *        "<span><a href='Aepli Arnold Otto?category=A&amp;view=correspondents&amp;search='>Aepli, Arnold Otto</a><span class='dates'> (1816–1897)</span></span>",
+ *        ...
+ *    ],
+ *    "categories": [
+ *        {
+ *            "category": "A",
+ *            "count": 22
+ *        },
+ *        {
+ *            "category": "B",
+ *            "count": 77
+ *        },
+ *        {
+ *            "category": "C",
+ *            "count": 19
+ *        },
+ *      ...
+ *    ]
+ * }
+ * ```
+ * 
+ * Sample Usage 
+ * ```xml
+ * <pb-split-list url="api/people" subforms="#options" selected="A" emit="transcription" subscribe="transcription"></pb-split-list>
+ * ```
+ * See https://www.briefedition.alfred-escher.ch/kontexte/personen/?category=A&search=&view=correspondents for a running sample. The source code of the webpage is here: https://github.com/stazh/briefedition-escher. Relevant files are: 
+ * - [templates/index.html](https://github.com/stazh/briefedition-escher/blob/master/templates/index.html#L223) - usage of pb-timeline
+ * - [modules/custom-api.json](https://github.com/stazh/briefedition-escher/blob/master/modules/custom-api.json#L1098) - `/api/people` endpoint delivering required JSON object
+ * 
  * @cssprop --pb-categorized-list-columns - the number of columns to display (default: 2)
  * @fires pb-submit - when received, submit a request to the server and refresh
  * @fires pb-start-update - sent before the element sends the request to the server
  * @fires pb-end-update - sent after new content has been received
  */
-export class PbSplitList extends pbMixin(LitElement) {
+export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             /**
@@ -59,17 +98,20 @@ export class PbSplitList extends pbMixin(LitElement) {
         this._params = {};
         this.selected = null;
         this.subforms = null;
+        this._initialized = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        this.selected = this.getParameter('category', this.selected);
-        
-        window.addEventListener('popstate', (ev) => {
-            console.log('<pb-split-list> popstate: %o', ev);
-            this.selected = ev.state.category;
-            this.submit();
+        waitOnce('pb-page-ready', () => {
+            this.selected = registry.state.category || this.selected;
+
+            registry.subscribe(this, (state) => {
+                console.log('<pb-split-list> popstate: %o', state);
+                this.selected = state.category;
+                this.submit();
+            });
         });
 
         this.subscribeTo('pb-submit', this.load.bind(this));
@@ -78,7 +120,7 @@ export class PbSplitList extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
         
-        PbSplitList.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.load();
         });
     }
@@ -89,8 +131,12 @@ export class PbSplitList extends pbMixin(LitElement) {
 
     load() {
         const formParams = this._paramsFromSubforms({ category: this.selected });
-        this.setParameters(formParams);
-        this.pushHistory('pb-split-list', formParams);
+        if (!this._initialized) {
+            registry.replace(this, formParams);    
+        } else {
+            registry.commit(this, formParams);
+        }
+        this._initialized = true;
 
         const params = new URLSearchParams(formParams);
 
@@ -142,7 +188,7 @@ export class PbSplitList extends pbMixin(LitElement) {
                     html`
                         <a part="${this.selected === cat.category ? 'active-category' : 'category'}" href="#${cat.category}" title="${cat.count}" class="${this.selected === cat.category ? 'active' : ''}"
                             @click="${(ev) => this._selectCategory(ev, cat.category)}">
-                            ${cat.category}
+                            ${cat.label ? unsafeHTML(cat.label) : cat.category}
                         </a>
                     `
                 )

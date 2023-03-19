@@ -1,3 +1,4 @@
+import { internalProperty } from "lit-element";
 import { Registry } from "./registry.js";
 
 export class KBGA extends Registry {
@@ -5,6 +6,7 @@ export class KBGA extends Registry {
     constructor(configElem) {
         super(configElem);
         this._api = configElem.getAttribute('api');
+        this._limit = configElem.getAttribute('limit') || 999999;
     }
 
     async query(key) {
@@ -12,7 +14,7 @@ export class KBGA extends Registry {
      
         const register = this.getRegister();
         const searchParam = register === 'bibls' ? 'biblsearch' : 'search';
-        const url = `https://meta.karl-barth.ch/api/${register}?${searchParam}=${encodeURIComponent(key)}`;
+        const url = `https://meta.karl-barth.ch/api/${register}?${searchParam}=${encodeURIComponent(key)}&perPage=${this._limit}`;
         const label = this.getLabelField();
         return new Promise((resolve) => {
             fetch(url)

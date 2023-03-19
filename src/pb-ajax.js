@@ -2,9 +2,9 @@ import { LitElement, html, css } from 'lit-element';
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
-import { translate } from "./pb-i18n.js";
+import { get as i18n } from "./pb-i18n.js";
+import './pb-message.js';
 
 /**
  * Triggers an action on the server and shows a dialog
@@ -14,7 +14,7 @@ import { translate } from "./pb-i18n.js";
  * The parameters sent to the server-side script will be copied
  * from the `pb-view` to which this component subscribes, see pb-update event.
  *
- * @slot - unnamed slot for link text
+ * @slot - unnamed slot for link content
  * @slot title - dialog title
  * 
  * @fires pb-start-update - Fired before the element updates its content
@@ -51,6 +51,19 @@ export class PbAjax extends pbMixin(LitElement) {
             event: {
                 type: String
             },
+            /**
+             * If set, display a confirmation dialog with the message text given in
+             * this property. The user may cancel the action.
+             */
+            confirm: {
+                type: String
+            },
+            /**
+             * Set to not show the server's response
+             */
+            quiet: {
+                type: Boolean
+            },
             _message: {
                 type: String
             }
@@ -60,6 +73,8 @@ export class PbAjax extends pbMixin(LitElement) {
     constructor() {
         super();
         this.method = 'get';
+        this.confirm = null;
+        this.quiet = false;
     }
 
     connectedCallback() {
@@ -78,22 +93,16 @@ export class PbAjax extends pbMixin(LitElement) {
                 with-credentials
                 @error="${this._handleError}"
                 @response="${this._handleResponse}"></iron-ajax>
-            ${this.dialogTemplate}
+            <pb-message id="confirmDialog"></pb-message>
+            <slot name="title" style="display: none"></slot>
         `;
     }
 
-    get dialogTemplate() {
-        return html`
-            <paper-dialog id="messageDialog">
-                <h2><slot name="title">Action</slot></h2>
-                <paper-dialog-scrollable>${unsafeHTML(this._message)}</paper-dialog-scrollable>
-                <div class="buttons">
-                    <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                    ${translate('dialogs.close')}
-                    </paper-button>
-                </div>
-            </paper-dialog>
-        `;
+    firstUpdated() {
+        super.firstUpdated();
+        const slot = this.shadowRoot.querySelector('slot[name=title]');
+        this._dialogTitle = '';
+        slot.assignedNodes().forEach(node => {this._dialogTitle += node.innerHTML});
     }
 
     static get styles() {
@@ -109,7 +118,14 @@ export class PbAjax extends pbMixin(LitElement) {
 
     _handleClick(ev) {
         ev.preventDefault();
-        this.trigger();
+        if (this.confirm) {
+            const dialog = this.shadowRoot.getElementById('confirmDialog');
+            dialog.confirm(this._dialogTitle, i18n(this.confirm))
+                .then(() => this.trigger())
+                .catch(() => console.log('<pb-ajax> Action cancelled'));
+        } else {
+            this.trigger();
+        }
     }
     
     trigger() {
@@ -122,8 +138,10 @@ export class PbAjax extends pbMixin(LitElement) {
     _handleResponse() {
         const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
         this._message = resp;
-        const dialog = this.shadowRoot.getElementById('messageDialog');
-        dialog.open();
+        if (!this.quiet) {
+            const dialog = this.shadowRoot.getElementById('confirmDialog');
+            dialog.show(this._dialogTitle, this._message);
+        }
 
         this.emitTo('pb-end-update');
 
@@ -143,8 +161,8 @@ export class PbAjax extends pbMixin(LitElement) {
         } else {
             this._message = msg;
         }
-        const dialog = this.shadowRoot.getElementById('messageDialog');
-        dialog.open();
+        const dialog = this.shadowRoot.getElementById('confirmDialog');
+        dialog.show(i18n('dialogs.error'), this._message);
         this.emitTo('pb-end-update');
     }
 

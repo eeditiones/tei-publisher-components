@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { pbMixin } from './pb-mixin';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import * as marked from 'marked/lib/marked.js';
 import './pb-code-highlight.js';
 
@@ -71,7 +71,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
 
     set url(value) {
         this._url = value;
-        PbMarkdown.waitOnce("pb-page-ready", (options) => {
+        waitOnce("pb-page-ready", (options) => {
             this._load(options.endpoint);
         });
     }

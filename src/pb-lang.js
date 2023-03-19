@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 
 /**
@@ -46,7 +46,7 @@ export class PbLang extends pbMixin(LitElement) {
         this.subscribeTo('pb-i18n-update', (ev) => {
             this.selected = ev.detail.language.replace(/^([^-]+).*$/, '$1');
         }, []);
-        PbLang.waitOnce('pb-i18n-update', (options) => {
+        waitOnce('pb-i18n-update', (options) => {
             this.selected = options.language.replace(/^([^-]+).*$/, '$1');
         });
     }

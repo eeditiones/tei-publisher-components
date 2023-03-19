@@ -26,6 +26,20 @@ function _updateStyles(context, styles) {
     let root = context.getRootNode();
     if (root.nodeType === Node.DOCUMENT_NODE) {
         root = root.head;
+    } else {
+        // fonts need to be declared outside shadow root, so extract
+        // all font-faces and put them into a style in the header
+        const elem = document.querySelector(`style#${styles.id}`);
+        if (elem) {
+            elem.parentNode.removeChild(elem);
+        }
+        const fonts = styles.innerHTML.match(/@font-face[^{]+{.*?}/gs);
+        if (fonts) {
+            const style = document.createElement('style');
+            style.id = styles.id;
+            style.appendChild(document.createTextNode(fonts.join('\n')));
+            document.head.appendChild(style);
+        }
     }
     const oldStyles = root.querySelector(`#${styles.id}`);
     if (oldStyles) {

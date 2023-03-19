@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
+import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox';
@@ -31,8 +32,14 @@ export class PbSearch extends pbMixin(LitElement) {
             action: {
                 type: String
             },
+            name: {
+                type: String
+            },
             value: {
                 type: String
+            },
+            start: {
+                type: Number
             },
             placeHolder: {
                 type: String,
@@ -61,17 +68,34 @@ export class PbSearch extends pbMixin(LitElement) {
 
     constructor() {
         super();
+        this.name = 'query';
         this.value = '';
         this.redirect = false;
         this.submitOnLoad = false;
         this.placeHolder = 'search.placeholder';
         this.disableAutocomplete = false;
+        this.start = 1;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', this._doSearch.bind(this));
+        this.subscribeTo('pb-paginate', (ev) => {
+            this.start = ev.detail.params.start;
+            this._doSearch(true);
+        });
+
+        registry.subscribe(this, (state) => {
+            this.value = state.query || '';
+            this.start = state.start || 1;
+            if (this.submitOnLoad) {
+                this.emitTo('pb-load', {
+                    "url": this.action,
+                    "params": state
+                });
+            }
+        });
     }
 
     firstUpdated() {
@@ -83,7 +107,7 @@ export class PbSearch extends pbMixin(LitElement) {
         ironform.addEventListener('iron-form-response', (event) =>
             event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
         );
-        PbSearch.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             if (this.minApiVersion('1.0.0')) {
                 loader.url = `${options.endpoint}/api/search/autocomplete`;
@@ -93,7 +117,8 @@ export class PbSearch extends pbMixin(LitElement) {
         });
 
         if (this.submitOnLoad) {
-            const params = this.getParameters();
+            const params = registry.state;
+            registry.replace(this, params);
             this.emitTo('pb-load', {
                 "url": this.action,
                 "params": params
@@ -170,16 +195,17 @@ export class PbSearch extends pbMixin(LitElement) {
         `;
     }
 
-    _doSearch() {
+    _doSearch(pagination = false) {
         let json = this.shadowRoot.getElementById('ironform').serializeForm();
         json = this._paramsFromSubforms(json);
+        // remove unnecessary param added by autocomplete
+        delete json['autocomplete-custom-template'];
+        // always start on first result after submitting new search
+        json.start = pagination ? this.start : 1;
         if (this.redirect) {
             window.location.href = `${this.action}?${new URLSearchParams(json)}`;
         } else {
-            this.setParameters(json);
-            this.pushHistory('search');
-            // always start on first result after submitting new search
-            json.start = 1;
+            registry.commit(this, json);
             this.emitTo('pb-load', {
                 "url": this.action,
                 "params": json

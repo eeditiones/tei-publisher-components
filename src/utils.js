@@ -1,4 +1,3 @@
-
 export function resolveURL(relPath) {
     const src = document.querySelector('script[src*=pb-components]');
     if (src) {
@@ -29,4 +28,24 @@ export function cmpVersion(a, b) {
 
 export function minVersion(given, required) {
     return cmpVersion(given, required) >= 0;
+}
+
+/**
+ * Retrieve value of a CSS property.
+ * 
+ * @param {Element} elem the component
+ * @param {string} name name of the property
+ * @param {any} defaultValue default value
+ * @returns the value or defaultValue if it does not exist
+ */
+export function getCSSProperty(elem, name, defaultValue) {
+    const property = getComputedStyle(elem).getPropertyValue(name);
+    if (property) {
+        try {
+            return JSON.parse(property);
+        } catch (e) {
+            return defaultValue;
+        }
+    }
+    return defaultValue;
 }

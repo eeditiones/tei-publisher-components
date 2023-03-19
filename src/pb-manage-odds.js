@@ -7,7 +7,7 @@ import '@polymer/paper-button';
 import '@polymer/paper-icon-button';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
@@ -73,7 +73,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
 
         this._loader = this.shadowRoot.getElementById('load');
 
-        PbManageOdds.waitOnce('pb-page-ready', (options) => {
+        waitOnce('pb-page-ready', (options) => {
             if (cmpVersion(options.apiVersion, '1.0.0') < 0) {
                 this._loader.url = `${options.endpoint}/modules/lib/components-odd.xql`;
             } else {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { LitElement, html, css } from 'lit-element'
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 import { repeat } from 'lit-html/directives/repeat';
 import { ifDefined } from 'lit-html/directives/if-defined';
@@ -433,7 +433,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         // it is unclear to me why root-path is not read from attribute without this explicit call
         this.rootPath = this.getAttribute('root-path');
 
-        PbOddEditor.waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
             this.load();
             this.inited = true;
         });

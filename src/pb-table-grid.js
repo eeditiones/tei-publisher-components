@@ -1,12 +1,14 @@
 import { LitElement, html, css } from 'lit-element';
 import { Grid } from "gridjs";
-import { pbMixin } from './pb-mixin.js';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { loadStylesheets, importStyles } from "./theming.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/iron-icons';
 import '@polymer/iron-form';
 import '@polymer/paper-icon-button';
 import './pb-table-column.js';
+import { registry } from "./urls.js";
 
 /**
  * A table grid based on [gridjs](https://gridjs.io/), which loads its data from a server endpoint
@@ -91,7 +93,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
         this.fixedHeader = false;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', (ev) => {
@@ -99,10 +101,10 @@ export class PbTableGrid extends pbMixin(LitElement) {
             this._submit();
         });
 
-        window.addEventListener('popstate', (ev) => {
-            this._params = ev.state;
+        registry.subscribe(this, (state) => {
+            this._params = state;
             this._submit();
-        });
+        })
 
         if (!this.height) {
             const property = getComputedStyle(this).getPropertyValue('--pb-table-grid-height');
@@ -112,6 +114,14 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 this.height = 'auto';
             }
         }
+
+        const gridjsTheme = await loadStylesheets([`${resolveURL(this.cssPath)}/mermaid.min.css`]);
+        const theme = importStyles(this);
+        const sheets = [...this.shadowRoot.adoptedStyleSheets, gridjsTheme];
+        if (theme) {
+            sheets.push(theme);
+        }
+        this.shadowRoot.adoptedStyleSheets = sheets;
     }
 
     firstUpdated() {
@@ -120,8 +130,8 @@ export class PbTableGrid extends pbMixin(LitElement) {
         const pbColumns = this.querySelectorAll('pb-table-column');
         const columns = [];
         pbColumns.forEach((column) => columns.push(column.data()));
-        PbTableGrid.waitOnce('pb-page-ready', () => {
-            this._params = this.getParameters();
+        waitOnce('pb-page-ready', () => {
+            this._params = registry.state;
             const url = this.toAbsoluteURL(this.source);
             const config = {
                 height: this.height,
@@ -155,8 +165,8 @@ export class PbTableGrid extends pbMixin(LitElement) {
                             }
                             this._params.limit = limit;
                             this._params.start = page * limit + 1;
-                            this.setParameters(this._params);
-                            this.pushHistory('grid', this._params);
+
+                            registry.commit(this, this._params);
 
                             return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(this._params).toString()}`;
                         }
@@ -180,9 +190,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     }
 
     render() {
-        const themes = resolveURL(this.cssPath);
         return html`
-            <link href="${themes}/mermaid.min.css" rel="stylesheet">
             ${ 
                 this.search ? html`
                     <iron-form id="form">

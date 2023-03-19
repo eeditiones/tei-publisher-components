@@ -46,13 +46,13 @@
                 display: block;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
                     <pb-select-feature id="select-view1" name="view1" label="View" items='[
                     {"name": "Diplomatic View", "properties": {"mode": "diplomatic", "view": "page"}}, 
-                    {"name": "Normalized View", "properties": {"mode": "norm", "view": "single"}}
+                    {"name": "Normalized View", "properties": {"mode": "norm", "view": "single", "root": null}}
                     ]'></pb-select-feature>
                     <pb-navigation direction="backward" keyboard="left">
                         <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
