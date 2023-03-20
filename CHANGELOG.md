@@ -1,3 +1,14 @@
+# [2.2.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.1.1...v2.2.0) (2023-03-20)
+
+
+### Features
+
+* **line-endings:** normalizing line-endings to use LF always in repo but allow CRLF on workspace ([95134e8](https://github.com/eeditiones/tei-publisher-components/commit/95134e8bc4f166696de53ff0478e04165692475b))
+* **pb-collapse:** allow icon to be right-handed. ([7a7429c](https://github.com/eeditiones/tei-publisher-components/commit/7a7429c0866e67f88bf540a70556e86f923271af))
+* **pb-collapse:** icon can be positioned absolutely (e.g. on the right) ([784e20f](https://github.com/eeditiones/tei-publisher-components/commit/784e20f060c98e3c1bd409442f379baa054abb14))
+* **pb-collapse:** icon can be positioned absolutely (e.g. on the right) ([4b4ec6b](https://github.com/eeditiones/tei-publisher-components/commit/4b4ec6b3c71af8ffc75a41c70d569f5f0fdd5ec1))
+* **pb-login:** submit dialog on 'enter' key ([9e5f0aa](https://github.com/eeditiones/tei-publisher-components/commit/9e5f0aaad203cfd5dabd22ebf066ba02ee5f9adf))
+
 ## [2.1.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.1.0...v2.1.1) (2023-03-17)
 
 
