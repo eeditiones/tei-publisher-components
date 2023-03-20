@@ -10,6 +10,7 @@ import { translate } from "./pb-i18n.js";
  * which should cause the connected `pb-load` element to refresh.
  *
  * @fires pb-load - Fires when user selects new page to show
+ * @fires pb-paginate - Fires when user selects new page to show
  * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
  */
 export class PbPaginate extends pbMixin(LitElement) {
