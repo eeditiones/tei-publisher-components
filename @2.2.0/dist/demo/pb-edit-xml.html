@@ -1,0 +1,23 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-edit-xml Demo</title>
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <ul>
+                    <li><pb-edit-xml path="/db/apps/tei-publisher/data/doc/documentation.xml">View Documentation</pb-edit-xml></li>
+                </ul>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

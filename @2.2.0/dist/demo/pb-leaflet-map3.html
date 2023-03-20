@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-leaflet-map Demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-leaflet-map.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            main {
+                display: grid;
+                grid-template-columns: minmax(256px, auto) 1fr;
+            }
+
+            pb-leaflet-map {
+                height: 480px;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <main>
+                    <ul id="locations">
+                        <li>
+                            <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491" auto>
+                                Titisee
+                                <template slot="popup">
+                                    <p>Der <b>Titisee</b> ist ein <a href="https://de.wikipedia.org/wiki/See" title="See">See</a> im südlichen <a href="https://de.wikipedia.org/wiki/Schwarzwald" title="Schwarzwald">Schwarzwald</a> in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a>.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Titisee">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation event="click" longitude="8.035903639726621" latitude="47.860249912035364" auto>
+                                Feldberg
+                                <template slot="popup">
+                                    <p>Der <b>Feldberg</b> ist mit <span style="border-width:0px; padding:0px; margin:0px;">1493 <abbr title="Meter über Normalhöhennull">m ü. NHN</abbr></span> der höchste Berg in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a>.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Feldberg_(Berg_im_Schwarzwald)">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation event="click" longitude="8.125068739930907" latitude="47.97215106146882" auto>
+                                Thurner
+                                <template slot="popup">
+                                    <p>Der <b>Thurner</b> ist eine Passhöhe und ein <a href="https://de.wikipedia.org/wiki/Weiler" title="Weiler">Weiler</a> im Südosten der Gemeinde <a href="https://de.wikipedia.org/wiki/St._M%C3%A4rgen" title="St. Märgen">St. Märgen</a>, Ortsteil dieser Gemeinde im <a href="https://de.wikipedia.org/wiki/Landkreis_Breisgau-Hochschwarzwald" title="Landkreis Breisgau-Hochschwarzwald">Landkreis Breisgau-Hochschwarzwald</a> in <a href="https://de.wikipedia.org/wiki/Baden-W%C3%BCrttemberg" title="Baden-Württemberg">Baden-Württemberg</a> (<a href="https://de.wikipedia.org/wiki/Deutschland" title="Deutschland">Deutschland</a>) auf einer kleinen Hochebene, auf die Straßensteigen aus den Talsystemen von <a href="https://de.wikipedia.org/wiki/Zartenbach" class="mw-redirect" title="Zartenbach">Zartenbach</a> im Süden, <a href="https://de.wikipedia.org/wiki/Wagensteigbach" title="Wagensteigbach">Wagensteigbach</a> im Nordosten, <a href="https://de.wikipedia.org/wiki/Wilde_Gutach" title="Wilde Gutach">Wilder Gutach</a> im Norden, <a href="https://de.wikipedia.org/wiki/Urach_(Hammerbach)" title="Urach (Hammerbach)">Urach</a> im Osten und <a href="https://de.wikipedia.org/wiki/Wutach" title="Wutach">Wutach</a> im Südosten führen.</p>
+                                    <p>Source: <a href="https://de.wikipedia.org/wiki/Thurner_(St._M%C3%A4rgen)">Wikipedia</a>.</p>
+                                </template>
+                            </pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation event="click" longitude="15.4315432" latitude="50.8143245" auto>
+                                Szklarska Poręba
+                                <template slot="popup">
+                                    <p>Szklarska Poręba [ˈʂklarska pɔˈrɛmba] (German: Schreiberhau) is a town in Jelenia Góra County, Lower Silesian Voivodeship, in south-western Poland. The town has a population of around 6,500. It is a popular ski resort.</p>
+                                    <p>Source: <a href="https://en.wikipedia.org/wiki/Szklarska_Por%C4%99ba">Wikipedia</a></p>
+                                </template>
+                            </pb-geolocation>
+                        </li>
+                    </ul>
+                    <pb-leaflet-map id="map" zoom="14" fit-markers>
+                        <pb-map-layer show base label="OpenTopo Map" url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png" max-zoom="19"
+                            attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors, &lt;a href="http://viewfinderpanoramas.org">SRTM&lt;/a> | Map style: &copy; &lt;a href="https://opentopomap.org">OpenTopoMap&lt;/a> (&lt;a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'></pb-map-layer>
+                        <pb-map-layer base label="ESRI World Imagery" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                            attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'></pb-map-layer>
+                        <pb-map-layer show label="Ski Slopes" url="https://tile.waymarkedtrails.org/slopes/{z}/{x}/{y}.png"
+                            attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors | Map style: &copy; &lt;a href="https://waymarkedtrails.org">waymarkedtrails.org</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'
+                            max-zoom="18"></pb-map-layer>
+                        <pb-map-layer label="Hiking Trails" url="https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png"
+                            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://waymarkedtrails.org">waymarkedtrails.org</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+                            max-zoom="18"></pb-map-layer>
+                        <pb-map-layer type="geojson" label="Gemeindegrenzen" url="gemeinden.geojson"></pb-map-layer>
+                    </pb-leaflet-map>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

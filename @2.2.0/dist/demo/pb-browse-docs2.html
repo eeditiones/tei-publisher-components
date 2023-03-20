@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-browse-docs Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                body {
+                    --paper-fab-background: #35424b;
+                }
+                .transcription {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                pb-link a {
+                    text-decoration: none;
+                    color: #222222;
+                }
+                h5 {
+                    font-size: 16px;
+                    margin: 0;
+                }
+                .parent-link {
+                    display: block;
+                    margin-bottom: 10px;
+                    margin-top: 10px;
+                    padding: 6px 0;
+                    border-bottom: thin solid var(--paper-grey-300);
+                }
+                .documents {
+                    list-style: none;
+                    padding: 0;
+                }
+                .documents li {
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 10px;
+                    padding: 6px 0;
+                    border-bottom: thin solid var(--paper-grey-300);
+                }
+                .documents app-toolbar {
+                    font-size: 14px;
+                }
+
+                .documents img {
+                margin-right: 40px;
+                }
+
+                @media (max-width: 1023px) {
+                    .documents img {
+                        display: none;
+                    }
+                }
+                
+                .toolbar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    border-bottom: 1px solid #a0a0a0;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <div class="toolbar">
+                    <pb-login id="login" group="tei"></pb-login>
+                </div>
+                <section>
+                    <pb-custom-form id="testForm" url="modules/testForm.xql" event="pb-results-received" subscribe="docs" emit="docs"/>
+                </section>
+                <main>
+                    <pb-browse-docs id="document-list" url="api/collection/test" fix-links
+                        sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
+                        sort-by="title"
+                        filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'
+                        filter-by="title" auto="auto" history="history" login="login" emit="docs" subscribe="docs">
+                        <pb-paginate slot="toolbar" id="paginate" per-page="10" range="5"
+                            emit="docs" subscribe="docs"></pb-paginate>
+                    </pb-browse-docs>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
