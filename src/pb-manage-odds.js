@@ -211,14 +211,15 @@ export class PbManageOdds extends pbMixin(LitElement) {
             ${this.odds.map((odd) =>
             html`
                 <div class="odd">
-                    <a href="odd-editor.html?odd=${odd.name}.odd" target="_blank">${odd.label}</a>
+                    <a href="odd-editor.html?odd=${odd.name}.odd" target="_blank"
+                        title="edit ODD in graphical editor">${odd.label}</a>
                     <!-- TODO this toolbar should only appear once per ODD files papercard -->
                     <app-toolbar>
                         ${
                 odd.canWrite ?
                     html`
                                     <pb-restricted login="login">
-                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post" 
+                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post"
                                             emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                                             <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                             <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
@@ -227,8 +228,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
                                     </pb-restricted>
                                 ` : null
                 }
-                        <pb-edit-xml path="${odd.path}">
-                            <paper-icon-button title="Edit ODD" icon="code"></paper-icon-button>
+                        <a href="odd-editor.html?odd=${odd.name}.odd" target="_blank" class="editor-link"
+                           title="edit ODD in graphical editor"><iron-icon icon="reorder"></iron-icon></a>
+                        <pb-edit-xml path="${odd.path}" class="editor-link">
+                            <paper-icon-button title="Edit XML" icon="create"></paper-icon-button>
                         </pb-edit-xml>
                     </app-toolbar>
                 </div>
@@ -295,15 +298,19 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 margin-right: 1em;
             }
 
-            .odd a {
+            .odd a,
+            .odd a:link,
+            .odd a:visited{
                 display: block;
-                flex: 2 0;
+                flex: 10 0;
+                color:var(--pb-manage-odds-link-color);
             }
 
             .odd app-toolbar {
                 flex: 1 0;
-                justify-content: flex-end;  
-                padding: 0;  
+                justify-content: flex-end;
+                padding: 0;
+                min-height:0.25rem;
             }
 
             pb-restricted {
@@ -313,7 +320,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
             .odd-description {
                 color: #888888;
                 font-size: 0.8em;
-                margin-top: -1em;
+                margin-bottom: 0.25rem;
             }
 
             #regenerateAll {
@@ -322,7 +329,28 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 margin-top: 10px;
                 text-align: right;
             }
+            [icon]{
+                color:var(--pb-manage-odds-icon-color);
+            }
+
+            [icon='reorder']
+            {
+                width:24px;
+                height: 24px;
+            }
+
+            @media (hover:hover) and (pointer: fine){
+                .odd app-toolbar .editor-link{
+                    opacity: 0;
+                }
+                .odd:hover .editor-link{
+                    opacity: 1;
+                    transition: opacity 0.6s;
+                }
+            }
         `;
     }
 }
-customElements.define('pb-manage-odds', PbManageOdds);
+if(!customElements.get('pb-manage-odds')){
+    customElements.define('pb-manage-odds', PbManageOdds);
+}
