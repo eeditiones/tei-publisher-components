@@ -121,7 +121,7 @@ export class PbSearch extends pbMixin(LitElement) {
         );
         waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
-            const url = this.source ?? "api/search/autocomplete";
+            const url = this.source || "api/search/autocomplete";
             if (this.minApiVersion('1.0.0')) {
                 loader.url = `${options.endpoint}/${url}`;
             } else {
