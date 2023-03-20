@@ -52,14 +52,15 @@ export class PbPaginate extends pbMixin(LitElement) {
                 type: Number
             },
             /**
-             * the amount of pages
+             * the amount of pages needed for all items,
+             * the value is calculated from the input data
              */
             pageCount: {
                 type: Number,
                 attribute: 'page-count'
             },
             /**
-             * todo
+             * the amount of page numbers shown within the component
              */
             range: {
                 type: Number
@@ -69,6 +70,14 @@ export class PbPaginate extends pbMixin(LitElement) {
              */
             pages: {
                 type: Array
+            },
+            /**
+             * show or hide (i.e. generate) previous and next buttons,
+             * default value is false, controls are not generated
+             */
+             showPreviousNext: {
+                type: Boolean,
+                attribute: 'show-previous-next'
             }
         };
     }
@@ -82,7 +91,9 @@ export class PbPaginate extends pbMixin(LitElement) {
         this.pageCount = 10;
         this.range = 5;
         this.pages = [];
+        this.showPreviousNext = false;
         this.foundLabel = 'browse.items';
+        this.prevNextPages = [];
     }
 
     connectedCallback() {
@@ -94,10 +105,12 @@ export class PbPaginate extends pbMixin(LitElement) {
     render() {
         return html`
             <span @click="${this._handleFirst}"><iron-icon icon="first-page"></iron-icon></span>
+            ${this.showPreviousNext ? html`<span @click="${() => this._handleClick(this.prevNextPages[0].label, this.prevNextPages[0].index)}}"><iron-icon icon="chevron-left"></iron-icon></span>` : ``}
             ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}">${item.label}</span>`)}
+            ${this.showPreviousNext ? html`<span @click="${() => this._handleClick(this.prevNextPages[1].label, this.prevNextPages[1].index)}"><iron-icon icon="chevron-right"></iron-icon></span>` : ``}
             <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
-
             <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
+
         `;
     }
 
@@ -148,16 +161,41 @@ export class PbPaginate extends pbMixin(LitElement) {
         let lowerBound = Math.max((this.page - Math.ceil(this.range / 2) + 1), 1);
         let upperBound = Math.min((lowerBound + this.range - 1), this.pageCount);
         lowerBound = Math.max((upperBound - this.range + 1), 1);
-        console.log("<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d",
-            start, total, this.perPage, this.pageCount, this.page, lowerBound, upperBound);
+        console.log("<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d, range: %d, show-previous-next: %s",
+            start, total, this.perPage, this.pageCount, this.page, lowerBound, upperBound, this.range, this.showPreviousNext);
         const pages = [];
+        const prevNextPages = []; //first item for previous control, second/last item for next control
         for (let i = lowerBound; i <= upperBound; i++) {
             pages.push({
                 label: i,
                 "class": i === this.page ? "active" : ""
             });
+            if(!this.showPreviousNext) continue;
+
+            //previous page if it's first page
+            if(lowerBound === 1 && i === 1 && this.page === i) {
+                prevNextPages.push({
+                    label: i,
+                    index: 0
+                });
+            }
+            //previous page
+            if(i + 1 === this.page) {
+                prevNextPages.push({
+                    label: i,
+                    index: pages.length - 1
+                });
+            }
+            //next page
+            if(i - 1 === this.page) {
+                prevNextPages.push({
+                    label: i,
+                    index: pages.length - 1
+                });
+            }
         }
         this.pages = pages;
+        this.prevNextPages = prevNextPages;
     }
 
     _refresh(ev) {
