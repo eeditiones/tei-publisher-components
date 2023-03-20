@@ -23,6 +23,7 @@ import '@cwmr/paper-autocomplete';
  * @slot - searchButton allows to plug a component that acts as submit button. Must support the 'click' event
  * @slot - resetButton allows to plug a component that acts as reset button. Must support the 'click' event
  * @fires pb-load - Fired to perform the actual search with parameters passed to the request
+ * @fires pb-paginate - When received, triggers the search again with the new value of the start property
  * @fires pb-search-resubmit - When received, triggers the search again
  */
 export class PbSearch extends pbMixin(LitElement) {
