@@ -129,16 +129,22 @@ export class PbLogin extends pbMixin(LitElement) {
             };
             this._checkLogin.generateRequest();
         });
+        this.addEventListener('keyup', event => {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                this._confirmLogin();
+            }
+        });
     }
 
     render() {
         return html`
-            <a href="#" @click="${this._show}" title="${this.user}">
+            <a href="#" @click="${this._show}" role="button" title="${this.user ? this.user : this.loginLabel}">
                 ${
             this.loggedIn ?
                 html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${translate(this.logoutLabel, { user: this.user })}</span>` :
                 html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${translate(this.loginLabel)}</span>`
-            }                
+            }
             </a>
 
             <paper-dialog id="loginDialog">
@@ -191,12 +197,8 @@ export class PbLogin extends pbMixin(LitElement) {
             a {
                 color: var(--pb-login-link-color, --pb-link-color);
                 text-decoration: none;
-            }
-
-            @media (max-width: 1024px) {
-                .label {
-                    display: none;
-                }
+                display: flex;
+                gap:0.5rem;
             }
 
             #message {
