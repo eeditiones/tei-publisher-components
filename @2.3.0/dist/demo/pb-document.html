@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-document Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
+                main {
+                    height: 70vh;
+                    overflow: auto;
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                pb-view {
+                    flex: 1 0;
+                }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                    <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page" disable-history></pb-document>
+                    <pb-document id="document2" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                    <!-- Display two document views side by side -->
+                    <main>
+                        <pb-view id="view1" src="document1" disable-history></pb-view>
+                        <pb-view id="view2" src="document2"></pb-view>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

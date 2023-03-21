@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-document Demo</title>
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+            pb-page {
+                height: calc(100vh - 180px);
+            }
+            main {
+                display: grid;
+                grid-template-columns: auto auto;
+                grid-column-gap: 4rem;
+                height: calc(100vh - 360px);
+            }
+            pb-view {
+                overflow-y: auto;
+            }
+            pb-facsimile {
+                --pb-facsimile-border: 4px solid rgba(0, 128, 90, 0.5);
+                display: block;
+            }
+            pb-image-strip {
+                display: flex;
+                flex-direction: row;
+            }
+
+            [slot="after"] {
+                margin-top: 5px;
+                padding-top: 10px;
+                border-top: 1px solid #606060;
+            }
+            [slot="before"] {
+                padding-bottom: 10px;
+                margin-bottom: 5px;
+                border-bottom: 1px solid #606060;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher">
+                <!-- Display facsimile -->
+                <pb-document id="document1" path="test/cortes_to_dantiscus.xml"></pb-document>
+                <main>
+                    <pb-view id="view1" src="document1" view="single" 
+                    load-css="transform/dantiscus.css"
+                    ></pb-view>
+                    <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+                            default-zoom-level="0" show-navigator
+                            show-navigation-control show-home-control show-rotation-control>
+                        <pb-image-strip slot="before" base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"></pb-image-strip>
+                        <div slot="after">Status: <span id="status"></span></div>
+                    </pb-facsimile>
+                </main>
+                <script>
+                    window.addEventListener('load', () => {
+                        const viewer = document.querySelector('pb-facsimile');
+                        const status = document.getElementById('status');
+                        // only for debugging to check
+                        // if events are fired in document order
+                        // window.pbEvents.subscribe('pb-load-facsimile', null, (ev) => {
+                        //     const viewShadow = ev.target
+                        //     const links = Array.from(viewShadow.shadowRoot.querySelectorAll('pb-facs-link'))
+                        //     console.log(links)
+                        //     const source = ev.detail._source
+                        //     const facs = source.getAttribute('facs')
+                        //     const index = links.indexOf(source)
+                        //     console.log('pb-load-facsimile', source, index, facs, links)
+                        // });
+
+                        window.pbEvents.subscribe('pb-facsimile-status', null, (ev) => {
+                            if (ev.detail.status === 'fail') {
+                                viewer.style.visibility = 'hidden';
+                            } else {
+                                viewer.style.visibility = 'visible';
+                                status.innerHTML = ev.detail.status;
+                            }
+                        });
+                    });
+                </script>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
