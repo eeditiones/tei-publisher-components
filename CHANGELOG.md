@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.2.0...v2.3.0) (2023-03-21)
+
+
+### Features
+
+* **pb-manage-odds:** layout and a11y refinements ([7ff2b1e](https://github.com/eeditiones/tei-publisher-components/commit/7ff2b1e082cb21b767aa234139338430e7f38c44))
+
 # [2.2.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.1.1...v2.2.0) (2023-03-20)
 
 
