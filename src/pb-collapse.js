@@ -173,11 +173,11 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
             }
 
             #trigger {
-                display: table-row;
+                display: flex;
+                align-items:center
             }
 
             iron-icon {
-                display: table-cell;
                 padding: var(--pb-collapse-icon-padding, 0 4px 0 0);
             }
 
@@ -186,9 +186,6 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
                 right: 0;
             }
 
-            slot[name="collapse-trigger"] {
-                display: table-cell;
-            }
         `;
     }
 }
