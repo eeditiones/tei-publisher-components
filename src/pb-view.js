@@ -907,13 +907,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (this.noScroll) {
             return;
         }
-        if (registry.state.id) {
-            const target = this.shadowRoot.getElementById(registry.state.id);
+        if (registry.hash) {
+            const target = this.shadowRoot.getElementById(registry.hash.substring(1));
             console.log('hash target: %o', target);
             if (target) {
                 window.requestAnimationFrame(() =>
                     setTimeout(() => {
-                        target.scrollIntoView({block: 'nearest'});
+                        target.scrollIntoView({ block: "center", inline: "nearest" });
                     }, 400)
                 );
             }

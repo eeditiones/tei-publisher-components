@@ -37,6 +37,11 @@ class Registry {
     constructor() {
         this.rootPath = '';
         /**
+         * Is the resource path part of the URL path or is it
+         * passed in a query parameter?
+         */
+        this.usePath = false;
+        /**
          * Records current state as determined from parsing the URL.
          * This should be used to initialize components.
          */
@@ -46,12 +51,21 @@ class Registry {
          * if a component calls commit or replace.
          */
         this.channelStates = {};
+        /**
+         * Records the hash part of the URL, if any
+         */
+        this.hash = null;
+        /**
+         * Should a hash in the URL be interpreted as an xml:id for loading the content?
+         */
+        this.idHash = true;
         this._listeners = [];
     }
 
-    configure(usePath = true, rootPath = '') {
+    configure(usePath = true, idHash = false, rootPath = '') {
         this.rootPath = rootPath;
         this.usePath = usePath;
+        this.idHash = idHash;
 
         // determine initial state of the registry by parsing current URL
         const initialState = this._stateFromURL();
@@ -92,8 +106,11 @@ class Registry {
 
     _stateFromURL() {
         const params = {};
-        if (window.location.hash.length > 0) {
-            params.id = window.location.hash.substring(1);
+        this.hash = window.location.hash;
+        // use the hash as an xml:id?
+        // hashs of the form #1.2.3.4 are internal eXist ids though and thus excluded
+        if (this.idHash && this.hash.length > 0 && (!/^#\d+\./.test(this.hash))) {
+            params.id = this.hash.substring(1);
         }
         if (this.usePath) {
             params.path = window.location.pathname.replace(new RegExp(`^${this.rootPath}/?`), '');
@@ -216,7 +233,9 @@ class Registry {
             newUrl.pathname = `${this.rootPath}/${this.state.path}`;
         }
 
-        newUrl.hash = this.state.id ? `#${this.state.id}` : '';
+        if (this.state.id) {
+            newUrl.hash = `#${this.state.id}`;
+        }
 
         console.log('urlFromState', newUrl.searchParams.toString())
         return newUrl;

@@ -39,9 +39,23 @@ export class PbPage extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'app-root'
             },
+            /**
+             * Is the resource path part of the URL or should it be
+             * encoded as a parameter? TEI Publisher uses the
+             * URL path, but the webcomponent demos need to encode the resource path
+             * in a query parameter.
+             */
             urlPath: {
                 type: String,
                 attribute: 'url-path'
+            },
+            /**
+             * If enabled, a hash in the URL (e.g. documentation.xml#introduction) will
+             * be interpreted as an xml:id to navigate to when talking to the server.
+             */
+            idHash: {
+                type: Boolean,
+                attribute: 'id-hash'
             },
             /**
              * TEI Publisher internal: set to the current page template.
@@ -148,6 +162,7 @@ export class PbPage extends pbMixin(LitElement) {
         this.unresolved = true;
         this.endpoint = ".";
         this.urlPath = 'path';
+        this.idHash = false;
         this.apiVersion = undefined;
         this.requireLanguage = false;
         this.theme = null;
@@ -189,7 +204,7 @@ export class PbPage extends pbMixin(LitElement) {
             this.appRoot = window.location.pathname;
         }
 
-        registry.configure(this.urlPath === 'path', this.appRoot);
+        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot);
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');
         
