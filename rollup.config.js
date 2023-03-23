@@ -13,7 +13,7 @@ const pbbundle = '<script type="module" src="../pb-components-bundle.js"></scrip
 
 function replaceDemo(input, scripts) {
     const output = input.toString().replace(/<!--scripts-->.*\/scripts-->/sg, scripts);
-    return output.replace(/endpoint=".*?"/g, 'endpoint="https://teipublisher.com/exist/apps/tei-publisher"');
+    return output.replace(/endpoint=".*?"/g, 'endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0"');
 }
 
 export default [
