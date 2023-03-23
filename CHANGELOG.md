@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.3.0...v2.3.1) (2023-03-23)
+
+
+### Bug Fixes
+
+* **pb-page:** make configurable if the hash part of the URL should be interpreted as xml:id to navigate to. This allows links like doc.xml#intro to work. ([6929257](https://github.com/eeditiones/tei-publisher-components/commit/69292572733516f5158ed2d2d37a4447e8844dee))
+
 # [2.3.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.2.0...v2.3.0) (2023-03-21)
 
 
