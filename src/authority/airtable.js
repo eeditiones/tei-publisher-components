@@ -46,7 +46,7 @@ export class Airtable extends Registry {
     }
 
     this.tokenizeChars = configElem.getAttribute('tokenize-regex') || "\\W";
-    
+
     this.infoExpr = getTemplate(configElem, '.info');
     this.detailExpr = getTemplate(configElem, '.detail');
 
@@ -55,7 +55,7 @@ export class Airtable extends Registry {
 
   _init() {
       window.ESGlobalBridge.requestAvailability();
-      const path = resolveURL('https://unpkg.com/airtable@0.11.1/build/airtable.browser.js');
+      const path = resolveURL('https://cdn.jsdelivr.net/npm/airtable@0.11.1/build/airtable.browser.js');
       window.ESGlobalBridge.instance.load('airtable', path);
       window.addEventListener(
         'es-bridge-airtable-loaded',
@@ -140,7 +140,7 @@ export class Airtable extends Registry {
         }
         let strings = [];
         const data = {};
-        this.fields.forEach((field) => { 
+        this.fields.forEach((field) => {
           const value = record.get(field);
           if (value) {
             data[field] = value;

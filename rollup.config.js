@@ -8,7 +8,7 @@ import pkg from "./package.json";
 
 const production = process.env.BUILD === 'production';
 
-const wcloader = '<script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>';
+const wcloader = '<script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>';
 const pbbundle = '<script type="module" src="../pb-components-bundle.js"></script>';
 
 function replaceDemo(input, scripts) {
