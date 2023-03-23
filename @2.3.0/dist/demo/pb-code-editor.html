@@ -9,13 +9,12 @@
     </head>
 
     <body>
-        <pb-page>
             <pb-demo-snippet>
                 <template>
                     <style>
                     pb-code-editor { margin-bottom: 32px; }
                     </style>
-                    <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
+                    <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
                         <pb-lang label="language" selected="en">
                             <paper-item value="de">Deutsch</paper-item>
                             <paper-item value="en">English</paper-item>
@@ -38,6 +37,5 @@ font-decoration: underline;" mode="css"></pb-code-editor>
                     </pb-page>
                 </template>
             </pb-demo-snippet>
-        </pb-page>
     </body>
 </html>
