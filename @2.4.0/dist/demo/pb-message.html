@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-message Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                    pb-message {
+                        width:400px;
+                    }
+                    #output {
+                        padding-left: 3em;
+                        color: #aa1111;
+                    }
+                </style>
+                <pb-page>
+                    <pb-message id="msg"></pb-message>
+
+                    <button onclick="init();">Show Message</button>
+                    <button onclick="confirm();">Show Confirmation</button>
+
+                    <span id="output"></span>
+                    <script type="application/javascript">
+                        function init() {
+                            document.getElementById('msg').show("a title", 'a message');
+                        }
+                        function confirm() {
+                            document.getElementById('msg')
+                                .confirm("a confirmation message", 'confirm?')
+                                .then(
+                                    () => { document.getElementById('output').innerHTML = 'Confirmed!'; },
+                                    () => { document.getElementById('output').innerHTML = 'Dismissed!'; }
+                                );
+                        }
+                    </script>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
