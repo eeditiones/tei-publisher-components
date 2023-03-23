@@ -17,6 +17,7 @@ export class PbMessage extends LitElement {
             }
             
             paper-dialog{
+                margin-top:25%;
                 min-width:300px;
             }
         `;
