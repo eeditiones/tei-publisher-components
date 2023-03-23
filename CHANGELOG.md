@@ -1,3 +1,15 @@
+# [2.4.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.3.1...v2.4.0) (2023-03-23)
+
+
+### Bug Fixes
+
+* **pb-manage-odds:** changed link to button ([e07dfaf](https://github.com/eeditiones/tei-publisher-components/commit/e07dfaf5708145e7364b15cd8cbaaa2e406970aa))
+
+
+### Features
+
+* **pb-ajax:** added progress and button indicates state ([e41254d](https://github.com/eeditiones/tei-publisher-components/commit/e41254df61fd560e1599ea41dd6fb70187e0b33e))
+
 ## [2.3.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.3.0...v2.3.1) (2023-03-23)
 
 
