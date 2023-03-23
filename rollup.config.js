@@ -132,7 +132,7 @@ export default [
             copy({
                 targets: [
                     {
-                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html'],
+                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html', '!**/pb-code-editor.html'],
                         dest: 'dist/demo',
                         transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
                     },
@@ -147,6 +147,12 @@ export default [
                         dest: 'dist/demo',
                         transform: (contents) =>
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-code-editor.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-code-editor.js"></script>`)
                     },
                     {
                         src: 'api.html',
