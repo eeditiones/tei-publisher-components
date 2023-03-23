@@ -16,10 +16,10 @@ import './pb-message.js';
  *
  * @slot - unnamed slot for link content
  * @slot title - dialog title
- * 
+ *
  * @fires pb-start-update - Fired before the element updates its content
- * @fires pb-end-update - Fired after the element has finished updating its content 
- * @fires pb-update - When received, copies request parameters from the event 
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-update - When received, copies request parameters from the event
 
  */
 export class PbAjax extends pbMixin(LitElement) {
@@ -95,6 +95,7 @@ export class PbAjax extends pbMixin(LitElement) {
                 @response="${this._handleResponse}"></iron-ajax>
             <pb-message id="confirmDialog"></pb-message>
             <slot name="title" style="display: none"></slot>
+            <progress id="progress" max="100"></progress>
         `;
     }
 
@@ -103,6 +104,8 @@ export class PbAjax extends pbMixin(LitElement) {
         const slot = this.shadowRoot.querySelector('slot[name=title]');
         this._dialogTitle = '';
         slot.assignedNodes().forEach(node => {this._dialogTitle += node.innerHTML});
+        this.button = this.querySelector('paper-button');
+        this.progress = this.shadowRoot.querySelector('progress');
     }
 
     static get styles() {
@@ -112,6 +115,13 @@ export class PbAjax extends pbMixin(LitElement) {
             }
             slot[name="title"] {
                 margin: 0;
+            }
+            progress{
+                width: 100%;
+                opacity: 0;
+            }
+            progress.running{
+                opacity: 1;
             }
         `;
     }
@@ -127,15 +137,33 @@ export class PbAjax extends pbMixin(LitElement) {
             this.trigger();
         }
     }
-    
-    trigger() {
+
+    async trigger() {
+        this._disable();
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.url = `${this.getEndpoint()}/${this.url}`;
         this.emitTo('pb-start-update');
-        this.shadowRoot.getElementById('loadContent').generateRequest();
+        await this.shadowRoot.getElementById('loadContent').generateRequest();
     }
 
+    _enable(){
+        if(this.button){
+            this.button.removeAttribute('disabled');
+            this.button.removeAttribute('readonly');
+            this.progress.classList.remove('running');
+        }
+    }
+    _disable(){
+        if(this.button){
+            this.button.setAttribute('disabled','disabled');
+            this.button.setAttribute('readonly','readonly');
+            this.progress.classList.add('running');
+        }
+    }
+
+
     _handleResponse() {
+        this._enable();
         const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
         this._message = resp;
         if (!this.quiet) {
@@ -151,6 +179,7 @@ export class PbAjax extends pbMixin(LitElement) {
     }
 
     _handleError() {
+        this._enable();
         const loader = this.shadowRoot.getElementById('loadContent');
         const msg = loader.lastError.response;
         const parser = new DOMParser();
