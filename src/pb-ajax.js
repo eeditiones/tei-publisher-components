@@ -128,11 +128,11 @@ export class PbAjax extends pbMixin(LitElement) {
         }
     }
     
-    trigger() {
+    async trigger() {
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.url = `${this.getEndpoint()}/${this.url}`;
         this.emitTo('pb-start-update');
-        this.shadowRoot.getElementById('loadContent').generateRequest();
+        await this.shadowRoot.getElementById('loadContent').generateRequest();
     }
 
     _handleResponse() {
