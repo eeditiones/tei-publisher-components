@@ -205,7 +205,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 <pb-ajax id="regenerateAll" url="${regenUrl}" method="post" title="${translate('odd.manage.regenerate-all')}"
                     emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                     <h3 slot="title">${translate('odd.manage.regenerate-all')}</h3>
-                    <a href="#">${translate('odd.manage.regenerate-all')}</a>
+                    <paper-button raised="raised"><a href="#">${translate('odd.manage.regenerate-all')}</a></paper-button>
                 </pb-ajax>
             </pb-restricted>
             ${this.odds.map((odd) =>
@@ -329,6 +329,12 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 margin-top: 10px;
                 text-align: right;
             }
+            
+            #regenerateAll a{
+                text-decoration: none;
+                color: inherit;
+            }
+
             [icon]{
                 color:var(--pb-manage-odds-icon-color);
             }
