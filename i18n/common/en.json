@@ -63,6 +63,9 @@
     "confirmDeletion": "Are you sure you want to delete the file?",
     "confirmDeletion_plural": "Are you sure you want to delete {{count}} files?",
     "documents": "Documents",
+    "documents-removed":"Removed documents",
+    "document-not-found":"Document not found",
+    "document-remove-failed":"Failed to remove document",
     "collections": "Local Collection",
     "dts": "Distributed Text Services (Experimental)",
     "test": {
