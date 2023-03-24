@@ -12,6 +12,7 @@ import { translate } from "./pb-i18n.js";
  * @fires pb-load - Fires when user selects new page to show
  * @fires pb-paginate - Fires when user selects new page to show
  * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
+ * @csspart count - the span displaying the number of items
  */
 export class PbPaginate extends pbMixin(LitElement) {
     static get properties() {
@@ -98,7 +99,7 @@ export class PbPaginate extends pbMixin(LitElement) {
             ${this.pages.map((item, index) => html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}">${item.label}</span>`)}
             <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
 
-            <span class="found">${translate(this.foundLabel, { count: this.total })}</span>
+            <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
         `;
     }
 
