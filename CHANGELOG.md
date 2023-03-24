@@ -1,3 +1,11 @@
+## [2.4.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.0...v2.4.1) (2023-03-24)
+
+
+### Bug Fixes
+
+* **pb-ajax:** progress bar breaks layout ([a00a6a6](https://github.com/eeditiones/tei-publisher-components/commit/a00a6a6a7d3d21f217bae2e96c2bd514501e9207))
+* **pb-paginate:** declare part for span showing number of items ([3fc090a](https://github.com/eeditiones/tei-publisher-components/commit/3fc090aef1d40897d9f9d25d3d5e1e7f2ee674eb))
+
 # [2.4.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.3.1...v2.4.0) (2023-03-23)
 
 
