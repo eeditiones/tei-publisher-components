@@ -128,7 +128,8 @@
   },
   "dts": {
     "endpoint": "Select Endpoint",
-    "note": "Experimental: access other editions which expose the DTS API"
+    "note": "Experimental: access other editions which expose the DTS API",
+    "requires-login":"Requires login"
   },
   "odd": {
     "files": "ODD Files",
