@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-leaflet-map Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-leaflet-map.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            main {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            pb-leaflet-map {
+                width: 640px;
+                height: 480px;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <main>
+                    <ul id="locations">
+                        <li>
+                            <pb-geolocation longitude="8.035903639726621" latitude="47.860249912035364" label="Feldberg">Feldberg
+                            </pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation longitude="13.33920479" latitude="52.50671377" label="Berlin">Berlin
+                            </pb-geolocation>
+                        </li>
+                        <li>
+                            <pb-geolocation longitude="2.32003101" latitude="48.85881005" label="Paris">Paris
+                            </pb-geolocation>
+                        </li>
+                    </ul>
+                    <pb-leaflet-map id="map" zoom="11" fit-markers>
+                        <pb-map-layer show base label="HikeBike Map" url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}" max-zoom="19"
+                            access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw"
+                            attribution='&copy; &lt;a href="https://www.mapbox.com/about/maps/"&gt;Mapbox&lt;/a&gt; &copy &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt; &lt;strong&gt;&lt;a href="https://www.mapbox.com/map-feedback/" target="_blank"&gt;Improve this map&lt;/a&gt;&lt;/strong&gt;'></pb-map-layer>
+                        <pb-map-icon icon-url="leaf-green.png" shadow-url="leaf-shadow.png" icon-size="38, 95" shadow-size="50, 64" 
+                            icon-anchor="22, 94" shadow-anchor="4, 62" popup-anchor="-3, -76"/>
+                        <pb-map-icon name="active" icon-url="leaf-red.png" shadow-url="leaf-shadow.png" icon-size="38, 95" shadow-size="50, 64" 
+                            icon-anchor="22, 94" shadow-anchor="4, 62" popup-anchor="-3, -76"/>
+                    </pb-leaflet-map>
+                </main>
+            </pb-page>
+            <script type="text/javascript">
+                /** 
+                 * Manually initialize map markers once components are ready. 
+                 * Not necessary if the pb-geolocation appear inside a component
+                 * which does itself send the `pb-update` event, e.g. `pb-view`.
+                 */
+                document.addEventListener('WebComponentsReady', () => {
+                    pbEvents.subscribe('pb-ready', null, function() {
+                        document.dispatchEvent(new CustomEvent('pb-update', { 
+                            detail: { 
+                                root: document.getElementById('locations')
+                            }
+                        }));
+                    });
+                });
+            </script>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
