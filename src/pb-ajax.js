@@ -118,10 +118,10 @@ export class PbAjax extends pbMixin(LitElement) {
             }
             progress{
                 width: 100%;
-                opacity: 0;
+                display: none;
             }
             progress.running{
-                opacity: 1;
+                display: block;
             }
         `;
     }
