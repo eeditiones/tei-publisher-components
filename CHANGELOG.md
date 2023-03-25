@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.1...v2.4.2) (2023-03-25)
+
+
+### Bug Fixes
+
+* **registry:** ignore popstate event if no components are involved ([9976fa0](https://github.com/eeditiones/tei-publisher-components/commit/9976fa07b5976d5f600abf6bbbc8fc646d225987))
+
 ## [2.4.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.0...v2.4.1) (2023-03-24)
 
 
