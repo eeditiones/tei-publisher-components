@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-link Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            main {
+                display: flex;
+            }
+
+            ul {
+                flex: 1 0;
+                display: block;
+                margin-right: 10px;
+                padding-right: 10px;
+                border-right: 1px solid #333333;
+            }
+
+            pb-view {
+                height: 70vh;
+                overflow: auto;
+                flex: 3 0;
+            }
+
+            pb-link a {
+                color: #333333;
+                text-decoration: none;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>
+                <main>
+                    <ul>
+                        <li>
+                            <pb-link path="test/graves6.xml" odd="graves">Graves' Letter</pb-link>
+                        </li>
+                        <li>
+                            <pb-link path="test/kant_rvernunft_1781.TEI-P5.xml" xml-id="f0456" odd="dta">Kant chapter by
+                                xml:id</pb-link>
+                        </li>
+                        <li>
+                            <pb-link class="docs" path="doc/documentation.xml" odd="docbook">Documentation</pb-link>
+                        </li>
+                        <li>
+                            <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook">Link by xml:id
+                            </pb-link>
+                        </li>
+                    </ul>
+                    <pb-view src="document1" view="div"></pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

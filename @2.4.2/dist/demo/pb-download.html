@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-download Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                pb-progress { margin-bottom: 10px; }
+                pb-download { margin-right: 10px; }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                    <pb-progress></pb-progress>
+                    <main>
+                        <pb-login id="loginElem"></pb-login>
+
+                        <pb-download type="pdf" src="document1" dialog="downloadDialog" title="Download PDF">
+                            <paper-button raised>Documentation: PDF</paper-button>
+                        </pb-download>
+                        <pb-download type="pdf" src="document1" title="Download PDF"
+                            source download>
+                            <paper-button raised>Documentation: FO source</paper-button>
+                        </pb-download>
+                        <!-- old api: -->
+                        <!--pb-download type="pdf" url="test/graves6.xml" dialog="downloadDialog" title="Download PDF"
+                            odd="graves.odd" -->
+                        <pb-download type="pdf" url="api/document/test%2Fgraves6.xml/pdf" dialog="downloadDialog" title="Download PDF"
+                            odd="graves.odd">
+                            <paper-button raised>Letter: PDF</paper-button>
+                        </pb-download>
+
+                        <pb-restricted login="loginElem">
+                            <!-- old api: -->
+                            <!--pb-ajax url="modules/lib/regenerate.xql?odd=graves.odd"-->
+                            <pb-ajax url="api/odd?odd=graves.odd" method="post">
+                                <paper-button raised>Recompile ODD</paper-button><span slot="title">Recompile ODD</span>
+                            </pb-ajax>
+                        </pb-restricted>
+
+                        <pb-download url="odd-editor.html" src="document1">
+                            <paper-button raised>Edit ODD</paper-button>
+                        </pb-download>
+                    </main>
+                </pb-page>
+                <paper-dialog id="downloadDialog">
+                    <h2>
+                        Generating File...
+                    </h2>
+                    <paper-dialog-scrollable>
+                        Generating a file may take a while ...
+                    </paper-dialog-scrollable>
+                    <div class="buttons">
+                        <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+                            close
+                        </paper-button>
+                    </div>
+                </paper-dialog>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
