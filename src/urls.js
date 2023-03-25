@@ -77,15 +77,18 @@ class Registry {
         window.history.replaceState(null, '');
         
         window.addEventListener('popstate', (ev) => {
-            if (ev.state) {
-                try {
-                    this.channelStates = JSON.parse(ev.state);
-                } catch (e) {
-                    console.error('<registry> error restoring state: %s', e.toString());
-                }
-            } else {
-                this.channelStates = {};
+            if (!ev.state) {
+                // only react to history entries triggered by components
+                return;
             }
+
+            try {
+                this.channelStates = JSON.parse(ev.state);
+            } catch (e) {
+                console.error('<registry> error restoring state: %s', e.toString());
+                return;
+            }
+
             this.state = this._stateFromURL();
             log('popstate: %o', this.channelStates);
 
@@ -123,7 +126,6 @@ class Registry {
             }
             params[key] = value;
         });
-        console.log('root: %s; window: %s, rel: %s', this.rootPath, window.location.pathname, params.path);
         return params;
     }
 
@@ -237,7 +239,6 @@ class Registry {
             newUrl.hash = `#${this.state.id}`;
         }
 
-        console.log('urlFromState', newUrl.searchParams.toString())
         return newUrl;
     }
 
