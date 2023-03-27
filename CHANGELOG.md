@@ -1,3 +1,10 @@
+## [2.4.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.2...v2.4.3) (2023-03-27)
+
+
+### Bug Fixes
+
+* wrong URL resolving leads to various errors if context path is empty ([43b9152](https://github.com/eeditiones/tei-publisher-components/commit/43b91528c120627b993190e486bd678d9724187e))
+
 ## [2.4.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.1...v2.4.2) (2023-03-25)
 
 
