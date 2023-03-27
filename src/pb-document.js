@@ -66,7 +66,7 @@ class PbDocument extends pbMixin(LitElement) {
 
     constructor() {
         super();
-        this.path = '';
+        this.path = null;
         this.rootPath = '';
         this.disableHistory = false;
     }
@@ -75,7 +75,8 @@ class PbDocument extends pbMixin(LitElement) {
         super.connectedCallback();
 
         if (!this.disableHistory) {
-            if (registry.state.path) {
+            // if path is unset, use path taken from the URL
+            if (registry.state.path && !this.path) {
                 this.path = registry.state.path;
             }
             this.view = registry.state.view || this.view;

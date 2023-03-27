@@ -422,7 +422,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
         if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
             return relative;
         }
-        const endpoint = server || this.getEndpoint();
+        const endpoint = server === '' ? '' : (server || this.getEndpoint());
         let base;
         if (endpoint === '.') {
             base = new URL(window.location.href);

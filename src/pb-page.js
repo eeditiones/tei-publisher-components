@@ -200,10 +200,6 @@ export class PbPage extends pbMixin(LitElement) {
             return;
         }
 
-        if (!this.appRoot) {
-            this.appRoot = window.location.pathname;
-        }
-
         registry.configure(this.urlPath === 'path', this.idHash, this.appRoot);
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');

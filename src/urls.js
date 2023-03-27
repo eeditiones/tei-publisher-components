@@ -231,7 +231,7 @@ class Registry {
             }
         }
 
-        if (this.usePath) {
+        if (this.usePath && this.state.path && this.state.path.length > 0) {
             newUrl.pathname = `${this.rootPath}/${this.state.path}`;
         }
 
