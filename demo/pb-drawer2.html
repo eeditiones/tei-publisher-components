@@ -85,7 +85,7 @@
                         pbEvents.subscribe('pb-update', 'transcription', (ev) => {
                             // the HTML content to be displayed is passed in ev.detail.root
                             const root = ev.detail.root;
-                            root.querySelectorAll('.tei-persName4, .tei-placeName4').forEach((name) => {
+                            root.querySelectorAll('.tei-persName5, .tei-placeName5').forEach((name) => {
                                 // disable the popover behaviour
                                 name.command('disable', true);
                                 // register click listener on each name
