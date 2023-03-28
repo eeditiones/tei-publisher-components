@@ -1,3 +1,11 @@
+## [2.4.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.3...v2.4.4) (2023-03-28)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** usage of 'viewportToImageRectangle' ([dc62c48](https://github.com/eeditiones/tei-publisher-components/commit/dc62c488690f0659441d4f968c3a00bda365ce52))
+* **pb-facsimile:** usage of 'viewportToImageRectangle' removed comment ([384fbe8](https://github.com/eeditiones/tei-publisher-components/commit/384fbe8a44dcd04143f0c2bdbc192cdf9a88cdc2))
+
 ## [2.4.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.2...v2.4.3) (2023-03-27)
 
 
