@@ -328,7 +328,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     _showAnnotationListener(event) {
-        console.log('_showAnnotationListener event: ');
         if (!this.viewer) {
             return;
         }
