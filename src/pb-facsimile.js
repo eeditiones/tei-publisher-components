@@ -363,14 +363,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (event.detail.coordinates) {
             // deconstruct given coordinates into variables
             const [x1, y1, w, h] = event.detail.coordinates;
-
-            const currentRect = this.viewer.viewport.viewportToImageRectangle(
-                this.viewer.viewport.getBounds(true));
+            const tiledImage = this.viewer.world.getItemAt(0);
+            const currentRect = tiledImage.viewportToImageRectangle(
+                tiledImage.getBounds(true));
 
             // scroll into view?
             if (!currentRect.containsPoint(new OpenSeadragon.Point(x1, y1))) {
                 this.viewer.viewport.fitBoundsWithConstraints(
-                    this.viewer.viewport.imageToViewportRectangle(x1, y1, currentRect.width, currentRect.height));
+                    tiledImage.imageToViewportRectangle(x1, y1, currentRect.width, currentRect.height));
             }
 
             // create new overlay
@@ -379,7 +379,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
             overlay.id = overlayId;
 
             // place marker
-            const marker = this.viewer.viewport.imageToViewportRectangle(x1, y1, w, h);
+            const marker = tiledImage.imageToViewportRectangle(x1, y1, w, h);
 
             this.viewer.addOverlay({
                 element: overlay,
