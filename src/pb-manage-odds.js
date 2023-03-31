@@ -52,7 +52,10 @@ export class PbManageOdds extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.subscribeTo('pb-login', () => this._refresh(), []);
+        this.subscribeTo('pb-login', () => {
+            this._refresh();
+        }, []);
+
         this.subscribeTo('pb-refresh-odds', (ev) => {
             this._refresh();
 
@@ -94,6 +97,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
         this.emitTo('pb-end-update');
 
         this.odds = this._loader.lastResponse;
+        this.requestUpdate();
     }
 
     _selectODD(ev) {
@@ -219,12 +223,13 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 odd.canWrite ?
                     html`
                                     <pb-restricted login="login">
-                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post"
+                                        <pb-ajax url="${regenUrl}?odd=${odd.name}.odd" method="post" class="editor-link"
                                             emit="${this.emit ? this.emit : ''}" .emitConfig="${this.emitConfig}">
                                             <h2 slot="title">${translate('menu.admin.recompile')}</h2>
                                             <paper-icon-button title="Regenerate ODD" icon="update"></paper-icon-button>
                                         </pb-ajax>
-                                        <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(`${odd.name}.odd`)}"></paper-icon-button>
+                                        <paper-icon-button title="Delete ODD" icon="delete" @click="${() => this._delete(`${odd.name}.odd`)}"
+                                            class="editor-link"></paper-icon-button>
                                     </pb-restricted>
                                 ` : null
                 }
@@ -345,7 +350,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                 height: 24px;
             }
 
-            @media (hover:hover) and (pointer: fine){
+            /* @media (hover:hover) and (pointer: fine){
                 .odd app-toolbar .editor-link{
                     opacity: 0;
                 }
@@ -353,7 +358,7 @@ export class PbManageOdds extends pbMixin(LitElement) {
                     opacity: 1;
                     transition: opacity 0.6s;
                 }
-            }
+            } */
         `;
     }
 }
