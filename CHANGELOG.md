@@ -1,3 +1,10 @@
+## [2.4.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.4...v2.4.5) (2023-03-31)
+
+
+### Bug Fixes
+
+* **pb-manage-odds:** react to login and remove hover effect to fix dialog not showing ([f1297c1](https://github.com/eeditiones/tei-publisher-components/commit/f1297c17236a44f3d14d9d49997216cfe85f183d))
+
 ## [2.4.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.3...v2.4.4) (2023-03-28)
 
 
