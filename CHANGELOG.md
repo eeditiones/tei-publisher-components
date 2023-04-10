@@ -1,3 +1,10 @@
+## [2.4.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.5...v2.4.6) (2023-04-10)
+
+
+### Bug Fixes
+
+* **kbga:** support endpoint for songs ([7bcff0b](https://github.com/eeditiones/tei-publisher-components/commit/7bcff0b37a464023281a7a6cdb7bcad94d4aabd1))
+
 ## [2.4.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.4...v2.4.5) (2023-03-31)
 
 
