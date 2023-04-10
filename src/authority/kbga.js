@@ -116,6 +116,7 @@ export class KBGA extends Registry {
               label = 'label';
               break;
           case 'bibl':
+          case 'songs':
               label = 'asHtml';
               break;
           default:
