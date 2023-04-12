@@ -1,3 +1,10 @@
+## [2.4.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.6...v2.4.7) (2023-04-12)
+
+
+### Bug Fixes
+
+* **pb-split-list:** added missing import ([b9e8212](https://github.com/eeditiones/tei-publisher-components/commit/b9e82129fc744eae630fc9e84e326ebfa48af858))
+
 ## [2.4.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.5...v2.4.6) (2023-04-10)
 
 
