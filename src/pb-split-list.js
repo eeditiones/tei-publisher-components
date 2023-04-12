@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from "./theming.js";
 import { registry } from "./urls.js";
