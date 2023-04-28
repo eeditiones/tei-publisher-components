@@ -1155,6 +1155,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             const view = this.shadowRoot.getElementById('view');
             this._applyToggles(view);
         }
+        // shield URL from selectors array
+        delete properties.selectors
+
         registry.commit(this, properties);
     }
 
