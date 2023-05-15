@@ -24,6 +24,7 @@ import { addSelector } from "./pb-toggle-feature.js";
  * ]
  * ```
  * 
+ * If the `name` property references the path to a translated label, the translation will be used instead.
  * # Client-side
  * 
  * ```javascript
@@ -152,7 +153,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
         return html`
             <paper-dropdown-menu id="menu" label="${translate(this.label)}" .disabled="${this.disabled}">
                 <paper-listbox id="list" slot="dropdown-content" .selected="${this.selected}">
-                    ${this.items.map((item) => html`<paper-item>${item.name}</paper-item>`)}
+                    ${this.items.map((item) => html`<paper-item>${translate(item.name)}</paper-item>`)}
                 </paper-listbox>
             </paper-dropdown-menu>
         `;
