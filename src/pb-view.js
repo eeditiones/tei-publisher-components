@@ -331,7 +331,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.url = null;
         this.onUpdate = false;
         this.appendFootnotes = false;
-        this.notFound = "the server did not return any content";
+        this.notFound = null;
         this.animation = false;
         this.direction = 'ltr';
         this.suppressHighlight = false;
@@ -719,10 +719,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
         }
         
-        const content = `
-            <p>${this.notFound}</p>
-            <p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>
-        `;
+        let content;
+        if (this.notFound != null) {
+            content = `<p>${this.notFound}</p>`;
+        } else {
+            content = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
+        }
 
         this._replaceContent({ content });
         this.emitTo('pb-end-update');
@@ -738,7 +740,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             return;
         }
         if (resp.error) {
-            if (this.notFound) {
+            if (this.notFound != null) {
                 this._content = this.notFound;
             }
             this.emitTo('pb-end-update', null);
