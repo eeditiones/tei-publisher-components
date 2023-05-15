@@ -1,3 +1,15 @@
+# [2.5.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.8...v2.5.0) (2023-05-15)
+
+
+### Bug Fixes
+
+* **pb-view:** if not-found is set to a string, show it instead of error message ([615cc9f](https://github.com/eeditiones/tei-publisher-components/commit/615cc9ff402aebf1e787b7c00ce25bcd8103fb08))
+
+
+### Features
+
+* **pb-page:** list of supported languages and fallback language can now be configured for cases when the detected language is not supported ([eeba0c5](https://github.com/eeditiones/tei-publisher-components/commit/eeba0c59f98b3eef0dcc44c311ce0f9a8ce109a0))
+
 ## [2.4.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.7...v2.4.8) (2023-05-15)
 
 
