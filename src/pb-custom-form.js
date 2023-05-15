@@ -131,7 +131,7 @@ export class PbCustomForm extends PbLoad {
     static get properties() {
         return {
             /**
-             * Register event handlers on all inputs and submit the form
+             * Register event handlers on all descendant elements matching the given CSS selector and submit the form
              * automatically if any of those changes. For button-like controls,
              * a submit is triggered on click, for text input on keyUp, and for
              * all other form components on change.
