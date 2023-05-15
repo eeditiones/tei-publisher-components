@@ -1,3 +1,10 @@
+## [2.4.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.7...v2.4.8) (2023-05-15)
+
+
+### Bug Fixes
+
+* **pb-select-feature:** allow labels in dropdown to be translated via i18n ([e5e5350](https://github.com/eeditiones/tei-publisher-components/commit/e5e5350dd8ed618ddaff6ceb7417d9c1b29f99ab))
+
 ## [2.4.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.6...v2.4.7) (2023-04-12)
 
 
