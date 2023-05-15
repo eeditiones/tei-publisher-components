@@ -112,6 +112,25 @@ export class PbPage extends pbMixin(LitElement) {
                 attribute: 'locale-fallback-ns'
             },
             /**
+             * Comma-separated list of languages supported. If the detected language
+             * is not in this list, fall back to the configured fallback language. 
+             */
+            supportedLanguages: {
+                type: Array,
+                attribute: 'supported-languages',
+                converter(value) {
+                    return value.split(/\s*,\s*/);
+                }
+            },
+            /**
+             * The fallback language to use if the detected language is not supported.
+             * Defaults to 'en'.
+             */
+            fallbackLanguage: {
+                type: String,
+                attribute: 'fallback-language'
+            },
+            /**
              * Set a language for i18n (e.g. 'en' or 'de'). If not set, browser language
              * detection will be used.
              */
@@ -165,6 +184,8 @@ export class PbPage extends pbMixin(LitElement) {
         this.idHash = false;
         this.apiVersion = undefined;
         this.requireLanguage = false;
+        this.supportedLanguages = null;
+        this.fallbackLanguage = 'en';
         this.theme = null;
         this._localeFallbacks = [];
         this._i18nInstance = null;
@@ -301,7 +322,7 @@ export class PbPage extends pbMixin(LitElement) {
             });
         }
         const options = {
-            fallbackLng: 'en',
+            fallbackLng: this.fallbackLanguage,
             defaultNS: 'common',
             ns: ['common'],
             debug: false,
@@ -316,6 +337,10 @@ export class PbPage extends pbMixin(LitElement) {
         };
         if (this.language) {
             options.lng = this.language;
+        }
+        console.log('supported langs: %o', this.supportedLanguages);
+        if (this.supportedLanguages) {
+            options.supportedLngs = this.supportedLanguages;
         }
 
         if (this._localeFallbacks.length > 0) {
