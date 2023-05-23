@@ -1,3 +1,4 @@
+import { match, compile, pathToRegexp } from "path-to-regexp";
 import { PbEvents } from "./pb-events.js";
 import { getSubscribedChannels } from "./pb-mixin.js";
 
@@ -60,12 +61,26 @@ class Registry {
          */
         this.idHash = true;
         this._listeners = [];
+
+        this.urlPattern = null;
+        this._pathParams = new Set();
     }
 
-    configure(usePath = true, idHash = false, rootPath = '') {
+    configure(usePath = true, idHash = false, rootPath = '', urlPattern) {
         this.rootPath = rootPath;
         this.usePath = usePath;
         this.idHash = idHash;
+        this.urlPattern = urlPattern;
+        
+        if (this.urlPattern) {
+            // save a list of parameter names which go into the path
+            const pathParams = [];
+            pathToRegexp(this.urlPattern, pathParams);
+            pathParams.forEach((param) => this._pathParams.add(param.name));
+            // compile URL pattern into a decode and encode function
+            this._decodePath = match(this.urlPattern);
+            this._encodePath = compile(this.urlPattern);
+        }
 
         // determine initial state of the registry by parsing current URL
         const initialState = this._stateFromURL();
@@ -115,12 +130,21 @@ class Registry {
         if (this.idHash && this.hash.length > 0 && (!/^#\d+\./.test(this.hash))) {
             params.id = this.hash.substring(1);
         }
-        if (this.usePath) {
-            params.path = window.location.pathname.replace(new RegExp(`^${this.rootPath}/?`), '');
+        const relpath = window.location.pathname.replace(new RegExp(`^${this.rootPath}/?`), '');
+        if (this.urlPattern) {
+            const result = this._decodePath(relpath);
+            Object.assign(params, result.params);
+            log('decoded path %s using template %s: %o', relpath, this.urlPattern, params);
+        } else if (this.usePath) {
+            params.path = relpath;
         }
+
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.forEach((value, key) => {
-            if (this.usePath && key === 'path') {
+            if (
+                (this.urlPattern && this._pathParams.has(key)) ||
+                (this.usePath && key === 'path')
+             ) {
                 console.warn("Found path parameter in query, but usePath is set to true. The path parameter will be ignored.");
                 return;
             }
@@ -221,21 +245,36 @@ class Registry {
     urlFromState() {
         const newUrl = new URL(window.location.href);
         for (const [param, value] of Object.entries(this.state)) {
-            if (( param !== 'path' || !this.usePath )
-                    && param !== 'id') {
+            if (this.urlPattern) {
+                if (!this._pathParams.has(param)) {
+                    if (value === null) {
+                        newUrl.searchParams.delete(param);
+                    } else {
+                        newUrl.searchParams.set(param, value);
+                    }
+                }
+            } else if (
+                    (param !== 'path' || !this.usePath) && 
+                    (param !== 'id' || !this.idHash)
+            ) {
                 if (value === null) {
-                    newUrl.searchParams.delete(param)
+                    newUrl.searchParams.delete(param);
                 } else {
-                    newUrl.searchParams.set(param, value)
+                    newUrl.searchParams.set(param, value);
                 }
             }
         }
 
-        if (this.usePath && this.state.path && this.state.path.length > 0) {
-            newUrl.pathname = `${this.rootPath}/${this.state.path}`;
+        if (this.state.path && this.state.path.length > 0) {
+            if (this.urlPattern) {
+                const encoded = this._encodePath(this.state);
+                newUrl.pathname = `${this.rootPath}/${encoded}`;
+            } else if (this.usePath) {
+                newUrl.pathname = `${this.rootPath}/${this.state.path}`;
+            }
         }
 
-        if (this.state.id) {
+        if (this.state.id && !this.urlPattern) {
             newUrl.hash = `#${this.state.id}`;
         }
 
