@@ -39,6 +39,10 @@ export class PbPage extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'app-root'
             },
+            urlTemplate: {
+                type: String,
+                attribute: 'url-template'
+            },
             /**
              * Is the resource path part of the URL or should it be
              * encoded as a parameter? TEI Publisher uses the
@@ -180,6 +184,7 @@ export class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlTemplate = null;
         this.urlPath = 'path';
         this.idHash = false;
         this.apiVersion = undefined;
@@ -221,7 +226,7 @@ export class PbPage extends pbMixin(LitElement) {
             return;
         }
 
-        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot);
+        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot, this.urlTemplate);
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');
         
