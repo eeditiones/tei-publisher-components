@@ -248,9 +248,7 @@ export class PbPage extends pbMixin(LitElement) {
             return;
         }
 
-        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot, this.urlTemplate,
-            this.urlIgnore ? this.urlIgnore.split(/\s*,\s*/) : null
-        );
+        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot, this.urlTemplate, this.urlIgnore);
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');
         
