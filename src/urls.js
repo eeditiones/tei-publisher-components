@@ -71,12 +71,14 @@ class Registry {
         this._pathParams = new Set();
     }
 
-    configure(usePath = true, idHash = false, rootPath = '', urlPattern, urlIgnore = []) {
+    configure(usePath = true, idHash = false, rootPath = '', urlPattern, ignoredParams) {
         this.rootPath = rootPath;
         this.usePath = usePath;
         this.idHash = idHash;
         this.urlPattern = urlPattern;
-        urlIgnore.forEach(param => this.urlIgnore.add(param));
+        if (ignoredParams) {
+            ignoredParams.split(/\s*,\s*/).forEach(param => this.urlIgnore.add(param));
+        }
 
         if (this.urlPattern) {
             // save a list of parameter names which go into the path
