@@ -62,16 +62,22 @@ class Registry {
         this.idHash = true;
         this._listeners = [];
 
+        /**
+         * URL pattern to use for mapping parameters into the URL path
+         */
         this.urlPattern = null;
+
+        this.urlIgnore = new Set();
         this._pathParams = new Set();
     }
 
-    configure(usePath = true, idHash = false, rootPath = '', urlPattern) {
+    configure(usePath = true, idHash = false, rootPath = '', urlPattern, urlIgnore = []) {
         this.rootPath = rootPath;
         this.usePath = usePath;
         this.idHash = idHash;
         this.urlPattern = urlPattern;
-        
+        urlIgnore.forEach(param => this.urlIgnore.add(param));
+
         if (this.urlPattern) {
             // save a list of parameter names which go into the path
             const pathParams = [];
@@ -270,12 +276,13 @@ class Registry {
 
         for (const [param, value] of Object.entries(this.state)) {
             if (this.urlPattern) {
-                if (!this._pathParams.has(param)) {
+                if (!(this._pathParams.has(param) || this.urlIgnore.has(param))) {
                     setParam(value, param);
                 }
             } else if (
                     (param !== 'path' || !this.usePath) && 
-                    (param !== 'id' || !this.idHash)
+                    (param !== 'id' || !this.idHash) &&
+                    (!this.urlIgnore.has(param))
             ) {
                 setParam(value, param);
             }
