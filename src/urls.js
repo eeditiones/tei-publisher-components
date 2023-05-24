@@ -148,7 +148,17 @@ class Registry {
                 console.warn("Found path parameter in query, but usePath is set to true. The path parameter will be ignored.");
                 return;
             }
-            params[key] = value;
+            // parameter already set
+            if ((key in params)) {
+                return;
+            }
+            // check for multiple entries
+            const allValues = urlParams.getAll(key);
+            if (allValues.length === 1) {
+                params[key] = value; // single entry
+            } else {
+                params[key] = allValues; // array
+            }
         });
         return params;
     }
@@ -244,24 +254,30 @@ class Registry {
 
     urlFromState() {
         const newUrl = new URL(window.location.href);
+
+        function setParam(value, param) {
+            if (value === null) {
+                newUrl.searchParams.delete(param);
+            } else if (Array.isArray(value)) {
+                // overwrite any previous value by setting the first member
+                newUrl.searchParams.set(param, value.pop());
+                // add additional values
+                value.forEach(v => newUrl.searchParams.append(param, v));
+            } else {
+                newUrl.searchParams.set(param, value);
+            }
+        }
+
         for (const [param, value] of Object.entries(this.state)) {
             if (this.urlPattern) {
                 if (!this._pathParams.has(param)) {
-                    if (value === null) {
-                        newUrl.searchParams.delete(param);
-                    } else {
-                        newUrl.searchParams.set(param, value);
-                    }
+                    setParam(value, param);
                 }
             } else if (
                     (param !== 'path' || !this.usePath) && 
                     (param !== 'id' || !this.idHash)
             ) {
-                if (value === null) {
-                    newUrl.searchParams.delete(param);
-                } else {
-                    newUrl.searchParams.set(param, value);
-                }
+                setParam(value, param);
             }
         }
 
