@@ -238,7 +238,7 @@ class Registry {
     }
 
     _commit(elem, newState, overwrite, replace) {
-        this.state = overwrite ? newState : Object.assign(this.state, newState);
+        this.state = overwrite ? newState : ({ ...this.state, ...newState});
         const resolved = this.urlFromState();
 
         const chs = getSubscribedChannels(elem);
@@ -267,10 +267,12 @@ class Registry {
             if (value === null) {
                 newUrl.searchParams.delete(param);
             } else if (Array.isArray(value)) {
+                // copy array before mutating it
+                const _v = Array.from(value);
                 // overwrite any previous value by setting the first member
-                newUrl.searchParams.set(param, value.pop());
+                newUrl.searchParams.set(param, _v.pop());
                 // add additional values
-                value.forEach(v => newUrl.searchParams.append(param, v));
+                _v.forEach(v => newUrl.searchParams.append(param, v));
             } else {
                 newUrl.searchParams.set(param, value);
             }
