@@ -315,6 +315,11 @@ export class PbLoad extends pbMixin(LitElement) {
 
         params = this.prepareParameters(params);
 
+        // filter null values
+        for (const [k,v] of Object.entries(params)) {
+            if (v === null) { delete params[k] }
+        }
+
         const url = this.getURL(params);
 
         console.log("<pb-load> Loading %s with parameters %o", url, params);
