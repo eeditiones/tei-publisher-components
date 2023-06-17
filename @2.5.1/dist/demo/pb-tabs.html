@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-document Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <!-- Display two document views side by side -->
+                <main>
+                    <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                    <pb-tabs>
+                        <paper-tab slot="tab">Tab 1</paper-tab>
+                        <paper-tab slot="tab">Tab 2</paper-tab>
+                        <paper-tab slot="tab">Tab 3</paper-tab>
+
+                        <div slot="page">
+                            <p>This is the first tab.</p>
+                        </div>
+                        <div slot="page">
+                            <p>And a second tab.</p>
+                        </div>
+                        <div slot="page">
+                            <p>The third tab.</p>
+                        </div>
+                    </pb-tabs>
+                    </pb-page>
+                </main>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
