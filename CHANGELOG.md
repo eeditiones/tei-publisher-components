@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.0...v2.5.1) (2023-06-14)
+
+
+### Bug Fixes
+
+* **pb-mixin:** emitting/subscribing to default channel failed, in particular for ([d7fa70a](https://github.com/eeditiones/tei-publisher-components/commit/d7fa70a1bc3f28bd2c4453275dad2c86b3a5e83e))
+
 # [2.5.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.4.8...v2.5.0) (2023-05-15)
 
 
