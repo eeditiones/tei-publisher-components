@@ -331,8 +331,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {String[]} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the emit property. Pass empty array to target the default channel.
      */
-    subscribeTo(type, listener, channels = []) {
-        const chs = channels && channels.length ? channels : getSubscribedChannels(this);
+    subscribeTo(type, listener, channels) {
+        let chs;
+        if (channels) {
+            chs = channels.length === 0 ? [defaultChannel] : channels;
+        } else {
+            chs = getSubscribedChannels(this);
+        }
         const handlers = chs.map(key => {
             const handle = ev => {
                 if (!ev.detail || !ev.detail.key || ev.detail.key !== key) {
@@ -357,8 +362,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {String[]} [channels] Optional: explicitely specify the channels to emit to. This overwrites
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
-    emitTo(type, options, channels = []) {
-        const chs = channels && channels.length ? channels : getEmittedChannels(this);
+    emitTo(type, options, channels) {
+        let chs;
+        if (channels) {
+            chs = channels.length === 0 ? [defaultChannel] : channels;
+        } else {
+            chs = getEmittedChannels(this);
+        }
         chs.forEach(ch => this._emit(ch, type, options));
     }
 
