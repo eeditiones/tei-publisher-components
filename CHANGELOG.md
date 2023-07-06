@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.1...v2.6.0) (2023-07-06)
+
+
+### Features
+
+* **authority:** renamed gf.js to anton.js and made endpoint and provider name configurable ([5dc6943](https://github.com/eeditiones/tei-publisher-components/commit/5dc69436644954d813801faf09e1c50f565b5d6e))
+
 ## [2.5.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.0...v2.5.1) (2023-06-14)
 
 
