@@ -1,3 +1,11 @@
+## [2.6.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.0...v2.6.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* **pb-svg:** react to url property change as well as event ([5fb4f7f](https://github.com/eeditiones/tei-publisher-components/commit/5fb4f7f48867a145a7cf97d5f1787a43006220a4))
+* **pb-tabs:** emit pb-tab event when selected tab changes ([709ee80](https://github.com/eeditiones/tei-publisher-components/commit/709ee8053526b290b257684bf97a21ed4a54a392))
+
 # [2.6.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.1...v2.6.0) (2023-07-06)
 
 
