@@ -138,6 +138,7 @@ export class Anton extends Registry {
         case 'organization':
           register = 'actors';
           break;
+        case 'origPlace':
         case 'place':
           register = 'places';
           break;
