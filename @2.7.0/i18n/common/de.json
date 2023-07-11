@@ -1,0 +1,282 @@
+{
+  "language": "Sprache",
+  "menu": {
+    "documentation": "Dokumentation",
+    "admin": {
+      "title": "Administration",
+      "recompile": "ODD neu übersetzen",
+      "appGenerator": "Anwendung generieren",
+      "edit-odd": "ODD editieren"
+    },
+    "news": "Neuigkeiten",
+    "download": {
+      "title": "Herunterladen",
+      "pdf-latex": "PDF (LaTeX Version)",
+      "pdf-fo": "PDF (FO Version)",
+      "pdf-title": "Als PDF herunterladen",
+      "fo-source": "FO Quelle",
+      "latex-source": "TeX Quelle",
+      "single-page": "Auf einer Seite anzeigen",
+      "epub-download": "Als ePub ebook herunterladen",
+      "view-tei": "TEI XML ansehen"
+    }
+  },
+  "dialogs": {
+    "error": "Autsch",
+    "close": "Schließen",
+    "yes": "Ja",
+    "no": "Nein",
+    "serverError": "Die Anfrage an den Server schlug fehl.",
+    "generatingFile": "Erzeuge Datei...",
+    "downloadMessage": "Das Erzeugen einer Datei zum Download kann bis zu mehrere Minuten dauern. Bitte warten Sie. Das Fenster sollte sich automatisch schließen, sobald der Download beendet wurde.",
+    "loading": "Lade ..."
+  },
+  "document": {
+    "contents": "Inhalt",
+    "selectODD": "ODD Auswählen",
+    "selectTemplate": "Template Auswählen",
+    "selectFeature": "Feature auswählen",
+    "normalized": "Normalisierte Ansicht",
+    "plain": "Leseansicht",
+    "view-type": "Seitenansicht",
+    "add-panel": "Ansicht hinzufügen",
+    "caveat-heading": "Achtung",
+    "settings": "Einstellungen",
+    "caveat": "Die Optionen hier erlauben es, mit verschiedenen Seitenvorlagen und ODDs zu experimentieren. Bitte beachten Sie, dass nicht jede Kombination für jedes Dokument Sinn macht. Zum Beispiel ist eine Karte nur sinnvoll, wenn Koordinaten vorhanden sind. Ebenso erfordert eine seitenweise Ansicht, dass Seitenumbrüche ausgezeichnet wurden. Die Fehlermeldung 'the server did not return any content' weißt in der Regel auf solche Unstimmigkeiten zwischen Markup, ODD und Seitenvorlage hin."
+  },
+  "browse": {
+    "description": "Diese Anwendung dient vorrangig zum Experimentieren mit verschiedenen Dokumenten und deren Transformationen über das TEI Processing Model. Es können eigene Dateien hochgeladen und neue ODDs erstellt werden.",
+    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei-demo', Passwort: 'demo').",
+    "sort": "Sortiere nach",
+    "filter": "Filtere nach",
+    "filterPlaceholder": "Filter",
+    "items": "{{count}} Eintrag gefunden",
+    "items_plural": "{{count}} Einträge gefunden",
+    "title": "Titel",
+    "author": "Autor",
+    "modificationDate": "Änderungsdatum",
+    "file": "Dateiname",
+    "delete": "Löschen",
+    "confirmDeletion": "Möchten Sie die Datei wirklich löschen?",
+    "confirmDeletion_plural": "Möchten Sie wirklich {{count}} Dateien löschen?",
+    "documents": "Dokumente",
+    "collections": "Lokale Sammlung",
+    "dts": "Distributed Text Services (experimentell)",
+    "test": {
+      "title": "TEI Publisher Demo Sammlung",
+      "description": "Dokumente zur Demonstration diverser Features. Die Auswahl ist in keiner Weise erschöpfend, sondern zeigt nur einen kleinen Teil des Möglichen. Weitere Beispiele sind jederzeit willkommen!"
+    },
+    "playground": {
+      "title": "Spielwiese",
+      "description": "Eine beschreibbare Sammlung zum Hochladen eigener Dokumente"
+    },
+    "doc": {
+      "title": "Dokumentation",
+      "description": "Dokumentation, verfasst in Docbook XML."
+    },
+    "markdown": {
+      "title": "Markdown-Beispiel",
+      "description": "Ein Beispiel zur Verwendung von Markdown für statische Inhalte."
+    },
+    "up": "Übergeordnetes Verzeichnis"
+  },
+  "upload": {
+    "upload": "Hochladen",
+    "drop": "Dateien vom Typ {{accept}} hier hinziehen zum Hochladen."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Code anzeigen",
+      "hide": "Code ausblenden"
+    },
+    "editCode": {
+      "show": "Code editieren",
+      "hide": "Editor schließen"
+    }
+  },
+  "clipboard": {
+    "copy": "Mit einem Klick in die Zwischenablage kopieren",
+    "paste": "Zum Testen in das Eingabefeld einfügen"
+  },
+  "login": {
+    "login": "Anmelden",
+    "as": "Angemeldet als {{user}}",
+    "user": "Benutzer",
+    "password": "Passwort",
+    "invalid": "Falsches Passwort oder ungültiger Benutzer",
+    "requiredGroup": "muss Mitglied der Gruppe {{group}} sein"
+  },
+  "search": {
+    "search": "Suche",
+    "reset": "Zurücksetzen",
+    "placeholder": "Suche nach",
+    "sections": "Abschnitte durchsuchen",
+    "headings": "Überschriften durchsuchen"
+  },
+  "dts": {
+    "endpoint": "Server wählen",
+    "note": "Experimentell: Zugriff auf externe Editionen über DTS API"
+  },
+  "odd": {
+    "files": "ODD Dateien",
+    "manage": {
+      "filename": "Dateiname des ODD (ohne Suffix)",
+      "title": "Titel für die Anzeige",
+      "create": "Erzeugen",
+      "create-from-example": "Aus Beispielen erzeugen",
+      "delete": "Möchten Sie die ODD-Datei {{file}} wirklich löschen?",
+      "regenerate-all": "Alle ODDs neu generieren (langsam)",
+      "filename-error": "Erforderlich. Benutze Buchstaben, Zahlen - und _",
+      "title-error": "Ein Titel ist erforderlich"
+    },
+    "editor": {
+      "delete-spec": "Elementspezifikation für '{{ident}}' wirklich löschen?",
+      "save": "Speichern",
+      "saving": "Speichern ...",
+      "saved": "Gespeichert",
+      "denied": "Fehlende Berechtigung",
+      "denied-message": "Sie haben keine Berechtigung zum Speichern von {{odd}}",
+      "reload": "Neu laden",
+      "reload-confirm": "Nicht gespeicherte Änderungen gehen verloren. Fortsetzen?",
+      "add-element": "Element hinzufügen",
+      "odd-source": "ODD-Quelle",
+      "specs": "Element Spezifikationen",
+      "jump-to": "Springe zu Element ...",
+      "title-short": "Kurztitel",
+      "title-short-placeholder": "Kurztitel für die Anzeige",
+      "description-label": "Beschreibung",
+      "description-placeholder": "Beschreibung des ODD",
+      "source-label": "Basis ODD",
+      "source-placeholder": "Basis-ODD, welches erweitert wird",
+      "use-namespace": "Auswählen, um einen anderen Namespace als TEI zu benutzen",
+      "namespace-placeholder": "Default Namespace URI (wenn nicht TEI)",
+      "title": "Titel",
+      "title-placeholder": "Titel des ODD",
+      "model": {
+        "delete-model-label": "Modell löschen?",
+        "delete-model-message": "Möchten Sie das ausgewählte Modell wirklich löschen?",
+        "description-placeholder": "[Beschreibung des Modells]",
+        "predicate-placeholder": "[Eine Bedingung angeben (in XQuery)]",
+        "link-with-or": "oder",
+        "css-class-placeholder": "[CSS Klasse (zur Verwendung in externem CSS)]",
+        "custom-behaviour-placeholder": "[Selbstdefiniertes Behaviour]",
+        "template-placeholder": "[Code Vorlage für den Inhalt angeben]",
+        "param-name-placeholder": "[Name des Parameters]",
+        "empty": "[Leer]",
+        "mode-placeholder": "[Modus setzen für nachfolgende Modelle]",
+        "set-param": "setze"
+      },
+      "css-source": "CSS Datei öffnen"
+    }
+  },
+  "facets": {
+    "show": "Zeige 50 häufigste",
+    "genre": "Genre",
+    "language": "Sprache"
+  },
+  "appgen": {
+    "account": {
+      "user": "Benutzerkonto für administrative Aufgaben. Der Benutzer wird angelegt, wenn er noch nicht existiert.",
+      "owner": "Das Benutzerkonto, dem die App gehören wird.",
+      "password": "Passwort für den Benutzer, der diese App besitzt."
+    },
+    "submit": "Speichern/Erzeugen",
+    "index": {
+      "help": "Definieren Sie die kleinsten Texteinheit, für die ein Volltextindex erstellt wird. Bei längeren Dokumenten mit mehreren Abschnitten (divs), empfiehlt es sich in der Regel, \"Für Abschnitt (div) erstellen\" zu wählen. Wenn keine Unterteilungen vorhanden sind, wähle \"Für den gesamten Text erstellen\".",
+      "label": "Standard-Volltextindex",
+      "index-div": "Für Abschnitt (div) erstellen",
+      "index-text": "Für den gesamten Text erstellen"
+    },
+    "view": {
+      "help": "Wähle die Texteinheit, die jeweils auf einer Seite angezeigt werden soll. Dies kann ein ganzer Abschnitt (div) sein oder eine einzelne Seite des Orginals. Letztere Option funktioniert nur, wenn im TEI Seitenumbrüche korrekt ausgezeichnet sind.",
+      "div": "Nach div (Kapitel / Abschnitt ...)",
+      "page": "Nach Seite"
+    },
+    "label": "Standardansicht",
+    "template": {
+      "help": "Wähle die HTML-Vorlage aus, die als Standardansicht verwendet werden soll",
+      "label": "HTML-Vorlage"
+    },
+    "title": {
+      "help": "Titel der App zur Anzeige in Dashboard usw.",
+      "label": "Titel der App"
+    },
+    "collection": "Name der Subcollection mit den TEI Dokumenten",
+    "abbrev": {
+      "label": "Kurzname zur Verwendung in URLs und Dateinamen",
+      "placeholder": "Kurzer Name"
+    },
+    "uri": "URL zur eindeutigen Identifizierung der App",
+    "dialog": {
+      "title": "App Generiert"
+    },
+    "open": "Öffnen",
+    "success": "Deine App wurde erfolgreich generiert!"
+  },
+  "annotations": {
+    "abbreviation": "Abkürzung",
+    "delete": "Annotation löschen",
+    "edit": "Annotation ändern",
+    "no-properties": "Keine Eigenschaften vorhanden.",
+    "occurrences": "Vorkommen im Text",
+    "organisation": "Organisation",
+    "person": "Person",
+    "place": "Ort",
+    "term": "Term",
+    "date": "Datum",
+    "apply": "Anwenden",
+    "correction": "Korrektur",
+    "reference": "Referenz",
+    "expansion": "Erweiterung",
+    "changes": "Änderungen",
+    "reg": "Regularisierung",
+    "hi": "Hervorhebung",
+    "app": "Apparatus",
+    "download": "Ergebnis als lokale Datei speichern",
+    "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
+    "undo": "Letzten Arbeitsschritt rückgängig machen",
+    "lookup": "Entität suchen",
+    "preview": "Voransicht erneuern",
+    "save": "Änderungen ins TEI speichern",
+    "confirm-reload": "Annotationen verwerfen und Quelle neu laden?",
+    "confirm-reload-title": "Quelle neu laden?",
+    "confirm-restore-title": "Annotationen wiederherstellen?",
+    "ref": "Link (ref)",
+    "reload": "Quelle neu laden",
+    "modify": "Änderung am Text vornehmen",
+    "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt.",
+    "apply-all": "Alle selektieren und anwenden",
+    "permission": "Zugriff verweigert: keine Berechtigung zum Speichern von Annotationen.",
+    "ner": {
+      "title": "Automatische Entitätenerkennung",
+      "description": "Erkannte Entitäten werden als Annotationen markiert.",
+      "run": "Ausführen",
+      "model": "Wähle ein Modell",
+      "denied": "Ungespeicherte Änderungen gefunden: bitte zuerst speichern oder verwerfen."
+    }
+  },
+  "ner": {
+    "title": "Trainiere ein Modell zur Entitätenerkennung",
+    "not-found": "Dieses Feature benötigt einen laufenden TEI Publisher NER Server, aber der Dienst antwortet nicht.",
+    "found": "TEI Publisher NER gefunden. spaCy Version:",
+    "name-placeholder": "Name des zu erstellenden Modells",
+    "name": "Name",
+    "path": "Pfad",
+    "path-placeholder": "Relativer Pfad zu einer Sammlung oder Datei",
+    "path-info": "Pfad zu einem Dokument oder einer Sammlung eingeben. Diese wird als Eingabe für das Training verwendet. Sollte relativ zum TEI Publisher Datenverzeichnis sein.",
+    "lang-info": "Es kann entweder ein neues Modell trainiert oder ein bestehendes Basismodell erweitert werden. Falls kein Basismodell unten ausgewählt wird, ist die Sprache anzugeben.",
+    "language-placeholder": "Sprache für die das Modell erstellt wird",
+    "language": "Sprache",
+    "language-error": "Benötige entweder eine Sprache oder ein Basismodell",
+    "model": "Basismodell",
+    "model-placeholder": "Zu erweiterndes Basismodell",
+    "vectors": "nur die Vektoren aus Basismodell kopieren",
+    "output": "Trainingsausgabe",
+    "prepare": "Trainingsdaten vorbereiten",
+    "start": "Ausführen"
+  },
+  "timeline": {
+    "unknown": "undatiert",
+    "clear": "Zeitraum zurücksetzen"
+  }
+}

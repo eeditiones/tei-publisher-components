@@ -1,0 +1,122 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-timeline Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+
+        <style>
+            main{
+                padding: 50px;
+
+            }
+            pb-timeline{
+                padding: 2rem 0;
+            }
+            #start, #end, #scope{
+                display: block;
+                margin-bottom: 1rem;
+            }
+            .wraptl{
+                max-width: 60vw;
+                overflow-y:hidden;
+                overflow-x:auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <h1>Timeline Demo</h1>
+            <!--
+        <pb-demo-snippet>
+            <template>
+-->
+
+            <label for="start">Start Date</label>
+            <input id="start" type="date" value="1891-05-18">
+            <label for="end">End Date</label>
+            <input id="end" type="date" value="1978-01-01">
+
+
+            <label for="scope">Scope</label>
+            <select id="scope">
+                <option value="D">Day</option>
+                <option value="W">Week</option>
+                <option value="M">Month</option>
+                <option value="Y" selected="selected">Year</option>
+                <option value="5Y">5 Years</option>
+                <option value="10Y">10 Years</option>
+            </select>
+
+
+            <div class="wraptl">
+                <pb-timeline scope="Y" auto
+                             start-date="1891-05-18"
+                             end-date="1978-01-01"
+                             url="./timeline-dev-data.json"
+                             resettable></pb-timeline>
+            </div>
+
+<!--            <textarea id="logs"></textarea>-->
+            <!--
+
+                </template>
+            </pb-demo-snippet>
+    -->
+
+        </main>
+    </body>
+
+
+    <script type="module">
+        // import { jsonDataDev } from './timeline-dev-data.js';
+        import {SearchResultService} from "../src/search-result-service.js";
+
+/*
+        const jsonData = jsonDataDev;
+
+        const dispatchPbTimelineDataLoadedEvent = (jsonData) => {
+            document.dispatchEvent(new CustomEvent('pb-timeline-data-loaded', {
+                bubbles: true,
+                detail: {
+                    jsonData: jsonData,
+                }
+            }));
+        }
+*/
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // initDevControls();
+
+            const startInput = document.getElementById('start');
+            startInput.addEventListener('input', (e)=>{
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').startDate = val;
+            });
+
+            const endInput = document.getElementById('end');
+            endInput.addEventListener('input', (e)=>{
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').endDate = val;
+            });
+            const select = document.getElementById('scope');
+            select.addEventListener('change', (e)=>{
+                console.log('scope changed')
+                const val = e.target.value;
+                const tl = document.querySelector('pb-timeline').scope = val;
+            });
+
+            document.addEventListener('pb-timeline-date-changed', (e) =>{
+                console.log('date changed ', e.detail.date);
+            });
+            document.addEventListener('pb-timeline-daterange-changed', (e) =>{
+                console.log('daterange changed ', e.detail.startDateStr, e.detail.endDateStr);
+            });
+        });
+
+
+    </script>
+</html>
