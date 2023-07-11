@@ -156,6 +156,8 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
                     const param = registry.state[key];
                     if (this.facets[key]) {
                         this.facets[key].push(param);
+                    } else if (Array.isArray(param)) {
+                        this.facets[key] = param;
                     } else {
                         this.facets[key] = [param];
                     }
