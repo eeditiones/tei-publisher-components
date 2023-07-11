@@ -1,3 +1,21 @@
+# [2.7.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.1...v2.7.0) (2023-07-11)
+
+
+### Bug Fixes
+
+* **pb-browse-docs:** init with multiple facets ([b538976](https://github.com/eeditiones/tei-publisher-components/commit/b538976766a69fe4e84cf568289d0d7e48c8336c))
+* **pb-custom-form:** null values in serializeform ([5c6af3d](https://github.com/eeditiones/tei-publisher-components/commit/5c6af3d0a7bd8782c7d3f2a2486abfb7483fd975))
+* **pb-load:** filter null values ([df5f8dc](https://github.com/eeditiones/tei-publisher-components/commit/df5f8dc4f43fabdaa833843a50b131c3a23b0b50))
+* **urls:** do not mutate state on replace ([09a4a94](https://github.com/eeditiones/tei-publisher-components/commit/09a4a94739b7a9cc46e8e2c915aebdd748aab1e0))
+* **urls:** multiple values in state and URL ([33940a5](https://github.com/eeditiones/tei-publisher-components/commit/33940a5333bf0bed54e66096e1186eac3ddb86dc))
+
+
+### Features
+
+* **pb-page:** add a property url-ignore to list parameter names which should never be reflected in the browser URL ([039e212](https://github.com/eeditiones/tei-publisher-components/commit/039e212c37e699b976fa3e3d5f5b51d268b62cae))
+* **pb-popover:** allow to override touch setting ([d8455e8](https://github.com/eeditiones/tei-publisher-components/commit/d8455e80bf2f96199b8d83dc5f682cadeab94975))
+* support url patterns to map parameters into the url path ([d0ec078](https://github.com/eeditiones/tei-publisher-components/commit/d0ec0789482e9dd0ea4d848de317d1d3057e7dd4))
+
 ## [2.6.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.0...v2.6.1) (2023-07-07)
 
 
