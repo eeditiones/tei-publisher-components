@@ -68,7 +68,7 @@ class Registry {
         this.urlPattern = null;
 
         this.urlIgnore = new Set();
-        this._pathParams = new Set();
+        this.pathParams = new Set();
     }
 
     configure(usePath = true, idHash = false, rootPath = '', urlPattern, ignoredParams) {
@@ -84,7 +84,7 @@ class Registry {
             // save a list of parameter names which go into the path
             const pathParams = [];
             pathToRegexp(this.urlPattern, pathParams);
-            pathParams.forEach((param) => this._pathParams.add(param.name));
+            pathParams.forEach((param) => this.pathParams.add(param.name));
             // compile URL pattern into a decode and encode function
             this._decodePath = match(this.urlPattern);
             this._encodePath = compile(this.urlPattern);
@@ -150,7 +150,7 @@ class Registry {
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.forEach((value, key) => {
             if (
-                (this.urlPattern && this._pathParams.has(key)) ||
+                (this.urlPattern && this.pathParams.has(key)) ||
                 (this.usePath && key === 'path')
              ) {
                 console.warn("Found path parameter in query, but usePath is set to true. The path parameter will be ignored.");
@@ -280,8 +280,11 @@ class Registry {
 
         for (const [param, value] of Object.entries(this.state)) {
             if (this.urlPattern) {
-                if (!(this._pathParams.has(param) || this.urlIgnore.has(param))) {
-                    setParam(value, param);
+                // check if param should be ignored or is required by the URL template
+                // fill up missing parameters by stripping potential "user." prefix
+                const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
+                if (!(this.pathParams.has(normParam) || this.urlIgnore.has(normParam))) {
+                    setParam(value, normParam);
                 }
             } else if (
                     (param !== 'path' || !this.usePath) && 
@@ -294,7 +297,16 @@ class Registry {
 
         if (this.state.path && this.state.path.length > 0) {
             if (this.urlPattern) {
-                const encoded = this._encodePath(this.state);
+                // path parameters should not be the empty string
+                const normState = {};
+                for (const [key, value] of Object.entries(this.state)) {
+                    if (this.pathParams.has(key) && value === '') {
+                        normState[key] = null;
+                    } else {
+                        normState[key] = value;
+                    }
+                }
+                const encoded = this._encodePath(normState);
                 newUrl.pathname = `${this.rootPath}/${encoded}`;
             } else if (this.usePath) {
                 newUrl.pathname = `${this.rootPath}/${this.state.path}`;
