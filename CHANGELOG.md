@@ -1,3 +1,49 @@
+# [2.8.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.7.0...v2.8.0) (2023-07-13)
+
+
+### Bug Fixes
+
+* **pb-split-list:** fix empty category passed as null ([819c44a](https://github.com/eeditiones/tei-publisher-components/commit/819c44a5c0508f0ebdf612f673c610a76d5d0e6a))
+* **url registry:** check url template for required parameters and try to fill them in from both, unprefixed or "user."-prefixed parameters ([f2e1a96](https://github.com/eeditiones/tei-publisher-components/commit/f2e1a96553eaf3bfb6927931c41a5d1f6d9eec8b))
+
+
+### Features
+
+* **pb-link, pb-view:** allow additional parameters to be passed with pb-refresh event ([672ab6f](https://github.com/eeditiones/tei-publisher-components/commit/672ab6f597b95ba014b2089e568de0a44e3bd281))
+
+# [2.7.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.1...v2.7.0) (2023-07-11)
+
+
+### Bug Fixes
+
+* **pb-browse-docs:** init with multiple facets ([b538976](https://github.com/eeditiones/tei-publisher-components/commit/b538976766a69fe4e84cf568289d0d7e48c8336c))
+* **pb-custom-form:** null values in serializeform ([5c6af3d](https://github.com/eeditiones/tei-publisher-components/commit/5c6af3d0a7bd8782c7d3f2a2486abfb7483fd975))
+* **pb-load:** filter null values ([df5f8dc](https://github.com/eeditiones/tei-publisher-components/commit/df5f8dc4f43fabdaa833843a50b131c3a23b0b50))
+* **urls:** do not mutate state on replace ([09a4a94](https://github.com/eeditiones/tei-publisher-components/commit/09a4a94739b7a9cc46e8e2c915aebdd748aab1e0))
+* **urls:** multiple values in state and URL ([33940a5](https://github.com/eeditiones/tei-publisher-components/commit/33940a5333bf0bed54e66096e1186eac3ddb86dc))
+
+
+### Features
+
+* **pb-page:** add a property url-ignore to list parameter names which should never be reflected in the browser URL ([039e212](https://github.com/eeditiones/tei-publisher-components/commit/039e212c37e699b976fa3e3d5f5b51d268b62cae))
+* **pb-popover:** allow to override touch setting ([d8455e8](https://github.com/eeditiones/tei-publisher-components/commit/d8455e80bf2f96199b8d83dc5f682cadeab94975))
+* support url patterns to map parameters into the url path ([d0ec078](https://github.com/eeditiones/tei-publisher-components/commit/d0ec0789482e9dd0ea4d848de317d1d3057e7dd4))
+
+## [2.6.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.0...v2.6.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* **pb-svg:** react to url property change as well as event ([5fb4f7f](https://github.com/eeditiones/tei-publisher-components/commit/5fb4f7f48867a145a7cf97d5f1787a43006220a4))
+* **pb-tabs:** emit pb-tab event when selected tab changes ([709ee80](https://github.com/eeditiones/tei-publisher-components/commit/709ee8053526b290b257684bf97a21ed4a54a392))
+
+# [2.6.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.1...v2.6.0) (2023-07-06)
+
+
+### Features
+
+* **authority:** renamed gf.js to anton.js and made endpoint and provider name configurable ([5dc6943](https://github.com/eeditiones/tei-publisher-components/commit/5dc69436644954d813801faf09e1c50f565b5d6e))
+
 ## [2.5.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.5.0...v2.5.1) (2023-06-14)
 
 

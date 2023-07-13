@@ -131,7 +131,10 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     }
 
     load() {
-        const formParams = this._paramsFromSubforms({ category: this.selected });
+        const formParams = this._paramsFromSubforms({});
+        if (this.selected) {
+            formParams.category = this.selected;
+        }
         if (!this._initialized) {
             registry.replace(this, formParams);    
         } else {

@@ -3,7 +3,7 @@ import { GeoNames } from './geonames.js';
 import { Airtable } from './airtable.js';
 import { GND } from './gnd.js';
 import { KBGA } from './kbga.js';
-import { GF } from './gf.js';
+import { Anton } from './anton.js';
 import { ReconciliationService } from './reconciliation.js';
 import { Custom } from './custom.js';
 
@@ -25,8 +25,9 @@ export function createConnectors(endpoint, root) {
       case 'KBGA':
         instance = new KBGA(configElem);
         break;
+      case 'Anton':
       case 'GF':
-        instance = new GF(configElem);
+        instance = new Anton(configElem);
         break;
       case 'ReconciliationService':
         instance = new ReconciliationService(configElem);
