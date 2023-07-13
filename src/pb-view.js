@@ -321,6 +321,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 type: Node,
                 attribute: false
             },
+            _additionalParams: {
+                type: Object
+            },
             ...super.properties
         };
     }
@@ -341,6 +344,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.beforeUpdate = null;
         this.noScroll = false;
         this._features = {};
+        this._additionalParams = {};
         this._selector = {};
         this._chunks = [];
         this._scrollTarget = null;
@@ -436,8 +440,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.signalReady();
 
         if (this.onUpdate) {
-            this.subscribeTo('pb-update', () => {
-                this._refresh();
+            this.subscribeTo('pb-update', (ev) => {
+                this._refresh(ev);
             });
         }
     }
@@ -587,6 +591,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             } else {
                 this.nodeId = ev.detail.root || this.nodeId;
             }
+
+            // check if the URL template needs any other parameters
+            // and set them on this._additionalParams
+            registry.pathParams.forEach((key) => {
+                this._additionalParams[key] = ev.detail[key];
+            });
+
             if (!this.noScroll) {
                 this._scrollTarget = ev.detail.hash;
             }
@@ -994,6 +1005,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         for (const [key, value] of Object.entries(this._features)) {
             params['user.' + key] = value;
         }
+        // add parameters for user-defined parameters supplied via pb-link
+        if (this._additionalParams) {
+            for (const [key, value] of Object.entries(this._additionalParams)) {
+                params[key] = value;
+            }
+        }
         return params;
     }
 
@@ -1162,18 +1179,24 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     _setState(properties) {
         for (const [key, value] of Object.entries(properties)) {
-            switch (key) {
-                case 'odd':
-                case 'view':
-                case 'columnSeparator':
-                case 'xpath':
-                case 'nodeId':
-                case 'path':
-                case 'root':
-                    break;
-                default:
-                    this._features[key] = value;
-                    break;
+            // check if URL template needs the parameter and if
+            // yes, add it to the additional parameter list
+            if (registry.pathParams.has(key)) {
+                this._additionalParams[key] = value;
+            } else {
+                switch (key) {
+                    case 'odd':
+                    case 'view':
+                    case 'columnSeparator':
+                    case 'xpath':
+                    case 'nodeId':
+                    case 'path':
+                    case 'root':
+                        break;
+                    default:
+                        this._features[key] = value;
+                        break;
+                }
             }
         }
         if (properties.odd && !this.getAttribute('odd')) {
