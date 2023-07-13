@@ -1,3 +1,16 @@
+# [2.8.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.7.0...v2.8.0) (2023-07-13)
+
+
+### Bug Fixes
+
+* **pb-split-list:** fix empty category passed as null ([819c44a](https://github.com/eeditiones/tei-publisher-components/commit/819c44a5c0508f0ebdf612f673c610a76d5d0e6a))
+* **url registry:** check url template for required parameters and try to fill them in from both, unprefixed or "user."-prefixed parameters ([f2e1a96](https://github.com/eeditiones/tei-publisher-components/commit/f2e1a96553eaf3bfb6927931c41a5d1f6d9eec8b))
+
+
+### Features
+
+* **pb-link, pb-view:** allow additional parameters to be passed with pb-refresh event ([672ab6f](https://github.com/eeditiones/tei-publisher-components/commit/672ab6f597b95ba014b2089e568de0a44e3bd281))
+
 # [2.7.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.6.1...v2.7.0) (2023-07-11)
 
 
