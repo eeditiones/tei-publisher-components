@@ -111,7 +111,10 @@
     "reset": "Obnovit",
     "placeholder": "Zadejte dotaz",
     "sections": "Hledat v oddílech",
-    "headings": "Hledat v nadpisech"
+    "headings": "Hledat v nadpisech",
+    "title": "Titul",
+    "content": "Text",
+    "scope": "Omezit hledání na"
   },
   "dts": {
     "endpoint": "Vybrat koncový bod",
