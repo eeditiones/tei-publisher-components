@@ -1,0 +1,249 @@
+{
+  "language": "Jazyk",
+  "menu": {
+    "documentation": "Dokumentace",
+    "admin": {
+      "title": "Správa",
+      "recompile": "Překompilovat ODD",
+      "appGenerator": "Generátor aplikace",
+      "edit-odd": "Upravit ODD"
+    },
+    "news": "Novinky",
+    "download": {
+      "title": "Uložit",
+      "pdf-latex": "PDF (verze LaTeX)",
+      "pdf-fo": "PDF (verze FO)",
+      "pdf-title": "Uložit jako PDF",
+      "fo-source": "Zdroj FO",
+      "latex-source": "Zdroj TeX",
+      "single-page": "Jenda strana",
+      "epub-download": "Uložit jako e-knihu (EPUB)",
+      "view-tei": "Zobrazit TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Bohužel",
+    "close": "Zavřít",
+    "yes": "Ano",
+    "no": "Ne",
+    "serverError": "Požadavek na server selhal.",
+    "generatingFile": "Vytváření souboru…",
+    "downloadMessage": "Vytváření souboru ke stažení může trvat i několik minut. Buďte trpěliví. Po stažení souboru se dialog sám zavře.",
+    "loading": "Nahrává se…"
+  },
+  "document": {
+    "contents": "Obsah",
+    "selectODD": "Vybrat ODD",
+    "selectTemplate": "Vybrat šablonu",
+    "selectFeature": "Vybrat vlastnost",
+    "normalized": "Normalizované zobrazení",
+    "plain": "Zobrazení pro čtení",
+    "view-type": "Zobrazení strany",
+    "add-panel": "Přidat zobrazení",
+    "caveat-heading": "Upozornění",
+    "settings": "Nastavení",
+    "caveat": "Pohrajte si s nastavením a vyzkoušejte různé šablony stránek a ODD. Ne všechny kombinace však dávají smysl u všech dokumentů. Například pro vykreslení mapy musíte zadat souřadnice a správně je zpracovat, zobrazení strany předpokládá použití elementů pro začátek strany (&lt;pb&gt;) ap. Pokud uvidíte že, ‚server nevrátil žádný obsah‘, obvykle to znamená nesoulad mezi daty a způsobem jejich zpracování v dokumentu, zvoleným ODD a šablonou stránky."
+  },
+  "browse": {
+    "description": "Pomocí této aplikace můžete experimentovat a vyzkoušet různé ODD s instrukcemi pro zpracování modelu. Nahrajte vlastní soubory a vytvořte vlastní ODD.",
+    "login": ", abyste mohli nahrát soubory a spravovat aplikaci (výchozí uživatel: 'tei-demo', heslo: 'demo').",
+    "sort": "Řadit podle",
+    "filter": "Filtrovat podle",
+    "filterPlaceholder": "Filtr",
+    "items": "Nalezeno položek: {{count}}",
+    "items_plural": "Nalezeno položek: {{count}}",
+    "title": "Titul",
+    "author": "Autor",
+    "modificationDate": "Poslední změna",
+    "file": "Název souboru",
+    "delete": "Odstranit",
+    "confirmDeletion": "Určitě chcete soubor odstranit?",
+    "confirmDeletion_plural": "Určitě chcete soubory ({{count}}×) odstranit?",
+    "documents": "Dokumenty",
+    "collections": "Místní kolekce",
+    "dts": "Distribuované textové služby (ve vývoji)",
+    "test": {
+      "title": "Kolekce ukázek TEI Publisheru",
+      "description": "Dokumenty obsahují ukázky různých funkcí. Výběr není úplný, představuje pouze část toho, čeho je možné dosáhnout. Obohaťte prosím tento seznam o své vlastní ukázky."
+    },
+    "playground": {
+      "title": "Plácek",
+      "description": "Kolekce s možností zápisu, do níž můžete nahrát své dokumenty pro testování."
+    },
+    "doc": {
+      "title": "Dokumentace",
+      "description": "Dokumentace (pomocí Docbook XML)."
+    },
+    "markdown": {
+      "title": "Ukázka Markdownu",
+      "description": "Příklad použití Markdownu pro statický obsah."
+    },
+    "up": "O úroveň výš"
+  },
+  "upload": {
+    "upload": "Nahrát",
+    "drop": "Pro nahrání souborů {{accept}} je přetáhněte sem."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Zobrazit kód",
+      "hide": "Skrýt kód"
+    },
+    "editCode": {
+      "show": "Upravit kód",
+      "hide": "Zavřít editor"
+    }
+  },
+  "clipboard": {
+    "copy": "Kliknutím na ikonu zkopírujete do schránky",
+    "paste": "Pro testování vložte do vstupního pole"
+  },
+  "login": {
+    "login": "Přihlásit se",
+    "as": "Přihlášen/a jako {{user}}",
+    "user": "Uživatel",
+    "password": "Heslo",
+    "invalid": "Chybné heslo nebo jméno uživatele",
+    "requiredGroup": "musí být členem skupiny {{group}}"
+  },
+  "search": {
+    "search": "Hledat",
+    "reset": "Obnovit",
+    "placeholder": "Zadejte dotaz",
+    "sections": "Hledat v oddílech",
+    "headings": "Hledat v nadpisech"
+  },
+  "dts": {
+    "endpoint": "Vybrat koncový bod",
+    "note": "Ve vývoji: přístup k dalším edicím pomocí DTS API"
+  },
+  "odd": {
+    "files": "Soubory ODD",
+    "manage": {
+      "filename": "Název souboru ODD (bez přípony)",
+      "title": "Zobrazovaný titul",
+      "create": "Vytvořit",
+      "create-from-example": "Vytvořit z příkladů",
+      "delete": "Určitě chcete odstranit soubor ODD {{file}}?",
+      "regenerate-all": "Přegenerovat všechna ODD (pomalé)",
+      "filename-error": "Povinné. Použijte písmena, číslice, - nebo _",
+      "title-error": "Titul je povinný"
+    },
+    "editor": {
+      "delete-spec": "Opravdu odstranit specifikaci prvku pro '{{ident}}'?",
+      "save": "Uložit",
+      "saving": "Ukládá se...",
+      "saved": "Uloženo",
+      "denied": "Nemáte dostatečná oprávnění",
+      "denied-message": "Nemáte oprávnění uložit {{odd}}",
+      "reload": "Načíst znovu",
+      "reload-confirm": "Neuložené změny se ztratí. Pokračovat?",
+      "add-element": "Přidat prvek",
+      "odd-source": "Zdroj ODD",
+      "specs": "Specifikace prvku",
+      "jump-to": "Přejít na prvek...",
+      "title-short": "Zkrácený název",
+      "title-short-placeholder": "Zkrácený název pro zobrazení",
+      "description-label": "Popis",
+      "description-placeholder": "Popis ODD",
+      "source-label": "Základní ODD",
+      "source-placeholder": "Výchozí ODD",
+      "use-namespace": "Zaškrtněte, chcete-li používat jiný jmenný prostor než TEI",
+      "namespace-placeholder": "Výchozí URI jmenného prostoru (nejde-li o TEI)",
+      "title": "Název",
+      "title-placeholder": "Název ODD",
+      "model": {
+        "delete-model-label": "Odstranit model?",
+        "delete-model-message": "Opravdu chcete odstranit vybraný model?",
+        "description-placeholder": "[Dokumentace modelu]",
+        "predicate-placeholder": "[Definujte další podmínky, které je třeba splnit (v xquery)]",
+        "link-with-or": "nebo",
+        "css-class-placeholder": "[Definovat název třídy CSS (pro externí CSS)]",
+        "custom-behaviour-placeholder": "[Vlastní chování]",
+        "template-placeholder": "[Definujte šablonu kódu, která se použije na obsah]",
+        "param-name-placeholder": "[Název parametru]",
+        "empty": "[Prázdný]"
+      },
+      "css-source": "Otevřít soubor CSS"
+    }
+  },
+  "facets": {
+    "show": "Zobrazit prvních 50",
+    "genre": "Žánr",
+    "language": "Jazyk"
+  },
+  "appgen": {
+    "account": {
+      "user": "Uživatelský účet pro správu aplikace. Pokud ještě neexistuje, bude uživatel vytvořen.",
+      "owner": "Uživatelský účet, který bude vlastníkem aplikace.",
+      "password": "Heslo pro účet, který bude vlastníkem aplikace."
+    },
+    "submit": "Uložit/Vytvořit",
+    "index": {
+      "help": "Určete nejmenší úsek, pro který se vytvoří fulltextový index. Pro texty členěné na oddíly se hodí volba 'Vytvořit pro oddíl', pro dokumenty bez oddílů vyberte 'Vytvořit pro text'.",
+      "label": "Výchozí fulltextový index",
+      "index-div": "Vytvořit pro oddíl",
+      "index-text": "Vytvořit pro text"
+    },
+    "view": {
+      "help": "Vyberte, co se zobrazí při procházení textu jako první: jedna strana, nebo celý oddíl. Aby se strany zobrazily, musejí se v dokumentu TEI používat značky &lt;tei:pb&gt;.",
+      "div": "Podle oddílů (kapitoly/sekce…)",
+      "page": "Podle strany"
+    },
+    "label": "Výchozí zobrazení",
+    "template": {
+      "help": "Vyberte výchozí šablonu HTML",
+      "label": "Šablona HTML"
+    },
+    "title": {
+      "help": "Název aplikace, který se zobrazí např. na řídicím panelu",
+      "label": "Název aplikace"
+    },
+    "collection": "Název podřazené kolekce pro uložení dokumentů TEI",
+    "abbrev": {
+      "label": "Zkrácený název pro použití v URL a ve jménech souborů",
+      "placeholder": "Zkrácený název"
+    },
+    "uri": "URL pro jedinečnou identifikaci aplikace",
+    "dialog": {
+      "title": "Aplikace vytvořena"
+    },
+    "open": "Otevřít",
+    "success": "Vaše aplikace se úspěšně vytvořila."
+  },
+  "annotations": {
+    "edit": "Upravit anotaci",
+    "delete": "Odstranit anotaci",
+    "save": "Sloučit a uložit anotace do TEI",
+    "no-properties": "Nejsou definovány žádné vlastnosti.",
+    "person": "Osoba",
+    "organisation": "Organizace",
+    "place": "Místo",
+    "term": "Pojem",
+    "date": "Datum",
+    "reg": "Sjednocování",
+    "app": "Položka poznámkového aparátu",
+    "hi": "Zvýraznění",
+    "ref": "Odkaz (ref)",
+    "abbreviation": "Zkratka",
+    "occurrences": "Výskyty v textu",
+    "correction": "Oprava",
+    "expansion": "Rozepsání",
+    "reference": "Odkaz",
+    "lookup": "Hledat entitu",
+    "apply": "Použít anotaci",
+    "apply-all": "Vybrat a použít vše",
+    "changes": "Změny",
+    "undo": "Vrátit poslední změnu",
+    "download": "Uložit sloučené TEI do souboru",
+    "reload": "Znovu načíst zdrojové TEI",
+    "preview": "Náhled výsledku po sloučení",
+    "confirm-restore-title": "Potvrdit obnovení",
+    "restore": "Našly se anotace pro tento dokument vytvořené, ale neuložené v předchozí relaci. Chcete je načíst?",
+    "confirm-reload-title": "Potvrdit načtení",
+    "confirm-reload": "Zrušit aktuální anotace a znovu načíst zdroj?",
+    "modify": "Použít úpravy základního textu",
+    "modify-info": "Upozornění: nejde o anotaci, při sloučení se změní základní text.",
+    "permission": "Oprávnění byla odepřena: nemáte povoleno ukládat anotace."
+  }
+}
