@@ -169,5 +169,8 @@
   },
   "pb-print-preview": {
     "demo/pb-print-preview.html": "Demo"
+  },
+  "pb-tify": {
+    "demo/pb-tify.html": "Demo"
   }
 }

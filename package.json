@@ -85,6 +85,7 @@
     "pagedjs": "^0.4.0",
     "path-to-regexp": "^6.2.1",
     "prismjs": "^1.21.0",
+    "tify": "^0.28.1",
     "tippy.js": "^6.2.7",
     "tom-select": "^2.0.2",
     "uniqolor": "^1.0.1",

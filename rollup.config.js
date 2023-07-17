@@ -24,7 +24,8 @@ export default [
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
-            'src/pb-code-editor.js'
+            'src/pb-code-editor.js',
+            'src/pb-tify.js'
         ],
         output: {
             dir: 'dist',
@@ -55,6 +56,10 @@ export default [
             }),
             copy({
                 targets: [
+                    {
+                        src: './node_modules/tify/dist/tify.css',
+                        dest: './css/tify'
+                    },
                     {
                         src: './node_modules/gridjs/dist/theme/mermaid.min.css',
                         dest: './css/gridjs'
@@ -132,7 +137,7 @@ export default [
             copy({
                 targets: [
                     {
-                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html', '!**/pb-code-editor.html'],
+                        src: ['demo/*.html', '!**/pb-tify.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html', '!**/pb-code-editor.html'],
                         dest: 'dist/demo',
                         transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
                     },
@@ -153,6 +158,12 @@ export default [
                         dest: 'dist/demo',
                         transform: (contents) =>
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-code-editor.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-tify.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-tify.js"></script>`)
                     },
                     {
                         src: 'api.html',
