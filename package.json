@@ -38,7 +38,7 @@
   "dependencies": {
     "@babel/runtime": "7.11.2",
     "@cwmr/paper-autocomplete": "^4.0.0",
-    "@jinntec/jinn-codemirror": "^1.11.6",
+    "@jinntec/jinn-codemirror": "^1.13.4",
     "@lrnwebcomponents/es-global-bridge": "^2.7.10",
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
