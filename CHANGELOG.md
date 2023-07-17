@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.8.0...v2.9.0) (2023-07-17)
+
+
+### Features
+
+* **pb-tify:** viewer for IIIF presentation manifests ([c82b56a](https://github.com/eeditiones/tei-publisher-components/commit/c82b56a55b0675a0dd8cf0b032c6a9d4e50eb985))
+
 # [2.8.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.7.0...v2.8.0) (2023-07-13)
 
 
