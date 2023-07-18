@@ -20,6 +20,9 @@ function _injectStylesheet(path) {
  * Requires a proper manifest listing the resources to show. `pb-facs-link`
  * can be used to navigate to a page.
  *
+ * @fires pb-refresh - if user opens another page and the corresponding canvas
+ * has an extension property "https://teipublisher.com/page", listing the parameters
+ * to be passed to the event.
  * @fires pb-load-facsimile - when received, opens the page denoted by the
  * `order` property in the event (see `pb-facs-link`). Page counts start at 1.
  */
@@ -40,6 +43,7 @@ export class PbTify extends pbMixin(LitElement) {
     constructor() {
         super();
         this.cssPath = '../css/tify';
+        this._initialPages = null;
     }
 
     async connectedCallback() {
@@ -49,8 +53,13 @@ export class PbTify extends pbMixin(LitElement) {
 
         this.subscribeTo('pb-load-facsimile', (ev) => {
             if (ev.detail && ev.detail.order && this._tify) {
-                console.log('<pb-tify> selecting page %d', ev.detail.order);
-                this._tify.setPage(parseInt(ev.detail.order));
+                // check if tify is already initialized
+                if (this._setPage) {
+                    this._setPage(parseInt(ev.detail.order, 10));
+                } else {
+                    // remember page and wait for tify
+                    this._initialPages = parseInt(ev.detail.order, 10);
+                }
             }
         });
     }
@@ -64,6 +73,20 @@ export class PbTify extends pbMixin(LitElement) {
             });
             this._tify.ready.then(() => { 
                 this.signalReady();
+                // open initial page if set earlier via pb-load-facsimile event
+                this._tify.setPage(this._initialPages);
+
+                // extend tify's setPage function to allow emitting an event
+                const {app} = this._tify;
+                this._setPage = app.setPage;
+
+                app.setPage = (pages) => {
+                    const page = Array.isArray(pages) ? pages[0] : pages;
+                    const canvas = app.$root.canvases[page - 1];
+                    
+                    this._switchPage(canvas);
+                    this._setPage(pages);
+                };
             });
 
             const container = document.createElement('div');
@@ -73,6 +96,14 @@ export class PbTify extends pbMixin(LitElement) {
 
             this._tify.mount(container);
         });
+    }
+
+    _switchPage(canvas) {
+        const renderLink = canvas['https://teipublisher.com/page'];
+        if (renderLink) {
+            console.log('<pb-tify> page changed, emitting refresh with params %o', renderLink);
+            this.emitTo('pb-refresh', renderLink);
+        }
     }
 
     createRenderRoot() {

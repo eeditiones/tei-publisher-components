@@ -18,11 +18,11 @@
 <body>
     <pb-demo-snippet>
         <template>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" api-version="1.0">
                 <!-- Display facsimile -->
                 <main>
-                    <pb-tify manifest="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest"></pb-tify>
-                    <pb-facs-link order="5"></pb-facs-link>
+                    <pb-tify manifest="api/iiif/test%2FF-rom.xml"></pb-tify>
+                    <pb-facs-link order="1"></pb-facs-link>
                 </main>
             </pb-page>
         </template>
