@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.9.0...v2.10.0) (2023-07-18)
+
+
+### Features
+
+* **pb-tify:** emit pb-refresh event if user switches page ([6c3f880](https://github.com/eeditiones/tei-publisher-components/commit/6c3f8807214f3a41593b72e75b2f23b5c7002ddd))
+
 # [2.9.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.8.0...v2.9.0) (2023-07-17)
 
 
