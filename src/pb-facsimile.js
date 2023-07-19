@@ -183,7 +183,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }, 0)
             
             this._facsimiles.splice(insertAt, 0, element)
-
+            this.loaded = this._facsimiles.length > 0;
+            
             this._facsimileObserver()
         });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
