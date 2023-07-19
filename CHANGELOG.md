@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.0...v2.10.1) (2023-07-19)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** set loaded attribute if facsimiles are available for display ([bf0c641](https://github.com/eeditiones/tei-publisher-components/commit/bf0c641ac947c056b5f95a3e747cab0e58047dca))
+
 # [2.10.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.9.0...v2.10.0) (2023-07-18)
 
 
