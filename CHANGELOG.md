@@ -1,3 +1,10 @@
+## [2.10.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.1...v2.10.2) (2023-07-22)
+
+
+### Bug Fixes
+
+* **pb-code-editor, pb-odd-editor:** code editor not visible in safari ([22cd409](https://github.com/eeditiones/tei-publisher-components/commit/22cd4096f3e1fe66735495e2426517d74192a2de))
+
 ## [2.10.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.0...v2.10.1) (2023-07-19)
 
 
