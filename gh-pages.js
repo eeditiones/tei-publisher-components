@@ -7,6 +7,7 @@ const json = JSON.parse(pkg);
 
 const versionTag = `@${json.version}`;
 const dir = path.join('docs', versionTag);
+const latest = path.resolve(path.join('docs', '@latest'));
 const dist = path.join(dir, 'dist');
 fs.mkdirSync(dist, { recursive: true});
 
@@ -17,6 +18,11 @@ copy('images', path.join(dir, 'images'));
 copy('lib', path.join(dir, 'lib'));
 copy('css', path.join(dir, 'css'));
 copy('src', path.join(dir, 'src'));
+
+try {
+    fs.unlinkSync(latest);
+} catch(e) { /* */ }
+fs.symlinkSync(path.resolve(dir), latest, 'dir');
 
 const redirect = fs.readFileSync(path.join('demo', 'redirect.js'), 'utf-8');
 fs.writeFileSync(path.join('docs', 'redirect.js'), redirect, { encoding: 'utf-8' });
