@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Using pb-autocomplete</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+            pb-repeat .instance {
+                display: flex;
+                align-items: center;
+            }
+            button {
+                border: 0;
+                background-color: inherit;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+    <body>
+        <h1>Using pb-autocomplete with remote suggestions</h1>
+        
+        <pb-demo-snippet>
+            <template>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <iron-form id="form">
+                        <form action="">
+                            <p>pb-autocomplete used with a pb-repeat:</p>
+                            <pb-repeat>
+                                <template>
+                                    <!--pb-autocomplete placeholder="Title" name="title" source="modules/autocomplete.xql"></pb-autocomplete-->
+                                    <pb-autocomplete placeholder="Title" name="title" source="api/search/autocomplete"></pb-autocomplete>
+                                </template>
+                            </pb-repeat>
+                            <p>If suggestions are an array of objects with properties "text" and "value", the "value" will be used
+                                in the form submit instead of the label displayed:
+                            </p>
+                            <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
+                                suggestions='[{"text": "English", "value": "en"}, {"text": "Polish", "value": "pl"}, {"text": "German", "value": "de"}]'>
+                            </pb-autocomplete>
+                            <button type="submit"><paper-button>Submit</paper-button></button>
+                        </form>
+                    </iron-form>
+                    <p>Parameters which would be sent: <code id="output"></code></p>
+                </pb-page>
+                <script>
+                    const form = document.getElementById('form');
+                    form.addEventListener('iron-form-submit', (ev) => {
+                        ev.preventDefault();
+                        const data = JSON.stringify(form.serializeForm());
+                        document.getElementById('output').innerHTML = data;
+                    });
+                </script>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
