@@ -88,11 +88,12 @@
     "tify": "^0.28.1",
     "tippy.js": "^6.2.7",
     "tom-select": "^2.0.2",
-    "uniqolor": "^1.0.1",
+    "uniqolor": "^1.1.0",
     "web-animations-js": "^2.3.2"
   },
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
+    "@babel/plugin-transform-optional-chaining": "^7.22.6",
     "@open-wc/eslint-config": "^4.2.0",
     "@open-wc/prettier-config": "^1.1.0",
     "@open-wc/testing": "^2.5.29",

@@ -42,7 +42,8 @@ export default [
                     "setSpreadProperties": true
                 },
                 "plugins": [
-                    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }]
+                    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }],
+                    ["@babel/plugin-transform-optional-chaining", { "useBuiltIns": true }]
                 ]
             }),
             resolve(),

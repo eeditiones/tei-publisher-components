@@ -268,7 +268,8 @@ export class PbPage extends pbMixin(LitElement) {
         }
 
         const stylesheetURLs = [
-            resolveURL('../css/components.css')
+            // TODO: replace with this.toAbsoluteURL
+            this.toAbsoluteURL('resources/css/components.css', this.endpoint)
         ];
         if (this.theme) {
             stylesheetURLs.push(this.toAbsoluteURL(this.theme, this.endpoint));
