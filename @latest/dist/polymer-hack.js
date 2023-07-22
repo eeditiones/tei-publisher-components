@@ -1,0 +1,1 @@
+window.polymerSkipLoadingFontRoboto=!0;
