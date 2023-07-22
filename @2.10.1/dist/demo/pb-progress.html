@@ -1,0 +1,47 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-document Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            pb-progress {
+                width: 100%;
+            }
+
+            button {
+                margin-top: 20px;
+            }
+            </style>
+            <pb-page>
+                <pb-progress></pb-progress>
+                <button id="button">Click to start ...</button>
+            </pb-page>
+            <script>
+                let started = false;
+                const btn = document.getElementById('button');
+                btn.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    if (started) {
+                        started = false;
+                        btn.innerHTML = 'Click to start';
+                        document.dispatchEvent(new CustomEvent('pb-end-update'));
+                    } else {
+                        started = true;
+                        btn.innerHTML = 'Click to stop';
+                        document.dispatchEvent(new CustomEvent('pb-start-update'));
+                    }
+                });
+            </script>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
