@@ -1,3 +1,11 @@
+## [2.10.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.2...v2.10.3) (2023-07-24)
+
+
+### Bug Fixes
+
+* **odd-editor:** update jinn-codemirror to 1.13.5 to fix issue with old predicate/template being copied into new rules ([1e80466](https://github.com/eeditiones/tei-publisher-components/commit/1e80466201d25f0263713aedfea8e48688ed46e9))
+* **pb-odd-model-editor:** re-enable paste into modelSequence ([ffb1bd8](https://github.com/eeditiones/tei-publisher-components/commit/ffb1bd8754821fc28891149c2e4fff0f18e3e3ef))
+
 ## [2.10.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.1...v2.10.2) (2023-07-22)
 
 
