@@ -94,15 +94,21 @@ export class GND extends Registry {
         if (json.dateOfDeath && json.dateOfDeath.length > 0) {
           output.death = json.dateOfDeath[0];
         }
-        json.placeOfBirth.forEach((item) => {
-          output.placeOfBirth = item;
-        });
-        json.placeOfDeath.forEach((item) => {
-          output.placeOfDeath = item;
-        });
-        json.gender.forEach((item) => {
-          output.gender = item.label;
-        });
+        if (json.placeOfBirth) {
+          json.placeOfBirth.forEach((item) => {
+            output.placeOfBirth = item;
+          });
+        }
+        if (json.placeOfDeath) {
+          json.placeOfDeath.forEach((item) => {
+            output.placeOfDeath = item;
+          });
+        }
+        if (json.gender) {
+          json.gender.forEach((item) => {
+            output.gender = item.label;
+          });
+        }
         if (json.biographicalOrHistoricalInformation) {
           output.note = json.biographicalOrHistoricalInformation.join('; ');
         }
