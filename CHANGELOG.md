@@ -1,3 +1,10 @@
+## [2.10.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.3...v2.10.4) (2023-07-27)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** react to i18n language change ([67037cb](https://github.com/eeditiones/tei-publisher-components/commit/67037cb818358b0f8da5a918aae931130c136827))
+
 ## [2.10.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.2...v2.10.3) (2023-07-24)
 
 
