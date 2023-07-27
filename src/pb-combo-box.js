@@ -2,6 +2,7 @@ import { LitElement } from 'lit-element';
 import TomSelect from "tom-select";
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { get as i18n } from "./pb-i18n.js";
 
 function importTheme(theme) {
     if (document.getElementById('__pb-multi-select-css')) {
@@ -16,7 +17,7 @@ function importTheme(theme) {
 }
 
 const renderDefault = (data) =>
-    data ? `<div>${data.text}</div>` : '';
+    data ? `<div>${i18n(data.text)}</div>` : '';
 
 /**
  * Provides a combo box, i.e. a combination of an input with a dropdown.
@@ -31,6 +32,13 @@ export class PbComboBox extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
+            /**
+             * The placeholder text to display in the control. May contain text or an i18n key to be
+             * translated automatically.
+             */
+            placeholder: {
+                type: String
+            },
             /**
              * A remote data source to use. The component will pass the text entered by the user
              * in parameter `query`. It expects a JSON array of objects with each object describing
@@ -96,10 +104,24 @@ export class PbComboBox extends pbMixin(LitElement) {
         this.renderFunction = renderDefault;
         this.onBlur = 'pb-combo-box-blur';
         this.onChange = 'pb-combo-box-change';
+        this.placeholder = '';
     }
 
     connectedCallback() {
         super.connectedCallback();
+        this.subscribeTo('pb-i18n-update', () => {
+            if (this._select) {
+                this._select.settings.placeholder = i18n(this.placeholder);
+                this._select.inputState();
+
+                if (this.source) {
+                    this._select.refreshOptions(false);
+                } else {
+                    this._select.clearOptions();
+                    this._select.sync();
+                }
+            }
+        });
     }
 
     firstUpdated() {
@@ -140,9 +162,12 @@ export class PbComboBox extends pbMixin(LitElement) {
                     item: this.renderFunction
                 };
             }
+            options.placeholder = i18n(this.placeholder);
             options.closeAfterSelect = this.closeAfterSelect;
             options.onBlur = () => this.emitTo(this.onBlur);
             options.onChange = () => this.emitTo(this.onChange);
+            options.plugins = ['change_listener'];
+
             this._select = new TomSelect(input, options);
         });
     }

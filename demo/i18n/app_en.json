@@ -1,6 +1,12 @@
 {
     "demo": {
-        "message": "User defined message"
+        "message": "User defined message",
+        "select-lang": "Pick language...",
+        "select-state": "Pick a state ...",
+        "select-animal": "Select your favorite pet ...",
+        "cat": "Cat",
+        "dog": "Dog",
+        "bird": "Bird"
     },
     "document": {
         "contents": "Custom Table of Contents"

@@ -1,6 +1,12 @@
 {
     "demo": {
-        "message": "Benutzerdefinierte Nachricht"
+        "message": "Benutzerdefinierte Nachricht",
+        "select-lang": "Sprache wählen...",
+        "select-state": "Staat auswählen ...",
+        "select-animal": "Wähle Dein bevorzugtes Haustier ...",
+        "cat": "Katze",
+        "dog": "Hund",
+        "bird": "Vogel"
     },
     "document": {
         "contents": "Inhaltsverzeichnis angepasst"
