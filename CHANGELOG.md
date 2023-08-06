@@ -1,3 +1,10 @@
+## [2.10.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.5...v2.10.6) (2023-08-06)
+
+
+### Bug Fixes
+
+* **pb-select-template:** needs to trigger page reload to render chosen template ([b22b761](https://github.com/eeditiones/tei-publisher-components/commit/b22b761661b7974e24a7e0c3f5b470021b4f8b08))
+
 ## [2.10.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.4...v2.10.5) (2023-08-06)
 
 
