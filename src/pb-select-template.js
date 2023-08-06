@@ -88,7 +88,8 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
         if (newTemplate === this.template) {
             return;
         }
-        registry.commit(this, { template: newTemplate });
+        registry.replace(this, { template: newTemplate });
+        window.location.reload();
     }
 
     _handleTemplatesResponse() {
