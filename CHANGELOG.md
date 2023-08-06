@@ -1,3 +1,10 @@
+## [2.10.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.4...v2.10.5) (2023-08-06)
+
+
+### Bug Fixes
+
+* **pb-login:** login event sent with wrong loggedIn flag ([880747e](https://github.com/eeditiones/tei-publisher-components/commit/880747ef9c8416960babb41dc03c79807068f7ab))
+
 ## [2.10.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.3...v2.10.4) (2023-07-27)
 
 
