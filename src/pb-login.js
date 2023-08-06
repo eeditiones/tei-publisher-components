@@ -252,12 +252,13 @@ export class PbLogin extends pbMixin(LitElement) {
     }
 
     _handleError() {
+        this.loggedIn = false;
+        this.password = null;
+        
         const resp = {
             userChanged: this.loggedIn,
             user: null
         };
-        this.loggedIn = false;
-        this.password = null;
         if (this._loginDialog.opened) {
             this._invalid = true;
         } else if (this.auto) {
