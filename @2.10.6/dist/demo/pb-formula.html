@@ -1,0 +1,243 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-formula Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style>
+                    figure {
+                        margin-left: auto;
+                        margin-right: auto;
+                        width:fit-content;
+                        margin-bottom: 10px;
+                        padding-bottom: 10px;
+                    }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <h2>Formula in heading: <pb-formula>a^{2}\dot{x}+x\dot{y}^{2}=0</pb-formula></h2>
+                    <figure>
+                        <pb-formula display>\frac{y}{z^{m-1}}+\frac{\overline{m-1}^{2}y}{z^{m+1}}=Q</pb-formula>
+                    </figure>
+                    <p>
+                        Paragraph with inline math <pb-formula>\frac{1}{z}</pb-formula>: Lorem ipsum <pb-formula>a^{2}\dot{x}+x\dot{y}^{2}=0</pb-formula> dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p> 
+                        
+                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy <pb-formula><math xmlns="http://www.w3.org/1998/Math/MathML">
+        <msqrt>
+          <mn>3</mn>
+          <mi>x</mi>
+          <mo>&#x2212;<!-- − --></mo>
+          <mn>1</mn>
+        </msqrt>
+        <mo>+</mo>
+        <mo stretchy="false">(</mo>
+        <mn>1</mn>
+        <mo>+</mo>
+        <mi>x</mi>
+        <msup>
+          <mo stretchy="false">)</mo>
+          <mn>2</mn>
+        </msup>
+      </math></pb-formula> eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                    </p>
+                    <figure>
+                        <pb-formula display>\begin{equation} \begin{split} x=A+Bv+Cvv+Dv^{3}\ \mbox{etc.} \\\ \text{donc }xx=AA+2ABv+BBvv+2ACvv\
+                  \mbox{etc.} \\\ \text{donc }2xx=2ABv+2BBvv+4ACvv\ \mbox{etc.}=\dot{v} \end{split} \end{equation}</pb-formula>
+                    </figure>
+                    <figure>
+                        <pb-formula>
+                            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                                <mi>x</mi> <mo>=</mo>
+                                <mrow>
+                                    <mfrac>
+                                    <mrow>
+                                        <mo>&#x2212;</mo>
+                                        <mi>b</mi>
+                                        <mo>&#x00B1;</mo>
+                                        <msqrt>
+                                        <msup><mi>b</mi><mn>2</mn></msup>
+                                        <mo>&#x2212;</mo>
+                                        <mn>4</mn><mi>a</mi><mi>c</mi>
+                                        </msqrt>
+                                    </mrow>
+                                    <mrow>
+                                        <mn>2</mn><mi>a</mi>
+                                    </mrow>
+                                    </mfrac>
+                                </mrow>
+                                <mtext>.</mtext>
+                            </math>
+                        </pb-formula>
+                    </figure>
+                    <figure>
+                        <pb-formula>
+                            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                                <mtable columnalign="right left right left right left right left right left right left" rowspacing="3pt" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true">
+                                <mtr>
+                                    <mtd>
+                                    <mi mathvariant="normal">&#x2207;<!-- ∇ --></mi>
+                                    <mo>&#x00D7;<!-- × --></mo>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mi mathvariant="bold">B</mi>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    <mo>&#x2212;<!-- − --></mo>
+                                    <mspace width="thinmathspace" />
+                                    <mfrac>
+                                        <mn>1</mn>
+                                        <mi>c</mi>
+                                    </mfrac>
+                                    <mspace width="thinmathspace" />
+                                    <mfrac>
+                                        <mrow>
+                                        <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mover>
+                                            <mrow class="MJX-TeXAtom-ORD">
+                                                <mi mathvariant="bold">E</mi>
+                                            </mrow>
+                                            <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                            </mover>
+                                        </mrow>
+                                        </mrow>
+                                        <mrow>
+                                        <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+                                        <mi>t</mi>
+                                        </mrow>
+                                    </mfrac>
+                                    </mtd>
+                                    <mtd>
+                                    <mi></mi>
+                                    <mo>=</mo>
+                                    <mfrac>
+                                        <mrow>
+                                        <mn>4</mn>
+                                        <mi>&#x03C0;<!-- π --></mi>
+                                        </mrow>
+                                        <mi>c</mi>
+                                    </mfrac>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mi mathvariant="bold">j</mi>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    </mtd>
+                                </mtr>
+                                <mtr>
+                                    <mtd>
+                                    <mi mathvariant="normal">&#x2207;<!-- ∇ --></mi>
+                                    <mo>&#x22C5;<!-- ⋅ --></mo>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mi mathvariant="bold">E</mi>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    </mtd>
+                                    <mtd>
+                                    <mi></mi>
+                                    <mo>=</mo>
+                                    <mn>4</mn>
+                                    <mi>&#x03C0;<!-- π --></mi>
+                                    <mi>&#x03C1;<!-- ρ --></mi>
+                                    </mtd>
+                                </mtr>
+                                <mtr>
+                                    <mtd>
+                                    <mi mathvariant="normal">&#x2207;<!-- ∇ --></mi>
+                                    <mo>&#x00D7;<!-- × --></mo>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mi mathvariant="bold">E</mi>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    <mspace width="thinmathspace" />
+                                    <mo>+</mo>
+                                    <mspace width="thinmathspace" />
+                                    <mfrac>
+                                        <mn>1</mn>
+                                        <mi>c</mi>
+                                    </mfrac>
+                                    <mspace width="thinmathspace" />
+                                    <mfrac>
+                                        <mrow>
+                                        <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mover>
+                                            <mrow class="MJX-TeXAtom-ORD">
+                                                <mi mathvariant="bold">B</mi>
+                                            </mrow>
+                                            <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                            </mover>
+                                        </mrow>
+                                        </mrow>
+                                        <mrow>
+                                        <mi mathvariant="normal">&#x2202;<!-- ∂ --></mi>
+                                        <mi>t</mi>
+                                        </mrow>
+                                    </mfrac>
+                                    </mtd>
+                                    <mtd>
+                                    <mi></mi>
+                                    <mo>=</mo>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mn mathvariant="bold">0</mn>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    </mtd>
+                                </mtr>
+                                <mtr>
+                                    <mtd>
+                                    <mi mathvariant="normal">&#x2207;<!-- ∇ --></mi>
+                                    <mo>&#x22C5;<!-- ⋅ --></mo>
+                                    <mrow class="MJX-TeXAtom-ORD">
+                                        <mover>
+                                        <mrow class="MJX-TeXAtom-ORD">
+                                            <mi mathvariant="bold">B</mi>
+                                        </mrow>
+                                        <mo stretchy="false">&#x2192;<!-- → --></mo>
+                                        </mover>
+                                    </mrow>
+                                    </mtd>
+                                    <mtd>
+                                    <mi></mi>
+                                    <mo>=</mo>
+                                    <mn>0</mn>
+                                    </mtd>
+                                </mtr>
+                                </mtable>
+                            </math>
+                        </pb-formula>
+                    </figure>
+                    <figure>
+                        <pb-formula display>\frac{y{z^{m-1}}+\frac{\overline{m-1}^{2}y}{z^{m+1}}=Q</pb-formula>
+                    </figure>
+                    <figure>
+                        <pb-formula>\sqrt{x^2 + 1}</pb-formula>
+                    </figure>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>

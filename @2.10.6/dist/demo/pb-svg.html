@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-svg Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                body {
+                    --pb-svg-height: 50vh;
+                    --pb-svg-width: 640px;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <main>
+                    <button onclick="swap();">Swap image</button>
+                    <pb-svg
+                        url="https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg">
+                    </pb-svg>
+                </main>
+                <script type="application/javascript">
+                    const files = [
+                        'https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg',
+                        'https://upload.wikimedia.org/wikipedia/commons/f/f2/Air_conditioning_unit-en.svg',
+                        'https://upload.wikimedia.org/wikipedia/commons/2/21/Horse_anatomy.svg'
+                    ];
+
+                    let current = 0;
+                    function swap() {
+                        current++;
+                        if (current === files.length) {
+                            current = 0;
+                        }
+                        pbEvents.emit('pb-show-annotation', null, {
+                            file: files[current]
+                        });
+                    }
+                </script>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
