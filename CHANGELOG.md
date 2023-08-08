@@ -1,3 +1,10 @@
+## [2.10.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.6...v2.10.7) (2023-08-08)
+
+
+### Bug Fixes
+
+* **pb-view:** fix navigation by xml:id ([ff1bd9c](https://github.com/eeditiones/tei-publisher-components/commit/ff1bd9cd27a8d2b550f183dd50d915cffab2dc2a))
+
 ## [2.10.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.5...v2.10.6) (2023-08-06)
 
 
