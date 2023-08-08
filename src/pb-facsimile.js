@@ -7,7 +7,10 @@ import { resolveURL } from './utils.js';
  * View zoomable images using a IIIF server.
  *
  * @fires pb-start-update - When received, resets the facsimile viewer
- * @fires pb-update - Checks the contents received for pb-facs-links
+ * @fires pb-load-facsimile - When received, adds an image to the current image sequence. Emitted by 
+ * `pb-facs-link`. The event detail should contain an object with the properties `url`, `order` and `element`,
+ * where `url` is the relative or absolute URL to the image, `order` is an integer specifying the position at which
+ * the image should be inserted in the list, and `element` points to the `pb-facs-link` element triggering the event.
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
  * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
  * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed;
@@ -24,10 +27,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
-            // Image source
-            src: {
-                type: String
-            },
             /**
              * Set to false to prevent the appearance of the default navigation controls.
              * Note that if set to false, the customs buttons set by the options
@@ -159,7 +158,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.constrainDuringPan = false;
         this.referenceStrip = false;
         this.referenceStripSizeRatio = 0.2;
-        this.src = '';
         this.prefixUrl = '../images/openseadragon/';
         this.loaded = false;
     }
