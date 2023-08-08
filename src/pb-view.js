@@ -575,6 +575,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             }
             if (ev.detail.id) {
                 this.xmlId = ev.detail.id;
+            } else if (ev.detail.id == null) {
+                this.xmlId = null;
             }
             this.odd = ev.detail.odd || this.odd;
             if (ev.detail.columnSeparator !== undefined) {
@@ -783,7 +785,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        this.xmlId = null;
 
         this.updateComplete.then(() => {
             const view = this.shadowRoot.getElementById('view');
@@ -1102,7 +1103,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                         root: this.previousId ? null : this.previous
                     });
                 }
-                this._load(this.previous, direction);
+                this.xmlId = this.previousId;
+                this._load(this.xmlId ? null : this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
@@ -1111,7 +1113,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                     root: this.nextId ? null : this.next
                 });
             }
-            this._load(this.next, direction);
+            this.xmlId = this.nextId;
+            this._load(this.xmlId ? null : this.next, direction);
         }
     }
 
