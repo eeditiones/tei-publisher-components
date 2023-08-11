@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.7...v2.11.0) (2023-08-11)
+
+
+### Features
+
+* **pb-odd-editor:** add download/export button ([4020bbf](https://github.com/eeditiones/tei-publisher-components/commit/4020bbf3418ca6324d129b5a8183312f1c024773))
+
 ## [2.10.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.6...v2.10.7) (2023-08-08)
 
 
