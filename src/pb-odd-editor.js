@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit-element'
+import { LitElement, html, css } from 'lit-element';
+import { supported as fsSupported, fileSave } from "browser-fs-access";
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 import { repeat } from 'lit-html/directives/repeat';
@@ -290,6 +291,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         this.hotkeys = {
             save: 'ctrl+shift+s,command+shift+s'
         }
+        this._hasChanges = false;
     }
 
     render() {
@@ -311,6 +313,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
                         <span class="icons">
                             <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="${translate('odd.editor.odd-source')}"></paper-icon-button></pb-edit-xml>
+                            <paper-icon-button @click="${this._download}" icon="icons:cloud-download" title="${fsSupported ? translate('odd.editor.save-as'): translate('odd.editor.download')}"></paper-icon-button>
                             <paper-icon-button @click="${this._reload}" icon="refresh" title="${translate('odd.editor.reload')}"></paper-icon-button>
                             <paper-icon-button @click="${this.save}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}" 
                                 ?disabled="${!this.loggedIn}"></paper-icon-button>
@@ -473,6 +476,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         this.loadContent.url = `${this.getEndpoint()}/${this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : 'api/odd/' + this.odd}`;
         const request = this.loadContent.generateRequest();
 
+        this._hasChanges = false;
         request.completes.then(r => this.handleOdd(r));
     }
 
@@ -888,10 +892,34 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         return code;
     }
 
-    save(e) {
+    _download() {
+        if (this._hasChanges) {
+            const dialog = this.shadowRoot.getElementById('dialog');
+            dialog.confirm(i18n("odd.editor.save"), i18n('odd.editor.unsaved'))
+                .then(
+                    () => this._downloadOdd(), 
+                    () => console.log('<pb-odd-editor> Download aborted'));
+            return;
+        }
+        this._downloadOdd();
+    }
+
+    _downloadOdd() {
+        const data = this.serializeOdd();
+        const blob = new Blob([data], { type: 'application/xml'});
+        fileSave(blob, {
+            fileName: this.odd,
+            extensions: ['.odd'],
+        })
+        .then(
+            () => console.log(`<pb-odd-editor> ${this.odd} exported`),
+            () => console.log('<pb-odd-editor> export aborted')
+        );
+    }
+
+    save() {
         document.dispatchEvent(new CustomEvent('pb-start-update'));
-        const data = this.serializeOdd()
-        console.log('serialised ODD:', data)
+        const data = this.serializeOdd();
 
         this.shadowRoot.getElementById('dialog').show(i18n("odd.editor.save"), i18n('odd.editor.saving'));
 
@@ -964,6 +992,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         
         this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
 
+        this._hasChanges = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
     }
 
@@ -1040,6 +1069,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     handleElementSpecChanged(e) {
         // console.log('handleElementSpecChanged ',e);
+        this._hasChanges = true;
         const elementSpec = this.elementSpecs.find(es => es.ident === e.detail.ident);
         const index = this.elementSpecs.indexOf(elementSpec);
         const newSpec = Object.assign({}, elementSpec, { models: e.detail.models });
