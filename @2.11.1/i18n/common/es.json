@@ -1,0 +1,249 @@
+{
+  "language": "Idioma",
+  "menu": {
+    "documentation": "Documentación",
+    "admin": {
+      "title": "Administrador",
+      "recompile": "Recompilar el ODD",
+      "appGenerator": "Generador de aplicaciones",
+      "edit-odd": "Editar el ODD"
+    },
+    "news": "Noticias",
+    "download": {
+      "title": "Descargar",
+      "pdf-latex": "PDF (versión LaTeX)",
+      "pdf-fo": "PDF (versión FO)",
+      "pdf-title": "Descargar en PDF",
+      "fo-source": "Código fuente FO",
+      "latex-source": "Código fuente TeX",
+      "single-page": "Una sola página",
+      "epub-download": "Descargar como ePub",
+      "view-tei": "Ver el TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "¡Vaya!",
+    "close": "Cerrar",
+    "yes": "Sí",
+    "no": "No",
+    "serverError": "La solicitud al servidor ha fallado.",
+    "generatingFile": "Generando el archivo...",
+    "downloadMessage": "Generar el archivo para su descarga puede tardar algunos minutos. Espere, por favor. Este mensaje debería cerrarse automáticamente cuando la descarga esté completa.",
+    "loading": "Cargando ..."
+  },
+  "document": {
+    "contents": "Índice",
+    "selectODD": "Seleccionar ODD",
+    "selectTemplate": "Seleccionar Plantilla",
+    "selectFeature": "Seleccionar una característica",
+    "normalized": "Vista normalizada",
+    "plain": "Vista de lectura sencilla",
+    "view-type": "Ver por páginas",
+    "add-panel": "Añadir Vista",
+    "caveat-heading": "Cuidado",
+    "settings": "Configuración",
+    "caveat": "Experimenta con diferentes plantillas y ODDs cambiando las opciones aquí. Por favor, ten en cuenta que no todas las combinaciones de configuración tienen sentido para todos los documentos. Por ejemplo, un mapa no puede ser producido sin marcar ni procesar las coordenadas explícitamente, y la vista de página asume que se han marcado los saltos de página. Si ves el mensaje \"el servidor no devolvió ningún contenido\", generalmente es señal de una desalineacion entre los datos codificados, la ODD y la plantilla."
+  },
+  "browse": {
+    "description": "Utiliza esta aplicación para experimentar y probar varios ODDs redactados a partir de diferentes instrucciones del modelo de procesamiento. Carga tus propios archivos y crea un ODD personalizado.",
+    "login": "para subir archivos o ver funciones administrativas (usuario predeterminado: 'tei-demo', contraseña: 'demo').",
+    "sort": "Ordenar por",
+    "filter": "Filtrar por",
+    "filterPlaceholder": "Filtro",
+    "items": "Se ha encontrado {{count}} elemento",
+    "items_plural": "Se han encontrado {{count}} elementos",
+    "title": "Título",
+    "author": "Autor",
+    "modificationDate": "Fecha de modificación",
+    "file": "Nombre del archivo",
+    "delete": "Borrar",
+    "confirmDeletion": "¿Seguro que quieres eliminar el archivo?",
+    "confirmDeletion_plural": "¿Seguro que quieres eliminar {{count}} archivos?",
+    "documents": "Documentos",
+    "collections": "Colección local",
+    "dts": "Servicios de texto distribuidos (versión experimental)",
+    "test": {
+      "title": "Colección demo del editor TEI",
+      "description": "Documentos que ejemplifican algunas funcionalidades del programa. La selección no es exhaustiva, pero sí representa una parte de lo que puede hacerse. Agradeceremos que contribuyas a aumentar la muestra con tus propios propios casos de uso."
+    },
+    "playground": {
+      "title": "Pruebas",
+      "description": "Una colección con permisos de escritura en la que puedes cargar tus propios documentos para probarlos."
+    },
+    "doc": {
+      "title": "Documentación",
+      "description": "Documentación (en Docbook XML)."
+    },
+    "markdown": {
+      "title": "Muestra en Markdown",
+      "description": "Un ejemplo de uso de Markdown para generar contenido estático."
+    },
+    "up": "Ir a la carpeta anterior"
+  },
+  "upload": {
+    "upload": "Cargar",
+    "drop": "Arrastra {{accept}} archivos aquí para cargarlos."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Mostrar el código",
+      "hide": "Ocultar el código"
+    },
+    "editCode": {
+      "show": "Editar el código",
+      "hide": "Cerrar el editor"
+    }
+  },
+  "clipboard": {
+    "copy": "Haz clic para copiarlo al portapapeles",
+    "paste": "Pegar en el campo de entrada para probar"
+  },
+  "login": {
+    "login": "Conectarse",
+    "as": "Sesión iniciada como {{user}}",
+    "user": "Usuario",
+    "password": "Contraseña",
+    "invalid": "Contraseña incorrecta o usuario no válido",
+    "requiredGroup": "debe ser miembro del grupo {{group}}"
+  },
+  "search": {
+    "search": "Buscar",
+    "reset": "Reestablecer",
+    "placeholder": "Escribe el término a buscar",
+    "sections": "Buscar en secciones",
+    "headings": "Buscar en títulos"
+  },
+  "dts": {
+    "endpoint": "Seleccionar punto final",
+    "note": "Experimental: acceder a otras ediciones que exponen la API DTS"
+  },
+  "odd": {
+    "files": "Archivos ODD",
+    "manage": {
+      "filename": "Nombre del archivo ODD (sin sufijo)",
+      "title": "Título para mostrar",
+      "create": "Crear",
+      "create-from-example": "Crear a partir de ejemplos",
+      "delete": "¿Seguro que quieres eliminar el archivo {{file}}?",
+      "regenerate-all": "Regenerar todos los ODD (lento)",
+      "filename-error": "Requerido. Usa letras, números, - y _",
+      "title-error": "El título es obligatorio"
+    },
+    "editor": {
+      "delete-spec": "¿Realmente deseas eliminar la especificación del elemento '{{ident}}'?",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "saved": "Guardado",
+      "denied": "Permiso denegado",
+      "denied-message": "No tienes permiso para guardar {{odd}}",
+      "reload": "Volver a cargar",
+      "reload-confirm": "Se perderán los cambios no guardados. ¿Continuar?",
+      "add-element": "Añadir elemento",
+      "odd-source": "Código fuente del ODD",
+      "specs": "Especificaciones de elementos",
+      "jump-to": "Ir al elemento ...",
+      "title-short": "Título corto",
+      "title-short-placeholder": "Título corto para mostrar",
+      "description-label": "Descripción",
+      "description-placeholder": "Descripción del ODD",
+      "source-label": "ODD Base",
+      "source-placeholder": "ODD del que heredar",
+      "use-namespace": "Comprobar el uso de un espacio de nombres diferente al TEI",
+      "namespace-placeholder": "URI por defecto del espacio de nombres (si no es TEI)",
+      "title": "Título",
+      "title-placeholder": "Título del ODD",
+      "model": {
+        "delete-model-label": "¿Eliminar el modelo?",
+        "delete-model-message": "¿Seguro que desea eliminar el modelo seleccionado?",
+        "description-placeholder": "[Documentar el modelo]",
+        "predicate-placeholder": "[Definir otras condiciones que deben cumplirse (en xquery)]",
+        "link-with-or": "o",
+        "css-class-placeholder": "[Definir nombre de clase CSS (para CSS externo)]",
+        "custom-behaviour-placeholder": "[Behaviour personalizado]",
+        "template-placeholder": "[Definir plantilla de código para aplicar al contenido]",
+        "param-name-placeholder": "[Nombre del parámetro]",
+        "empty": "[Vacío]"
+      },
+      "css-source": "Abrir fichero CSS"
+    }
+  },
+  "facets": {
+    "show": "Mostrar top 50",
+    "genre": "Género",
+    "language": "Idioma"
+  },
+  "appgen": {
+    "account": {
+      "user": "Cuenta de usuario para tareas administrativas. El usuario será creado si aún no existe.",
+      "owner": "La cuenta de usuario que será propietaria de la aplicación.",
+      "password": "Contraseña para el usuario propietario de esta aplicación."
+    },
+    "submit": "Guardar/generar",
+    "index": {
+      "help": "Definir el bloque más pequeño a partir del que se crea el índice de texto completo. Para documentos organizados en divisiones suele ser preferible usar 'Crear por divisiones'. Si no hay divisiones, elija \"Crear por texto\".",
+      "label": "Índice de texto completo por defecto",
+      "index-div": "Crear por divisiones",
+      "index-text": "Crear por texto"
+    },
+    "view": {
+      "help": "Elija lo que se muestra por defecto al navegar por el texto: vista por páginas o por divisiones completas. La vista por página exige que el TEI XML esté correctamente marcado con etiquetas &lt;tei:pb&gt;.",
+      "div": "Por divisiones (capítulo/sección...)",
+      "page": "Por páginas"
+    },
+    "label": "Vista predeterminada",
+    "template": {
+      "help": "Elija la plantilla HTML a utilizar por defecto",
+      "label": "Plantilla HTML"
+    },
+    "title": {
+      "help": "Título de la aplicación a mostrar, por ejemplo, en el panel de control",
+      "label": "Título de la aplicación"
+    },
+    "collection": "Nombre de la subcolección que contendrá los documentos TEI",
+    "abbrev": {
+      "label": "Nombre abreviado para URLs y nombres de archivo",
+      "placeholder": "Nombre abreviado"
+    },
+    "uri": "URL para identificar la aplicación de forma única",
+    "dialog": {
+      "title": "Aplicación generada"
+    },
+    "open": "Abrir",
+    "success": "¡Tu aplicación ha sido generada con éxito!"
+  },
+  "annotations": {
+    "edit": "Editar anotación",
+    "delete": "Eliminar anotación",
+    "save": "Fusionar y guardar anotaciones en TEI",
+    "no-properties": "No hay propiedades definidas.",
+    "person": "Persona",
+    "organisation": "Organización",
+    "place": "Lugar",
+    "term": "Término",
+    "date": "Fecha",
+    "reg": "Regularización",
+    "app": "Entrada de aparato",
+    "hi": "Destacar",
+    "ref": "Enlace (ref)",
+    "abbreviation": "Abreviatura",
+    "occurrences": "Ocurrencias en el texto",
+    "correction": "Corrección",
+    "expansion": "Expansión",
+    "reference": "Referencia",
+    "lookup": "Buscar entidades",
+    "apply": "Actualizar anotación",
+    "apply-all": "Seleccionar y aplicar todo",
+    "changes": "Cambios",
+    "undo": "Deshacer el último cambio",
+    "download": "Fusionar y guardar TEI en local",
+    "reload": "Recargar fuente TEI",
+    "preview": "Vista previa de los resultados de la fusión",
+    "confirm-restore-title": "Confirmar restauración",
+    "restore": "Se han encontrado anotaciones hechas en este documento en una sesión anterior. ¿Quieres recargarlas?",
+    "confirm-reload-title": "Confirmar recarga",
+    "confirm-reload": "¿Descartar las anotaciones actuales y recargar la fuente?",
+    "modify": "Aplicar edición al texto base",
+    "modify-info": "Nota: esto no es una anotación, pero modificará el texto base cuando se fusione.",
+    "permission": "Permiso denegado: no tiene permiso para guardar anotaciones."
+  }
+}
