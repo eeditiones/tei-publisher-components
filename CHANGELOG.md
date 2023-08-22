@@ -1,3 +1,10 @@
+## [2.11.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.11.0...v2.11.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **pb-manage-odds:** do not reload list of ODDs on pb-login event: permissions are handled by pb-restricted anyway ([e530710](https://github.com/eeditiones/tei-publisher-components/commit/e530710aa216783358ec6d9e7e3cc39002499847))
+
 # [2.11.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.10.7...v2.11.0) (2023-08-11)
 
 
