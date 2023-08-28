@@ -55,7 +55,7 @@ export class Airtable extends Registry {
 
   _init() {
       window.ESGlobalBridge.requestAvailability();
-      const path = resolveURL('https://cdn.jsdelivr.net/npm/airtable@0.11.1/build/airtable.browser.js');
+      const path = resolveURL('https://cdn.jsdelivr.net/npm/airtable@0.12.2/build/airtable.browser.js');
       window.ESGlobalBridge.instance.load('airtable', path);
       window.addEventListener(
         'es-bridge-airtable-loaded',
@@ -149,11 +149,12 @@ export class Airtable extends Registry {
         });
         const regex = new RegExp(this.tokenizeChars);
         this.tokenize.forEach((key) => {
-          strings = strings.concat(data[key].split(regex));
+          if (data[key]) {
+            strings = strings.concat(data[key].split(regex));
+          }
         });
         strings = strings.filter(tok => !/^\d+$/.test(tok));
         strings.sort((s1, s2) => s2.length - s1.length);
-        console.log(strings);
         container.innerHTML = expandTemplate(this.infoExpr, data);
 
         resolve({
