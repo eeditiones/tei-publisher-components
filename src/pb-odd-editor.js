@@ -313,9 +313,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
                         <span class="icons">
                             <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="${translate('odd.editor.odd-source')}"></paper-icon-button></pb-edit-xml>
-                            <paper-icon-button @click="${this._download}" icon="icons:cloud-download" title="${fsSupported ? translate('odd.editor.save-as'): translate('odd.editor.download')}"></paper-icon-button>
+                            <paper-icon-button @click="${() => this.save(true)}" icon="icons:cloud-download" title="${fsSupported ? translate('odd.editor.save-as'): translate('odd.editor.download')}"></paper-icon-button>
                             <paper-icon-button @click="${this._reload}" icon="refresh" title="${translate('odd.editor.reload')}"></paper-icon-button>
-                            <paper-icon-button @click="${this.save}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}" 
+                            <paper-icon-button @click="${() => this.save(false)}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}" 
                                 ?disabled="${!this.loggedIn}"></paper-icon-button>
                         </span>
                     </h3>
@@ -441,7 +441,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             this.inited = true;
         });
 
-        this.registerHotkey('save', this.save.bind(this));
+        this.registerHotkey('save', () => this.save(false));
     }
 
     setUseNamespace() {
@@ -892,32 +892,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         return code;
     }
 
-    _download() {
-        if (this._hasChanges) {
-            const dialog = this.shadowRoot.getElementById('dialog');
-            dialog.confirm(i18n("odd.editor.save"), i18n('odd.editor.unsaved'))
-                .then(
-                    () => this._downloadOdd(), 
-                    () => console.log('<pb-odd-editor> Download aborted'));
-            return;
-        }
-        this._downloadOdd();
-    }
-
-    _downloadOdd() {
-        const data = this.serializeOdd();
-        const blob = new Blob([data], { type: 'application/xml'});
-        fileSave(blob, {
-            fileName: this.odd,
-            extensions: ['.odd'],
-        })
-        .then(
-            () => console.log(`<pb-odd-editor> ${this.odd} exported`),
-            () => console.log('<pb-odd-editor> export aborted')
-        );
-    }
-
-    save() {
+    save(download=false) {
         document.dispatchEvent(new CustomEvent('pb-start-update'));
         const data = this.serializeOdd();
 
@@ -949,7 +924,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         
         const request = saveOdd.generateRequest();
         request.completes
-            .then(this.handleSaveComplete.bind(this))
+            .then((req) => {
+                this.handleSaveComplete(req, download);
+            })
             .catch(this.handleSaveError.bind(this));
     }
 
@@ -972,16 +949,16 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 `;
     }
 
-    handleSaveComplete(req) {
+    handleSaveComplete(req, download=false) {
         const data = req.response;
         if (data.status === 'denied') {
             this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.denied"), i18n("odd.editor.denied-message", { odd: this.odd }));
             document.dispatchEvent(new CustomEvent('pb-end-update'));
             return;
         }
-
+        
         let msg;
-
+        
         if (this.lessThanApiVersion('1.0.0')) {
             const report = data.report.map(PbOddEditor._renderReport);
             msg = `<div class="list-group">${report.join('')}</div>`;
@@ -991,9 +968,21 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         }
         
         this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
-
+        
         this._hasChanges = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
+
+        if (download) {
+            const blob = new Blob([data.source], { type: 'application/xml'});
+            fileSave(blob, {
+                fileName: this.odd,
+                extensions: ['.odd'],
+            })
+            .then(
+                () => console.log(`<pb-odd-editor> ${this.odd} exported`),
+                () => console.log('<pb-odd-editor> export aborted')
+            );
+        }
     }
 
     handleSaveError(rejected) {
