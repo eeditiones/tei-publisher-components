@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.11.1...v2.12.0) (2023-08-28)
+
+
+### Features
+
+* **pb-mei:** allow MEI data to be passed directly; move into separate bundle pb-mei ([9fe14f4](https://github.com/eeditiones/tei-publisher-components/commit/9fe14f4e8b34e1ab2934d75e3602fbed2b45185d))
+
 ## [2.11.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.11.0...v2.11.1) (2023-08-22)
 
 
