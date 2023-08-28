@@ -1,0 +1,249 @@
+{
+  "language": "Język",
+  "menu": {
+    "documentation": "Dokumentacja",
+    "admin": {
+      "title": "Panel administracyjny",
+      "recompile": "Zrekompiluj ODD",
+      "appGenerator": "Generator aplikacji",
+      "edit-odd": "Edytuj ODD"
+    },
+    "news": "Aktualności",
+    "download": {
+      "title": "Pobierz",
+      "pdf-latex": "PDF (via LaTeX)",
+      "pdf-fo": "PDF (via FO)",
+      "pdf-title": "Pobierz w formacie PDF",
+      "fo-source": "FO (kod źródłowy)",
+      "latex-source": "TeX (kod źródłowy)",
+      "single-page": "Widok ciągły",
+      "epub-download": "Pobierz w formacie ePub",
+      "view-tei": "Widok TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Auć",
+    "close": "Zamknij",
+    "yes": "Tak",
+    "no": "Nie",
+    "serverError": "Zapytanie do serwera nie powiodło się.",
+    "generatingFile": "Generowanie pliku...",
+    "downloadMessage": "Generowanie pliku do pobrania może potrwać kilka minut. Proszę czekać. To okno powinno zamknąć się automatycznie kiedy pobieranie zostanie zakończone.",
+    "loading": "Ładowanie ..."
+  },
+  "document": {
+    "contents": "Treść",
+    "selectODD": "Wybierz ODD",
+    "selectTemplate": "Wybierz szablon",
+    "selectFeature": "Wybierz ustawienie",
+    "normalized": "Widok znormalizowany",
+    "plain": "Widok do czytania",
+    "view-type": "Podział wg stron",
+    "add-panel": "Dodaj panel",
+    "caveat-heading": "Uwaga",
+    "settings": "Ustawienia",
+    "caveat": "Eksperymentuj z różnymi kombinacjami szablonów i plików ODD. Zwróć uwagę, że nie wszystkie kombinacje prowadzą do sensownych rezultatów w połączeniu z danym dokumentem źródłowym. Dla przykładu do wygenerowania mapy niezbędne jest zawarcie w dokumencie koordynat geograficznych, zaś Widok wg strony zakłada, że są one oznakowane. W przypadku kiedy zamiast fragmentu strony widoczny jest komunikat 'zapytanie do serwera nie przyniosło rezultatu' lub podobny, jest to najczęściej symptom niedopasowania pomiędzy dokumentem źródłowym a ODD lub szablonem strony."
+  },
+  "browse": {
+    "description": "Eksperymentuj i wypróbuj rezultaty zastosowania rozmaitych plików ODD dołączonych do naszej aplikacji. Zaimportuj własne pliki źródłowe i utwórz własny plik ODD dostosowany do Twoich potrzeb.",
+    "login": "aby zaimportować pliki oraz uzyskać dostęp do funkcji administracyjnych (domyślny użytkownik: 'tei-demo', hasło: 'demo').",
+    "sort": "Sortuj",
+    "filter": "Filtruj według",
+    "filterPlaceholder": "Filtruj",
+    "items": "Znaleziono {{count}} rezultat",
+    "items_plural": "Znaleziono {{count}} rezultatów",
+    "title": "Tytuł",
+    "author": "Autor",
+    "modificationDate": "Data ostatniej modyfikacji",
+    "file": "Nazwa pliku",
+    "delete": "Usuń",
+    "confirmDeletion": "Czy na pewno chcesz usunąć ten plik?",
+    "confirmDeletion_plural": "Czy na pewno chcesz usunąć {{count}} plików?",
+    "documents": "Dokumenty",
+    "collections": "Kolekcja lokalna",
+    "dts": "Serwis DTS (Distributed Text Services - wersja eksperymentalna)",
+    "test": {
+      "title": "Kolekcja Demo",
+      "description": "Kolekcja dokumentów demonstrujących różne dziedziny i formy prezentacji. Dobór przykładów nie stanowi reprezentatywnej próbki, jedynie podzbiór tego, co można uzyskać. Zachęcamy do współpracy przy poszerzaniu naszej kolekcji przykładów poprzez nadsyłanie własnych 'use cases'."
+    },
+    "playground": {
+      "title": "Poletko eksperymentalne",
+      "description": "Kolekcja z prawem zapisu plików. Tutaj można zapisać własne pliki źródłowe dla celów testowych."
+    },
+    "doc": {
+      "title": "Dokumentacja",
+      "description": "Dokumentacja (w formacie Docbook XML)."
+    },
+    "markdown": {
+      "title": "Próbka Markdown",
+      "description": "Przykład użycia formatu Markdown dla treści statycznych."
+    },
+    "up": "Przejdź do katalogu nadrzędnego"
+  },
+  "upload": {
+    "upload": "Prześlij",
+    "drop": "Przeciągnij dokumenty w formatach {{accept}} aby zaimportować."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Pokaż kod źródłowy",
+      "hide": "Ukryj kod źródłowy"
+    },
+    "editCode": {
+      "show": "Edytuj kod źródłowy",
+      "hide": "Zamknij edytor"
+    }
+  },
+  "clipboard": {
+    "copy": "Kliknij, aby skopiować do schowka",
+    "paste": "Wklej w polu edycji, aby przetestować"
+  },
+  "login": {
+    "login": "Zaloguj",
+    "as": "Zalogowano jako {{user}}",
+    "user": "Użytkownik",
+    "password": "Hasło",
+    "invalid": "Nieprawidłowe hasło lub nazwa użytkownika",
+    "requiredGroup": "musi być członkiem grupy {{group}}"
+  },
+  "search": {
+    "search": "Szukaj",
+    "reset": "Resetuj",
+    "placeholder": "Wprowadź zapytanie",
+    "sections": "Przeszukaj sekcje",
+    "headings": "Przeszukaj nagłówki"
+  },
+  "dts": {
+    "endpoint": "Wybierz Endpoint",
+    "note": "Wersja eksperymentalna: uzyskaj dostęp do edycji, które udostępniają API DTS"
+  },
+  "odd": {
+    "files": "Pliki ODD",
+    "manage": {
+      "filename": "Nazwa pliku ODD (bez rozszerzenia)",
+      "title": "Tytuł do wyświetlania",
+      "create": "Utwórz",
+      "create-from-example": "Utwórz na bazie przykładów",
+      "delete": "Czy na pewno chcesz usunąć plik ODD {{file}}?",
+      "regenerate-all": "Wygeneruj wszystkie transformacje ODD (czasochłonne)",
+      "filename-error": "Pole wymagane. Użyj liter, cyfr, oraz znaków - i _",
+      "title-error": "Tytuł jest wymagany"
+    },
+    "editor": {
+      "delete-spec": "Czy na pewno usunąć elementSpec dla '{{ident}}'?",
+      "save": "Zapisz",
+      "saving": "Zapisywanie ...",
+      "saved": "Zapisano",
+      "denied": "Brak uprawnień",
+      "denied-message": "Nie masz uprawnień aby zapisać plik {{odd}}",
+      "reload": "Odśwież",
+      "reload-confirm": "Zmiany, które nie zostały zapisane będą utracone. Czy kontynuować?",
+      "add-element": "Dodaj element",
+      "odd-source": "Kod źródłowy ODD",
+      "specs": "Specyfikacje (elementSpec)",
+      "jump-to": "Przejdź do elementu ...",
+      "title-short": "Skrócony tytuł",
+      "title-short-placeholder": "Skrócony tytuł (do wyświetlania)",
+      "description-label": "Opis",
+      "description-placeholder": "Informacje o pliku ODD",
+      "source-label": "Bazowy plik ODD",
+      "source-placeholder": "Bazowy plik ODD (z którego dziedziczone są modele domyślne)",
+      "use-namespace": "Zaznacz, jeżeli zamierzasz używać innych standardów niż TEI",
+      "namespace-placeholder": "Default namespace URI (jeżeli inna niż TEI)",
+      "title": "Tytuł",
+      "title-placeholder": "Nazwa pliku ODD",
+      "model": {
+        "delete-model-label": "Usunąć model?",
+        "delete-model-message": "Czy na pewno chcesz usunąć wybrany model?",
+        "description-placeholder": "[Dokumentacja modelu]",
+        "predicate-placeholder": "[Warunki, dla których dany model obowiązuje (w XQuery)]",
+        "link-with-or": "lub",
+        "css-class-placeholder": "[Klasa CSS (z zewnętrznego arkusza CSS)]",
+        "custom-behaviour-placeholder": "[Behaviour (niestandardowe)]",
+        "template-placeholder": "[Szablon (zostanie zastosowany do parametru content)]",
+        "param-name-placeholder": "[Nazwa parametru]",
+        "empty": "[Brak]"
+      },
+      "css-source": "Otwórz plik CSS"
+    }
+  },
+  "facets": {
+    "show": "Pokaż top 50",
+    "genre": "Gatunek",
+    "language": "Język"
+  },
+  "appgen": {
+    "account": {
+      "user": "Nazwa konta administratora. Konto zostanie utworzone, jeżeli jeszcze nie istnieje.",
+      "owner": "Konto administratora aplikacji.",
+      "password": "Hasło do konta administratora aplikacji."
+    },
+    "submit": "Zapisz/Generuj",
+    "index": {
+      "help": "Zdefiniuj jaka jest najmniejsza jednostka dla której zostanie utworzony indeks tekstowy. W przypadku dokumentów zorganizowanych w sekcje (TEI: div), zazwyczaj wybór opcji 'Utwórz indeks dla sekcji' jest najodpowiedniejszy. Jeżeli w dokumencie nie występują sekcje, wybierz 'Utwórz indeks dla elementu text'.",
+      "label": "Domyślny indeks do przeszukiwania pełnotekstowego",
+      "index-div": "Utwórz indeks dla sekcji",
+      "index-text": "Utwórz indeks dla elementu text"
+    },
+    "view": {
+      "help": "Wybierz sposób wyświetlania dokumentu: strona po stronie lub według sekcji. Widok według stron zakłada, że kod źródłowy TEI zawiera odpowiednio rozmieszczone znaczniki &lt;tei:pb&gt;.",
+      "div": "Według sekcji (rozdział/sekcja...)",
+      "page": "Według stron"
+    },
+    "label": "Widok domyślny",
+    "template": {
+      "help": "Wybierz domyślny szablon HTML do wyświetlania dokumentów",
+      "label": "Szablon HTML"
+    },
+    "title": {
+      "help": "Tytuł aplikacji pokazywany m. in. w aplikacji Dashboard",
+      "label": "Nazwa aplikacji"
+    },
+    "collection": "Nazwa kolekcji zawierającej dokumenty źródłowe",
+    "abbrev": {
+      "label": "Nazwa skrócona - używana w adresach URL oraz nazwach plików i kolekcji",
+      "placeholder": "Nazwa skrócona"
+    },
+    "uri": "URL jednoznacznie identyfikujący aplikację",
+    "dialog": {
+      "title": "Aplikacja została wygenerowana"
+    },
+    "open": "Otwórz",
+    "success": "Twoja aplikacja została pomyślnie wygenerowana!"
+  },
+  "annotations": {
+    "edit": "Edytuj adnotację",
+    "delete": "Usuń adnotację",
+    "save": "Scal adnotacje i zapisz w TEI",
+    "no-properties": "Nie zdefiniowano żadnych właściwości.",
+    "person": "Osoba",
+    "organisation": "Organizacja",
+    "place": "Miejsce",
+    "term": "Hasło",
+    "date": "Data",
+    "reg": "Forma znormalizowana",
+    "app": "Przypis aparatu krytycznego",
+    "hi": "Wyróżnienie",
+    "ref": "Odnośnik (ref)",
+    "abbreviation": "Skrót",
+    "occurrences": "Wystąpienia w tekście",
+    "correction": "Korekta",
+    "expansion": "Rozwinięcie",
+    "reference": "Odniesienie",
+    "lookup": "Szukaj obiektu",
+    "apply": "Zastosuj adnotację",
+    "apply-all": "Wybierz i zastosuj wszystkie",
+    "changes": "Zmiany",
+    "undo": "Cofnij ostatnią zmianę",
+    "download": "Zapisz scalone adnotacje do pliku TEI na Twoim komputerze",
+    "reload": "Załaduj ponownie dokument źródłowy TEI",
+    "preview": "Podgląd wyników scalania",
+    "confirm-restore-title": "Potwierdź przywracanie",
+    "restore": "Znaleziono adnotacje dla tego dokumentu pochodzące z poprzedniej sesji. Czy chcesz je załadować?",
+    "confirm-reload-title": "Potwierdź ponowne załadowanie",
+    "confirm-reload": "Anulować aktualne adnotacje i załadować plik źródłowy ponownie?",
+    "modify": "Zmień tekst podstawowy",
+    "modify-info": "Uwaga: nie jest to zwyczajna adnotacja; po scaleniu tekst źródłowy ulegnie zmianie.",
+    "permission": "Odmowa dostępu: nie masz uprawnień do zapisywania adnotacji."
+  }
+}
