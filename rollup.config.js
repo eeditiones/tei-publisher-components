@@ -115,6 +115,10 @@ export default [
                         dest: 'lib'
                     },
                     {
+                        src: './node_modules/airtable/build/airtable.browser.js',
+                        dest: 'lib'
+                    },
+                    {
                         src: './node_modules/web-midi-player/index.js',
                         dest: 'lib/web-midi-player'
                     },

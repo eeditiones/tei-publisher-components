@@ -55,7 +55,7 @@ export class Airtable extends Registry {
 
   _init() {
       window.ESGlobalBridge.requestAvailability();
-      const path = resolveURL('https://cdn.jsdelivr.net/npm/airtable@0.12.2/build/airtable.browser.js');
+      const path = resolveURL('../lib/airtable.browser.js');
       window.ESGlobalBridge.instance.load('airtable', path);
       window.addEventListener(
         'es-bridge-airtable-loaded',
