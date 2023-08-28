@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.0...v2.12.1) (2023-08-28)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,airtable:** fix error caused by empty field ([1af83fb](https://github.com/eeditiones/tei-publisher-components/commit/1af83fb88f594cfb3a667e619702a42b4b136859))
+
 # [2.12.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.11.1...v2.12.0) (2023-08-28)
 
 
