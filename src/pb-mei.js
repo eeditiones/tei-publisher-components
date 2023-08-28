@@ -1,12 +1,17 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import "@lrnwebcomponents/es-global-bridge";
+import createVerovioModule from 'verovio/dist/verovio-module.mjs';
+import { VerovioToolkit } from 'verovio/dist/verovio.mjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { resolveURL } from './utils.js';
 import '@polymer/paper-icon-button';
 import '@polymer/paper-checkbox';
 import '@polymer/iron-icons';
 import '@polymer/iron-icons/av-icons';
+
+let _verovio = null;
 
 /** Import external script dynamically */
 function _import(name, location) {
@@ -32,19 +37,33 @@ function _import(name, location) {
  * <pb-mei id="viewer" player url="http://www.marenzio.org/mei/M-06-5/M_06_5_01_S_io_parto_i_moro_e_pur_partir_conviene.mei" 
  *         footer="none">
  *    <pb-option name="appXPath" on="./rdg[contains(@label, 'original')]" off="">Original Clefs</pb-option>
- *  </pb-mei>
+ * </pb-mei>
+ * ```
+ * 
+ * The MEI document to display can either be given directly in the `data` property or loaded from an URL
+ * specified in `url`.
  * 
  * @prop {"auto" | "encoded" | "none" | "always"} footer - Control footer layout
  * @prop {"auto" | "encoded" | "none"} header - Control footer layout
  * @prop {"auto" | "none" | "line" | "encoded" | "smart"} breaks - Define page and system breaks layout (default: "auto")
+ * @cssprop --pb-mei-min-width - minimal width
+ * @csspart toolbar - toolbar with pagination and midi player controls
+ * @csspart music - the music output area
  */
 export class PbMei extends pbMixin(LitElement) {
 
     static get properties() {
         return {
+            /**
+             * MEI data to display specified as a string. This should represent a complete
+             * MEI document.
+             */
+            data: {
+                type: String
+            },
           /**
-           * URL of the MEI file to load. A relative URL would be resolved
-           * relative to the TEI Publisher endpoint.
+           * URL of the MEI file to load. Will be used if no `data` property is present. 
+           * A relative URL would be resolved relative to the TEI Publisher endpoint.
            */
           url: {
             type: String,
@@ -107,7 +126,6 @@ export class PbMei extends pbMixin(LitElement) {
         this._pages = 0;
         this._page = 0;
         this._midiPlayer = null;
-        this._verovio = null;
         this.footer = 'auto';
         this.header = 'auto';
         this.breaks = 'auto';
@@ -120,6 +138,7 @@ export class PbMei extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
         this.querySelectorAll('pb-option').forEach((option) => {
             this._options.push({
                 name: option.getAttribute('name'),
@@ -134,58 +153,72 @@ export class PbMei extends pbMixin(LitElement) {
         super.firstUpdated();
 
         if (this.player) {
-            _import("midiPlayer", 'https://cdn.jsdelivr.net/npm/web-midi-player@latest/index.js')
+            _import("midiPlayer", resolveURL('../lib/web-midi-player/index.js'))
                 .then(() => {
                     const { 'web-midi-player': { default: MidiPlayer } } = window;
                     this._midiPlayer = new MidiPlayer();
                 });
         }
 
-        _import("verovio", 'https://www.verovio.org/javascript/latest/verovio-toolkit.js')
-            .then(() => {
-                this._verovio = new window.verovio.toolkit();
-
+        if (!_verovio) {
+            createVerovioModule().then(VerovioModule => {
+                _verovio = new VerovioToolkit(VerovioModule);
+    
                 waitOnce('pb-page-ready', () => {
-                    this.load();
+                    this.load(); 
                 });
             });
+        } else {
+            waitOnce('pb-page-ready', () => {
+                this.load(); 
+            });
+        }
     }
 
     update(changedProps) {
         super.update(changedProps);
-        if (changedProps.get('url')) {
+        if (changedProps.get('url') || changedProps.get('data')) {
             this.load();
         } else if (
           (changedProps.has('appXPath') ||
             changedProps.has('choiceXPath') ||
             changedProps.has('mdivXPath') ||
             changedProps.has('substXPath')) &&
-          this._verovio
+          _verovio
         ) {
-          this._verovio.setOptions(this._getOptions());
-          this._verovio.loadData(this._data);
+          _verovio.setOptions(this._getOptions());
+          _verovio.loadData(this._data);
           this.showPage();
         }
     }
 
     load() {
-        const link = this.toAbsoluteURL(this.url);
+        if (this.data) {
+            console.log('<pb-mei> Rendering data');
+            this.show(this.data);
+        } else if (this.url) {
+            const link = this.toAbsoluteURL(this.url);
 
-        fetch(link)
-          .then(response => response.text())
-          .then(async data => {
-            this._data = data;
-            this._verovio.setOptions(this._getOptions());
-            this._verovio.loadData(this._data);
-            this._pages = this._verovio.getPageCount();
-            this._page = 1;
-            console.log('<pb-mei> Loaded %d pages', this._pages);
-            this.showPage();
-          });
+            fetch(link)
+            .then(response => response.text())
+            .then(async str => {
+                this.show(str);
+            });
+        }
+    }
+
+    show(str) {
+        this._data = str;
+        _verovio.setOptions(this._getOptions());
+        _verovio.loadData(this._data);
+        this._pages = _verovio.getPageCount();
+        this._page = 1;
+        console.log('<pb-mei> Loaded %d pages', this._pages);
+        this.showPage();
     }
 
     showPage() {
-        this._svg = this._verovio.renderToSVG(this._page, {});
+        this._svg = _verovio.renderToSVG(this._page, {});
     }
 
     async play() {
@@ -199,8 +232,8 @@ export class PbMei extends pbMixin(LitElement) {
                 this._midiPaused = false;
                 this._midiPlayer.resume();
             } else {
-                this._verovio.loadData(this._data);
-                const mdata = this._verovio.renderToMIDI();
+                _verovio.loadData(this._data);
+                const mdata = _verovio.renderToMIDI();
                 const raw = window.atob(mdata);
                 const rawLength = raw.length;
                 const array = new Uint8Array(new ArrayBuffer(rawLength));
@@ -226,7 +259,7 @@ export class PbMei extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <div id="toolbar">
+            <div id="toolbar" part="toolbar">
                 <div class="${this._pages === 1 ? 'hidden' : ''}">
                     <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"
                         ?disabled="${this._page === 1}"></paper-icon-button>
@@ -237,8 +270,8 @@ export class PbMei extends pbMixin(LitElement) {
                 <div>${ this._renderOptions() }</div>
             </div>
             ${ this._svg ? 
-                html`<div id="output">${unsafeHTML(this._svg)}</div>` :
-                html`<div id="output">${translate('dialogs.loading')}</div>`
+                html`<div id="output" part="music">${unsafeHTML(this._svg)}</div>` :
+                html`<div id="output" part="music">${translate('dialogs.loading')}</div>`
             }
         `;
     }
@@ -310,6 +343,7 @@ export class PbMei extends pbMixin(LitElement) {
             :host {
                 display: grid;
                 grid-template-rows: auto 1fr;
+                min-width: var(--pb-mei-min-width, auto);
             }
 
             #toolbar {
@@ -318,7 +352,7 @@ export class PbMei extends pbMixin(LitElement) {
             }
 
             #toolbar div {
-                margin-right: 30px;
+                margin-right: 1rem;
             }
 
             #toolbar div:last-child {

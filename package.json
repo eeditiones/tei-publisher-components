@@ -28,7 +28,7 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
     "clean": "npm run clean-lib && rimraf dist css images/leaflet demo/build docs",
-    "clean-lib": "rimraf -g lib/leaflet* lib/paged*",
+    "clean-lib": "rimraf -g lib/leaflet* lib/paged* lib/web-midi-player.js lib/openseadragon*",
     "prepare": "npm run docs && npm run build:production",
     "semantic-release": "semantic-release",
     "gh-pages": "node gh-pages.js"
@@ -90,7 +90,9 @@
     "tippy.js": "^6.3.7",
     "tom-select": "^2.2.2",
     "uniqolor": "^1.1.0",
-    "web-animations-js": "^2.3.2"
+    "verovio": "^3.16.0",
+    "web-animations-js": "^2.3.2",
+    "web-midi-player": "^1.4.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",

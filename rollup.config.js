@@ -25,7 +25,8 @@ export default [
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
             'src/pb-code-editor.js',
-            'src/pb-tify.js'
+            'src/pb-tify.js',
+            'src/pb-mei.js'
         ],
         output: {
             dir: 'dist',
@@ -114,6 +115,10 @@ export default [
                         dest: 'lib'
                     },
                     {
+                        src: './node_modules/web-midi-player/index.js',
+                        dest: 'lib/web-midi-player'
+                    },
+                    {
                         src: './src/assets/components.css',
                         dest: 'css'
                     }
@@ -165,6 +170,12 @@ export default [
                         dest: 'dist/demo',
                         transform: (contents) =>
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-tify.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-mei.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-mei.js"></script>`)
                     },
                     {
                         src: 'api.html',
