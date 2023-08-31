@@ -1,3 +1,10 @@
+## [2.12.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.2...v2.12.3) (2023-08-31)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** local version of openseadragon.min.js needs to stay ([4e958a1](https://github.com/eeditiones/tei-publisher-components/commit/4e958a19aa87e6be4cfc77cbab71bf102547699f))
+
 ## [2.12.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.1...v2.12.2) (2023-08-28)
 
 
