@@ -591,7 +591,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             if (ev.detail.root === null) {
                 this.nodeId = null;
             } else {
-                this.nodeId = ev.detail.root || this.nodeId;
+                this.nodeId = (ev.detail.position !== undefined ? ev.detail.position : ev.detail.root) || this.nodeId;
             }
 
             // check if the URL template needs any other parameters
