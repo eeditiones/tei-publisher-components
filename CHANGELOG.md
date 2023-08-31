@@ -1,3 +1,10 @@
+## [2.12.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.4...v2.12.5) (2023-08-31)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** openseadragon.min.js should not be removed by npm clean ([9ccdfb6](https://github.com/eeditiones/tei-publisher-components/commit/9ccdfb6158c152359d96b4fb82edfd0170b2fb2c))
+
 ## [2.12.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.3...v2.12.4) (2023-08-31)
 
 
