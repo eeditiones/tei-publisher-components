@@ -1,3 +1,10 @@
+## [2.12.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.1...v2.12.2) (2023-08-28)
+
+
+### Bug Fixes
+
+* **pb-odd-editor:** download to file produced incomplete ODD; save is required first ([16fa08f](https://github.com/eeditiones/tei-publisher-components/commit/16fa08fb39944eb5dc77d5c06d90b7e2632361e8))
+
 ## [2.12.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.0...v2.12.1) (2023-08-28)
 
 
