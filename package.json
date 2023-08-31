@@ -28,7 +28,7 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format": "npm run format:eslint && npm run format:prettier",
     "clean": "npm run clean-lib && rimraf dist css images/leaflet demo/build docs",
-    "clean-lib": "rimraf -g lib/leaflet* lib/paged* lib/web-midi-player.js lib/openseadragon* lib/airtable.browser.js",
+    "clean-lib": "rimraf -g lib/leaflet* lib/paged* lib/web-midi-player.js lib/airtable.browser.js",
     "prepare": "npm run docs && npm run build:production",
     "semantic-release": "semantic-release",
     "gh-pages": "node gh-pages.js"
