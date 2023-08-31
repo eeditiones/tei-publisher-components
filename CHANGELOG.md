@@ -1,3 +1,10 @@
+## [2.12.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.3...v2.12.4) (2023-08-31)
+
+
+### Bug Fixes
+
+* **pb-view:** initial load failed if on-update was set ([4876ffe](https://github.com/eeditiones/tei-publisher-components/commit/4876ffe55fbd680b0e70694e95f1c316516aba4a))
+
 ## [2.12.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.2...v2.12.3) (2023-08-31)
 
 
