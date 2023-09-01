@@ -1,3 +1,11 @@
+## [2.12.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.5...v2.12.6) (2023-09-01)
+
+
+### Bug Fixes
+
+* **pb-link:** support parameters 'xpath' to be passed to connected pb-view ([56f50e9](https://github.com/eeditiones/tei-publisher-components/commit/56f50e912fc5eb83027638a31e2660d0ca06a803))
+* **pb-split-list:** prevent commit after popstate to avoid messing up history ([c817eb8](https://github.com/eeditiones/tei-publisher-components/commit/c817eb8187cb71123c10d17953f29a3c2c1bce4e))
+
 ## [2.12.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.4...v2.12.5) (2023-08-31)
 
 
