@@ -29,6 +29,10 @@ export class PbLink extends pbMixin(LitElement) {
                 type: String,
                 reflect: true
             },
+            xpath: {
+                type: String,
+                reflect: true
+            },
             /** Browse to a different document */
             path: {
                 type: String
@@ -116,6 +120,9 @@ export class PbLink extends pbMixin(LitElement) {
         }
         if (this.view) {
             params.view = this.view;
+        }
+        if (this.xpath) {
+            params.xpath = this.xpath;
         }
         if (this.params) {
             Object.assign(params, this.params);
