@@ -111,7 +111,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
             registry.subscribe(this, (state) => {
                 console.log('<pb-split-list> popstate: %o', state);
                 this.selected = state.category;
-                this.submit();
+                this.submit(false);
             });
         });
 
@@ -126,19 +126,21 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
         });
     }
 
-    submit() {
-        this.load();
+    submit(commit = true) {
+        this.load(commit);
     }
 
-    load() {
+    load(commit = true) {
         const formParams = this._paramsFromSubforms({});
         if (this.selected) {
             formParams.category = this.selected;
         }
-        if (!this._initialized) {
-            registry.replace(this, formParams);    
-        } else {
-            registry.commit(this, formParams);
+        if (commit) {
+            if (!this._initialized) {
+                registry.replace(this, formParams);    
+            } else {
+                registry.commit(this, formParams);
+            }
         }
         this._initialized = true;
 
