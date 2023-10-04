@@ -29,7 +29,7 @@ export class Registry {
   set name(name) {
     this._register = name;
   }
-  
+
   /**
    * Query the authority and return a RegistryResult.
    *

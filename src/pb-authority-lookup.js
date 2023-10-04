@@ -35,6 +35,12 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       stopwords: {
         type: String
       },
+      /**
+       * Whether to give verbose debugging output in the browser console.
+       */
+      debug: {
+        type: Boolean
+      },
       _results: {
         type: Array,
       },
@@ -47,6 +53,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.query = '';
     this.type = null;
     this.sortByLabel = false;
+    this.debug = false;
     this._results = [];
     this._authorities = {};
   }
@@ -71,7 +78,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       connectors.forEach(connector => { this._authorities[connector.register] = connector });
     });
 
-    console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
+    if (this.debug) {
+      console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
+    }
   }
 
   render() {
@@ -95,17 +104,27 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   async lookup(register, id, container) {
     if (!id || id === '') {
-      console.log('<pb-authority-lookup> Key is empty');
+      if (this.debug) {
+        console.log('<pb-authority-lookup> Key is empty');
+      }
       container.innerHTML = '';
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log('<pb-authority-lookup> Retrieving info for %s from %s', id, register);
+    if (this.debug) {
+      console.log(`<pb-authority-lookup/lookup> retrieving info for %s from %s ...`, id, register);
+    }
     let info = await authority.info(id, container);
+    if (this.debug) {
+      console.log(`<pb-authority-lookup/lookup> found info for %s at %s: %s`, id, register, JSON.stringify(info));
+    }
     if (info.strings) {
       info = Object.assign(info, {
         strings: info.strings.filter((s) => s && !this._stopwordSet.has(s.toLowerCase()))
       });
+    }
+    if (this.debug) {
+      console.log(`<pb-authority-lookup/lookup> return %s`, JSON.stringify(info));
     }
     return info;
   }
@@ -144,6 +163,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       strings: item.strings,
       properties: {
         ref: item.id,
+        ...(item.label) && { key: item.label},
+        ...(item.type) && { type: item.type},
+        ...(item.link) && { type: item.link},
+        ...(item.details) && { details: item.details}
       }
     };
     this.emitTo('pb-authority-select', options);
@@ -182,6 +205,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           if (response.ok) {
             return response.json();
           }
+          Promise.reject()
         })
         .then(json => {
           items.forEach((item) => {
