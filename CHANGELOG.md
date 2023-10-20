@@ -1,3 +1,11 @@
+## [2.12.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.6...v2.12.7) (2023-10-20)
+
+
+### Bug Fixes
+
+* **pb-i18n:** support changing options at runtime ([66a9e41](https://github.com/eeditiones/tei-publisher-components/commit/66a9e4107424e84172269e1317d2633298d63e29))
+* **pb-view-annotate:** emit pb-annotations-loaded; refresh incomplete annotation display after list of annotations changed ([b7b1569](https://github.com/eeditiones/tei-publisher-components/commit/b7b1569e77290600bcd73fcd50da4c26c3bcbae0))
+
 ## [2.12.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.5...v2.12.6) (2023-09-01)
 
 
