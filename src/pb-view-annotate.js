@@ -215,6 +215,7 @@ function clearProperties(teiRange) {
  * The class itself does not provide any editing facility, except for
  * handling deletions.
  * 
+ * @fires pb-annotations-loaded - fired after text was loaded and annotations were drawn
  * @fires pb-selection-changed - fired when user selects text
  * @fires pb-annotations-changed - fired when an annotation was added or changed
  * @fires pb-annotation-detail - fired to request additional details about an annotation
@@ -335,6 +336,7 @@ class PbViewAnnotate extends PbView {
   set annotations(annoData) {
     this._ranges = annoData;
     this.updateAnnotations(true);
+    this._markIncompleteAnnotations();
     this._initAnnotationColors();
     this._annotationStyles();
   }
@@ -426,6 +428,7 @@ class PbViewAnnotate extends PbView {
         this.scrollTop = this._scrollTop;
         this._scrollTop = undefined;
       }
+      this.emitTo('pb-annotations-loaded');
     }, 300));
   }
 
@@ -511,6 +514,10 @@ class PbViewAnnotate extends PbView {
           break;
         case 'modify':
           span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
+          if (!span) {
+            console.error('<pb-view-annotate> Target node not found for %o', teiRange.node);
+            break;
+          }
           span.dataset.annotation = JSON.stringify(teiRange.properties);
           break;
         default:
@@ -997,6 +1004,8 @@ class PbViewAnnotate extends PbView {
         const key = this.getKey(annotation.dataset.type);
         if (!data[key] || data[key].length === 0) {
           annotation.classList.add('incomplete');
+        } else {
+          annotation.classList.remove('incomplete');
         }
       }
     });
