@@ -128,7 +128,7 @@ export class PbI18n extends LitElement {
     constructor() {
         super();
         this.key = 'missing-key';
-        this.options = null;
+        this._options = null;
         this._translated = null;
     }
 
@@ -142,8 +142,13 @@ export class PbI18n extends LitElement {
         this._translate();
     }
 
+    set options(value) {
+        this._options = value;
+        this._translate();
+    }
+
     _translate() {
-        const transl = get(this.key, this.options);
+        const transl = get(this.key, this._options);
         if (transl && transl !== this.key) {
             this._translated = transl;
         } else {
