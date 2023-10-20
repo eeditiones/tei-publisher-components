@@ -273,7 +273,10 @@
       "run": "Run",
       "model": "Select a model",
       "denied": "Unsaved changes found: please store or discard them first."
-    }
+    },
+    "confirm-discard-title": "Discard",
+    "confirm-discard": "Discard the list of occurrences?",
+    "doc-count": "{{count}} von {{total}}"
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",

@@ -78,7 +78,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     return html`
       <paper-input
         id="query"
-        label="${translate('Search for')}"
+        label="${translate('annotations.lookup')}"
         always-float-label
         value="${this.query}"
         @change="${this._queryChanged}"
