@@ -1,3 +1,10 @@
+## [2.12.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.7...v2.12.8) (2023-10-22)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** provide getter/setter for current value ([72443d8](https://github.com/eeditiones/tei-publisher-components/commit/72443d880ea252fd1cfe58b43d49cf26a06f8a11))
+
 ## [2.12.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.6...v2.12.7) (2023-10-20)
 
 
