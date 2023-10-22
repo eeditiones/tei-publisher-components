@@ -84,6 +84,21 @@ export class PbComboBox extends pbMixin(LitElement) {
         };
     }
 
+    get value() {
+        return this._select ? this._select.getValue() : null;
+    }
+
+    set value(value) {
+        if (!this._select) {
+            return;
+        }
+        this._select.clear(true);
+        this._select.sync();
+
+        this._select.setValue(value, false);
+        this._select.sync();
+    }
+
     /**
      * Set a javascript function to be called whenever an item
      * needs to be rendered. The function will be passed the data
@@ -164,8 +179,8 @@ export class PbComboBox extends pbMixin(LitElement) {
             }
             options.placeholder = i18n(this.placeholder);
             options.closeAfterSelect = this.closeAfterSelect;
-            options.onBlur = () => this.emitTo(this.onBlur);
-            options.onChange = () => this.emitTo(this.onChange);
+            options.onBlur = () => this.emitTo(this.onBlur, { value: this.value });
+            options.onChange = () => this.emitTo(this.onChange, { value: this.value });
             options.plugins = ['change_listener'];
 
             this._select = new TomSelect(input, options);
