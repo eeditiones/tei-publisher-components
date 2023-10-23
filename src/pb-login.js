@@ -41,6 +41,7 @@ export class PbLogin extends pbMixin(LitElement) {
             /**
              * If set, only users being members of the specified group are
              * allowed to log in.
+             * Multiple groups can be defined separating items by space and/or punctuation.
              */
             group: {
                 type: String
@@ -268,9 +269,31 @@ export class PbLogin extends pbMixin(LitElement) {
         this.emitTo('pb-login', resp);
     }
 
+    /**
+     * 
+     * @param {Array<String>} arr array containg string values (name of groups)
+     * @param {String} val value to check if it's in the array
+     * @returns true if the checked values is in the array
+     */
+    _isItemInArray(arr, val) {
+        return arr.some((arrVal) => val === arrVal);
+    }
+    
+    /**
+     * 
+     * @param {object} info object returned by login function; 
+     * contains groups the user is a member of
+     * @returns true if user is member of one of defined groups
+     */
     _checkGroup(info) {
         if (this.group) {
-            return info.groups && info.groups.indexOf(this.group) > -1;
+            let groupArray = this.group.split(/\W+/);
+            let exists = false;
+            if(info.groups)
+                groupArray.forEach(async (oneItem) => {
+                    exists = this._isItemInArray(info.groups, oneItem) || exists;
+                });
+            return exists;
         }
         return true;
     }
