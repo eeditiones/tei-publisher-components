@@ -1,3 +1,10 @@
+## [2.12.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.8...v2.12.9) (2023-10-23)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** drop change listener as this is leading to display issues ([73cf4be](https://github.com/eeditiones/tei-publisher-components/commit/73cf4be4171414479534e7c1f3bc56c870abfb17))
+
 ## [2.12.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.7...v2.12.8) (2023-10-22)
 
 
