@@ -1,3 +1,10 @@
+## [2.12.10](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.9...v2.12.10) (2023-10-23)
+
+
+### Bug Fixes
+
+* **pb-load:** add property 'plain' to prevent pb-load injecting internal parameters like 'start' or 'language' ([a9b7b8f](https://github.com/eeditiones/tei-publisher-components/commit/a9b7b8f08fa61d55ea61f409ebdd7fbcf93acf40))
+
 ## [2.12.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.8...v2.12.9) (2023-10-23)
 
 
