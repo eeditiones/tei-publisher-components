@@ -30,6 +30,10 @@ export class Registry {
     this._register = name;
   }
   
+  get editable() {
+    return false;
+  }
+  
   /**
    * Query the authority and return a RegistryResult.
    *

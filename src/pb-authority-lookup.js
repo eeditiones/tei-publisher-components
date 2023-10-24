@@ -101,7 +101,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log('<pb-authority-lookup> Retrieving info for %s from %s', id, register);
+    console.log('<pb-authority-lookup> Retrieving info for %s from %s using %s', id, register, authority.name);
     let info = await authority.info(id, container);
     if (info.strings) {
       info = Object.assign(info, {
@@ -131,14 +131,16 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         ${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` :null}
         <div><span class="register" part="register">${item.register}</span></div>
 
-
-          <div class="icons">
-              <paper-icon-button
-                  icon="editor:mode-edit"
-                  @click="${() => this._select(item)}"
-              ></paper-icon-button>
-          </div>
-          ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
+        ${ 
+          this._authorities[this.type].editable ?
+            html`<div class="icons">
+                <paper-icon-button
+                    icon="editor:mode-edit"
+                    @click="${() => this._select(item)}"
+                ></paper-icon-button>
+            </div>` : null 
+        }
+        ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
 
       </li>
     `;

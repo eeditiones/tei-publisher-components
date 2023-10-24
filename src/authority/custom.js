@@ -6,6 +6,7 @@ export class Custom extends Registry {
 
   constructor(endpoint, configElem) {
     super(configElem);
+    this._editable = configElem.hasAttribute('edit');
     this._endpoint = endpoint;
     this._connectors = createConnectors(endpoint, configElem);
     this._connectors.forEach((connector) => {
@@ -16,6 +17,10 @@ export class Custom extends Registry {
       this._endpoint,
       this._connectors,
     );
+  }
+
+  get editable() {
+    return this._editable;
   }
 
   async query(key) {
