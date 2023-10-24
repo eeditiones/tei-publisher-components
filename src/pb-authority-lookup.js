@@ -85,10 +85,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       >
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
       </paper-input>
+      <slot name="authform"></slot>
       <div id="output">
-        <table part="output">
+        <ul part="output">
           ${this._results.map(item => this._formatItem(item))}
-        </table>
+        </ul>
       </div>
     `;
   }
@@ -112,28 +113,37 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   _formatItem(item) {
     return html`
-      <tr>
-        <td>
-          <paper-icon-button
-            icon="icons:add"
-            @click="${() => this._select(item)}"
-          ></paper-icon-button>
-        </td>
-        <td>
-          <div>
+      <li>
+          <div class="icons">
+              <paper-icon-button
+                  icon="icons:link"
+                  @click="${() => this._select(item)}"
+                  title="link to"
+              ></paper-icon-button>
+          </div>
+          <div class="link">
             ${item.link
               ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
               : html`${unsafeHTML(item.label)}`
             }
           </div>
+        ${item.occurrences > 0 ? html`<div><span class="occurrences" part="occurrences">${item.occurrences}</span></div>` : null}
+        ${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` :null}
+        <div><span class="register" part="register">${item.register}</span></div>
+
+
+          <div class="icons">
+              <paper-icon-button
+                  icon="editor:mode-edit"
+                  @click="${() => this._select(item)}"
+              ></paper-icon-button>
+          </div>
           ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
-        </td>
-        <td>${item.occurrences > 0 ? html`<span class="occurrences" part="occurrences">${item.occurrences}</span>` : null}</td>
-        <td>${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` : null}</td>
-        <td><span class="register" part="register">${item.register}</span></td>
-      </tr>
+
+      </li>
     `;
   }
+
 
   _select(item) {
     const connector = this._authorities[item.register];
@@ -214,6 +224,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       :host {
         display: flex;
         flex-direction: column;
+          justify-content: space-between;
+      }
+
+      .link {
+        flex-grow: 2;
       }
       #output {
         overflow: auto;
@@ -221,13 +236,30 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         scrollbar-width: none;
       }
 
-      #output table {
+      /*
+      #output .icons{
+          visibility: hidden;
+      }
+      #output .icons:hover{
+          visibility: visible;
+      }
+      */
+
+      #output ul {
         width: 100%;
+        padding: 0;
+        list-style: none;
       }
-      #output td {
-        vertical-align: top;
-        padding-bottom: 8px;
+      #output li {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+          border-bottom: 1px solid #efefef;
       }
+        #output li:hover{
+            background:#efefef;
+        }
       #output td:nth-child(3), #output td:nth-child(4), #output td:nth-child(5) {
         text-align: right;
         vertical-align: middle;
@@ -235,6 +267,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
       .details, .source, .register, .occurrences {
         font-size: .85rem;
+          width: 100%;
       }
 
       .source, .register, .occurrences {

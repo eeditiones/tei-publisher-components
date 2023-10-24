@@ -9,7 +9,7 @@ import { get as i18n } from './pb-i18n.js';
 /**
  * Return the first child of ancestor which contains current.
  * Used to adjust nested anchor points.
- * 
+ *
  * @param {Node} current the anchor node
  * @param {Node} ancestor the context ancestor node
  * @returns {Node} first child of ancestor containing current
@@ -25,7 +25,7 @@ function extendRange(current, ancestor) {
 /**
  * Check if the nodeToCheck should be ignored when computing offsets.
  * Applies e.g. to footnote markers.
- * 
+ *
  * @param {Node} nodeToCheck the node to check
  * @returns true if node should be ignored
  */
@@ -108,7 +108,7 @@ function ancestors(node, selector) {
 /**
  * Find the next text node after the current node.
  * Descends into elements.
- * 
+ *
  * @param {Node} node the current node
  * @returns next text node or the current node if none is found
  */
@@ -210,11 +210,11 @@ function clearProperties(teiRange) {
  * An extended `PbView`, which supports annotations to be added
  * and edited by the user. Handles mouse selection and keeps track
  * of the annotations made.
- * 
+ *
  * Interaction with the actual editing form is entirely done via events.
  * The class itself does not provide any editing facility, except for
  * handling deletions.
- * 
+ *
  * @fires pb-annotations-loaded - fired after text was loaded and annotations were drawn
  * @fires pb-selection-changed - fired when user selects text
  * @fires pb-annotations-changed - fired when an annotation was added or changed
@@ -227,7 +227,7 @@ class PbViewAnnotate extends PbView {
        * Configures the default annotation property containing the key for authority entries.
        * Default: 'ref', corresponding to TEI attribute @ref. Change to 'corresp' or 'key' when
        * using those attributes instead.
-       * 
+       *
        * You can also define a custom mapping of annotation types to key properties, e.g. if you would
        * like to use @key for some elements, but @corresp for others.
        */
@@ -325,7 +325,7 @@ class PbViewAnnotate extends PbView {
       this._clearMarkers();
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
-    
+
     this._resizeHandler();
   }
 
@@ -385,7 +385,7 @@ class PbViewAnnotate extends PbView {
     super.zoom(direction);
     window.requestAnimationFrame(() => this.refreshMarkers());
   }
-  
+
   getKey(type) {
     return this.keyMap[type] || this.key;
   }
@@ -501,7 +501,7 @@ class PbViewAnnotate extends PbView {
   }
 
   updateAnnotations(silent = false) {
-    this._ranges.forEach((teiRange) => { 
+    this._ranges.forEach((teiRange) => {
       let span;
       switch (teiRange.type) {
         case 'delete':
@@ -522,7 +522,7 @@ class PbViewAnnotate extends PbView {
           break;
         default:
           this._updateAnnotation(teiRange, silent, true);
-          break;   
+          break;
       }
     });
     window.requestAnimationFrame(() => this.refreshMarkers());
@@ -563,8 +563,7 @@ class PbViewAnnotate extends PbView {
           this.inHandler = false;
         }, 100);
       }
-
-      this.emitTo('pb-selection-changed', { hasContent: true, range });
+      this.emitTo('pb-selection-changed', { hasContent: true, range, selected:  selection.toString()});
     } else {
       this.emitTo('pb-selection-changed', { hasContent: false });
     }
@@ -749,7 +748,8 @@ class PbViewAnnotate extends PbView {
       editBtn.setAttribute('title', i18n('annotations.edit'));
       editBtn.addEventListener('click', () => {
         const data = JSON.parse(span.dataset.annotation);
-        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data }));
+        const text = span.textContent;
+        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
       });
       div.appendChild(editBtn);
     }
@@ -794,7 +794,7 @@ class PbViewAnnotate extends PbView {
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
         if (data[this.getKey(type)]) {
-          this.emitTo('pb-annotation-detail', {
+          this.emitTo   ('pb-annotation-detail', {
             type,
             id: data[this.getKey(type)],
             container: info,
