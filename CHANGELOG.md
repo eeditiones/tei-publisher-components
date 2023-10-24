@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.10...v2.13.0) (2023-10-24)
+
+
+### Features
+
+* **pb-authority-lookup:** custom connector can now have an edit button (used by future versions of annotation tool) ([1240172](https://github.com/eeditiones/tei-publisher-components/commit/124017238557f1d6bfe93c6a4da91e6caece6f31))
+
 ## [2.12.10](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.9...v2.12.10) (2023-10-23)
 
 
