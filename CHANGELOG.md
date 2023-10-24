@@ -1,3 +1,10 @@
+## [2.13.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.0...v2.13.1) (2023-10-24)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** fix issue with authority entry list display ([427ac63](https://github.com/eeditiones/tei-publisher-components/commit/427ac63039cd9b572a0d2a57306964cb02bf7d45))
+
 # [2.13.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.10...v2.13.0) (2023-10-24)
 
 
