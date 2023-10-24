@@ -226,7 +226,6 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       :host {
         display: flex;
         flex-direction: column;
-          justify-content: space-between;
       }
 
       .link {
