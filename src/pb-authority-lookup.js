@@ -101,7 +101,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log('<pb-authority-lookup> Retrieving info for %s from %s using %s', id, register, authority.name);
+    console.log('<pb-authority-lookup> Retrieving info for %s from %s using %s', id, register, authority.constructor.name);
     let info = await authority.info(id, container);
     if (info.strings) {
       info = Object.assign(info, {
