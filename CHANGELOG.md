@@ -1,3 +1,10 @@
+## [2.13.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.1...v2.13.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,airtable:** avoid javascript console error, report missing record for key ([c483125](https://github.com/eeditiones/tei-publisher-components/commit/c4831252602062685b03f3f3fe3f1f51776ddc04))
+
 ## [2.13.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.0...v2.13.1) (2023-10-24)
 
 
