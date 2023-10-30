@@ -276,7 +276,7 @@
     },
     "confirm-discard-title": "Discard",
     "confirm-discard": "Discard the list of occurrences?",
-    "doc-count": "{{count}} von {{total}}"
+    "doc-count": "{{count}} out of {{total}}"
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",
