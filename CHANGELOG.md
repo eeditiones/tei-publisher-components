@@ -1,3 +1,16 @@
+# [2.14.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.2...v2.14.0) (2023-11-03)
+
+
+### Bug Fixes
+
+* **pb-select-feature:** determine initial state on load ([2a80ce0](https://github.com/eeditiones/tei-publisher-components/commit/2a80ce0f362025c6c09c205fddfb0e79c7514711))
+* **pb-toggle-feature:** if selector specified, emit event on load ([7d3ff92](https://github.com/eeditiones/tei-publisher-components/commit/7d3ff9284f2e9afbf7d381654928bd3371f38060))
+
+
+### Features
+
+* **pb-toggle-feature:** add attribute "global": if set, toggles any matching selectors below the surrounding pb-page (i.e. not just in connected pb-view/pb-load) ([18ee228](https://github.com/eeditiones/tei-publisher-components/commit/18ee22805550e5f663b89c7a1c4d51442e36cde3))
+
 ## [2.13.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.1...v2.13.2) (2023-10-26)
 
 
