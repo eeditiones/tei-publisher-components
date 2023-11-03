@@ -209,15 +209,17 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
         this.signalReady();
 
-        if (this.global) {
-            waitOnce('pb-page-ready', () => {
+        waitOnce('pb-page-ready', () => {
+            if (this.global) {
                 this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: {
                     selector: this.selector,
                     command: this.action,
                     state: this.checked
                 }, bubbles: true, composed: true }));
+            } else if (this.selector) {
+                this.emitTo('pb-toggle', {refresh: false});
+            }
         });
-        }
     }
 
     _setChecked(param) {
