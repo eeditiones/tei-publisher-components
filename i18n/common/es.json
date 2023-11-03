@@ -173,7 +173,7 @@
         "predicate-placeholder": "[Definir otras condiciones que deben cumplirse (en xquery)]",
         "link-with-or": "o",
         "css-class-placeholder": "[Definir nombre de clase CSS (para CSS externo)]",
-        "custom-behaviour-placeholder": "[Behaviour personalizado]",
+        "custom-behaviour-placeholder": "[Comportamiento personalizado]",
         "template-placeholder": "[Definir plantilla de código para aplicar al contenido]",
         "param-name-placeholder": "[Nombre del parámetro]",
         "empty": "[Vacío]",
