@@ -1,0 +1,5 @@
+/**
+ * Copyright 2018 The Pennsylvania State University
+ * @license Apache-2.0, see License.md for full text.
+ */
+class t{constructor(){this.imports={},this.webpack=!1,this.import=(t,i,e=!1)=>this.load(t,i,e),this.load=(t,i,e=!1)=>{let o=this.imports[t],s=!e&&this.webpack&&this.webpack[t];return new Promise(s||o?(i,e)=>{i(this.imports[t])}:(e,o)=>{const s=document.createElement("script");s.src=i,s.setAttribute("data-name",t),this.imports[t]=i,s.onload=()=>{e(this.imports[t]),this.imports[t]=!0,setTimeout(()=>{const e=new CustomEvent(`es-bridge-${t}-loaded`,{bubbles:!0,cancelable:!0,detail:{name:t,location:i}});document.dispatchEvent(e)},100)},s.onerror=()=>{o(new Error(`Failed to load ${t} script with location ${i}.`)),delete this.imports[t],this.imports[t]=!1},document.documentElement.appendChild(s)})}}}window.ESGlobalBridge=window.ESGlobalBridge||{},window.ESGlobalBridge.requestAvailability=()=>(window.ESGlobalBridge.instance||(window.ESGlobalBridge.instance=new t),window.ESGlobalBridge.instance);window.ESGlobalBridge.requestAvailability();
