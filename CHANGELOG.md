@@ -1,3 +1,10 @@
+## [2.14.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.0...v2.14.1) (2023-11-12)
+
+
+### Bug Fixes
+
+* **pb-tify:** instead of using a custom property, link to the transcription page is now specified in a "rendering" property on the canvas ([c092878](https://github.com/eeditiones/tei-publisher-components/commit/c0928785ce31db2a95e765fde203e0c1e7443ec5))
+
 # [2.14.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.2...v2.14.0) (2023-11-03)
 
 
