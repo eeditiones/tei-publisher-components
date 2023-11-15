@@ -8,6 +8,12 @@ import '@polymer/paper-icon-button';
 
 /**
  * Performs authority lookups via configurable connectors.
+ * 
+ * @fires pb-authority-select - Fired when user selects an entry from the list
+ * @fires pb-authority-edit-entity - Fired when user clicks the edit button next to an entry
+ * @fires pb-authority-new-entity - Fired when user clicks the add new entity button
+ * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and 
+ * authority type
  */
 export class PbAuthorityLookup extends pbMixin(LitElement) {
   static get properties() {
@@ -84,6 +90,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         @change="${this._queryChanged}"
       >
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
+        ${
+          this._authorities[this.type].editable ?
+            html`<paper-icon-button icon="icons:add" @click="${this._addEntity}" slot="suffix"></paper-icon-button>` :
+            null
+        }
       </paper-input>
       <slot name="authform"></slot>
       <div id="output">
@@ -136,7 +147,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
             html`<div class="icons">
                 <paper-icon-button
                     icon="editor:mode-edit"
-                    @click="${() => this._select(item)}"
+                    @click="${() => this._editEntity(item)}"
                 ></paper-icon-button>
             </div>` : null 
         }
@@ -161,6 +172,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.emitTo('pb-authority-select', options);
   }
 
+  _editEntity(item) {
+    this.emitTo('pb-authority-edit-entity', {id: item.id});
+  }
+
   _queryChanged() {
     this._results = [];
       this.query = this.shadowRoot.getElementById('query').value;
@@ -177,6 +192,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       this.emitTo('pb-end-update');
       this.shadowRoot.getElementById('query').focus();
     });
+  }
+
+  _addEntity() {
+    this.emitTo('pb-authority-new-entity', {query: this.query});
   }
 
   _occurrences(items) {
