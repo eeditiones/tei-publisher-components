@@ -1,3 +1,10 @@
+## [2.14.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.1...v2.14.2) (2023-11-15)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** emit event if user clicks add entity ([58e63a4](https://github.com/eeditiones/tei-publisher-components/commit/58e63a47a9c11ca35a6f53620aec5cfc0e52be96))
+
 ## [2.14.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.0...v2.14.1) (2023-11-12)
 
 
