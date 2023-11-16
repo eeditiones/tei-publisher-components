@@ -160,20 +160,31 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   _select(item) {
     const connector = this._authorities[item.register];
-    if (connector) {
-      connector.select(item);
-    }
     const options = {
       strings: item.strings,
       properties: {
         ref: item.id,
       }
     };
-    this.emitTo('pb-authority-select', options);
+    if (connector) {
+      connector
+        .select(item)
+        .then(() => this.emitTo('pb-authority-select', options))
+        .catch((e) => this.emitTo('pb-authority-error', {status: e.message}));
+    } else {
+      this.emitTo('pb-authority-select', options);
+    }
   }
 
   _editEntity(item) {
-    this.emitTo('pb-authority-edit-entity', {id: item.id});
+    const connector = this._authorities[item.register];
+    if (connector) {
+      connector
+        .select(item)
+        .then(() => this.emitTo('pb-authority-edit-entity', {id: item.id}));
+    } else {
+      this.emitTo('pb-authority-edit-entity', {id: item.id});
+    }
   }
 
   _queryChanged() {

@@ -109,7 +109,7 @@ export class Custom extends Registry {
       }
     }
     if (!entry) {
-      return Promise.reject(`No record found for ID ${item.id}`);
+      return Promise.reject(new Error(`No record found for ID ${item.id}`));
     }
     return fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`, {
       method: 'POST',
@@ -120,6 +120,11 @@ export class Custom extends Registry {
 			},
 			body: JSON.stringify(entry),
     })
-      .then((response) => response.json());
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      return Promise.reject(Error(response.status.toString()));
+    });
   }
 }
