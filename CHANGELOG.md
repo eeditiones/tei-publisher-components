@@ -1,3 +1,10 @@
+## [2.14.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.2...v2.14.3) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,custom:** trigger pb-authority-error if saving to local registry fails ([66edabc](https://github.com/eeditiones/tei-publisher-components/commit/66edabc50913c38bcf20a9094d995800f8c17271))
+
 ## [2.14.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.1...v2.14.2) (2023-11-15)
 
 
