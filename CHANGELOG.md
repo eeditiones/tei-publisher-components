@@ -1,3 +1,10 @@
+## [2.14.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.3...v2.14.4) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** suppress pb-selection-changed event if annotation is deleted ([c5cb4d9](https://github.com/eeditiones/tei-publisher-components/commit/c5cb4d992c1fc9ee34167f3a942715ac55b8232a))
+
 ## [2.14.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.2...v2.14.3) (2023-11-16)
 
 
