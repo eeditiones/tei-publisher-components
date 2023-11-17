@@ -103,13 +103,13 @@ export class Custom extends Registry {
     let entry;
     for (const connector of this._connectors) {
       // eslint-disable-next-line no-await-in-loop
-      entry = await connector.getRecord(item.id);
+      entry = await connector.getRecord(item.id).catch(() => null);
       if (entry) {
         break;
       }
     }
     if (!entry) {
-      return Promise.reject(new Error(`No record found for ID ${item.id}`));
+      return Promise.resolve(item);
     }
     return fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`, {
       method: 'POST',
