@@ -1,3 +1,17 @@
+## [2.14.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.3...v2.14.4) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** suppress pb-selection-changed event if annotation is deleted ([c5cb4d9](https://github.com/eeditiones/tei-publisher-components/commit/c5cb4d992c1fc9ee34167f3a942715ac55b8232a))
+
+## [2.14.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.2...v2.14.3) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,custom:** trigger pb-authority-error if saving to local registry fails ([66edabc](https://github.com/eeditiones/tei-publisher-components/commit/66edabc50913c38bcf20a9094d995800f8c17271))
+
 ## [2.14.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.1...v2.14.2) (2023-11-15)
 
 
