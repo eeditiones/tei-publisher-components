@@ -73,6 +73,7 @@ export class Custom extends Registry {
             resolve({
               id: json.id,
               strings: json.strings,
+              editable: this._editable
             });
             return;
           }
