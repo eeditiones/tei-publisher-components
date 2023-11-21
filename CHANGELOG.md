@@ -1,3 +1,13 @@
+## [2.14.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.5...v2.14.6) (2023-11-21)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add missing i18n labels ([cdf33cb](https://github.com/eeditiones/tei-publisher-components/commit/cdf33cbe6194a4165f308f9e9f94af310def8b7f))
+* **pb-authority-lookup:** fix undefined error ([d549209](https://github.com/eeditiones/tei-publisher-components/commit/d5492091c4b9a02ee6c345e61ad424ee554a70fe))
+* **pb-authority-lookup,custom:** add property to info event details if authority is editable ([fd2e388](https://github.com/eeditiones/tei-publisher-components/commit/fd2e3885402e2cde219be1c3f9db4c162bdfd336))
+* **pb-view-annotate:** add callback function to pb-annotation-detail event; refreshes popover position when called ([b76bf9f](https://github.com/eeditiones/tei-publisher-components/commit/b76bf9fd0cd7df30d5dc89f180dcb313e7ea836c))
+
 ## [2.14.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.4...v2.14.5) (2023-11-17)
 
 
