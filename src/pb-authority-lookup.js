@@ -92,7 +92,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
         ${
           this._authorities[this.type].editable ?
-            html`<paper-icon-button icon="icons:add" @click="${this._addEntity}" slot="suffix"></paper-icon-button>` :
+            html`<paper-icon-button icon="icons:add" @click="${this._addEntity}" title="${translate('annotations.add-entity')}" slot="suffix"></paper-icon-button>` :
             null
         }
       </paper-input>
@@ -148,6 +148,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
                 <paper-icon-button
                     icon="editor:mode-edit"
                     @click="${() => this._editEntity(item)}"
+                    title="${translate('annotations.edit-entity')}"
                 ></paper-icon-button>
             </div>` : null 
         }
