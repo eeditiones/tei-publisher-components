@@ -801,11 +801,12 @@ class PbViewAnnotate extends PbView {
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
         if (data[this.getKey(type)]) {
-          this.emitTo   ('pb-annotation-detail', {
+          this.emitTo('pb-annotation-detail', {
             type,
             id: data[this.getKey(type)],
             container: info,
             span,
+            ready: () => instance.setContent(wrapper)
           });
         } else {
           // show properties as key/value table
