@@ -1,3 +1,10 @@
+## [2.15.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.0...v2.15.1) (2023-11-22)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** pass register type in events ([0d26d6a](https://github.com/eeditiones/tei-publisher-components/commit/0d26d6ab529378bb4c8f5f0b5278efbc667dca7d))
+
 # [2.15.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.6...v2.15.0) (2023-11-22)
 
 
