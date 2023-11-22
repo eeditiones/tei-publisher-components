@@ -278,7 +278,7 @@ class PbViewAnnotate extends PbView {
 
     /** @param {Event} event */
     this._eventHandler = event => {
-      if (event.type === 'selectionchange' && this._inHandler) {
+      if (event.type === 'selectionchange' || this._inHandler) {
         return;
       }
       if (event.type === 'mousedown') {
@@ -657,9 +657,16 @@ class PbViewAnnotate extends PbView {
 
     window.requestAnimationFrame(() => this.refreshMarkers());
 
-    const selection = this._getSelection();
-    selection.removeAllRanges();
-    selection.addRange(newRange);
+    this._inHandler = true;
+    try {
+      const selection = this._getSelection();
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    } catch(e) {
+      console.error('<pb-view-annotate> %s', e.message);
+    } finally {
+      this._inHandler = false;
+    }
   }
 
   editAnnotation(span, properties) {
@@ -794,11 +801,12 @@ class PbViewAnnotate extends PbView {
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
         typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
         if (data[this.getKey(type)]) {
-          this.emitTo   ('pb-annotation-detail', {
+          this.emitTo('pb-annotation-detail', {
             type,
             id: data[this.getKey(type)],
             container: info,
             span,
+            ready: () => instance.setContent(wrapper)
           });
         } else {
           // show properties as key/value table
