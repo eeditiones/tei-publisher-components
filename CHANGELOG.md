@@ -1,3 +1,16 @@
+# [2.15.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.6...v2.15.0) (2023-11-22)
+
+
+### Bug Fixes
+
+* **i18n:** corrects preposition ([0f702ae](https://github.com/eeditiones/tei-publisher-components/commit/0f702aeabdd81e152503a410b048e7dc15af3229))
+* **i18n:** minor correction in es translation ([811ff02](https://github.com/eeditiones/tei-publisher-components/commit/811ff02b91aa461d885933fdba66b6f318e575d4))
+
+
+### Features
+
+* **i18n:** adds missing translations in spanish ([4c231ab](https://github.com/eeditiones/tei-publisher-components/commit/4c231ab9dbdfcbed6429480d637dc676cb7b8aa1))
+
 ## [2.14.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.5...v2.14.6) (2023-11-21)
 
 
