@@ -17,6 +17,8 @@ import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
+ * If empty options for sorting and filtering are set, hidden HTML controls are generated,
+ * even control for deleting document.
  *
  * @slot toolbar - toolbar area
  * @slot - unnamed default slot
@@ -47,6 +49,11 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
                 type: String,
                 attribute: 'sort-by'
             },
+            /** 
+             * List of fields (label and value) 
+             * used for sorting returned document.
+             * If set to empty array ([]) hidden control is generated.
+            */
             sortOptions: {
                 type: Array,
                 attribute: 'sort-options'
@@ -61,6 +68,11 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
                 type: String,
                 attribute: 'filter-by'
             },
+            /** 
+             * List of document parts (label and value) 
+             * used when searching within documents. 
+             * If set to empty array ([]) hidden control is generated.
+            */            
             filterOptions: {
                 type: Array,
                 attribute: 'filter-options'
@@ -247,14 +259,16 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
             </custom-style>
             <slot name="header"></slot>
             <div class="toolbar">
-                <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}" part="sort-dropdown">
-                    <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
-                    ${this.sortOptions.map(option =>
-            html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
-        )}
-                    </paper-listbox>
-                </paper-dropdown-menu>
-                <div>
+                <div class="${this._showFormControl(this.sortOptions)}">
+                    <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}" part="sort-dropdown">
+                        <paper-listbox id="sort-list" selected="${this.sortBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
+                        ${this.sortOptions.map(option =>
+                html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`
+            )}
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
+                <div class="${this._showFormControl(this.filterOptions)}">
                     <paper-dropdown-menu id="filterSelect" label="${translate(this.filterByLabel)}" part="filter-dropdown">
                         <paper-listbox id="filter-list" selected="${this.filterBy}" slot="dropdown-content" class="dropdown-content" attr-for-selected="value" @selected-item-changed="${this._filterChanged}">
                         ${this.filterOptions.map(option =>
@@ -269,7 +283,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
                     <paper-autocomplete-suggestions id="autocomplete" for="filterString" source="${this._suggestions}" remote-source></paper-autocomplete-suggestions>
                 </div>
             </div>
-            <div class="toolbar">
+            <div class="toolbar ${this._canModify(this._allowModification)} ${this._showFormControls()}">
                 <slot name="toolbar"></slot>
                 <paper-button id="delete" part="delete-button" title="${translate('browse.delete')}" class="${this._canModify(this._allowModification)}">
                     <iron-icon icon="delete"></iron-icon>
@@ -535,6 +549,24 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         if (e.keyCode === 13) {
             this._filter();
         }
+    }
+
+    /**
+     * If no options are set (array is empty), control will be hidden.
+     * @param {Array} options 
+     * @returns value of class property: 'hidden' or empty string
+     */
+    _showFormControl(options) {
+        return (options.length === 0) ? 'hidden' : '';
+    }
+
+    /**
+     * Returns style name or empty string for hiding parent control
+     * and control for deleting a document if filter and sort options are not set.
+     * @returns value of class property: 'hidden' or empty string
+     */
+    _showFormControls() {
+       return (this.filterOptions.length === 0 && this.sortOptions.length === 0) ? 'hidden' : '';
     }
 }
 customElements.define('pb-browse-docs', PbBrowseDocs);
