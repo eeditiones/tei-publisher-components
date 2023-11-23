@@ -181,7 +181,7 @@ export class PbComboBox extends pbMixin(LitElement) {
             options.closeAfterSelect = this.closeAfterSelect;
             options.onBlur = () => this.emitTo(this.onBlur, { value: this.value });
             options.onChange = () => this.emitTo(this.onChange, { value: this.value });
-            options.plugins = ['change_listener'];
+            // options.plugins = ['change_listener'];
 
             this._select = new TomSelect(input, options);
         });

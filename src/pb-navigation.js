@@ -27,6 +27,16 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
              */
             keyboard: {
                 type: String
+            },
+            /**
+             * Rendition of the navigation element if it's disabled
+             * Possible values:
+             * - hidden (default if not set; control is removed from the document layout)
+             * - invisible (controll is hidden, but keeped in the document layout)
+             * - visible (control is visible)
+             */
+            rendition : {
+                type: String
             }
         };
     }
@@ -79,13 +89,20 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     static get styles() {
         return css`
-            :host {
-                display: inline;
-            }
-            :host([disabled]) {
-                display: none;
-            }
-        `;
+                :host {
+                    display: inline;
+                }
+                :host([disabled]):host(:not([rendition])), :host([disabled]):host([rendition="hidden"]) {
+                    display: none;
+                }
+                :host([disabled]):host([rendition="invisible"]) {
+                    visibility: hidden;
+                }
+                :host([disabled]):host([rendition="visible"]) {
+                    visibility: visible;
+                    cursor: not-allowed;
+                }
+                `;
     }
 }
 

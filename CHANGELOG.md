@@ -1,3 +1,116 @@
+## [2.15.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.0...v2.15.1) (2023-11-22)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** pass register type in events ([0d26d6a](https://github.com/eeditiones/tei-publisher-components/commit/0d26d6ab529378bb4c8f5f0b5278efbc667dca7d))
+
+# [2.15.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.6...v2.15.0) (2023-11-22)
+
+
+### Bug Fixes
+
+* **i18n:** corrects preposition ([0f702ae](https://github.com/eeditiones/tei-publisher-components/commit/0f702aeabdd81e152503a410b048e7dc15af3229))
+* **i18n:** minor correction in es translation ([811ff02](https://github.com/eeditiones/tei-publisher-components/commit/811ff02b91aa461d885933fdba66b6f318e575d4))
+
+
+### Features
+
+* **i18n:** adds missing translations in spanish ([4c231ab](https://github.com/eeditiones/tei-publisher-components/commit/4c231ab9dbdfcbed6429480d637dc676cb7b8aa1))
+
+## [2.14.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.5...v2.14.6) (2023-11-21)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add missing i18n labels ([cdf33cb](https://github.com/eeditiones/tei-publisher-components/commit/cdf33cbe6194a4165f308f9e9f94af310def8b7f))
+* **pb-authority-lookup:** fix undefined error ([d549209](https://github.com/eeditiones/tei-publisher-components/commit/d5492091c4b9a02ee6c345e61ad424ee554a70fe))
+* **pb-authority-lookup,custom:** add property to info event details if authority is editable ([fd2e388](https://github.com/eeditiones/tei-publisher-components/commit/fd2e3885402e2cde219be1c3f9db4c162bdfd336))
+* **pb-view-annotate:** add callback function to pb-annotation-detail event; refreshes popover position when called ([b76bf9f](https://github.com/eeditiones/tei-publisher-components/commit/b76bf9fd0cd7df30d5dc89f180dcb313e7ea836c))
+
+## [2.14.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.4...v2.14.5) (2023-11-17)
+
+
+### Bug Fixes
+
+* **pb-authority,custom:** select method should not reject promise if no record is found in external authorities: the entry may only exist in the local register ([2c7ec1e](https://github.com/eeditiones/tei-publisher-components/commit/2c7ec1efa393084abcae570c790902d6912f26fd))
+
+## [2.14.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.3...v2.14.4) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** suppress pb-selection-changed event if annotation is deleted ([c5cb4d9](https://github.com/eeditiones/tei-publisher-components/commit/c5cb4d992c1fc9ee34167f3a942715ac55b8232a))
+
+## [2.14.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.2...v2.14.3) (2023-11-16)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,custom:** trigger pb-authority-error if saving to local registry fails ([66edabc](https://github.com/eeditiones/tei-publisher-components/commit/66edabc50913c38bcf20a9094d995800f8c17271))
+
+## [2.14.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.1...v2.14.2) (2023-11-15)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** emit event if user clicks add entity ([58e63a4](https://github.com/eeditiones/tei-publisher-components/commit/58e63a47a9c11ca35a6f53620aec5cfc0e52be96))
+
+## [2.14.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.14.0...v2.14.1) (2023-11-12)
+
+
+### Bug Fixes
+
+* **pb-tify:** instead of using a custom property, link to the transcription page is now specified in a "rendering" property on the canvas ([c092878](https://github.com/eeditiones/tei-publisher-components/commit/c0928785ce31db2a95e765fde203e0c1e7443ec5))
+
+# [2.14.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.2...v2.14.0) (2023-11-03)
+
+
+### Bug Fixes
+
+* **pb-select-feature:** determine initial state on load ([2a80ce0](https://github.com/eeditiones/tei-publisher-components/commit/2a80ce0f362025c6c09c205fddfb0e79c7514711))
+* **pb-toggle-feature:** if selector specified, emit event on load ([7d3ff92](https://github.com/eeditiones/tei-publisher-components/commit/7d3ff9284f2e9afbf7d381654928bd3371f38060))
+
+
+### Features
+
+* **pb-toggle-feature:** add attribute "global": if set, toggles any matching selectors below the surrounding pb-page (i.e. not just in connected pb-view/pb-load) ([18ee228](https://github.com/eeditiones/tei-publisher-components/commit/18ee22805550e5f663b89c7a1c4d51442e36cde3))
+
+## [2.13.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.1...v2.13.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup,airtable:** avoid javascript console error, report missing record for key ([c483125](https://github.com/eeditiones/tei-publisher-components/commit/c4831252602062685b03f3f3fe3f1f51776ddc04))
+
+## [2.13.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.13.0...v2.13.1) (2023-10-24)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** fix issue with authority entry list display ([427ac63](https://github.com/eeditiones/tei-publisher-components/commit/427ac63039cd9b572a0d2a57306964cb02bf7d45))
+
+# [2.13.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.10...v2.13.0) (2023-10-24)
+
+
+### Features
+
+* **pb-authority-lookup:** custom connector can now have an edit button (used by future versions of annotation tool) ([1240172](https://github.com/eeditiones/tei-publisher-components/commit/124017238557f1d6bfe93c6a4da91e6caece6f31))
+
+## [2.12.10](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.9...v2.12.10) (2023-10-23)
+
+
+### Bug Fixes
+
+* **pb-load:** add property 'plain' to prevent pb-load injecting internal parameters like 'start' or 'language' ([a9b7b8f](https://github.com/eeditiones/tei-publisher-components/commit/a9b7b8f08fa61d55ea61f409ebdd7fbcf93acf40))
+
+## [2.12.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.8...v2.12.9) (2023-10-23)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** drop change listener as this is leading to display issues ([73cf4be](https://github.com/eeditiones/tei-publisher-components/commit/73cf4be4171414479534e7c1f3bc56c870abfb17))
+
 ## [2.12.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.12.7...v2.12.8) (2023-10-22)
 
 
