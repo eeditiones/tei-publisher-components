@@ -41,7 +41,7 @@ export class PbLogin extends pbMixin(LitElement) {
             /**
              * If set, only users being members of the specified group are
              * allowed to log in.
-             * Multiple groups can be defined separating items by space and/or punctuation.
+             * Multiple groups can be defined separating items by space and/or comma.
              */
             group: {
                 type: String
@@ -287,7 +287,7 @@ export class PbLogin extends pbMixin(LitElement) {
      */
     _checkGroup(info) {
         if (this.group) {
-            let groupArray = this.group.split(/\W+/);
+            let groupArray = this.group.split(/[\s+,]+/);
             let exists = false;
             if(info.groups)
                 groupArray.forEach(async (oneItem) => {
