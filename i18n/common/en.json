@@ -276,7 +276,10 @@
     },
     "confirm-discard-title": "Discard",
     "confirm-discard": "Discard the list of occurrences?",
-    "doc-count": "{{count}} von {{total}}"
+    "doc-count": "{{count}} von {{total}}",
+    "toggle": "Show/hide preview/control panel",
+    "add-entity": "Create entity",
+    "edit-entity": "Edit entity"
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",

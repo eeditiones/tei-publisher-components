@@ -99,10 +99,15 @@ export class PbTify extends pbMixin(LitElement) {
     }
 
     _switchPage(canvas) {
-        const renderLink = canvas['https://teipublisher.com/page'];
-        if (renderLink) {
-            console.log('<pb-tify> page changed, emitting refresh with params %o', renderLink);
-            this.emitTo('pb-refresh', renderLink);
+        const rendering = canvas.rendering;
+        if (rendering && rendering.length > 0) {
+            const url = new URL(rendering[0]['@id']);
+            const params = {};
+            url.searchParams.forEach((value, key) => {
+                params[key] = value;
+            })
+            console.log('<pb-tify> page changed, emitting refresh with params %o', params);
+            this.emitTo('pb-refresh', params);
         }
     }
 
