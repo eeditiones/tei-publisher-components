@@ -29,7 +29,8 @@ export class PbRestricted extends pbMixin(LitElement) {
             /**
              * If set, requires the logged in user to be member of
              * the given group.
-             */
+             * Multiple groups can be defined separating items by space and/or comma.
+              */
             group: {
                 type: String
             }
@@ -78,6 +79,22 @@ export class PbRestricted extends pbMixin(LitElement) {
         `;
     }
 
+    /**
+     * 
+     * @param {Array<String>} arr array containg string values (name of groups)
+     * @param {String} val value to check if it's in the array
+     * @returns true if the checked values is in the array
+     */
+    _isItemInArray(arr, val) {
+        return arr.some((arrVal) => val === arrVal);
+    }
+
+    /**
+     * 
+     * @param {object} user user name returned by login function; 
+     * @param {object} groups contains groups (an array) the logged user is a member of
+     * @returns true if user is member of one of defined groups
+     */
     _loggedIn(user, groups) {
         if (user == null) {
             return false;
@@ -86,7 +103,12 @@ export class PbRestricted extends pbMixin(LitElement) {
             if (!groups) {
                 return false;
             }
-            return groups.indexOf(this.group) > -1;
+            let groupArray = this.group.split(/[\s+,]+/);
+            let exists = false;
+            groupArray.forEach(async (oneItem) => {
+                exists = this._isItemInArray(groups, oneItem) || exists;
+            });
+            return exists;
         }
         return true;
     }
