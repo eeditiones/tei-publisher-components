@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.1...v2.15.2) (2023-12-22)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** always disable client-side filtering if there's a remote source configured ([5331ca4](https://github.com/eeditiones/tei-publisher-components/commit/5331ca483576f4032c9fa073377e149f49c9dfc8))
+
 ## [2.15.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.0...v2.15.1) (2023-11-22)
 
 
