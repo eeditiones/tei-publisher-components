@@ -157,7 +157,7 @@ export class PbComboBox extends pbMixin(LitElement) {
                 const url = this.toAbsoluteURL(this.source);
                 options.labelField = 'text';
                 options.valueField = 'value';
-                options.searchField = ['text', 'value'];
+                options.searchField = [];
                 options.preload = this.preload;
                 options.load = (query, callback) => {
                     fetch(`${url}?query=${encodeURIComponent(query)}`, {
