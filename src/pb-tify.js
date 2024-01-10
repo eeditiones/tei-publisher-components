@@ -20,10 +20,9 @@ function _injectStylesheet(path) {
  * Requires a proper manifest listing the resources to show. `pb-facs-link`
  * can be used to navigate to a page.
  *
- * @fires pb-refresh - if user opens another page and the corresponding canvas
- * has an extension property "https://teipublisher.com/page", listing the parameters
- * to be passed to the event.
- * @fires pb-load-facsimile - when received, opens the page denoted by the
+ * @fires pb-refresh - fired if user navigates to another page within the viewer. Parameters to be passed
+ * with the event will be copied from the `@id` URL declared in the `rendering` property of the canvas.
+ * @fires pb-show-annotation - when received, opens the the manifest given in `file` and the page denoted by the
  * `order` property in the event (see `pb-facs-link`). Page counts start at 1.
  */
 export class PbTify extends pbMixin(LitElement) {
@@ -46,19 +45,33 @@ export class PbTify extends pbMixin(LitElement) {
         this._initialPages = null;
     }
 
+    attributeChangedCallback(name, oldVal, newVal) {
+        super.attributeChangedCallback(name, oldVal, newVal);
+        
+        if (name === 'manifest' && newVal) {
+            this.manifest = newVal;
+            this._initViewer();
+        }
+    }
+
     async connectedCallback() {
         super.connectedCallback();
 
         _injectStylesheet(this.cssPath);
 
-        this.subscribeTo('pb-load-facsimile', (ev) => {
-            if (ev.detail && ev.detail.order && this._tify) {
+        this.subscribeTo('pb-show-annotation', (ev) => {
+            if (ev.detail) {
+                this._initialPages = ev.detail.order ? Number(ev.detail.order) : Number.POSITIVE_INFINITY;
+                if (this._initialPages === Number.POSITIVE_INFINITY) {
+                    this._initialPages = 1;
+                }
+                const url = ev.detail.file || ev.detail.url;
+                if (url && url !== this.manifest) {
+                    this.manifest = ev.detail.file;
+                    this._initViewer();
                 // check if tify is already initialized
-                if (this._setPage) {
-                    this._setPage(parseInt(ev.detail.order, 10));
-                } else {
-                    // remember page and wait for tify
-                    this._initialPages = parseInt(ev.detail.order, 10);
+                } else if (this._setPage) {
+                    this._setPage(this._initialPages);
                 }
             }
         });
@@ -68,34 +81,48 @@ export class PbTify extends pbMixin(LitElement) {
         super.firstUpdated();
 
         waitOnce('pb-page-ready', () => {
-            this._tify = new Tify({
-                manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint())
-            });
-            this._tify.ready.then(() => { 
-                this.signalReady();
-                // open initial page if set earlier via pb-load-facsimile event
-                this._tify.setPage(this._initialPages);
+            this._container = document.createElement('div');
+            this._container.style.height = '100%';
+            this._container.style.width = '100%';
+            this.appendChild(this._container);
 
-                // extend tify's setPage function to allow emitting an event
-                const {app} = this._tify;
-                this._setPage = app.setPage;
-
-                app.setPage = (pages) => {
-                    const page = Array.isArray(pages) ? pages[0] : pages;
-                    const canvas = app.$root.canvases[page - 1];
-                    
-                    this._switchPage(canvas);
-                    this._setPage(pages);
-                };
-            });
-
-            const container = document.createElement('div');
-            container.style.height = '100%';
-            container.style.width = '100%';
-            this.appendChild(container);
-
-            this._tify.mount(container);
+            this._initViewer();
         });
+    }
+
+    _initViewer() {
+        if (!this.manifest) {
+            return;
+        }
+
+        if (this._tify) {
+            this._tify.destroy();
+        }
+
+        this._tify = new Tify({
+            manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint())
+        });
+        this._tify.ready.then(() => { 
+            this.signalReady();
+            // open initial page if set earlier via pb-load-facsimile event
+            if (this._initialPages) {
+                this._tify.setPage(this._initialPages);
+            }
+
+            // extend tify's setPage function to allow emitting an event
+            const {app} = this._tify;
+            this._setPage = app.setPage;
+
+            app.setPage = (pages) => {
+                const page = Array.isArray(pages) ? pages[0] : pages;
+                const canvas = app.$root.canvases[page - 1];
+                
+                this._switchPage(canvas);
+                this._setPage(pages);
+            };
+        });
+
+        this._tify.mount(this._container);
     }
 
     _switchPage(canvas) {
