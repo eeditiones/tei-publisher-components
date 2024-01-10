@@ -1,3 +1,10 @@
+## [2.15.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.2...v2.15.3) (2024-01-10)
+
+
+### Bug Fixes
+
+* **pb-tify:** support changing the displayed manifest by reacting to 'pb-show-annotation' emitted by 'pb-facs-link'. Use the URL given in [@facs](https://github.com/facs) as manifest URL. ([1f7e6ff](https://github.com/eeditiones/tei-publisher-components/commit/1f7e6ffcd2085a9c381379e94930f77d128879bb))
+
 ## [2.15.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.1...v2.15.2) (2023-12-22)
 
 
