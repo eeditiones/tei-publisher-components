@@ -479,7 +479,7 @@ class PbViewAnnotate extends PbView {
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
-    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass}`;
+    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${teiRange.before ? 'before' : ''}`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
 
@@ -585,13 +585,17 @@ class PbViewAnnotate extends PbView {
 
   addAnnotation(info) {
     const range = info.range || this._currentSelection;
+    if (range.collapsed && !info.before) {
+      return null;
+    }
     const startRange = rangeToPoint(range.startContainer, range.startOffset);
     const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
     const adjustedRange = {
       context: startRange.parent,
       start: startRange.offset,
-      end: endRange.offset,
-      text: range.cloneContents().textContent,
+      end: info.before ? startRange.offset : endRange.offset,
+      text: info.before ? '' : range.cloneContents().textContent,
+      before: info.before
     };
     if (info.type) {
       adjustedRange.type = info.type;
@@ -848,19 +852,21 @@ class PbViewAnnotate extends PbView {
   _showMarker(span, root, rootRect, margin = 0) {
     const rects = span.getClientRects();
     const type = span.dataset.type;
-    for (let i = 0; i < rects.length; i++) {
-      const rect = rects[i];
-      const marker = document.createElement('div');
-      marker.className = `marker annotation-${type}`;
-      marker.style.position = 'absolute';
-      marker.style.left = `${rect.left - rootRect.left}px`;
-      marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
-      marker.style.marginTop = `${margin}px`;
-      marker.style.width = `${rect.width}px`;
-      marker.style.height = `3px`;
-      marker.style.backgroundColor = `var(--pb-annotation-${type})`;
-      marker.part = 'annotation';
-      root.appendChild(marker);
+    if (!span.classList.contains('before')) {
+      for (let i = 0; i < rects.length; i++) {
+        const rect = rects[i];
+        const marker = document.createElement('div');
+        marker.className = `marker annotation-${type}`;
+        marker.style.position = 'absolute';
+        marker.style.left = `${rect.left - rootRect.left}px`;
+        marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
+        marker.style.marginTop = `${margin}px`;
+        marker.style.width = `${rect.width}px`;
+        marker.style.height = `3px`;
+        marker.style.backgroundColor = `var(--pb-annotation-${type})`;
+        marker.part = 'annotation';
+        root.appendChild(marker);
+      }
     }
 
     this._createTooltip(span);
@@ -1134,6 +1140,11 @@ class PbViewAnnotate extends PbView {
             text-decoration: none;
             font-variant: normal;
             padding: 2px;
+        }
+
+        .annotation.before::after {
+          margin-left: 0;
+          border-radius: 4px;
         }
 
         [part=highlight] {
