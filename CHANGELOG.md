@@ -1,3 +1,10 @@
+# [2.16.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.3...v2.16.0) (2024-01-12)
+
+
+### Features
+
+* **pb-view-annotate:** support (potentially empty) annotations to be inserted before the current selection, e.g. <pb> ([acbecd3](https://github.com/eeditiones/tei-publisher-components/commit/acbecd3ee7a92044a97f930be9ae89e13243004f))
+
 ## [2.15.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.2...v2.15.3) (2024-01-10)
 
 
