@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import "@lrnwebcomponents/es-global-bridge";
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { get as i18n } from "./pb-i18n.js";
 import './pb-map-layer.js';
 import './pb-map-icon.js';
 
@@ -29,6 +30,7 @@ import './pb-map-icon.js';
  *   fitBounds: Boolean - if true, recompute current zoom level to show all markers
  * }
  * ```
+ * @fires pb-geocode - emitted if geocoding is enabled and the user searches or selects a location from the map
  */
 export class PbLeafletMap extends pbMixin(LitElement) {
     static get properties() {
@@ -96,6 +98,20 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 type: String,
                 attribute: 'css-path'
             },
+            /**
+             * Enables geocoding: an additional control will allow users to search for a place.
+             * Reverse geocoding is also possible: single clicking on the map will request information
+             * about the current location.
+             * 
+             * In both cases, a `pb-geocode` event will be emitted containing additional information
+             * about the place in the event details (see demo).
+             * 
+             * For lookups the free OSM/Nominatim service is used.
+             */
+            geoCoding: {
+                type: Boolean,
+                attribute: 'geo-coding'
+            },
             _map: {
                 type: Object
             }
@@ -118,6 +134,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         this.fitMarkers = false;
         this.disableClusteringAt = null;
         this._icons = {};
+        this.geoCoding = false;
     }
 
     connectedCallback() {
@@ -191,6 +208,10 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             if (ev.detail.coordinates) {
                 this.latitude = ev.detail.coordinates.latitude;
                 this.longitude = ev.detail.coordinates.longitude;
+                if (ev.detail.clear) {
+                    this._markerLayer.clearLayers();
+                }
+
                 if (!this._hasMarker(this.latitude, this.longitude)) {
                     const marker = L.marker([this.latitude, this.longitude]);
                     marker.addEventListener('click', () => {
@@ -239,17 +260,28 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
-    firstUpdated() {
+    async firstUpdated() {
         if (!this.toggle) {
             this.disabled = false;
         }
+
+        if (window.L !== undefined) {
+            this._initMap();
+            return;
+        }
+
         window.ESGlobalBridge.requestAvailability();
         const leafletPath = resolveURL('../lib/leaflet-src.js');
         const pluginPath = resolveURL('../lib/leaflet.markercluster-src.js');
-        window.ESGlobalBridge.instance.load("leaflet", leafletPath)
-        .then(() => window.ESGlobalBridge.instance.load("plugin", pluginPath));
+        const geoCodingPath = resolveURL('../lib/Control.Geocoder.min.js');
+        await window.ESGlobalBridge.instance.load("leaflet", leafletPath);
+        await window.ESGlobalBridge.instance.load("plugin", pluginPath);
+        if (this.geoCoding) {
+            await window.ESGlobalBridge.instance.load("geocoding", geoCodingPath);
+        }
+
         window.addEventListener(
-            "es-bridge-plugin-loaded",
+            `es-bridge-${this.geocoding ? 'geoCoding' : 'plugin'}-loaded`,
             this._initMap.bind(this),
             { once: true }
         );
@@ -260,6 +292,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         return html`
             <link rel="Stylesheet" href="${cssPath}/leaflet.css">
             <link rel="Stylesheet" href="${cssPath}/MarkerCluster.Default.css">
+            ${this.geoCoding ? html`<link rel="Stylesheet" href="${cssPath}/Control.Geocoder.css">` : null}
             <div id="map" style="height: 100%; width: 100%"></div>
         `;
     }
@@ -338,6 +371,55 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             L.control.closeButton = (options) => new L.Control.CloseButton(options);
             L.control.closeButton({ position: 'topright' }).addTo(this._map);
         }
+
+        this._configureGeoCoding();
+    }
+
+    _configureGeoCoding() {
+        if (!this.geoCoding) {
+            return;
+        }
+        const geocoder = L.Control.Geocoder.nominatim({
+            geocodingQueryParams: {
+                'accept-language': 'en'
+            }
+        });
+        const control = L.Control.geocoder({
+            defaultMarkGeocode: false,
+            geocoder,
+            placeholder: i18n('search.search'),
+            suggestMinLength: 3
+        });
+        control.on('markgeocode', (e) => {
+            const {geocode} = e;
+            const options = {
+                coordinates: {
+                    longitude: geocode.center.lng,
+                    latitude: geocode.center.lat,
+                },
+                name: geocode.name,
+                label: geocode.html,
+                properties: geocode.properties
+            };
+            this.emitTo('pb-geocode', options);
+        });
+        control.addTo(this._map);
+
+        this._map.on('click', (e) => {
+            geocoder.reverse(e.latlng, this._map.options.crs.scale(this._map.getZoom()), (results) => {
+                const geocode = results[0];
+                const options = {
+                    coordinates: {
+                        longitude: geocode.center.lng,
+                        latitude: geocode.center.lat,
+                    },
+                    name: geocode.name,
+                    label: geocode.html,
+                    properties: geocode.properties
+                };
+                this.emitTo('pb-geocode', options);
+            });
+        });
     }
 
     _configureMarkers() {

@@ -103,6 +103,14 @@ export default [
                         dest: './css/leaflet'
                     },
                     {
+                        src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.min.js*',
+                        dest: './lib'
+                    },
+                    {
+                        src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.css',
+                        dest: './css/leaflet'
+                    },
+                    {
                         src: './node_modules/tom-select/dist/css/*.min.css',
                         dest: './css/tom-select'
                     },

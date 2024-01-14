@@ -78,6 +78,44 @@ export class PbEvents {
         });
         document.dispatchEvent(ev);
     }
+
+    /**
+     * Wait for one or more TEI Publisher web components to become ready (by waiting for their `pb-ready` event).
+     * 
+     * @param {HTMLElement|HTMLElement[]} targets element or array of elements to check for ready state
+     * @returns Promise which resolves when all components are ready
+     */
+    static ifReady(targets) {
+        if (!Array.isArray(targets)) {
+            targets = [targets];
+        }
+        // const targets = Array.from(document.querySelectorAll(selector));
+        return new Promise((resolve) => {
+            const targetCount = targets.length;
+            if (targetCount === 0) {
+                // selector did not return any targets
+                resolve();
+                return;
+            }
+            let count = targetCount;
+            targets.forEach((target) => {
+                if (target._isReady) {
+                    count -= 1;
+                    if (count === 0) {
+                        resolve();
+                    }
+                    return;
+                }
+                const handler = target.addEventListener('pb-ready', () => {
+                    count -= 1;
+                    if (count === 0) {
+                        target.removeEventListener('pb-ready', handler);
+                        resolve();
+                    }
+                });
+            });
+        });
+    }
 }
 
 if (!window.pbEvents) {
