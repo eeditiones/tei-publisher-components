@@ -1,6 +1,41 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from './urls.js';
 
+/**
+ * 
+ * @param {Array<String>} arr array containg string values (name of groups)
+ * @param {String} val value to check if it's in the array
+ * @returns true if the checked values is in the array
+ */
+function _isItemInArray(arr, val) {
+    return arr.some((arrVal) => val === arrVal);
+}
+
+/**
+ * 
+ * @param {object} user user name returned by login function; 
+ * @param {object} groups contains groups (an array) the logged user is a member of
+ * @param {string} targetGroups string containing (optionally) space separated list of target groups
+ * @returns true if user is member of one of the target groups
+ */
+export function isLoggedIn(user, groups, targetGroups) {
+    if (user == null) {
+        return false;
+    }
+    if (targetGroups) {
+        if (!groups) {
+            return false;
+        }
+        const groupArray = targetGroups.split(/[\s+,]+/);
+        let exists = false;
+        groupArray.forEach(async (oneItem) => {
+            exists = _isItemInArray(groups, oneItem) || exists;
+        });
+        return exists;
+    }
+    return true;
+}
 
 /**
  * Show content if the user is logged in. Optionally requires the user
@@ -18,7 +53,9 @@ export class PbRestricted extends pbMixin(LitElement) {
     static get properties() {
         return {
             ...super.properties,
-            /** Id of the pb-login element to connect to */
+            /** Id of the pb-login element to connect to 
+             * @deprecated no longer used
+             */
             login: {
                 type: String
             },
@@ -50,15 +87,10 @@ export class PbRestricted extends pbMixin(LitElement) {
             this.classList.add('fallback');
         }
 
-        const login = document.getElementById(this.login);
-        if (!login) {
-            console.error('<pb-restricted> connected pb-login element not found!');
-            return;
-        }
         this.subscribeTo('pb-login', (ev) => {
             this.show = this._loggedIn(ev.detail.user, ev.detail.groups);
         }, []);
-        this.show = login.loggedIn && this._loggedIn(login.user, login.groups);
+        this.show = registry.currentUser && this._loggedIn(registry.currentUser.user, registry.currentUser.groups);
     }
 
     render() {
@@ -74,43 +106,13 @@ export class PbRestricted extends pbMixin(LitElement) {
             }
 
             :host(.fallback), :host([show]) {
-                display: block;
+                display: inherit;
             }
         `;
     }
 
-    /**
-     * 
-     * @param {Array<String>} arr array containg string values (name of groups)
-     * @param {String} val value to check if it's in the array
-     * @returns true if the checked values is in the array
-     */
-    _isItemInArray(arr, val) {
-        return arr.some((arrVal) => val === arrVal);
-    }
-
-    /**
-     * 
-     * @param {object} user user name returned by login function; 
-     * @param {object} groups contains groups (an array) the logged user is a member of
-     * @returns true if user is member of one of defined groups
-     */
     _loggedIn(user, groups) {
-        if (user == null) {
-            return false;
-        }
-        if (this.group) {
-            if (!groups) {
-                return false;
-            }
-            let groupArray = this.group.split(/[\s+,]+/);
-            let exists = false;
-            groupArray.forEach(async (oneItem) => {
-                exists = this._isItemInArray(groups, oneItem) || exists;
-            });
-            return exists;
-        }
-        return true;
+        return isLoggedIn(user, groups, this.group);
     }
 }
 customElements.define('pb-restricted', PbRestricted);

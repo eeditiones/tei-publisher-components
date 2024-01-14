@@ -69,6 +69,12 @@ class Registry {
 
         this.urlIgnore = new Set();
         this.pathParams = new Set();
+
+        /**
+         * Information about the user currently logged in or null. If a user is logged in
+         * this will be an object with two properties: `user` and `groups`.
+         */
+        this.currentUser = null;
     }
 
     configure(usePath = true, idHash = false, rootPath = '', urlPattern, ignoredParams) {

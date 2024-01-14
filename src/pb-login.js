@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -250,6 +251,15 @@ export class PbLogin extends pbMixin(LitElement) {
             }
         }
         this.emitTo('pb-login', resp);
+
+        if (this.loggedIn) {
+            registry.currentUser = {
+                user: this.user,
+                groups: this.groups
+            }
+        } else {
+            registry.currentUser = null;
+        }
     }
 
     _handleError() {
@@ -266,6 +276,7 @@ export class PbLogin extends pbMixin(LitElement) {
             this._loginDialog.open();
         }
 
+        registry.currentUser = null;
         this.emitTo('pb-login', resp);
     }
 
