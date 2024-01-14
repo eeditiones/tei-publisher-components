@@ -1,3 +1,15 @@
+# [2.18.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.17.0...v2.18.0) (2024-01-14)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** only show edit buttons if user is logged in and belongs to right group ([ad43550](https://github.com/eeditiones/tei-publisher-components/commit/ad435501c4f72419378b934525ff0fc0236f70fd))
+
+
+### Features
+
+* **pb-login,pb-restricted:** pb-login now copies the user information into the global state registry, so it is no longer necessary for pb-restricted to have access to the pb-login element ([e83d248](https://github.com/eeditiones/tei-publisher-components/commit/e83d24855cfb290434479c07207f2c1d042ac458))
+
 # [2.17.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.16.0...v2.17.0) (2024-01-14)
 
 
