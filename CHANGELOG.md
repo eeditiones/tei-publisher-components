@@ -1,3 +1,10 @@
+# [2.17.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.16.0...v2.17.0) (2024-01-14)
+
+
+### Features
+
+* **pb-leaflet-map:** enable geocoding using the OSM/Nominatim service ([0c6e4a2](https://github.com/eeditiones/tei-publisher-components/commit/0c6e4a2cd5eda0e2dfbaf047b6bf83598b39d605))
+
 # [2.16.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.15.3...v2.16.0) (2024-01-12)
 
 
