@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { createConnectors } from "./authority/connectors.js";
+import "./pb-restricted.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
@@ -41,6 +42,15 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       stopwords: {
         type: String
       },
+      /**
+       * A list of space- or comma-separated group names, whose members will be
+       * allowed to add or edit entries in the local register (if enabled).
+       * 
+       * @default "tei"
+       */
+      group: {
+        type: String
+      },
       _results: {
         type: Array,
       },
@@ -55,6 +65,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.sortByLabel = false;
     this._results = [];
     this._authorities = {};
+    this.group = 'tei';
   }
 
   connectedCallback() {
@@ -92,8 +103,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
         ${
           this._authorities[this.type] && this._authorities[this.type].editable ?
-            html`<paper-icon-button icon="icons:add" @click="${this._addEntity}" title="${translate('annotations.add-entity')}" slot="suffix"></paper-icon-button>` :
-            null
+          html`
+            <pb-restricted group="${this.group}" slot="suffix">
+              <paper-icon-button icon="icons:add" @click="${this._addEntity}" title="${translate('annotations.add-entity')}"></paper-icon-button>
+            </pb-restricted>
+            ` : null
         }
       </paper-input>
       <slot name="authform"></slot>
@@ -144,13 +158,16 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
         ${ 
           this._authorities[this.type] && this._authorities[this.type].editable ?
-            html`<div class="icons">
-                <paper-icon-button
-                    icon="editor:mode-edit"
-                    @click="${() => this._editEntity(item)}"
-                    title="${translate('annotations.edit-entity')}"
-                ></paper-icon-button>
-            </div>` : null 
+            html`
+            <pb-restricted group="${this.group}">
+              <div class="icons">
+                  <paper-icon-button
+                      icon="editor:mode-edit"
+                      @click="${() => this._editEntity(item)}"
+                      title="${translate('annotations.edit-entity')}"
+                  ></paper-icon-button>
+              </div>
+            </pb-restricted>` : null 
         }
         ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
 
@@ -258,6 +275,11 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       :host {
         display: flex;
         flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
       }
 
       .link {
