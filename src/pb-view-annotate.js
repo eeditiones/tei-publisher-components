@@ -562,7 +562,7 @@ class PbViewAnnotate extends PbView {
             selection.removeAllRanges();
             selection.addRange(range);
           } finally {
-            this.inHandler = false;
+            this._inHandler = false;
           }
         }, 100);
       }
