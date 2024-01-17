@@ -1,3 +1,11 @@
+## [2.18.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.0...v2.18.1) (2024-01-17)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** fix map initialization; hold ctrl or cmd while clicking on map for reverse geocoding ([ed9ce33](https://github.com/eeditiones/tei-publisher-components/commit/ed9ce33262cc3b142c7bdb4b6f9e09a8c411671f))
+* **pb-view-annotate:** view stopped reporting selection events after error ([d56c5b5](https://github.com/eeditiones/tei-publisher-components/commit/d56c5b5f75d590c8a2da4bcabfc21febb155027a))
+
 # [2.18.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.17.0...v2.18.0) (2024-01-14)
 
 
