@@ -556,11 +556,14 @@ class PbViewAnnotate extends PbView {
       console.log('<pb-view-annotate> selection: %o', range);
 
       if (changed) {
-        this._inHandler = true;
         setTimeout(() => {
-          selection.removeAllRanges();
-          selection.addRange(range);
-          this.inHandler = false;
+          this._inHandler = true;
+          try {
+            selection.removeAllRanges();
+            selection.addRange(range);
+          } finally {
+            this.inHandler = false;
+          }
         }, 100);
       }
       this.emitTo('pb-selection-changed', { hasContent: true, range, selected:  selection.toString()});
