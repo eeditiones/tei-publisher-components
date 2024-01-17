@@ -100,8 +100,8 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             },
             /**
              * Enables geocoding: an additional control will allow users to search for a place.
-             * Reverse geocoding is also possible: single clicking on the map will request information
-             * about the current location.
+             * Reverse geocoding is also possible: clicking on the map while pressing ctrl or cmd 
+             * will request information about the current location.
              * 
              * In both cases, a `pb-geocode` event will be emitted containing additional information
              * about the place in the event details (see demo).
@@ -260,7 +260,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
     }
 
-    async firstUpdated() {
+    firstUpdated() {
         if (!this.toggle) {
             this.disabled = false;
         }
@@ -274,17 +274,18 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         const leafletPath = resolveURL('../lib/leaflet-src.js');
         const pluginPath = resolveURL('../lib/leaflet.markercluster-src.js');
         const geoCodingPath = resolveURL('../lib/Control.Geocoder.min.js');
-        await window.ESGlobalBridge.instance.load("leaflet", leafletPath);
-        await window.ESGlobalBridge.instance.load("plugin", pluginPath);
-        if (this.geoCoding) {
-            await window.ESGlobalBridge.instance.load("geocoding", geoCodingPath);
-        }
-
-        window.addEventListener(
-            `es-bridge-${this.geocoding ? 'geoCoding' : 'plugin'}-loaded`,
-            this._initMap.bind(this),
-            { once: true }
-        );
+        window.ESGlobalBridge.instance.load("leaflet", leafletPath)
+            .then(() => {
+                window.ESGlobalBridge.instance.load("plugin", pluginPath)
+                    .then(() => {
+                        if (this.geoCoding) {
+                            window.ESGlobalBridge.instance.load("geocoding", geoCodingPath)
+                                .then(this._initMap.bind(this));
+                        } else {
+                            this._initMap();
+                        }
+                    });
+            });
     }
 
     render() {
@@ -325,7 +326,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             return;
         }
 
-        L.Icon.Default.imagePath = resolveURL(this.imagesPath);
+                L.Icon.Default.imagePath = resolveURL(this.imagesPath);
 
         const crs = L.CRS[this.crs] || L.CRS.EPSG3857;
         this._map = L.map(this.shadowRoot.getElementById('map'), {
@@ -406,19 +407,22 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         control.addTo(this._map);
 
         this._map.on('click', (e) => {
-            geocoder.reverse(e.latlng, this._map.options.crs.scale(this._map.getZoom()), (results) => {
-                const geocode = results[0];
-                const options = {
-                    coordinates: {
-                        longitude: geocode.center.lng,
-                        latitude: geocode.center.lat,
-                    },
-                    name: geocode.name,
-                    label: geocode.html,
-                    properties: geocode.properties
-                };
-                this.emitTo('pb-geocode', options);
-            });
+            if (e.originalEvent.ctrlKey || e.originalEvent.metaKey) {
+                e.originalEvent.stopPropagation();
+                geocoder.reverse(e.latlng, this._map.options.crs.scale(this._map.getZoom()), (results) => {
+                    const geocode = results[0];
+                    const options = {
+                        coordinates: {
+                            longitude: e.latlng.lng,
+                            latitude: e.latlng.lat,
+                        },
+                        name: geocode.name,
+                        label: geocode.html,
+                        properties: geocode.properties
+                    };
+                    this.emitTo('pb-geocode', options);
+                });
+            }
         });
     }
 
@@ -516,7 +520,11 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                         );
                     } else {
                         layer.openTooltip();
-                        this._map.setView(coords, this.zoom);
+                        if (zoom) {
+                            this._map.setView(coords, zoom);
+                        } else {
+                            this._map.panTo(coords);
+                        }
                     }
                     if (setActive && this._icons && this._icons.active) {
                         layer.setIcon(this._icons.active);
