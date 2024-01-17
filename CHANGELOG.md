@@ -1,3 +1,10 @@
+## [2.18.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.1...v2.18.2) (2024-01-17)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** selection still sometimes ignored due to typo ([dcbc2be](https://github.com/eeditiones/tei-publisher-components/commit/dcbc2be8150beaa7e1d531bf313b37e1af964c3c))
+
 ## [2.18.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.0...v2.18.1) (2024-01-17)
 
 
