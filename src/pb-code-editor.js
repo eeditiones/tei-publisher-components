@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
+import "@jinntec/jinn-codemirror/dist/src/xml-editor";
+import "@jinntec/jinn-codemirror/dist/src/epidoc-editor";
 import { translate } from './pb-i18n.js';
 import { pbMixin } from "./pb-mixin.js";
 
@@ -9,8 +11,8 @@ import { pbMixin } from "./pb-mixin.js";
  * [@jinntec/jinn-codemirror](https://github.com/JinnElements/jinn-codemirror),
  * mainly for backwards compatibility.
  *
- * @deprecated directly use `jinn-codemirror` instead, which is included in the tei-publisher-components 
- * bundle.
+ * @deprecated directly use `jinn-codemirror`/`jinn-xml-editor`/`jinn-epidoc-editor` instead, which are 
+ * included in the `pb-code-editor` bundle.
  */
 export class PbCodeEditor extends pbMixin(LitElement) {
 

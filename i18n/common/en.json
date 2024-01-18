@@ -282,7 +282,8 @@
     "doc-count": "{{count}} von {{total}}",
     "toggle": "Show/hide preview/control panel",
     "add-entity": "Create entity",
-    "edit-entity": "Edit entity"
+    "edit-entity": "Edit entity",
+    "edit-reference": "Search/edit reference"
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",
