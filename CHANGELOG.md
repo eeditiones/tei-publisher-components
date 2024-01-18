@@ -1,3 +1,10 @@
+## [2.18.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.2...v2.18.3) (2024-01-18)
+
+
+### Bug Fixes
+
+* **pb-code-editor:** include jinn-xml-editor and jinn-epidoc-editor in bundle so they can be used instead of deprecated pb-code-editor ([106d91f](https://github.com/eeditiones/tei-publisher-components/commit/106d91f0e2ab4a27d17aa89c8cb8c6a1fa4058b0))
+
 ## [2.18.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.1...v2.18.2) (2024-01-17)
 
 
