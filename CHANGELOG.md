@@ -1,3 +1,10 @@
+## [2.18.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.3...v2.18.4) (2024-01-22)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** changes not saved after editing/correcting an added (but not yet merged) annotation ([837b37f](https://github.com/eeditiones/tei-publisher-components/commit/837b37f6639d7e57b768ad7b7ffc612b14c4a3c3))
+
 ## [2.18.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.2...v2.18.3) (2024-01-18)
 
 
