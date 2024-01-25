@@ -258,11 +258,13 @@
     "lookup": "Search entity",
     "apply": "Apply annotation",
     "apply-all": "Select and apply all",
+    "search-other": "Search for occurrences in other documents",
+    "save-other": "Search for occurrences in other documents and apply annotations immediately",
     "changes": "Changes",
     "undo": "Undo last change",
     "download": "Save merged TEI to local file",
     "reload": "Reload source TEI",
-    "preview": "Preview merge results",
+    "preview": "Refresh preview",
     "confirm-restore-title": "Confirm Restore",
     "restore": "Annotations made for this document in a previous session have been found. Would you like to reload them?",
     "confirm-reload-title": "Confirm Reload",
@@ -279,11 +281,17 @@
     },
     "confirm-discard-title": "Discard",
     "confirm-discard": "Discard the list of occurrences?",
-    "doc-count": "{{count}} von {{total}}",
+    "doc-count": "{{count}} of {{total}}",
     "toggle": "Show/hide preview/control panel",
     "add-entity": "Create entity",
     "edit-entity": "Edit entity",
-    "edit-reference": "Search/edit reference"
+    "edit-reference": "Search/edit reference",
+    "hints": {
+      "modify": "marked entity of same type but different key",
+      "incomplete": "marked same type but without key",
+      "unmarked": "unmarked occurrence in text",
+      "open-in-tab": "Open document in new tab to review"
+    }
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",
