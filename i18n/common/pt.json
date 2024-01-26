@@ -47,6 +47,9 @@
   "browse": {
     "description": "Use este aplicativo para experimentar vários ODDs contendo as instruções dos modelos de processamento. Envie seus próprios arquivos e crie um ODD personalizado.",
     "login": "para enviar os arquivos ou ver funções administrativas (usuário padrão: 'tei-demo', senha: 'demo').",
+    "login-1": "Entrar como ",
+    "login-2": "com palavra-passe",
+    "login-3": "para experimentar com os seus próprios ficheiros e ODD",
     "sort": "Ordenar por",
     "filter": "Filtrar por",
     "filterPlaceholder": "Filtro",
@@ -60,6 +63,9 @@
     "confirmDeletion": "Tem certeza que deseja eliminar este ficheiro?",
     "confirmDeletion_plural": "Tem certeza que deseja eliminar estes {{count}} ficheiro(s)?",
     "documents": "Documentos",
+    "documents-removed": "Remover documento",
+    "document-not-found": "Documento não encontrado",
+    "document-remove-failed": "Falha ao remover o documento",
     "collections": "Coleção local",
     "dts": "Distributed Text Services (Experimental)",
     "test": {
@@ -77,6 +83,10 @@
     "markdown": {
       "title": "Exemplo de Markdown",
       "description": "Um exemplo de uso de markdown para conteúdo estático."
+    },
+    "annotate": {
+      "title": "Amostras de Anotação",
+      "description": "Outro espaço para anotar documentos."
     },
     "up": "Voltar ao registo pai"
   },
@@ -111,11 +121,15 @@
     "reset": "Reinicializar",
     "placeholder": "Inserir Consulta",
     "sections": "Pesquisar em Secções",
-    "headings": "Pesquisar títulos"
+    "headings": "Pesquisar títulos",
+    "title": "Pesquisar títulos",
+    "content": "Pesquisar conteúdo",
+    "scope": "Âmbito da consulta"
   },
   "dts": {
     "endpoint": "Selecionar Endpoint",
-    "note": "Experimental: acessar outras edições que expõem a DTS API"
+    "note": "Experimental: acessar outras edições que expõem a DTS API",
+    "requires-login": "Requer acesso"
   },
   "odd": {
     "files": "Arquivos ODD",
@@ -134,6 +148,9 @@
       "save": "Guardar",
       "saving": "Salvando ...",
       "saved": "Guardado",
+      "unsaved": "Existem alterações que não foram guardadas, as quais serão incluídas na exportação! Deseja continuar mesmo assim?",
+      "download": "Descarregar ODD",
+      "save-as": "Guardar ODD na pasta",
       "denied": "Permissão negada",
       "denied-message": "Não tem permissão para salvar {{odd}}",
       "reload": "Recarregar",
@@ -162,7 +179,9 @@
         "custom-behaviour-placeholder": "[Comportamento personalizado]",
         "template-placeholder": "[Defina um modelo de código para aplicar ao conteúdo]",
         "param-name-placeholder": "[Nome do parametro]",
-        "empty": "[Vazio]"
+        "empty": "[Vazio]",
+        "mode-placeholder": "[Modo de processamento - passado para modelos subsequentes]",
+        "set-param": "definir"
       },
       "css-source": "Abrir arquivo CSS"
     }
@@ -170,7 +189,10 @@
   "facets": {
     "show": "Mostrar top 50",
     "genre": "Género",
-    "language": "Idioma"
+    "language": "Idioma",
+    "feature": "Funcionalidade",
+    "form": "Forma",
+    "period": "Período"
   },
   "appgen": {
     "account": {
@@ -210,5 +232,89 @@
     },
     "open": "Abrir",
     "success": "Seu aplicativo foi gerado com sucesso!"
+  },
+  "annotations": {
+    "edit": "Editar anotação",
+    "delete": "Eliminar anotação",
+    "save": "Unir e guardar as anotações em TEI",
+    "no-properties": "Nenhuma propriedade definida.",
+    "person": "Pessoa",
+    "organisation": "Organização",
+    "place": "Local",
+    "term": "Termo",
+    "date": "Data",
+    "reg": "Regularização",
+    "app": "Entrada do aparato",
+    "hi": "Destacar",
+    "ref": "Link (ref)",
+    "pb": "Quebra de página (pb)",
+    "pagenum": "Número de página (@n)",
+    "facs": "URL da imagem (@facs)",
+    "abbreviation": "Abreviatura",
+    "occurrences": "Ocorrências em texto",
+    "correction": "Correção",
+    "expansion": "Expansão",
+    "reference": "Referência",
+    "lookup": "Pesquisar entidade",
+    "apply": "Aplicar anotação",
+    "apply-all": "Selecionar e aplicar tudo",
+    "search-other": "Pesquisar por ocorrências noutros documentos",
+    "save-other": "Procurar por ocorrências noutros documentos e aplicá-las imediatamente",
+    "changes": "Alterações",
+    "undo": "Anular a última alteração",
+    "download": "Guardar o TEI unificado num ficheiro local.",
+    "reload": "Recarregar o TEI de origem",
+    "preview": "Pré-visualizar resultados unificados",
+    "confirm-restore-title": "Confirmar restauração",
+    "restore": "Foram encontradas anotações feitas a este documento numa sessão anterior. Gostaria de recarregá-las?",
+    "confirm-reload-title": "Confirmar Recarregamento",
+    "confirm-reload": "Ignorar as anotações atuais e recarregar a fonte?",
+    "modify": "Aplicar uma edição ao texto-base",
+    "modify-info": "Aviso: Isto não é uma anotação, mas modificará o texto-base ao ser unido.",
+    "permission": "Permissão negada: não tem permissão para guardar anotações.",
+    "ner": {
+      "title": "Extração de Entidades Nomeadas",
+      "description": "Para encontrar automaticamente entidades nomeadas no texto e marcá-las como anotações.",
+      "run": "Executar",
+      "model": "Selecione um modelo",
+      "denied": "Há alterações não gravadas: por favor, guarde-as ou ignore-as primeiro."
+    },
+    "confirm-discard-title": "Ignorar",
+    "confirm-discard": "Ignorar a lista de ocorrências?",
+    "doc-count": "{{count}} de {{total}}",
+    "toggle": "Mostrar/ocultar painel de pré-visualização/controlo",
+    "add-entity": "Criar entidade",
+    "edit-entity": "Editar entidade",
+    "edit-reference": "Pesquisar/editar referência",
+    "hints": {
+      "modify": "entidade marcada do mesmo tipo, mas chave diferente",
+      "incomplete": "marcado o mesmo tipo, mas sem chave",
+      "unmarked": "ocorrência não marcada no texto",
+      "open-in-tab": "Abra o documento numa nova aba para rever"
+    }
+  },
+  "ner": {
+    "title": "Treinar um Modelo de Reconhecimento de Entidade Nomeada",
+    "not-found": "Esta funcionalidade requer que o serviço TEI Publisher NER esteja em execução! Falha ao entrar em contacto com o serviço.",
+    "found": "TEI Publisher NER encontrado com a versão spaCy",
+    "name-placeholder": "Nome do modelo a criar",
+    "name": "Nome",
+    "path": "Caminho",
+    "path-placeholder": "Caminho relativo para documento ou coleção",
+    "path-info": "Insira o caminho para um documento ou coleção para usar como entrada de treino. Deve ser relativo à raiz de dados do TEI Publisher.",
+    "lang-info": "Pode treinar um novo modelo para um idioma ou selecionar um modelo existente para estender abaixo. Se não estender um modelo existente, deve especificar um idioma. Caso contrário, deixe-o vazio.",
+    "language-placeholder": "Idioma para criar o modelo",
+    "language": "Idioma",
+    "language-error": "É necessário fornecer um idioma ou um modelo-base",
+    "model": "Modelo-Base",
+    "model-placeholder": "Modelo-base para estender ou copiar de",
+    "vectors": "Apenas copiar vetores do modelo-base",
+    "output": "Saída do Treino",
+    "prepare": "Preparando os dados de treino",
+    "start": "Executar"
+  },
+  "timeline": {
+    "unknown": "desatualizado",
+    "clear": "Limpar seleção de data"
   }
 }

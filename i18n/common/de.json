@@ -247,6 +247,9 @@
     "app": "Apparatus",
     "hi": "Hervorhebung",
     "ref": "Link (ref)",
+    "pb": "Seitenumbruch (pb)",
+    "pagenum": "Seitenzahl (@n)",
+    "facs": "Bildadresse (@facs)",
     "abbreviation": "Abkürzung",
     "occurrences": "Vorkommen im Text",
     "correction": "Korrektur",
@@ -255,11 +258,13 @@
     "lookup": "Entität suchen",
     "apply": "Anwenden",
     "apply-all": "Alle selektieren und anwenden",
+    "search-other": "Suche nach Vorkommnissen in anderen Dokumenten",
+    "save-other": "Suche nach Vorkommnissen in anderen Dokumenten und wende die Annotationen unmittelbar an",
     "changes": "Änderungen",
     "undo": "Letzten Arbeitsschritt rückgängig machen",
     "download": "Ergebnis als lokale Datei speichern",
     "reload": "Quelle neu laden",
-    "preview": "Voransicht erneuern",
+    "preview": "Voransicht aktualisieren",
     "confirm-restore-title": "Annotationen wiederherstellen",
     "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
     "confirm-reload-title": "Quelle neu laden",
@@ -279,7 +284,14 @@
     "doc-count": "{{count}} von {{total}}",
     "toggle": "Ein-/Ausblenden der Vorschau/Kontrollleiste",
     "add-entity": "Entität hinzufügen",
-    "edit-entity": "Entität bearbeiten"
+    "edit-entity": "Entität bearbeiten",
+    "edit-reference": "Referenz suchen/bearbeiten",
+    "hints": {
+      "modify": "markierte Entität desselben Typs, aber mit anderem Schlüssel",
+      "incomplete": "markiert mit gleichem Typ, aber ohne Schlüsselangabe",
+      "unmarked": "nicht markiertes Vorkommen im Text",
+      "open-in-tab": "Dokument in neuem Tab zur Überprüfung öffnen"
+    }
   },
   "ner": {
     "title": "Trainiere ein Modell zur Entitätenerkennung",
