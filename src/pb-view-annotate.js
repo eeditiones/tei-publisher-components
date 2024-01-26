@@ -219,6 +219,8 @@ function clearProperties(teiRange) {
  * @fires pb-selection-changed - fired when user selects text
  * @fires pb-annotations-changed - fired when an annotation was added or changed
  * @fires pb-annotation-detail - fired to request additional details about an annotation
+ * @fires pb-disable - if received, disables selection tracking, suppressing pb-selection-changed events
+ * @fires pb-enable - re-enables selection tracking
  */
 class PbViewAnnotate extends PbView {
   static get properties() {
@@ -260,6 +262,7 @@ class PbViewAnnotate extends PbView {
     this._ranges = [];
     this._rangesMap = new Map();
     this._history = [];
+    this._disabled = false;
   }
 
   connectedCallback() {
@@ -325,6 +328,9 @@ class PbViewAnnotate extends PbView {
       this._clearMarkers();
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
+
+    this.addEventListener('pb-disable', () => { this._disabled = true; });
+    this.addEventListener('pb-enable', () => { this._disabled = false; });
 
     this._resizeHandler();
   }
@@ -535,6 +541,9 @@ class PbViewAnnotate extends PbView {
   }
 
   _selectionChanged() {
+    if (this._disabled) {
+      return;
+    }
     const selection = this._getSelection();
     const range = this._selectedRange(selection);
     if (range) {
@@ -552,6 +561,7 @@ class PbViewAnnotate extends PbView {
           changed = true;
         }
       }
+      this._markSelection(range);
       this._currentSelection = range;
       console.log('<pb-view-annotate> selection: %o', range);
 
@@ -568,8 +578,36 @@ class PbViewAnnotate extends PbView {
       }
       this.emitTo('pb-selection-changed', { hasContent: true, range, selected:  selection.toString()});
     } else {
+      this._clearSelection();
       this.emitTo('pb-selection-changed', { hasContent: false });
     }
+  }
+
+  _markSelection(range) {
+    const root = this.shadowRoot.getElementById('view');
+    const rootRect = root.getBoundingClientRect();
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    this._clearSelection();
+    const rects = range.getClientRects();
+    for (let i = 0; i < rects.length; i++) {
+      const rect = rects[i];
+      const marker = document.createElement('div');
+      marker.className = `selection-marker`;
+      marker.style.position = 'absolute';
+      marker.style.left = `${rect.left - rootRect.left}px`;
+      marker.style.top = `${rect.top - rootRect.top}px`;
+      marker.style.width = `${rect.width}px`;
+      marker.style.height = `${rect.height}px`;
+      marker.style.backgroundColor = `var(--pb-annotation-selection, #f9ea7678)`;
+      markerLayer.appendChild(marker);
+    }
+  }
+
+  _clearSelection() {
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    markerLayer.querySelectorAll('.selection-marker').forEach((oldMarker) => {
+      markerLayer.removeChild(oldMarker);
+    });
   }
 
   updateAnnotation(teiRange, batch = false) {
