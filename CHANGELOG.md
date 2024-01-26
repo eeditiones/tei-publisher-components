@@ -1,3 +1,10 @@
+# [2.19.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.4...v2.19.0) (2024-01-26)
+
+
+### Features
+
+* **pb-view-annotate:** keep track of the current selection; allow external js to disable/enable selection tracking via event ([e15d1d1](https://github.com/eeditiones/tei-publisher-components/commit/e15d1d12faaacf8c4c0dae1915807fabd2eaa013))
+
 ## [2.18.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.3...v2.18.4) (2024-01-22)
 
 
