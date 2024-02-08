@@ -1,0 +1,214 @@
+{
+  "language": "语言",
+  "menu": {
+    "documentation": "文档",
+    "admin": {
+      "title": "管理员",
+      "recompile": "重新编译ODD",
+      "appGenerator": "应用程序生成器",
+      "edit-odd": "编辑ODD"
+    },
+    "news": "最新消息",
+    "download": {
+      "title": "下载",
+      "pdf-latex": "PDF (LaTeX版本)",
+      "pdf-fo": "PDF (FO版本)",
+      "pdf-title": "下载PDF",
+      "fo-source": "FO源码",
+      "latex-source": "TeX源码",
+      "single-page": "单页",
+      "epub-download": "下载为epub电子书",
+      "view-tei": "查看TEI XML文件"
+    }
+  },
+  "dialogs": {
+    "error": "出错了！",
+    "close": "关闭",
+    "yes": "确定",
+    "no": "取消",
+    "serverError": "向服务器请求失败。",
+    "generatingFile": "正在生成文件",
+    "downloadMessage": "生成下载文件可能需要几分钟的时间。请稍后。该对话框将在下载完成后自动关闭。",
+    "loading": "正在载入..."
+  },
+  "document": {
+    "contents": "目录",
+    "selectODD": "选择ODD",
+    "selectTemplate": "选择模板",
+    "selectFeature": "选择功能",
+    "normalized": "标准视图",
+    "plain": "阅读视图",
+    "view-type": "页面视图",
+    "add-panel": "添加视图",
+    "caveat-heading": "注意事项",
+    "settings": "设置",
+    "caveat": "只需在这里更改这些选项，就可以试验不同的页面模板和ODD。请注意，并非每个设置组合对所有文档都成立。如同没有明确编码和处理的坐标无法生成地图一样，页面视图也需要先标记分页符。如果你看到“服务器没有回复任何内容”的消息，通常即表明编码数据、ODD和页面模板相互不匹配。"
+  },
+  "browse": {
+    "description": "使用这个应用程序用来实验和试行各种包含处理模型指令的ODD。您可以上传个人文件并创建自定义的ODD。",
+    "login": "上传文件或查看管理功能(默认用户：“tei-demo”，密码：“demo”)。",
+    "sort": "排序方式",
+    "filter": "过滤条件",
+    "filterPlaceholder": "过滤器",
+    "items": "找到 {{count}} 项",
+    "items_plural": "找到 {{count}} 项",
+    "title": "标题",
+    "author": "作者",
+    "modificationDate": "修改日期",
+    "file": "文件名",
+    "delete": "删除",
+    "confirmDeletion": "确定要删除该文件吗？",
+    "confirmDeletion_plural": "确定要删除该{{count}}份文件吗？",
+    "documents": "文件",
+    "collections": "本地收藏夹",
+    "dts": "分布式文本服务(实验性)",
+    "test": {
+      "title": "TEI Publisher 演示收藏",
+      "description": "展示各种特征的文件。 其选择并不全面，只展示了一部分可能性。欢迎您以個人案例加以補充。"
+    },
+    "playground": {
+      "title": "游乐场",
+      "description": "可输入的集合，便于上传个人文件进行测试。"
+    },
+    "doc": {
+      "title": "文档",
+      "description": "文档 (以Docbook XML编写)"
+    },
+    "markdown": {
+      "title": "标记符示例",
+      "description": "静态内容中使用标记符的示例"
+    },
+    "up": "返回上层"
+  },
+  "upload": {
+    "upload": "上传",
+    "drop": "将{{accept}}文件拖至此处上传"
+  },
+  "demo": {
+    "showCode": {
+      "show": "显示代码",
+      "hide": "隐藏代码"
+    },
+    "editCode": {
+      "show": "编辑代码",
+      "hide": "关闭编辑器"
+    }
+  },
+  "clipboard": {
+    "copy": "点击复制到剪贴板",
+    "paste": "粘贴至输入栏测试"
+  },
+  "login": {
+    "login": "登入",
+    "as": "以 {{user}} 身份登录",
+    "user": "用户",
+    "password": "密码",
+    "invalid": "密码错误或用户无效",
+    "requiredGroup": "必须属于 {{group}}"
+  },
+  "search": {
+    "search": "搜索",
+    "reset": "重置",
+    "placeholder": "输入查询",
+    "sections": "章节搜索",
+    "headings": "标题搜索"
+  },
+  "dts": {
+    "endpoint": "选择终结点",
+    "note": "实验性: 通过DTS API 访问其他版本"
+  },
+  "odd": {
+    "files": "ODD 文件",
+    "manage": {
+      "filename": "ODD 文件名(无后缀)",
+      "title": "显示标题",
+      "create": "创建",
+      "create-from-example": "从实例中创建",
+      "delete": "确定要删除ODD文件 {{file}}?",
+      "regenerate-all": "重新生成所有ODD(慢)",
+      "filename-error": "必填。使用字母、 数字、 - 和 _",
+      "title-error": "请输入标题。"
+    },
+    "editor": {
+      "delete-spec": "确定要删除 '{{ident}}'元素规范？",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "已保存",
+      "denied": "无权限",
+      "denied-message": "您没有权限保存 {{odd}}",
+      "reload": "重新加载",
+      "reload-confirm": "未保存的更改都将丢失。是否继续？",
+      "add-element": "添加元素",
+      "odd-source": "ODD源码",
+      "specs": "元素规范",
+      "jump-to": "跳转至元素...",
+      "title-short": "短标题",
+      "title-short-placeholder": "显示的短标题",
+      "description-label": "描述",
+      "description-placeholder": "ODD的描述",
+      "source-label": "基础ODD",
+      "source-placeholder": "ODD 扩展自",
+      "use-namespace": "检查是否使用了与TEI不同的命名空间",
+      "namespace-placeholder": "默认的命名空间URI (若非TEI)",
+      "title": "标题",
+      "title-placeholder": "ODD 标题",
+      "model": {
+        "delete-model-label": "删除模型？",
+        "delete-model-message": "您确定要删除选中的模型？",
+        "description-placeholder": "[记录模型]",
+        "predicate-placeholder": "[定义必须满足的其他条件(在xquery中)]",
+        "link-with-or": "或",
+        "css-class-placeholder": "[定义CSS 类名 (用于外部 CSS 名称)]",
+        "custom-behaviour-placeholder": "[自定义行为]",
+        "template-placeholder": "[定义适用于内容的代码模板]",
+        "param-name-placeholder": "[参数名]",
+        "empty": "清空 [Empty]"
+      },
+      "css-source": "打开CSS文件"
+    }
+  },
+  "facets": {
+    "show": "显示前50",
+    "genre": "体裁",
+    "language": "语言"
+  },
+  "appgen": {
+    "account": {
+      "user": "管理任务的用户账户。如果用户还不存在，将创建该用户。",
+      "owner": "将拥有该应用程序的用户账户。",
+      "password": "拥有此应用程序的用户密码。"
+    },
+    "submit": "保存/生成",
+    "index": {
+      "help": "定义创建全文索引的最小文本单位。对于有多个段落的文档，最好选择 \"创建段落\"。如果没有分段，选择 \"创建文本\"。",
+      "label": "默认全文索引",
+      "index-div": "创建段落",
+      "index-text": "创建文本"
+    },
+    "view": {
+      "help": "选择浏览文本时默认显示的内容：单页或整段。按页显示需要先用&lt;tei:pb&gt;标签正确标记TEI。",
+      "div": "按段落(章/节)",
+      "page": "按页"
+    },
+    "label": "默认视图",
+    "template": {
+      "help": "选择默认使用的HTML模板",
+      "label": "HTML 模板"
+    },
+    "title": {
+      "help": "将显示 (例如在Dashboard中) 的应用程序标题",
+      "label": "应用程序标题"
+    },
+    "collection": "持有TEI文件子集的名称",
+    "abbrev": {
+      "label": "在 URL 和文件名中使用的短名",
+      "placeholder": "短名称"
+    },
+    "uri": "唯一识别应用程序的 URL",
+    "dialog": {
+      "title": "应用程序已生成"
+    },
+    "open": "打开",
+    "success": "您的应用程式已成功产生"
+  }
+}
