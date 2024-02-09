@@ -18,7 +18,8 @@ import { pbMixin } from './pb-mixin';
  * @fires pb-highlight-on - Fires highlight event with a key passed to which other pb-highlight elements with the same key will react
  * @fires pb-highlight-off - When received, triggers removal of a highlight that might have been on for this element before
  * @fires pb-highlight-on - When received, switches the highlight on if the same key was received as the current element has
- * @cssprop --pb-highlight-color - Background color to highlight an element
+ * @cssprop [--pb-highlight-color=#F9E976]- Background color to highlight an element
+ * @cssprop --pb-highlight-background-image - Background-image to highlight an element with a gradient (e.g. stripes with repeating-linear-gradient). Will override --pb-highlight-color.
 */
 export class PbHighlight extends pbMixin(LitElement) {
     static get properties() {
@@ -121,7 +122,7 @@ export class PbHighlight extends pbMixin(LitElement) {
                 animation-duration: 500ms;
                 animation-iteration-count: 1;
                 animation-timing-function: ease-in;
-
+                background-image: var(--pb-highlight-background-image);
             }
 
             .highlight-off {
