@@ -162,7 +162,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     marker.bindTooltip(loc.label);
                 }
                 marker.addEventListener('click', () => {
-                    this.emitTo('pb-leaflet-marker-click', loc);
+                    this.emitTo('pb-leaflet-marker-click', { element: loc });
                 });
                 marker.bindTooltip(loc.label);
                 this.setMarkerIcon(marker);
@@ -192,7 +192,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                     marker.bindPopup(loc.popup);
                 }
                 marker.addEventListener('click', () => {
-                    this.emitTo('pb-leaflet-marker-click', loc);
+                    this.emitTo('pb-leaflet-marker-click', { element: loc });
                 });
                 this.setMarkerIcon(marker);
             });
@@ -215,7 +215,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                 if (!this._hasMarker(this.latitude, this.longitude)) {
                     const marker = L.marker([this.latitude, this.longitude]);
                     marker.addEventListener('click', () => {
-                        this.emitTo('pb-leaflet-marker-click', ev.detail.element);
+                        this.emitTo('pb-leaflet-marker-click', ev.detail);
                     });
                     if (ev.detail.label) {
                         marker.bindTooltip(ev.detail.label);
@@ -530,7 +530,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
                         layer.setIcon(this._icons.active);
                     }
                 } else if (this._icons && this._icons.default && layer.getIcon() !== this._icons.default) {
-                        layer.setIcon(this._icons.default);
+                    layer.setIcon(this._icons.default);
                 }
             });
         }
