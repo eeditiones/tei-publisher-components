@@ -51,7 +51,7 @@ describe('initialize and refresh view', () => {
         })));
         await oneEvent(document, 'pb-end-update');
 
-        const geolocation = view.shadowRoot.querySelector('pb-geolocation[key=CanFloque]');
+        const geolocation = view.shadowRoot.querySelector('pb-geolocation[key=CanFloque] *');
         expect(geolocation.innerHTML).to.equal('Can Floque');
     });
 
