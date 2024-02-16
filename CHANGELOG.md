@@ -1,3 +1,11 @@
+## [2.19.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.0...v2.19.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** pb-leaflet-marker-click event details should include reference to pb-geolocation element where possible ([da54cdb](https://github.com/eeditiones/tei-publisher-components/commit/da54cdb99bda19ab2bb9386d5d0e2e3b3196ee19))
+* **pb-table-grid:** react to language changes ([50cc2a0](https://github.com/eeditiones/tei-publisher-components/commit/50cc2a019bde937061499cd151cda9aed455c31a))
+
 # [2.19.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.4...v2.19.0) (2024-01-26)
 
 
