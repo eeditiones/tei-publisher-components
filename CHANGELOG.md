@@ -1,3 +1,10 @@
+## [2.19.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.1...v2.19.2) (2024-03-23)
+
+
+### Bug Fixes
+
+* **pb-tify:** make sure container div is created ([e96f4f2](https://github.com/eeditiones/tei-publisher-components/commit/e96f4f2ba27d83096c5cf84ce4943bd00ba62091))
+
 ## [2.19.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.0...v2.19.1) (2024-02-16)
 
 
