@@ -1,3 +1,10 @@
+## [2.19.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.2...v2.19.3) (2024-04-25)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** using patched OSD from jinntec/openseadragon and corrected finding the pb-page element. ([2a89c8d](https://github.com/eeditiones/tei-publisher-components/commit/2a89c8d108260608eab76ade31b81f289ce1902b))
+
 ## [2.19.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.1...v2.19.2) (2024-03-23)
 
 
