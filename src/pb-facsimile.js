@@ -7,7 +7,7 @@ import { resolveURL } from './utils.js';
  * View zoomable images using a IIIF server.
  *
  * @fires pb-start-update - When received, resets the facsimile viewer
- * @fires pb-load-facsimile - When received, adds an image to the current image sequence. Emitted by 
+ * @fires pb-load-facsimile - When received, adds an image to the current image sequence. Emitted by
  * `pb-facs-link`. The event detail should contain an object with the properties `url`, `order` and `element`,
  * where `url` is the relative or absolute URL to the image, `order` is an integer specifying the position at which
  * the image should be inserted in the list, and `element` points to the `pb-facs-link` element triggering the event.
@@ -41,7 +41,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 type: Boolean,
                 attribute: 'show-navigator'
             },
-            
+
             /** If true then the 'previous" and 'next' button is displayed switch between images. */
             showSequenceMode: {
                 type: Boolean,
@@ -173,16 +173,16 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.subscribeTo('pb-start-update', this._clearAll.bind(this));
         this.subscribeTo('pb-load-facsimile', (e) => {
             const { element, order } = e.detail
-            const itemOrder = this._facsimiles.map(item => item.getOrder ? item.getOrder() : Number.POSITIVE_INFINITY )  
+            const itemOrder = this._facsimiles.map(item => item.getOrder ? item.getOrder() : Number.POSITIVE_INFINITY )
             const insertAt = itemOrder.reduce((result, next, index) => {
                 if (order < next) return result;
                 if (order === next) return index;
                 return index + 1;
             }, 0)
-            
+
             this._facsimiles.splice(insertAt, 0, element)
             this.loaded = this._facsimiles.length > 0;
-            
+
             this._facsimileObserver()
         });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
@@ -236,7 +236,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         const options = {
             element: this.shadowRoot.getElementById('viewer'),
             prefixUrl,
-            preserveViewport: true,            
+            preserveViewport: true,
             showZoomControl: true,
             sequenceMode: this.showSequenceMode,
             showHomeControl: this.showHomeControl,
@@ -271,10 +271,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
         to full-page functionality. Standard OSD completely deletes all body children disconnecting all event-handlers
         that have been there. This solution just uses style.display to hide/show. Former display value of pb-page
         will be preserved.
-
-        Current limitation: this solution assumes that a pb-page element exists and is an immediate child of body.
          */
-        this.ownerPage = this.closest('pb-page');
+        this.ownerPage = document.querySelector('pb-page');
         if(this.ownerPage){
             this.pbPageDisplay = window.getComputedStyle(this.ownerPage).getPropertyValue('display');
             this.viewer.addHandler('full-screen', (ev) => {
