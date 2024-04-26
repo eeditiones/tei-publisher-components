@@ -133,7 +133,7 @@ export class PbHighlight extends pbMixin(LitElement) {
     _highlightOn(ev) {
         if (ev.detail.source != this && ev.detail.id === this.key) {
             this._className = 'highlight-on';
-            if (ev.detail.scroll) {
+            if (ev.detail.scroll && this.disabled == false) {
                 this.scrollIntoView({ block: "center", behaviour: 'smooth' });
             }
             if (this.duration > 0) {
