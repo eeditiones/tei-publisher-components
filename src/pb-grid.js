@@ -10,6 +10,7 @@ import './pb-panel.js';
  * @slot - default unnamed slot for the panel
  * @fires pb-refresh - Fired after a new column has been added to allow connected components to refresh.
  * @fires pb-panel - When received, updates the list of panels to show
+ * @fires pb-zoom - When received, zoom in or out by changing font size of the content
  * @cssprop --pb-grid-column-widths - Columns width specified according to the grid-template-columns property of the CSS Grid Layout
  * @cssprop --pb-grid-column-gap - Width of the gap between columns
  */
@@ -73,6 +74,10 @@ export class PbGrid extends pbMixin(LitElement) {
             this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
 
             registry.commit(this, this._getState())
+        });
+
+        this.subscribeTo('pb-zoom', ev => {
+            this.zoom(ev.detail.direction);
         });
 
         const panelsParam = registry.get('panels');
@@ -249,6 +254,17 @@ export class PbGrid extends pbMixin(LitElement) {
                 justify-content: space-between;
             }
         `;
+    }
+
+    zoom(direction) {
+        const fontSize = window.getComputedStyle(this).getPropertyValue('font-size');
+        const size = parseInt(fontSize.replace(/^(\d+)px/, "$1"));
+
+        if (direction === 'in') {
+            this.style.fontSize = (size + 1) + 'px';
+        } else {
+            this.style.fontSize = (size - 1) + 'px';
+        }
     }
 
 }
