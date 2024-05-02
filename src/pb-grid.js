@@ -92,10 +92,27 @@ export class PbGrid extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
+
         this.panels.forEach(panelNum => this._insertPanel(panelNum));
         registry.commit(this, this._getState())
         this._animate();
         this._update();
+
+        this.addEventListener('pb-drop', (ev) => {
+            const draggedPanelIdx = parseInt(ev.detail.panel);
+            const targetPanelIdx = this._getPanelIndex(ev.detail.target);
+
+            console.log('<pb-grid> Insert panel %d at %d in %s', draggedPanelIdx, targetPanelIdx, this.panels);
+            this.querySelectorAll('._grid_panel').forEach((panel) => {
+                panel.classList.remove('dragover');
+            });
+            
+            this.panels.splice(targetPanelIdx, 0, this.panels.splice(draggedPanelIdx, 1)[0]);
+            this.innerHTML=''; // hard reset of child DOM
+            this.panels.forEach(panelNum => this._insertPanel(panelNum));
+            registry.commit(this, this._getState());
+            this._update();
+        });
     }
 
     /**
@@ -153,14 +170,28 @@ export class PbGrid extends pbMixin(LitElement) {
         this.emitTo('pb-refresh', null);
     }
 
+    /**
+     * Remove a panel from the grid
+     * 
+     * @param {HTMLElement|number} panel the pb-panel element or the panel number 
+     */
     removePanel(panel) {
-        const idx = this._getPanelIndex(panel);
+        let idx;
+        let container;
+        if (typeof panel === 'number') {
+            idx = this.panels.indexOf(panel);
+            container = this.querySelector(`[active="${panel}"]`);
+        } else {
+            container = panel;
+            idx = this._getPanelIndex(panel);
+        }
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
-        panel.parentNode.removeChild(panel);
+        container.parentNode.removeChild(panel);
         this._columns -= 1;
-        registry.commit(this, this._getState() )
+        registry.commit(this, this._getState());
+        this._assignPanelIds();
         this._update();
     }
 
@@ -173,6 +204,7 @@ export class PbGrid extends pbMixin(LitElement) {
             this.insertBefore(clone, this.firstElementChild);
         }
         clone.classList.add('_grid_panel');
+        this._assignPanelIds();
     }
 
     _update() {
@@ -192,6 +224,12 @@ export class PbGrid extends pbMixin(LitElement) {
     _getPanelIndex(panel) {
         const panels = Array.from(this.querySelectorAll('._grid_panel'));
         return panels.indexOf(panel);
+    }
+
+    _assignPanelIds() {
+        this.querySelectorAll('._grid_panel').forEach((panel, idx) => {
+            panel.position = idx;
+        });
     }
 
     _getState() {
