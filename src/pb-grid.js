@@ -10,6 +10,7 @@ import './pb-panel.js';
  * @slot - default unnamed slot for the panel
  * @fires pb-refresh - Fired after a new column has been added to allow connected components to refresh.
  * @fires pb-panel - When received, updates the list of panels to show
+ * @fires pb-zoom - When received, zoom in or out by changing font size of the content
  * @cssprop --pb-grid-column-widths - Columns width specified according to the grid-template-columns property of the CSS Grid Layout
  * @cssprop --pb-grid-column-gap - Width of the gap between columns
  */
