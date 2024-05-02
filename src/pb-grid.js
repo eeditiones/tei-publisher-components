@@ -193,7 +193,7 @@ export class PbGrid extends pbMixin(LitElement) {
         console.log('<pb-grid> Removing panel %d', idx);
         this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
-        container.parentNode.removeChild(panel);
+        container.parentNode.removeChild(container);
         this._columns -= 1;
         registry.commit(this, this._getState());
         this._assignPanelIds();
