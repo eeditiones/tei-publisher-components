@@ -1,3 +1,10 @@
+# [2.20.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.3...v2.20.0) (2024-05-02)
+
+
+### Features
+
+* **pb-grid:** support dragging a panel to a different position in the grid ([4cf75f8](https://github.com/eeditiones/tei-publisher-components/commit/4cf75f8edb0294a8943846037c44a41e87a76afd))
+
 ## [2.19.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.2...v2.19.3) (2024-04-25)
 
 
