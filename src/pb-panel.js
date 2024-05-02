@@ -43,6 +43,13 @@ export class PbPanel extends pbMixin(LitElement) {
             panels: {
                 type: Array,
                 reflect: true
+            },
+            /**
+             * if set, the panel can be dragged to another position in the grid. A button will
+             * be added to the toolbar to allow dragging.
+             */
+            draggable: {
+                type: Boolean
             }
         };
     }
@@ -52,6 +59,8 @@ export class PbPanel extends pbMixin(LitElement) {
         this.active = 0;
         this.label = 'View';
         this.panels = null;
+        this.position = -1;
+        this.draggable = false;
     }
 
     connectedCallback() {
@@ -65,15 +74,59 @@ export class PbPanel extends pbMixin(LitElement) {
         this._show();
     }
 
+    firstUpdated() {
+        const dragHandle = this.shadowRoot.getElementById('drag-handle');
+        let initiator = null;
+
+        if (this.draggable) {
+            dragHandle.addEventListener('dragstart', (ev) => {
+                ev.dataTransfer.setDragImage(this, 10, 10);
+                ev.dataTransfer.setData("text", this.position);
+                initiator = this;
+            });
+        }
+
+        this.addEventListener('dragover', (ev) => {
+            ev.preventDefault();
+        });
+        document.addEventListener('dragenter', (ev) => {
+            ev.stopPropagation();
+            ev.preventDefault();
+            if (initiator === this) {
+                return;
+            }
+            if (this.contains(ev.target)) {
+                this.classList.add('dragover');
+            } else {
+                this.classList.remove('dragover');
+            }
+        });
+        this.addEventListener('drop', (ev) => {
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            initiator = null;
+            this.dispatchEvent(new CustomEvent('pb-drop', {
+                detail: {
+                    panel: ev.dataTransfer.getData("text"),
+                    target: this
+                },
+                bubbles: true,
+                composed: true
+            }));
+        });
+    }
+
     render() {
         return html`
-            <app-toolbar>
+            <app-toolbar id="toolbar">
                 <paper-dropdown-menu id="menu" label="${this.label}">
                     <paper-listbox id="panels" slot="dropdown-content" class="dropdown-content" 
-                        selected="${this.active}" @selected-item-changed="${this._update}">
+                    selected="${this.active}" @selected-item-changed="${this._update}">
                     ${this.panels.map((item) => html`<paper-item>${item}</paper-item>`)}
-                    </paper-listbox>
+                </paper-listbox>
                 </paper-dropdown-menu>
+                ${this.draggable ? html`<paper-icon-button id="drag-handle" icon="icons:open-with" draggable="true"></paper-icon-button>` : ''}
                 <slot name="toolbar"></slot>
             </app-toolbar>
             <slot></slot>
@@ -98,6 +151,20 @@ export class PbPanel extends pbMixin(LitElement) {
 
             app-toolbar {
                 font-size: 75%;
+            }
+
+            :host(.dragover) {
+                background-color: var(--pb-grid-highlight-color, var(--pb-highlight-color));
+                animation: highlight 1s;
+            }
+
+            @keyframes highlight {
+                from {
+                    background-color: transparent;
+                }
+                to {
+                    background-color: var(--pb-grid-highlight-color, var(--pb-highlight-color));
+                }
             }
         `;
     }
