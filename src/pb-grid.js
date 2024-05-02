@@ -75,6 +75,10 @@ export class PbGrid extends pbMixin(LitElement) {
             registry.commit(this, this._getState())
         });
 
+        this.subscribeTo('pb-zoom', ev => {
+            this.zoom(ev.detail.direction);
+        });
+
         const panelsParam = registry.get('panels');
         if (panelsParam) {
             this.panels = panelsParam.split('.').map(param => parseInt(param));
@@ -249,6 +253,17 @@ export class PbGrid extends pbMixin(LitElement) {
                 justify-content: space-between;
             }
         `;
+    }
+
+    zoom(direction) {
+        const fontSize = window.getComputedStyle(this).getPropertyValue('font-size');
+        const size = parseInt(fontSize.replace(/^(\d+)px/, "$1"));
+
+        if (direction === 'in') {
+            this.style.fontSize = (size + 1) + 'px';
+        } else {
+            this.style.fontSize = (size - 1) + 'px';
+        }
     }
 
 }
