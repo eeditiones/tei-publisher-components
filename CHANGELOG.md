@@ -1,3 +1,15 @@
+# [2.21.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.20.0...v2.21.0) (2024-05-02)
+
+
+### Bug Fixes
+
+* no scrolling when component is disabled ([dfe1881](https://github.com/eeditiones/tei-publisher-components/commit/dfe188178d556608501a5e600ccb81591565e6c2))
+
+
+### Features
+
+* changes vertical alignment of scroll ([38b8dce](https://github.com/eeditiones/tei-publisher-components/commit/38b8dce6f5e6dc63c38aa34905b21dc1ab832c33))
+
 # [2.20.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.3...v2.20.0) (2024-05-02)
 
 
