@@ -172,7 +172,7 @@ export class PbGrid extends pbMixin(LitElement) {
         this._insertPanel(value);
         registry.commit(this, this._getState())
         this._update();
-        this.emitTo('pb-refresh', null);
+        this.emitTo('pb-refresh');
     }
 
     /**
