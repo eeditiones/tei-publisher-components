@@ -1,3 +1,10 @@
+## [2.22.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.0...v2.22.1) (2024-05-02)
+
+
+### Bug Fixes
+
+* **pb-grid:** remove panel broken ([44bcf81](https://github.com/eeditiones/tei-publisher-components/commit/44bcf8150832042c9706cc8e3e4dee8c19db9689))
+
 # [2.22.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.21.0...v2.22.0) (2024-05-02)
 
 
