@@ -1,3 +1,10 @@
+# [2.22.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.21.0...v2.22.0) (2024-05-02)
+
+
+### Features
+
+* adds zoom to pb-grid ([c3f557d](https://github.com/eeditiones/tei-publisher-components/commit/c3f557d83ff13e23dad5a9162af5f9f0f7e319ad))
+
 # [2.21.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.20.0...v2.21.0) (2024-05-02)
 
 
