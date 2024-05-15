@@ -59,6 +59,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 attribute: 'show-full-page-control'
             },
             /**
+             * if true shows a 'download' button
+             */
+            showDownloadButton:{
+              type: Boolean,
+              attribute: 'show-download-control'
+            },
+            /**
              * Default zoom between: set to 0 to adjust to viewer size.
              */
             defaultZoomLevel: {
@@ -138,6 +145,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
             loaded: {
                 type: Boolean,
                 reflect: true
+            },
+            /**
+             * CORS (Cross-Origin Resource Sharing) policy - wraps the OSD Viewer option -
+             * only sensible values are 'anonymous' (default) or 'use-credentials'.
+             */
+            crossOriginPolicy:{
+                type: String,
+                attribute: 'cors'
             }
         };
     }
@@ -146,6 +161,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         super();
         this._facsimiles = [];
         this.baseUri = '';
+        this.crossOriginPolicy = 'anonymous';
         this.type = 'iiif';
         this.visibilityRatio = 1;
         this.defaultZoomLevel = 0;
@@ -155,6 +171,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.showNavigationControl = false;
         this.showFullPageControl = false;
         this.showRotationControl = false;
+        this.showDownloadButton = false;
         this.constrainDuringPan = false;
         this.referenceStrip = false;
         this.referenceStripSizeRatio = 0.2;
@@ -189,22 +206,31 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
 
     firstUpdated() {
-        window.ESGlobalBridge.requestAvailability();
-        const path = resolveURL('../lib/openseadragon.min.js');
-        window.ESGlobalBridge.instance.load("openseadragon", path);
-        window.addEventListener(
-            "es-bridge-openseadragon-loaded",
-            this._initOpenSeadragon.bind(this),
-            { once: true }
-        );
+        try{
+            window.ESGlobalBridge.requestAvailability();
+            const path = resolveURL('../lib/openseadragon.min.js');
+            window.ESGlobalBridge.instance.load("openseadragon", path);
+            window.addEventListener(
+                "es-bridge-openseadragon-loaded",
+                this._initOpenSeadragon.bind(this),
+                { once: true }
+            );
+        } catch (error){
+            console.error(error.message);
+        }
     }
 
     render() {
         return html`
             <slot name="before"></slot>
             <!-- Openseadragon -->
+
             <div id="viewer" part="image"></div>
             <slot name="after"></slot>
+            ${this.showDownloadButton ?
+                html`<a id="downloadBtn" title="Download">&#8676;</a>`:''
+            }
+
         `;
     }
 
@@ -227,6 +253,26 @@ export class PbFacsimile extends pbMixin(LitElement) {
                 max-height: var(--pb-facsimile-height, auto);
                 width: 100%;
             }
+            #downloadBtn{
+                position: absolute;
+                z-index: 100;
+                bottom:0.25rem;
+                width:1.35rem;
+                height:1.35rem;
+                transform:rotate(-90deg);
+                cursor: pointer;
+                border: thin solid #D7DDE8;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius:0.75rem;
+                background-image:linear-gradient(to left, #fafafa 0%, #D7DDE8  51%, #bbbbbb  100%);
+                font-size:1.2rem;
+                box-shadow: -2px 1px 5px 0px rgba(0,0,0,0.75);
+            }
+            #downloadBtn:hover{
+                background-image:radial-gradient( white, #efefef);
+            }
         `;
     }
 
@@ -248,8 +294,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
             visibilityRatio: 1,
             minZoomLevel: 1,
             defaultZoomLevel: this.defaultZoomLevel,
-            constrainDuringPan: true
+            constrainDuringPan: true,
+            crossOriginPolicy: this.crossOriginPolicy
         };
+
         if (this.referenceStrip) {
             options.showReferenceStrip = true;
             options.referenceStripSizeRatio = this.referenceStripSizeRatio;
@@ -265,6 +313,18 @@ export class PbFacsimile extends pbMixin(LitElement) {
             this.loaded = false;
             this.emitTo('pb-facsimile-status', { status: 'fail' });
         });
+
+        const download = this.shadowRoot.querySelector('#downloadBtn');
+        if(this.showDownloadButton){
+            download.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                const currentImage = this.viewer.drawer.canvas.toDataURL("image/png");
+                const downloadLink = document.createElement('a');
+                downloadLink.href = currentImage;
+                downloadLink.download = 'download';
+                downloadLink.click();
+            });
+        }
 
         /*
         handling of full-screen view requires to hide/unhide the content of body to allow full screen viewer
