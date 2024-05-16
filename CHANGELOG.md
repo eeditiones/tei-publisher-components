@@ -1,3 +1,17 @@
+# [2.23.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.2...v2.23.0) (2024-05-15)
+
+
+### Features
+
+* **pb-facsimile:** added option to add download icon to trigger download of current viewport. Added a demo for the feature ([0233c83](https://github.com/eeditiones/tei-publisher-components/commit/0233c8333e9e78ed529a21361e358974c1cecf46))
+
+## [2.22.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.1...v2.22.2) (2024-05-02)
+
+
+### Bug Fixes
+
+* **pb-grid:** emit pb-refresh to configured channel only ([63091ab](https://github.com/eeditiones/tei-publisher-components/commit/63091ab6d509770b8b847fe25fe5a1a2ed7d86e8))
+
 ## [2.22.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.0...v2.22.1) (2024-05-02)
 
 
