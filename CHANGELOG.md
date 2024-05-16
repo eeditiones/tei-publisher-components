@@ -1,3 +1,10 @@
+## [2.23.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.0...v2.23.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup, anton:** avoid error if json.data.location == null ([d06a34a](https://github.com/eeditiones/tei-publisher-components/commit/d06a34acc923b80b3b788bef5fa6fb2aecd18a35))
+
 # [2.23.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.2...v2.23.0) (2024-05-15)
 
 
