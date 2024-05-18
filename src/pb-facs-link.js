@@ -79,7 +79,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         const link = this.shadowRoot.querySelector('a');
         link.addEventListener(this.trigger, this._linkListener.bind(this));
         if (this.emitOnLoad) {
-            this._trigger();
+            this.wait(() => { this._trigger(); });
         }
     }
 
