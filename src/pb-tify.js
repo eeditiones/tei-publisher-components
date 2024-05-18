@@ -80,6 +80,8 @@ export class PbTify extends pbMixin(LitElement) {
                 }
             }
         });
+
+        this.signalReady();
     }
 
     firstUpdated() {
@@ -103,7 +105,6 @@ export class PbTify extends pbMixin(LitElement) {
             manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint())
         });
         this._tify.ready.then(() => { 
-            this.signalReady();
             // open initial page if set earlier via pb-load-facsimile event
             if (this._initialPages) {
                 this._tify.setPage(this._initialPages);
