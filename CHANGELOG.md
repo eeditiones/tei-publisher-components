@@ -1,3 +1,13 @@
+## [2.23.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.1...v2.23.2) (2024-05-19)
+
+
+### Bug Fixes
+
+* **pb-facs-link:** emit-on-load should also wait for pb-facsimile/pb-tify to be available ([b16730a](https://github.com/eeditiones/tei-publisher-components/commit/b16730a07c7d930080b35de2de9af75da93b3ab2))
+* **pb-mixin:** fix bug in wait method introduced by 189d5a1ac87014db3452f846cf506616a12959f4 ([afb665d](https://github.com/eeditiones/tei-publisher-components/commit/afb665d9a720c484bbf0549628780920f7a91447))
+* **pb-mixin:** the wait method needs to make sure the HTML DOM has been loaded entirely before selecting elements to wait for ([189d5a1](https://github.com/eeditiones/tei-publisher-components/commit/189d5a1ac87014db3452f846cf506616a12959f4))
+* **pb-tify:** emit ready event element is connected ([b8bae11](https://github.com/eeditiones/tei-publisher-components/commit/b8bae1199030dd8d3b68307507be9ac3246a4e9f))
+
 ## [2.23.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.0...v2.23.1) (2024-05-16)
 
 
