@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-view Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+            body {
+                --paper-fab-background: #35424b;
+            }
+
+            main {
+                position: relative;
+                height: 70vh;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+
+            pb-navigation {
+                position: absolute;
+                bottom: 45%;
+                --paper-fab-background: #35424b;
+                color: white;
+            }
+
+            pb-navigation[direction=backward] {
+                left: 20px;
+            }
+
+            pb-navigation[direction=forward] {
+                right: 20px;
+            }
+
+            pb-facsimile {
+                flex: 1 1;
+                max-width: 50vw;
+                margin-right: 20px;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+                <main>
+                    <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/" default-zoom-level="0"
+                        show-navigator show-navigation-control show-home-control subscribe="transcription">
+                    </pb-facsimile>
+
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left">
+                        <paper-fab icon="icons:chevron-left"></paper-fab>
+                    </pb-navigation>
+                    <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']" append-footnotes>
+                    </pb-view>
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right">
+                        <paper-fab icon="icons:chevron-right"></paper-fab>
+                    </pb-navigation>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

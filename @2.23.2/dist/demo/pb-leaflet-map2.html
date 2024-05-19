@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-leaflet-map Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-leaflet-map.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                main {
+                    max-width: 800px;
+                }
+                pb-geolocation {
+                    text-decoration: underline;
+                    color: #ff9900;
+                }
+                pb-leaflet-map {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 480px;
+                    height: 360px;
+                    box-shadow: -7px -6px 8px 0px #00000038;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <main>
+                    <p id="locations">Lorem ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="13.33920479" latitude="52.50671377" label="Berlin">Berlin</pb-geolocation> sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut 
+                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores 
+                        et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
+                        ipsum dolor sit amet, consetetur <pb-geolocation event="click" longitude="2.32003101" latitude="48.85881005" label="Paris">Paris</pb-geolocation>
+                        sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
+                        dolore magna aliquyam erat, sed diam voluptua <pb-geolocation event="click" longitude="8.1499728" latitude="47.9011491">Titisee</pb-geolocation>. At vero eos et accusam et justo duo dolores et ea rebum. 
+                        Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                    <pb-leaflet-map id="map" zoom="11" toggle>
+                        <pb-map-layer show base label="OpenTopo Map" url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png" max-zoom="19"
+                            attribution='&copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors'></pb-map-layer>
+                    </pb-leaflet-map>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
