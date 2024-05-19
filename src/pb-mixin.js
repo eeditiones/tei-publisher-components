@@ -213,11 +213,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {Function} callback function to be called when all components are ready
      */
     wait(callback) {
-        if (!this.waitFor) {
-            callback();
-            return;
-        }
-        window.addEventListener('DOMContentLoaded', () => {
+        const _checkAndWait = () => {
             const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
             const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
             const targetCount = targets.length;
@@ -247,7 +243,19 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
                     }
                 });
             });
-        });
+        }
+
+        if (!this.waitFor) {
+            callback();
+            return;
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                _checkAndWait();
+            });
+        } else {
+            _checkAndWait();
+        }
     }
 
     /**
