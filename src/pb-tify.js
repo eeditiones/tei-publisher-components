@@ -59,6 +59,11 @@ export class PbTify extends pbMixin(LitElement) {
 
         _injectStylesheet(this.cssPath);
 
+        this._container = document.createElement('div');
+        this._container.style.height = '100%';
+        this._container.style.width = '100%';
+        this.appendChild(this._container);
+        
         this.subscribeTo('pb-show-annotation', (ev) => {
             if (ev.detail) {
                 this._initialPages = ev.detail.order ? Number(ev.detail.order) : Number.POSITIVE_INFINITY;
@@ -75,17 +80,14 @@ export class PbTify extends pbMixin(LitElement) {
                 }
             }
         });
+
+        this.signalReady();
     }
 
     firstUpdated() {
         super.firstUpdated();
 
         waitOnce('pb-page-ready', () => {
-            this._container = document.createElement('div');
-            this._container.style.height = '100%';
-            this._container.style.width = '100%';
-            this.appendChild(this._container);
-
             this._initViewer();
         });
     }
@@ -103,7 +105,6 @@ export class PbTify extends pbMixin(LitElement) {
             manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint())
         });
         this._tify.ready.then(() => { 
-            this.signalReady();
             // open initial page if set earlier via pb-load-facsimile event
             if (this._initialPages) {
                 this._tify.setPage(this._initialPages);

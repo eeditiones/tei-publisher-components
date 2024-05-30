@@ -98,7 +98,9 @@ export class Anton extends Registry {
       switch (this._register) {
         case 'place':
           output.country = json.data.country;
-          output.location = json.data.location.coordinates;
+          if (json.data.location && json.data.location.coordinates) {
+            output.location = json.data.location.coordinates;
+          }
           output.links = json.data.links.map((link) => link.url);
           break;
         case 'person':

@@ -1,3 +1,89 @@
+## [2.23.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.1...v2.23.2) (2024-05-19)
+
+
+### Bug Fixes
+
+* **pb-facs-link:** emit-on-load should also wait for pb-facsimile/pb-tify to be available ([b16730a](https://github.com/eeditiones/tei-publisher-components/commit/b16730a07c7d930080b35de2de9af75da93b3ab2))
+* **pb-mixin:** fix bug in wait method introduced by 189d5a1ac87014db3452f846cf506616a12959f4 ([afb665d](https://github.com/eeditiones/tei-publisher-components/commit/afb665d9a720c484bbf0549628780920f7a91447))
+* **pb-mixin:** the wait method needs to make sure the HTML DOM has been loaded entirely before selecting elements to wait for ([189d5a1](https://github.com/eeditiones/tei-publisher-components/commit/189d5a1ac87014db3452f846cf506616a12959f4))
+* **pb-tify:** emit ready event element is connected ([b8bae11](https://github.com/eeditiones/tei-publisher-components/commit/b8bae1199030dd8d3b68307507be9ac3246a4e9f))
+
+## [2.23.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.0...v2.23.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup, anton:** avoid error if json.data.location == null ([d06a34a](https://github.com/eeditiones/tei-publisher-components/commit/d06a34acc923b80b3b788bef5fa6fb2aecd18a35))
+
+# [2.23.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.2...v2.23.0) (2024-05-15)
+
+
+### Features
+
+* **pb-facsimile:** added option to add download icon to trigger download of current viewport. Added a demo for the feature ([0233c83](https://github.com/eeditiones/tei-publisher-components/commit/0233c8333e9e78ed529a21361e358974c1cecf46))
+
+## [2.22.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.1...v2.22.2) (2024-05-02)
+
+
+### Bug Fixes
+
+* **pb-grid:** emit pb-refresh to configured channel only ([63091ab](https://github.com/eeditiones/tei-publisher-components/commit/63091ab6d509770b8b847fe25fe5a1a2ed7d86e8))
+
+## [2.22.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.22.0...v2.22.1) (2024-05-02)
+
+
+### Bug Fixes
+
+* **pb-grid:** remove panel broken ([44bcf81](https://github.com/eeditiones/tei-publisher-components/commit/44bcf8150832042c9706cc8e3e4dee8c19db9689))
+
+# [2.22.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.21.0...v2.22.0) (2024-05-02)
+
+
+### Features
+
+* adds zoom to pb-grid ([c3f557d](https://github.com/eeditiones/tei-publisher-components/commit/c3f557d83ff13e23dad5a9162af5f9f0f7e319ad))
+
+# [2.21.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.20.0...v2.21.0) (2024-05-02)
+
+
+### Bug Fixes
+
+* no scrolling when component is disabled ([dfe1881](https://github.com/eeditiones/tei-publisher-components/commit/dfe188178d556608501a5e600ccb81591565e6c2))
+
+
+### Features
+
+* changes vertical alignment of scroll ([38b8dce](https://github.com/eeditiones/tei-publisher-components/commit/38b8dce6f5e6dc63c38aa34905b21dc1ab832c33))
+
+# [2.20.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.3...v2.20.0) (2024-05-02)
+
+
+### Features
+
+* **pb-grid:** support dragging a panel to a different position in the grid ([4cf75f8](https://github.com/eeditiones/tei-publisher-components/commit/4cf75f8edb0294a8943846037c44a41e87a76afd))
+
+## [2.19.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.2...v2.19.3) (2024-04-25)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** using patched OSD from jinntec/openseadragon and corrected finding the pb-page element. ([2a89c8d](https://github.com/eeditiones/tei-publisher-components/commit/2a89c8d108260608eab76ade31b81f289ce1902b))
+
+## [2.19.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.1...v2.19.2) (2024-03-23)
+
+
+### Bug Fixes
+
+* **pb-tify:** make sure container div is created ([e96f4f2](https://github.com/eeditiones/tei-publisher-components/commit/e96f4f2ba27d83096c5cf84ce4943bd00ba62091))
+
+## [2.19.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.19.0...v2.19.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** pb-leaflet-marker-click event details should include reference to pb-geolocation element where possible ([da54cdb](https://github.com/eeditiones/tei-publisher-components/commit/da54cdb99bda19ab2bb9386d5d0e2e3b3196ee19))
+* **pb-table-grid:** react to language changes ([50cc2a0](https://github.com/eeditiones/tei-publisher-components/commit/50cc2a019bde937061499cd151cda9aed455c31a))
+
 # [2.19.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.18.4...v2.19.0) (2024-01-26)
 
 
