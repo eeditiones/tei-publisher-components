@@ -1,3 +1,10 @@
+# [2.24.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.2...v2.24.0) (2024-06-27)
+
+
+### Features
+
+* **i18n:** add translations for mainland traditional Chinese; complete simplified Chinese; drop incomplete zh_TW ([0cf6127](https://github.com/eeditiones/tei-publisher-components/commit/0cf6127ebfbf9d39cbc60ca0a2c00b0cff52928b))
+
 ## [2.23.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.1...v2.23.2) (2024-05-19)
 
 
