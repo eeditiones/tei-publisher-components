@@ -156,12 +156,18 @@ export class PbGrid extends pbMixin(LitElement) {
         }
     }
 
+	/**
+	 * Add a panel. Defaults to opening 'the next' panel if the `initial` parameter is omitted: if
+	 * panels 1,6,3 are open, panel 7 will be added
+	 *
+	 * @param {number} [initial] The panel number of the panel to add.
+	 */
     addPanel(initial) {
-        let value = initial
-        if (!initial && !this.panels.length) {
-            value = 0
+        let value = initial;
+        if (initial === undefined && !this.panels.length) {
+            value = 0;
         }
-        if (!initial && this.panels.length) {
+        if (initial === undefined && this.panels.length) {
             const max = this.panels.reduce((result, next) => Math.max(result, next), 0);
             value = max + 1;
         }
@@ -170,15 +176,15 @@ export class PbGrid extends pbMixin(LitElement) {
         this.panels.push(value);
 
         this._insertPanel(value);
-        registry.commit(this, this._getState())
+        registry.commit(this, this._getState());
         this._update();
         this.emitTo('pb-refresh');
     }
 
     /**
      * Remove a panel from the grid
-     * 
-     * @param {HTMLElement|number} panel the pb-panel element or the panel number 
+     *
+     * @param {HTMLElement|number} panel the pb-panel element or the panel number
      */
     removePanel(panel) {
         let idx;
