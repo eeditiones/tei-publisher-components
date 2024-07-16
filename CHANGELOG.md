@@ -1,3 +1,10 @@
+## [2.24.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.0...v2.24.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* **pb-grid:** Fix calling pb-grid#addPanel(0) ([e326905](https://github.com/eeditiones/tei-publisher-components/commit/e326905a070224267dc1b1b0840ce368eeeac330))
+
 # [2.24.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.2...v2.24.0) (2024-06-27)
 
 
