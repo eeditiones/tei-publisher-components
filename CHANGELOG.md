@@ -1,3 +1,10 @@
+## [2.24.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.1...v2.24.2) (2024-07-23)
+
+
+### Bug Fixes
+
+* **pb-collapse:** collapse icons with fixed width ([0e83fbe](https://github.com/eeditiones/tei-publisher-components/commit/0e83fbecaaca0983bf282a80135cbf674668dfe3))
+
 ## [2.24.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.0...v2.24.1) (2024-07-16)
 
 
