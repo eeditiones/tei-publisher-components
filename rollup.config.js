@@ -24,7 +24,9 @@ export default [
             'src/pb-leaflet-map.js',
             'src/pb-odd-editor.js',
             'src/pb-edit-app.js',
-            'src/pb-code-editor.js'
+            'src/pb-code-editor.js',
+            'src/pb-tify.js',
+            'src/pb-mei.js'
         ],
         output: {
             dir: 'dist',
@@ -41,7 +43,8 @@ export default [
                     "setSpreadProperties": true
                 },
                 "plugins": [
-                    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }]
+                    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }],
+                    ["@babel/plugin-transform-optional-chaining", { "useBuiltIns": true }]
                 ]
             }),
             resolve(),
@@ -55,6 +58,10 @@ export default [
             }),
             copy({
                 targets: [
+                    {
+                        src: './node_modules/tify/dist/tify.css',
+                        dest: './css/tify'
+                    },
                     {
                         src: './node_modules/gridjs/dist/theme/mermaid.min.css',
                         dest: './css/gridjs'
@@ -96,6 +103,14 @@ export default [
                         dest: './css/leaflet'
                     },
                     {
+                        src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.min.js*',
+                        dest: './lib'
+                    },
+                    {
+                        src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.css',
+                        dest: './css/leaflet'
+                    },
+                    {
                         src: './node_modules/tom-select/dist/css/*.min.css',
                         dest: './css/tom-select'
                     },
@@ -106,6 +121,14 @@ export default [
                     {
                         src: './node_modules/pagedjs/dist/paged.polyfill.js',
                         dest: 'lib'
+                    },
+                    {
+                        src: './node_modules/airtable/build/airtable.browser.js',
+                        dest: 'lib'
+                    },
+                    {
+                        src: './node_modules/web-midi-player/index.js',
+                        dest: 'lib/web-midi-player'
                     },
                     {
                         src: './src/assets/components.css',
@@ -132,7 +155,7 @@ export default [
             copy({
                 targets: [
                     {
-                        src: ['demo/*.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html', '!**/pb-code-editor.html'],
+                        src: ['demo/*.html', '!**/pb-tify.html', '!**/pb-odd-editor.html', '!**/pb-leaflet-map*.html', '!**/pb-code-editor.html'],
                         dest: 'dist/demo',
                         transform: (contents) => replaceDemo(contents, `${wcloader}${pbbundle}`)
                     },
@@ -153,6 +176,18 @@ export default [
                         dest: 'dist/demo',
                         transform: (contents) =>
                             replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-code-editor.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-tify.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-tify.js"></script>`)
+                    },
+                    {
+                        src: ['demo/pb-mei.html'],
+                        dest: 'dist/demo',
+                        transform: (contents) =>
+                            replaceDemo(contents, `${wcloader}${pbbundle}<script type="module" src="../pb-mei.js"></script>`)
                     },
                     {
                         src: 'api.html',

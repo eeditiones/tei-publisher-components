@@ -81,7 +81,6 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        waitOnce('pb-page-ready', () => {
             registry.subscribe(this, (state) => {
                 const param = state[this.name];
                 if (typeof param !== 'undefined') {
@@ -99,19 +98,17 @@ export class PbSelectFeature extends pbMixin(LitElement) {
                 this.selected = 0;
             }
 
-            this.shadowRoot.getElementById('list').selected = this.selected;
-
             const newState = {};
             newState[this.name] = this.selected;
             registry.replace(this, newState);
 
             this.signalReady();
-        });
     }
 
     firstUpdated() {
         super.firstUpdated();
 
+        this.shadowRoot.getElementById('list').selected = this.selected;
         this.shadowRoot.getElementById('menu').addEventListener('iron-select', this._selectionChanged.bind(this));
     }
 
@@ -136,6 +133,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
             }
             this.items[current].selectors.forEach((config) => {
                 if (config.global) {
+                    registry.commit(this, state);
                     this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }));
                 } else {
                     addSelector({

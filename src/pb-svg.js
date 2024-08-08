@@ -6,9 +6,10 @@ import { pbMixin } from './pb-mixin.js';
 /**
  * Show an SVG image with zoom and pan functionality. The image URL may
  * either be specified via the `url` property or an `pb-show-annotation` event
- * sent to this component.
+ * sent to this component. A relative URL will be resolved against the current API context.
  *
- * @fires pb-show-annotation - When received, loads the image from the URL passed from the event
+ * @fires pb-show-annotation - When received, loads the image from the URL passed in property `file`
+ * within the event
  * @cssprop --pb-svg-height - Height of the SVG element
  * @cssprop --pb-svg-width - Width of the SVG element
  */
@@ -32,43 +33,48 @@ export class PbSvg extends pbMixin(LitElement) {
 
     connectedCallback() {
         super.connectedCallback();
+
+        window.ESGlobalBridge.requestAvailability();
+        window.ESGlobalBridge.instance.load("svg-pan-zoom", `https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js`);
+
+        this.subscribeTo('pb-show-annotation', (ev) => {
+            if (this.url === ev.detail.file) {
+                return;
+            }
+            this.url = ev.detail.file;
+        });
     }
 
     firstUpdated() {
         super.firstUpdated();
-        window.ESGlobalBridge.requestAvailability();
-        window.ESGlobalBridge.instance.load("svg-pan-zoom", `https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js`);
-        window.addEventListener(
-            "es-bridge-svg-pan-zoom-loaded",
-            this._onSvgPanZoomLoaded.bind(this),
-            { once: true }
-        );
 
         this.container = this.shadowRoot.getElementById('image');
+    }
 
-        this.subscribeTo('pb-show-annotation', (ev) => {
-            console.log('<pb-svg> loading %s', ev.detail.file);
-            this.url = ev.detail.file;
+    updated(changed) {
+        if (changed.has('url') && this.url && this.url !== changed.get('url')) {
             this.load();
-        });
+        }
     }
 
-    _onSvgPanZoomLoaded() {
-        this.load();
-    }
- 
     load() {
+        if (!this.url) {
+            return;
+        }
+        const uri = this.toAbsoluteURL(this.url);
+        console.log('<pb-svg> Loading %s', uri);
         if (this._pan) {
             this._pan.destroy();
             this._pan = null;
             this.container.innerHTML = '';
         }
-        if (!this.url) {
-            return;
-        }
-        fetch(this.url)
+        fetch(uri)
             .then((response) => response.text())
             .then((data) => {
+                if (!window.svgPanZoom) {
+                    console.error('<pb-svg> svgPanZoom not available');
+                    return;
+                }
                 const doc = new DOMParser().parseFromString(data, "image/svg+xml");
                 const svg = doc.documentElement;
                 this.container.appendChild(svg);

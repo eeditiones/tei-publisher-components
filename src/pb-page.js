@@ -40,6 +40,31 @@ export class PbPage extends pbMixin(LitElement) {
                 attribute: 'app-root'
             },
             /**
+             * Can be used to define parameters which should be serialized in the
+             * URL path rather than as query parameters. Expects a url pattern
+             * relative to the application root
+             * (supported patterns are documented in the 
+             * [path-to-regexp](https://www.npmjs.com/package/path-to-regexp) library documentation).
+             * 
+             * For example, a pattern `:lang/texts/:path/:id?` would support URLs like 
+             * `en/texts/text1/chapter1`. Whenever components change state – e.g. due to a navigation
+             * event – the standard parameters `path`, `lang` and `id` would be serialized into the
+             * URL path pattern rather than query parameters.
+             */
+            urlTemplate: {
+                type: String,
+                attribute: 'url-template'
+            },
+            /**
+             * A comma-separated list of parameter names which should not be reflected on the browser URL.
+             * Use this to exclude e.g. the default `odd` parameter of a pb-view to be shown in the
+             * browser URL.
+             */
+            urlIgnore: {
+                type: String,
+                attribute: 'url-ignore'
+            },
+            /**
              * Is the resource path part of the URL or should it be
              * encoded as a parameter? TEI Publisher uses the
              * URL path, but the webcomponent demos need to encode the resource path
@@ -180,6 +205,8 @@ export class PbPage extends pbMixin(LitElement) {
         super();
         this.unresolved = true;
         this.endpoint = ".";
+        this.urlTemplate = null;
+        this.urlIgnore = null;
         this.urlPath = 'path';
         this.idHash = false;
         this.apiVersion = undefined;
@@ -221,7 +248,7 @@ export class PbPage extends pbMixin(LitElement) {
             return;
         }
 
-        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot);
+        registry.configure(this.urlPath === 'path', this.idHash, this.appRoot, this.urlTemplate, this.urlIgnore);
 
         this.endpoint = this.endpoint.replace(/\/+$/, '');
         
@@ -241,7 +268,8 @@ export class PbPage extends pbMixin(LitElement) {
         }
 
         const stylesheetURLs = [
-            resolveURL('../css/components.css')
+            // TODO: replace with this.toAbsoluteURL
+            this.toAbsoluteURL('resources/css/components.css', this.endpoint)
         ];
         if (this.theme) {
             stylesheetURLs.push(this.toAbsoluteURL(this.theme, this.endpoint));

@@ -48,7 +48,6 @@ import './dts-client.js';
 import './pb-codepen.js';
 import './pb-markdown.js';
 import './pb-observable.js';
-import './pb-mei.js';
 import './pb-autocomplete.js';
 import './pb-select.js';
 import './pb-clipboard.js';

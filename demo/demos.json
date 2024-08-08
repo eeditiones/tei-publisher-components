@@ -40,7 +40,8 @@
   },
   "pb-facsimile": {
     "demo/pb-facsimile.html": "Demo",
-    "demo/pb-facsimile-2.html": "Align text page with facsimile"
+    "demo/pb-facsimile-2.html": "Align text page with facsimile",
+    "demo/pb-facsimile-3.html": "With Download Button"
   },
   "pb-image-strip": {
     "demo/pb-image-strip-view.html": "Demo with pb-view",
@@ -61,7 +62,8 @@
   "pb-leaflet-map": {
     "demo/pb-leaflet-map.html": "Demo",
     "demo/pb-leaflet-map2.html": "Show map on demand",
-    "demo/pb-leaflet-map3.html": "Map with layers"
+    "demo/pb-leaflet-map3.html": "Map with layers",
+    "demo/pb-leaflet-map4.html": "Map with geosearch plugin"
   },
   "pb-link": {
     "demo/pb-link.html": "Demo"
@@ -138,8 +140,7 @@
     "demo/pb-version.html": "Demo"
   },
   "pb-mei": {
-    "demo/pb-mei.html": "Demo",
-    "demo/pb-mei2.html": "Extended Features"
+    "demo/pb-mei.html": "Demo"
   },
   "pb-autocomplete": {
     "demo/pb-autocomplete.html": "Demo",
@@ -169,5 +170,8 @@
   },
   "pb-print-preview": {
     "demo/pb-print-preview.html": "Demo"
+  },
+  "pb-tify": {
+    "demo/pb-tify.html": "Demo"
   }
 }

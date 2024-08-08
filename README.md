@@ -38,6 +38,7 @@ For most use case, including `pb-components-bundle.js` is enough. However, we sh
 | `dist/pb-leaflet-map.js`       | (optional) support for displaying maps                                          |
 | `dist/pb-odd-editor.js`        | implements the visual ODD editor                                                |
 | `dist/pb-component-docs.js`    | components to view the API documentation of this package                        |
+| `dist/pb-tify.js` | IIIF presentation API viewer |
 
 Bundles build on each other, so you always need to at least include `pb-components-bundle.js` in your HTML page.
 

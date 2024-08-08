@@ -47,6 +47,9 @@
   "browse": {
     "description": "Eksperymentuj i wypróbuj rezultaty zastosowania rozmaitych plików ODD dołączonych do naszej aplikacji. Zaimportuj własne pliki źródłowe i utwórz własny plik ODD dostosowany do Twoich potrzeb.",
     "login": "aby zaimportować pliki oraz uzyskać dostęp do funkcji administracyjnych (domyślny użytkownik: 'tei-demo', hasło: 'demo').",
+    "login-1": "Zaloguj jako ",
+    "login-2": " z hasłem",
+    "login-3": "aby eksperymentować z własnymi plikami i ODD",
     "sort": "Sortuj",
     "filter": "Filtruj według",
     "filterPlaceholder": "Filtruj",
@@ -60,6 +63,9 @@
     "confirmDeletion": "Czy na pewno chcesz usunąć ten plik?",
     "confirmDeletion_plural": "Czy na pewno chcesz usunąć {{count}} plików?",
     "documents": "Dokumenty",
+    "documents-removed": "Usunięte dokumenty",
+    "document-not-found": "Nie znaleziono dokumentu",
+    "document-remove-failed": "Nie udało się usunąć dokumentu",
     "collections": "Kolekcja lokalna",
     "dts": "Serwis DTS (Distributed Text Services - wersja eksperymentalna)",
     "test": {
@@ -77,6 +83,10 @@
     "markdown": {
       "title": "Próbka Markdown",
       "description": "Przykład użycia formatu Markdown dla treści statycznych."
+    },
+    "annotate": {
+      "title": "Przykłady anotacji",
+      "description": "Poletko eksperymentalne do anotowania dokumentów."
     },
     "up": "Przejdź do katalogu nadrzędnego"
   },
@@ -111,11 +121,15 @@
     "reset": "Resetuj",
     "placeholder": "Wprowadź zapytanie",
     "sections": "Przeszukaj sekcje",
-    "headings": "Przeszukaj nagłówki"
+    "headings": "Przeszukaj nagłówki",
+    "title": "Przeszukaj tytuły",
+    "content": "Przeszukaj zawartość",
+    "scope": "Obszar kwerendy"
   },
   "dts": {
     "endpoint": "Wybierz Endpoint",
-    "note": "Wersja eksperymentalna: uzyskaj dostęp do edycji, które udostępniają API DTS"
+    "note": "Wersja eksperymentalna: uzyskaj dostęp do edycji, które udostępniają API DTS",
+    "requires-login": "Wymaga logowania"
   },
   "odd": {
     "files": "Pliki ODD",
@@ -134,6 +148,9 @@
       "save": "Zapisz",
       "saving": "Zapisywanie ...",
       "saved": "Zapisano",
+      "unsaved": "Niezapisane zmiany zostaną zawarte w eksporcie! Czy kontynuować mimo to?",
+      "download": "Pobierz ODD",
+      "save-as": "Zapisz ODD do folderu",
       "denied": "Brak uprawnień",
       "denied-message": "Nie masz uprawnień aby zapisać plik {{odd}}",
       "reload": "Odśwież",
@@ -162,7 +179,9 @@
         "custom-behaviour-placeholder": "[Behaviour (niestandardowe)]",
         "template-placeholder": "[Szablon (zostanie zastosowany do parametru content)]",
         "param-name-placeholder": "[Nazwa parametru]",
-        "empty": "[Brak]"
+        "empty": "[Brak]",
+        "mode-placeholder": "[Tryb przetwarzania (processing mode) - przekazywany do zagnieżdżonych modeli]",
+        "set-param": "ustaw"
       },
       "css-source": "Otwórz plik CSS"
     }
@@ -170,7 +189,10 @@
   "facets": {
     "show": "Pokaż top 50",
     "genre": "Gatunek",
-    "language": "Język"
+    "language": "Język",
+    "feature": "Funkcje",
+    "form": "Forma publikacji",
+    "period": "Okres"
   },
   "appgen": {
     "account": {
@@ -225,6 +247,9 @@
     "app": "Przypis aparatu krytycznego",
     "hi": "Wyróżnienie",
     "ref": "Odnośnik (ref)",
+    "pb": "Początek strony (pb)",
+    "pagenum": "Numer strony (@n)",
+    "facs": "URL obrazu (@facs)",
     "abbreviation": "Skrót",
     "occurrences": "Wystąpienia w tekście",
     "correction": "Korekta",
@@ -233,6 +258,8 @@
     "lookup": "Szukaj obiektu",
     "apply": "Zastosuj adnotację",
     "apply-all": "Wybierz i zastosuj wszystkie",
+    "search-other": "Szukaj wystąpień w innych dokumentach",
+    "save-other": "Szukaj wystąpień w innych dokumentach i zaaplikuj do nich anotację",
     "changes": "Zmiany",
     "undo": "Cofnij ostatnią zmianę",
     "download": "Zapisz scalone adnotacje do pliku TEI na Twoim komputerze",
@@ -244,6 +271,50 @@
     "confirm-reload": "Anulować aktualne adnotacje i załadować plik źródłowy ponownie?",
     "modify": "Zmień tekst podstawowy",
     "modify-info": "Uwaga: nie jest to zwyczajna adnotacja; po scaleniu tekst źródłowy ulegnie zmianie.",
-    "permission": "Odmowa dostępu: nie masz uprawnień do zapisywania adnotacji."
+    "permission": "Odmowa dostępu: nie masz uprawnień do zapisywania adnotacji.",
+    "ner": {
+      "title": "Rozpoznawanie nazw własnych (Named Entity Extraction)",
+      "description": "Spróbuj automatycznie znaleźć nazwy własne w tekście i oznakować je jako anotacje.",
+      "run": "Uruchom",
+      "model": "Wybierz model",
+      "denied": "Znaleziono niezapisane zmiany: proszę najpierw je zapisać lub odrzucić."
+    },
+    "confirm-discard-title": "Odrzuć",
+    "confirm-discard": "Odrzucić istniejącą listę wystąpień?",
+    "doc-count": "{{count}} z {{total}}",
+    "toggle": "Pokaż/ukryj panel podglądu/sterowania",
+    "add-entity": "Utwórz rekord",
+    "edit-entity": "Edytuj rekord",
+    "edit-reference": "Szukaj/edytuj odwołanie",
+    "hints": {
+      "modify": "zaznaczony obiekt tego samego typu, ale z innym identyfikatorem",
+      "incomplete": "zaznaczono obiekt tego samego typ, ale bez identyfikatora",
+      "unmarked": "nieoznaczone wystąpienie w tekście",
+      "open-in-tab": "Otwórz podgląd dokumentu w nowej karcie"
+    }
+  },
+  "ner": {
+    "title": "Wytrenuj model rozpoznawania nazw własnych",
+    "not-found": "Ta funkcja wymaga, aby usługa TEI Publisher NER była uruchomiona! Nie udało się połączyć z serwisem NER.",
+    "found": "Znaleziono serwis TEI Publisher NER z spaCy w wersji",
+    "name-placeholder": "Nazwa modelu do utworzenia",
+    "name": "Nazwa",
+    "path": "Ścieżka dostępu",
+    "path-placeholder": "Ścieżka dostępu (względna) do dokumentu lub kolekcji",
+    "path-info": "Wprowadź ścieżkę dostępu do dokumentu lub kolekcji, które mają zostać użyte jako dane szkoleniowe dla modelu. Ścieżka musi być podana w odniesieniu do bazowej kolekcji danych aplikacji (data root).",
+    "lang-info": "Możesz wyszkolić nowy model dla języka albo wybrać jeden z istniejących poniżej modeli do rozszerzenia. Jeśli nie rozszerzasz istniejącego modelu, musisz określić język. W przeciwnym razie zostaw to pole puste.",
+    "language-placeholder": "Język, dla którego tworzony jest model",
+    "language": "Język",
+    "language-error": "Wymagany jest język albo model bazowy",
+    "model": "Model bazowy",
+    "model-placeholder": "Model bazowy do rozszerzenia lub skopiowania",
+    "vectors": "Skopiuj z modelu podstawowego jedynie wektory",
+    "output": "Wyniki szkolenia",
+    "prepare": "Przygotowywanie danych szkoleniowych",
+    "start": "Uruchom"
+  },
+  "timeline": {
+    "unknown": "bez daty",
+    "clear": "Wyczyść wybór daty"
   }
 }

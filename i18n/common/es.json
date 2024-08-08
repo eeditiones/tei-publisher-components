@@ -47,6 +47,9 @@
   "browse": {
     "description": "Utiliza esta aplicación para experimentar y probar varios ODDs redactados a partir de diferentes instrucciones del modelo de procesamiento. Carga tus propios archivos y crea un ODD personalizado.",
     "login": "para subir archivos o ver funciones administrativas (usuario predeterminado: 'tei-demo', contraseña: 'demo').",
+    "login-1": "Iniciar sesión como ",
+    "login-2": " con contraseña",
+    "login-3": "experimentar con tus propios archivos y ODD",
     "sort": "Ordenar por",
     "filter": "Filtrar por",
     "filterPlaceholder": "Filtro",
@@ -60,6 +63,9 @@
     "confirmDeletion": "¿Seguro que quieres eliminar el archivo?",
     "confirmDeletion_plural": "¿Seguro que quieres eliminar {{count}} archivos?",
     "documents": "Documentos",
+    "documents-removed": "Documentos eliminados",
+    "document-not-found": "Documento no encontrado",
+    "document-remove-failed": "Error al guardar el documento",
     "collections": "Colección local",
     "dts": "Servicios de texto distribuidos (versión experimental)",
     "test": {
@@ -77,6 +83,10 @@
     "markdown": {
       "title": "Muestra en Markdown",
       "description": "Un ejemplo de uso de Markdown para generar contenido estático."
+    },
+    "annotate": {
+      "title": "Muestras de anotación",
+      "description": "Otro parque de juegos para anotar documentos."
     },
     "up": "Ir a la carpeta anterior"
   },
@@ -111,11 +121,15 @@
     "reset": "Reestablecer",
     "placeholder": "Escribe el término a buscar",
     "sections": "Buscar en secciones",
-    "headings": "Buscar en títulos"
+    "headings": "Buscar en títulos",
+    "title": "Búsqueda de títulos",
+    "content": "Buscar contenido",
+    "scope": "Ámbito de consulta"
   },
   "dts": {
     "endpoint": "Seleccionar punto final",
-    "note": "Experimental: acceder a otras ediciones que exponen la API DTS"
+    "note": "Experimental: acceder a otras ediciones que exponen la API DTS",
+    "requires-login": "Inicio de sesión obligatorio"
   },
   "odd": {
     "files": "Archivos ODD",
@@ -134,6 +148,9 @@
       "save": "Guardar",
       "saving": "Guardando...",
       "saved": "Guardado",
+      "unsaved": "¡Hay cambios sin guardar, que serán incluidos en la exportación! ¿Continuar de todos modos?",
+      "download": "Descargar ODD",
+      "save-as": "Guardar ODD en el directorio",
       "denied": "Permiso denegado",
       "denied-message": "No tienes permiso para guardar {{odd}}",
       "reload": "Volver a cargar",
@@ -162,7 +179,9 @@
         "custom-behaviour-placeholder": "[Behaviour personalizado]",
         "template-placeholder": "[Definir plantilla de código para aplicar al contenido]",
         "param-name-placeholder": "[Nombre del parámetro]",
-        "empty": "[Vacío]"
+        "empty": "[Vacío]",
+        "mode-placeholder": "[Modo de procesamiento - pasado a modelos posteriores]",
+        "set-param": "set"
       },
       "css-source": "Abrir fichero CSS"
     }
@@ -170,7 +189,10 @@
   "facets": {
     "show": "Mostrar top 50",
     "genre": "Género",
-    "language": "Idioma"
+    "language": "Idioma",
+    "feature": "Funcionalidad",
+    "form": "Formulario",
+    "period": "Período"
   },
   "appgen": {
     "account": {
@@ -225,6 +247,9 @@
     "app": "Entrada de aparato",
     "hi": "Destacar",
     "ref": "Enlace (ref)",
+    "pb": "Salto de página (pb)",
+    "pagenum": "Número de página (@n)",
+    "facs": "URL de la imagen (@facs)",
     "abbreviation": "Abreviatura",
     "occurrences": "Ocurrencias en el texto",
     "correction": "Corrección",
@@ -233,6 +258,8 @@
     "lookup": "Buscar entidades",
     "apply": "Actualizar anotación",
     "apply-all": "Seleccionar y aplicar todo",
+    "search-other": "Buscar ocurrencias en otros documentos",
+    "save-other": "Buscar ocurrencias en otros documentos y aceptar las anotaciones inmediatamente",
     "changes": "Cambios",
     "undo": "Deshacer el último cambio",
     "download": "Fusionar y guardar TEI en local",
@@ -244,6 +271,50 @@
     "confirm-reload": "¿Descartar las anotaciones actuales y recargar la fuente?",
     "modify": "Aplicar edición al texto base",
     "modify-info": "Nota: esto no es una anotación, pero modificará el texto base cuando se fusione.",
-    "permission": "Permiso denegado: no tiene permiso para guardar anotaciones."
+    "permission": "Permiso denegado: no tiene permiso para guardar anotaciones.",
+    "ner": {
+      "title": "Extracción de entidades nombradas",
+      "description": "Intenta encontrar automáticamente entidades nombradas en el texto y marcarlas como anotaciones.",
+      "run": "Ejecutar",
+      "model": "Seleccionar un Modelo",
+      "denied": "Cambios no guardados encontrados: por favor guarde o descarte primero."
+    },
+    "confirm-discard-title": "Descartar",
+    "confirm-discard": "¿Descartar la lista de ocurrencias?",
+    "doc-count": "{{count}} de {{total}}",
+    "toggle": "Mostrar / ocultar el panel de previsualización/control",
+    "add-entity": "Crear entidad",
+    "edit-entity": "Editar entidad",
+    "edit-reference": "Buscar/editar referencia",
+    "hints": {
+      "modify": "entidad marcada del mismo tipo pero clave diferente",
+      "incomplete": "marcado con el mismo tipo pero sin clave",
+      "unmarked": "ocurrencia no marcada en el texto",
+      "open-in-tab": "Abrir documento en nueva pestaña para revisar"
+    }
+  },
+  "ner": {
+    "title": "Entrenar un modelo de reconocimiento de entidades nombradas",
+    "not-found": "¡Esta función requiere que el servicio TEI Publisher NER esté funcionando! No se pudo contactar con el servicio.",
+    "found": "Se encontró TEI Publisher NER con la versión spaCy",
+    "name-placeholder": "Nombre del modelo a crear",
+    "name": "Nombre",
+    "path": "Ruta",
+    "path-placeholder": "Ruta relativa al documento o colección",
+    "path-info": "Introduzca la ruta a un documento o colección a utilizar como ínput de entrenamiento. Debe ser relativa a la raíz de datos del editor TEI.",
+    "lang-info": "Puede entrenar un nuevo modelo para un idioma o seleccionar un modelo existente para extenderse a continuación. Si no se extiende un modelo existente, debe especificar un idioma. De lo contrario, déjelo vacío.",
+    "language-placeholder": "Idioma para el que crear el modelo",
+    "language": "Idioma",
+    "language-error": "Se requiere un idioma o un modelo base",
+    "model": "Modelo base",
+    "model-placeholder": "Modelo base desde el que extender o copiar",
+    "vectors": "Solo copiar vectores del modelo base",
+    "output": "Salida de entrenamiento",
+    "prepare": "Preparando datos de entrenamiento",
+    "start": "Ejecutar"
+  },
+  "timeline": {
+    "unknown": "sin fecha",
+    "clear": "Eliminar la fecha seleccionada"
   }
 }

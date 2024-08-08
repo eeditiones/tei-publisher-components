@@ -4,8 +4,8 @@ import { pbMixin } from './pb-mixin.js';
 import { registry } from "./urls.js";
 
 /**
- * Create an internal link: clicking it will cause connected views to
- * update and load the corresponding document fragment defined by the
+ * Create an internal link: clicking it will emit a `pb-refresh`event, 
+ * causing connected views to update and load the corresponding document fragment defined by the
  * properties.
  *
  * @fires pb-refresh - Fires when user clicks the link
@@ -29,6 +29,10 @@ export class PbLink extends pbMixin(LitElement) {
                 type: String,
                 reflect: true
             },
+            xpath: {
+                type: String,
+                reflect: true
+            },
             /** Browse to a different document */
             path: {
                 type: String
@@ -42,9 +46,15 @@ export class PbLink extends pbMixin(LitElement) {
                 type: String
             },
             /**
+             * Additional parameters to be passed in the event details.
+             * Should be specified as a JSON object.
+             */
+            params: {
+                type: Object
+            },
+            /**
              * Modify browser history: if set, clicking this
              * element will generate a new history entry in the browser's history.
-             * Only use this on one element on the page.
              */
             history: {
                 type: Boolean
@@ -55,6 +65,7 @@ export class PbLink extends pbMixin(LitElement) {
     constructor() {
         super();
         this.history = true;
+        this.params = null;
     }
 
     connectedCallback() {
@@ -109,6 +120,12 @@ export class PbLink extends pbMixin(LitElement) {
         }
         if (this.view) {
             params.view = this.view;
+        }
+        if (this.xpath) {
+            params.xpath = this.xpath;
+        }
+        if (this.params) {
+            Object.assign(params, this.params);
         }
         if (this.history) {
             registry.commit(this, params);

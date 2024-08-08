@@ -321,6 +321,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 type: Node,
                 attribute: false
             },
+            _additionalParams: {
+                type: Object
+            },
             ...super.properties
         };
     }
@@ -341,6 +344,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.beforeUpdate = null;
         this.noScroll = false;
         this._features = {};
+        this._additionalParams = {};
         this._selector = {};
         this._chunks = [];
         this._scrollTarget = null;
@@ -436,8 +440,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.signalReady();
 
         if (this.onUpdate) {
-            this.subscribeTo('pb-update', () => {
-                this._refresh();
+            this.subscribeTo('pb-update', (ev) => {
+                this._refresh(ev);
             });
         }
     }
@@ -571,6 +575,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             }
             if (ev.detail.id) {
                 this.xmlId = ev.detail.id;
+            } else if (ev.detail.id == null) {
+                this.xmlId = null;
             }
             this.odd = ev.detail.odd || this.odd;
             if (ev.detail.columnSeparator !== undefined) {
@@ -585,8 +591,15 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             if (ev.detail.root === null) {
                 this.nodeId = null;
             } else {
-                this.nodeId = ev.detail.root || this.nodeId;
+                this.nodeId = (ev.detail.position !== undefined ? ev.detail.position : ev.detail.root) || this.nodeId;
             }
+
+            // check if the URL template needs any other parameters
+            // and set them on this._additionalParams
+            registry.pathParams.forEach((key) => {
+                this._additionalParams[key] = ev.detail[key];
+            });
+
             if (!this.noScroll) {
                 this._scrollTarget = ev.detail.hash;
             }
@@ -772,7 +785,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.previousId = resp.previousId;
         this.nodeId = resp.root;
         this.switchView = resp.switchView;
-        this.xmlId = null;
 
         this.updateComplete.then(() => {
             const view = this.shadowRoot.getElementById('view');
@@ -994,6 +1006,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         for (const [key, value] of Object.entries(this._features)) {
             params['user.' + key] = value;
         }
+        // add parameters for user-defined parameters supplied via pb-link
+        if (this._additionalParams) {
+            for (const [key, value] of Object.entries(this._additionalParams)) {
+                params[key] = value;
+            }
+        }
         return params;
     }
 
@@ -1085,7 +1103,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                         root: this.previousId ? null : this.previous
                     });
                 }
-                this._load(this.previous, direction);
+                this.xmlId = this.previousId;
+                this._load(this.xmlId ? null : this.previous, direction);
             }
         } else if (this.next) {
             if (!this.disableHistory && !this.map) {
@@ -1094,7 +1113,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                     root: this.nextId ? null : this.next
                 });
             }
-            this._load(this.next, direction);
+            this.xmlId = this.nextId;
+            this._load(this.xmlId ? null : this.next, direction);
         }
     }
 
@@ -1162,18 +1182,24 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     _setState(properties) {
         for (const [key, value] of Object.entries(properties)) {
-            switch (key) {
-                case 'odd':
-                case 'view':
-                case 'columnSeparator':
-                case 'xpath':
-                case 'nodeId':
-                case 'path':
-                case 'root':
-                    break;
-                default:
-                    this._features[key] = value;
-                    break;
+            // check if URL template needs the parameter and if
+            // yes, add it to the additional parameter list
+            if (registry.pathParams.has(key)) {
+                this._additionalParams[key] = value;
+            } else {
+                switch (key) {
+                    case 'odd':
+                    case 'view':
+                    case 'columnSeparator':
+                    case 'xpath':
+                    case 'nodeId':
+                    case 'path':
+                    case 'root':
+                        break;
+                    default:
+                        this._features[key] = value;
+                        break;
+                }
             }
         }
         if (properties.odd && !this.getAttribute('odd')) {

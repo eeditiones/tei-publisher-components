@@ -47,7 +47,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         this.trigger = 'mouseover';
         this.label = '';
         this.order = Number.POSITIVE_INFINITY;
-        this.waitFor = 'pb-facsimile,pb-image-strip';
+        this.waitFor = 'pb-facsimile,pb-image-strip,pb-tify';
         this.default = '';
     }
 
@@ -79,7 +79,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         const link = this.shadowRoot.querySelector('a');
         link.addEventListener(this.trigger, this._linkListener.bind(this));
         if (this.emitOnLoad) {
-            this._trigger();
+            this.wait(() => { this._trigger(); });
         }
     }
 
@@ -109,6 +109,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         this.emitTo('pb-show-annotation', {
             element: this,
             file: this.facs,
+            order: this.getOrder(),
             coordinates: this.coordinates
         });
     }

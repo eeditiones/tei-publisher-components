@@ -52,10 +52,6 @@ export class PbManageOdds extends pbMixin(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.subscribeTo('pb-login', () => {
-            this._refresh();
-        }, []);
-
         this.subscribeTo('pb-refresh-odds', (ev) => {
             this._refresh();
 

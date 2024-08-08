@@ -3,19 +3,21 @@ import { Registry } from "./registry.js";
 /**
  * Connector for the corporate archive of Georgfischer AG.
  */
-export class GF extends Registry {
+export class Anton extends Registry {
     
     constructor(configElem) {
         super(configElem);
+        this._url = configElem.getAttribute('url') || `https://archives.georgfischer.com/api`;
         this._api = configElem.getAttribute('api');
         this._limit = configElem.getAttribute('limit') || 999999;
+        this._provider = configElem.getAttribute('provider') || configElem.getAttribute('connector')
     }
 
     async query(key) {
         const results = [];
      
         const register = this.getRegister();
-        const url = `https://archives.georgfischer.com/api/${register}?search=${encodeURIComponent(key)}&perPage=${this._limit}`;
+        const url = `${this._url}/${register}?search=${encodeURIComponent(key)}&perPage=${this._limit}`;
         const label = this.getLabelField();
         return new Promise((resolve) => {
             fetch(url)
@@ -38,9 +40,9 @@ export class GF extends Registry {
                       id: (this._prefix ? `${this._prefix}-${item.id}` : item.id),
                       label: item[label],
                       details: `${item.id}`,
-                      link: `https://archives.georgfischer.com/api/${register}/${item.id}`,
+                      link: `${this._url}/${register}/${item.id}`,
                       strings: [item[label]],
-                      provider: 'GF'
+                      provider: this._provider
                     };
                     results.push(result);
                 });
@@ -87,7 +89,7 @@ export class GF extends Registry {
    */
   async getRecord(key) {
     const id = key.replace(/^.*-([^-]+)$/, '$1');
-    const url = `https://archives.georgfischer.com/api/${this.getRegister()}/${id}`;
+    const url = `${this._url}/${this.getRegister()}/${id}`;
     return fetch(url)
     .then(response => response.json())
     .then(json => {
@@ -96,7 +98,9 @@ export class GF extends Registry {
       switch (this._register) {
         case 'place':
           output.country = json.data.country;
-          output.location = json.data.location.coordinates;
+          if (json.data.location && json.data.location.coordinates) {
+            output.location = json.data.location.coordinates;
+          }
           output.links = json.data.links.map((link) => link.url);
           break;
         case 'person':
@@ -136,6 +140,7 @@ export class GF extends Registry {
         case 'organization':
           register = 'actors';
           break;
+        case 'origPlace':
         case 'place':
           register = 'places';
           break;

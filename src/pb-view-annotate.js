@@ -9,7 +9,7 @@ import { get as i18n } from './pb-i18n.js';
 /**
  * Return the first child of ancestor which contains current.
  * Used to adjust nested anchor points.
- * 
+ *
  * @param {Node} current the anchor node
  * @param {Node} ancestor the context ancestor node
  * @returns {Node} first child of ancestor containing current
@@ -25,7 +25,7 @@ function extendRange(current, ancestor) {
 /**
  * Check if the nodeToCheck should be ignored when computing offsets.
  * Applies e.g. to footnote markers.
- * 
+ *
  * @param {Node} nodeToCheck the node to check
  * @returns true if node should be ignored
  */
@@ -108,7 +108,7 @@ function ancestors(node, selector) {
 /**
  * Find the next text node after the current node.
  * Descends into elements.
- * 
+ *
  * @param {Node} node the current node
  * @returns next text node or the current node if none is found
  */
@@ -210,14 +210,17 @@ function clearProperties(teiRange) {
  * An extended `PbView`, which supports annotations to be added
  * and edited by the user. Handles mouse selection and keeps track
  * of the annotations made.
- * 
+ *
  * Interaction with the actual editing form is entirely done via events.
  * The class itself does not provide any editing facility, except for
  * handling deletions.
- * 
+ *
+ * @fires pb-annotations-loaded - fired after text was loaded and annotations were drawn
  * @fires pb-selection-changed - fired when user selects text
  * @fires pb-annotations-changed - fired when an annotation was added or changed
  * @fires pb-annotation-detail - fired to request additional details about an annotation
+ * @fires pb-disable - if received, disables selection tracking, suppressing pb-selection-changed events
+ * @fires pb-enable - re-enables selection tracking
  */
 class PbViewAnnotate extends PbView {
   static get properties() {
@@ -226,7 +229,7 @@ class PbViewAnnotate extends PbView {
        * Configures the default annotation property containing the key for authority entries.
        * Default: 'ref', corresponding to TEI attribute @ref. Change to 'corresp' or 'key' when
        * using those attributes instead.
-       * 
+       *
        * You can also define a custom mapping of annotation types to key properties, e.g. if you would
        * like to use @key for some elements, but @corresp for others.
        */
@@ -259,6 +262,7 @@ class PbViewAnnotate extends PbView {
     this._ranges = [];
     this._rangesMap = new Map();
     this._history = [];
+    this._disabled = false;
   }
 
   connectedCallback() {
@@ -277,7 +281,7 @@ class PbViewAnnotate extends PbView {
 
     /** @param {Event} event */
     this._eventHandler = event => {
-      if (event.type === 'selectionchange' && this._inHandler) {
+      if (event.type === 'selectionchange' || this._inHandler) {
         return;
       }
       if (event.type === 'mousedown') {
@@ -324,7 +328,10 @@ class PbViewAnnotate extends PbView {
       this._clearMarkers();
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
-    
+
+    this.addEventListener('pb-disable', () => { this._disabled = true; });
+    this.addEventListener('pb-enable', () => { this._disabled = false; });
+
     this._resizeHandler();
   }
 
@@ -335,6 +342,7 @@ class PbViewAnnotate extends PbView {
   set annotations(annoData) {
     this._ranges = annoData;
     this.updateAnnotations(true);
+    this._markIncompleteAnnotations();
     this._initAnnotationColors();
     this._annotationStyles();
   }
@@ -383,7 +391,7 @@ class PbViewAnnotate extends PbView {
     super.zoom(direction);
     window.requestAnimationFrame(() => this.refreshMarkers());
   }
-  
+
   getKey(type) {
     return this.keyMap[type] || this.key;
   }
@@ -426,6 +434,7 @@ class PbViewAnnotate extends PbView {
         this.scrollTop = this._scrollTop;
         this._scrollTop = undefined;
       }
+      this.emitTo('pb-annotations-loaded');
     }, 300));
   }
 
@@ -476,7 +485,7 @@ class PbViewAnnotate extends PbView {
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
-    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass}`;
+    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${teiRange.before ? 'before' : ''}`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
 
@@ -498,7 +507,7 @@ class PbViewAnnotate extends PbView {
   }
 
   updateAnnotations(silent = false) {
-    this._ranges.forEach((teiRange) => { 
+    this._ranges.forEach((teiRange) => {
       let span;
       switch (teiRange.type) {
         case 'delete':
@@ -511,11 +520,15 @@ class PbViewAnnotate extends PbView {
           break;
         case 'modify':
           span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
+          if (!span) {
+            console.error('<pb-view-annotate> Target node not found for %o', teiRange.node);
+            break;
+          }
           span.dataset.annotation = JSON.stringify(teiRange.properties);
           break;
         default:
           this._updateAnnotation(teiRange, silent, true);
-          break;   
+          break;
       }
     });
     window.requestAnimationFrame(() => this.refreshMarkers());
@@ -528,6 +541,9 @@ class PbViewAnnotate extends PbView {
   }
 
   _selectionChanged() {
+    if (this._disabled) {
+      return;
+    }
     const selection = this._getSelection();
     const range = this._selectedRange(selection);
     if (range) {
@@ -545,22 +561,53 @@ class PbViewAnnotate extends PbView {
           changed = true;
         }
       }
+      this._markSelection(range);
       this._currentSelection = range;
       console.log('<pb-view-annotate> selection: %o', range);
 
       if (changed) {
-        this._inHandler = true;
         setTimeout(() => {
-          selection.removeAllRanges();
-          selection.addRange(range);
-          this.inHandler = false;
+          this._inHandler = true;
+          try {
+            selection.removeAllRanges();
+            selection.addRange(range);
+          } finally {
+            this._inHandler = false;
+          }
         }, 100);
       }
-
-      this.emitTo('pb-selection-changed', { hasContent: true, range });
+      this.emitTo('pb-selection-changed', { hasContent: true, range, selected:  selection.toString()});
     } else {
+      this._clearSelection();
       this.emitTo('pb-selection-changed', { hasContent: false });
     }
+  }
+
+  _markSelection(range) {
+    const root = this.shadowRoot.getElementById('view');
+    const rootRect = root.getBoundingClientRect();
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    this._clearSelection();
+    const rects = range.getClientRects();
+    for (let i = 0; i < rects.length; i++) {
+      const rect = rects[i];
+      const marker = document.createElement('div');
+      marker.className = `selection-marker`;
+      marker.style.position = 'absolute';
+      marker.style.left = `${rect.left - rootRect.left}px`;
+      marker.style.top = `${rect.top - rootRect.top}px`;
+      marker.style.width = `${rect.width}px`;
+      marker.style.height = `${rect.height}px`;
+      marker.style.backgroundColor = `var(--pb-annotation-selection, #f9ea7678)`;
+      markerLayer.appendChild(marker);
+    }
+  }
+
+  _clearSelection() {
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    markerLayer.querySelectorAll('.selection-marker').forEach((oldMarker) => {
+      markerLayer.removeChild(oldMarker);
+    });
   }
 
   updateAnnotation(teiRange, batch = false) {
@@ -579,13 +626,17 @@ class PbViewAnnotate extends PbView {
 
   addAnnotation(info) {
     const range = info.range || this._currentSelection;
+    if (range.collapsed && !info.before) {
+      return null;
+    }
     const startRange = rangeToPoint(range.startContainer, range.startOffset);
     const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
     const adjustedRange = {
       context: startRange.parent,
       start: startRange.offset,
-      end: endRange.offset,
-      text: range.cloneContents().textContent,
+      end: info.before ? startRange.offset : endRange.offset,
+      text: info.before ? '' : range.cloneContents().textContent,
+      before: info.before
     };
     if (info.type) {
       adjustedRange.type = info.type;
@@ -651,22 +702,20 @@ class PbViewAnnotate extends PbView {
 
     window.requestAnimationFrame(() => this.refreshMarkers());
 
-    const selection = this._getSelection();
-    selection.removeAllRanges();
-    selection.addRange(newRange);
+    this._inHandler = true;
+    try {
+      const selection = this._getSelection();
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    } catch(e) {
+      console.error('<pb-view-annotate> %s', e.message);
+    } finally {
+      this._inHandler = false;
+    }
   }
 
   editAnnotation(span, properties) {
-    if (span.dataset.type === 'edit') {
-      let range = this._rangesMap.get(span);
-      if (range) {
-        range.properties = properties;
-        range = clearProperties(range);
-        this.emitTo('pb-annotations-changed', { ranges: this._ranges });
-      } else {
-        console.error('no range found for edit span %o', span);
-      }
-    } else if (span.dataset.tei) {
+    if (span.dataset.tei) {
       // TODO: check in _ranges if it has already been modified
       const context = span.closest('[data-tei]');
       let range = this._ranges.find(r => r.type === 'modify' && r.node === span.dataset.tei);
@@ -681,6 +730,15 @@ class PbViewAnnotate extends PbView {
       range.properties = properties;
       range = clearProperties(range);
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+    } else {
+        let range = this._rangesMap.get(span);
+        if (range) {
+          range.properties = properties;
+          range = clearProperties(range);
+          this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+        } else {
+          console.error('no range found for edit span %o', span);
+        }
     }
     const jsonOld = JSON.parse(span.dataset.annotation);
     const json = Object.assign(jsonOld || {}, properties);
@@ -742,7 +800,8 @@ class PbViewAnnotate extends PbView {
       editBtn.setAttribute('title', i18n('annotations.edit'));
       editBtn.addEventListener('click', () => {
         const data = JSON.parse(span.dataset.annotation);
-        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data }));
+        const text = span.textContent;
+        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
       });
       div.appendChild(editBtn);
     }
@@ -792,6 +851,7 @@ class PbViewAnnotate extends PbView {
             id: data[this.getKey(type)],
             container: info,
             span,
+            ready: () => instance.setContent(wrapper)
           });
         } else {
           // show properties as key/value table
@@ -833,19 +893,21 @@ class PbViewAnnotate extends PbView {
   _showMarker(span, root, rootRect, margin = 0) {
     const rects = span.getClientRects();
     const type = span.dataset.type;
-    for (let i = 0; i < rects.length; i++) {
-      const rect = rects[i];
-      const marker = document.createElement('div');
-      marker.className = `marker annotation-${type}`;
-      marker.style.position = 'absolute';
-      marker.style.left = `${rect.left - rootRect.left}px`;
-      marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
-      marker.style.marginTop = `${margin}px`;
-      marker.style.width = `${rect.width}px`;
-      marker.style.height = `3px`;
-      marker.style.backgroundColor = `var(--pb-annotation-${type})`;
-      marker.part = 'annotation';
-      root.appendChild(marker);
+    if (!span.classList.contains('before')) {
+      for (let i = 0; i < rects.length; i++) {
+        const rect = rects[i];
+        const marker = document.createElement('div');
+        marker.className = `marker annotation-${type}`;
+        marker.style.position = 'absolute';
+        marker.style.left = `${rect.left - rootRect.left}px`;
+        marker.style.top = `${rect.top - rootRect.top + rect.height}px`;
+        marker.style.marginTop = `${margin}px`;
+        marker.style.width = `${rect.width}px`;
+        marker.style.height = `3px`;
+        marker.style.backgroundColor = `var(--pb-annotation-${type})`;
+        marker.part = 'annotation';
+        root.appendChild(marker);
+      }
     }
 
     this._createTooltip(span);
@@ -997,6 +1059,8 @@ class PbViewAnnotate extends PbView {
         const key = this.getKey(annotation.dataset.type);
         if (!data[key] || data[key].length === 0) {
           annotation.classList.add('incomplete');
+        } else {
+          annotation.classList.remove('incomplete');
         }
       }
     });
@@ -1117,6 +1181,11 @@ class PbViewAnnotate extends PbView {
             text-decoration: none;
             font-variant: normal;
             padding: 2px;
+        }
+
+        .annotation.before::after {
+          margin-left: 0;
+          border-radius: 4px;
         }
 
         [part=highlight] {

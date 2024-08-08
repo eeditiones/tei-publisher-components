@@ -440,8 +440,7 @@ export class PbOddModelEditor extends LitElement {
                                            title="move up"></paper-icon-button>
                         <paper-icon-button @click="${this._requestRemoval}" icon="delete" title="remove"></paper-icon-button>
                         <paper-icon-button @click="${this._copy}" icon="content-copy" title="copy"></paper-icon-button>
-                        <paper-icon-button @click="${this._paste}" icon="content-paste"
-                                           ?hidden="${this._isModel}"></paper-icon-button>
+                        <paper-icon-button @click="${this._paste}" icon="content-paste"></paper-icon-button>
 
                         ${this._isGroupOrSequence() ?
                 html`
@@ -759,7 +758,7 @@ export class PbOddModelEditor extends LitElement {
             css: '',
             desc: '',
             predicate: '',
-            type: e.detail.item.getAttribute('value'),
+            type: e instanceof Event ? e.detail.item.getAttribute('value') : e,
             output: '',
             sourcerend: false,
             models: [],
@@ -781,6 +780,15 @@ export class PbOddModelEditor extends LitElement {
         modelTypeSelector.select("");
 
         this.dispatchEvent(new CustomEvent('model-changed', { composed: true, bubbles: true, detail: { oldModel, newModel: this.model } }));
+    }
+
+    addModel(newModel) {
+        if (newModel.type !== 'model') {
+            console.error('only models can be added to modelSequence or modelGrp');
+            return;
+        }
+        this.model.models.unshift(newModel);
+        this.requestUpdate();
     }
 
     _removeModel(ev) {

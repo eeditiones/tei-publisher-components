@@ -47,6 +47,9 @@
   "browse": {
     "description": "Pomocí této aplikace můžete experimentovat a vyzkoušet různé ODD s instrukcemi pro zpracování modelu. Nahrajte vlastní soubory a vytvořte vlastní ODD.",
     "login": ", abyste mohli nahrát soubory a spravovat aplikaci (výchozí uživatel: 'tei-demo', heslo: 'demo').",
+    "login-1": "Přihlásit se jako ",
+    "login-2": "s heslem",
+    "login-3": "a experimentovat s vlastními soubory a ODD",
     "sort": "Řadit podle",
     "filter": "Filtrovat podle",
     "filterPlaceholder": "Filtr",
@@ -60,6 +63,9 @@
     "confirmDeletion": "Určitě chcete soubor odstranit?",
     "confirmDeletion_plural": "Určitě chcete soubory ({{count}}×) odstranit?",
     "documents": "Dokumenty",
+    "documents-removed": "Odstraněné dokumenty",
+    "document-not-found": "Dokument nenalezen",
+    "document-remove-failed": "Dokument se nepodařilo odstranit",
     "collections": "Místní kolekce",
     "dts": "Distribuované textové služby (ve vývoji)",
     "test": {
@@ -77,6 +83,10 @@
     "markdown": {
       "title": "Ukázka Markdownu",
       "description": "Příklad použití Markdownu pro statický obsah."
+    },
+    "annotate": {
+      "title": "Ukázky anotace",
+      "description": "Další hřiště pro anotování dokumentů."
     },
     "up": "O úroveň výš"
   },
@@ -118,7 +128,8 @@
   },
   "dts": {
     "endpoint": "Vybrat koncový bod",
-    "note": "Ve vývoji: přístup k dalším edicím pomocí DTS API"
+    "note": "Ve vývoji: přístup k dalším edicím pomocí DTS API",
+    "requires-login": "Vyžaduje přihlášení"
   },
   "odd": {
     "files": "Soubory ODD",
@@ -137,6 +148,9 @@
       "save": "Uložit",
       "saving": "Ukládá se...",
       "saved": "Uloženo",
+      "unsaved": "Existují neuložené změny, které se nedostanou do exportu. I přesto pokračovat?",
+      "download": "Uložit ODD",
+      "save-as": "Uložit ODD do složky",
       "denied": "Nemáte dostatečná oprávnění",
       "denied-message": "Nemáte oprávnění uložit {{odd}}",
       "reload": "Načíst znovu",
@@ -165,7 +179,9 @@
         "custom-behaviour-placeholder": "[Vlastní chování]",
         "template-placeholder": "[Definujte šablonu kódu, která se použije na obsah]",
         "param-name-placeholder": "[Název parametru]",
-        "empty": "[Prázdný]"
+        "empty": "[Prázdný]",
+        "mode-placeholder": "[Režim zpracování - předání do následujících modelů]",
+        "set-param": "nastavit"
       },
       "css-source": "Otevřít soubor CSS"
     }
@@ -173,7 +189,10 @@
   "facets": {
     "show": "Zobrazit prvních 50",
     "genre": "Žánr",
-    "language": "Jazyk"
+    "language": "Jazyk",
+    "feature": "Funkcionalita",
+    "form": "Formulář",
+    "period": "Období"
   },
   "appgen": {
     "account": {
@@ -228,6 +247,9 @@
     "app": "Položka poznámkového aparátu",
     "hi": "Zvýraznění",
     "ref": "Odkaz (ref)",
+    "pb": "Začátek strany (pb)",
+    "pagenum": "Číslo strany (@n)",
+    "facs": "URL obrázku (@facs)",
     "abbreviation": "Zkratka",
     "occurrences": "Výskyty v textu",
     "correction": "Oprava",
@@ -236,6 +258,8 @@
     "lookup": "Hledat entitu",
     "apply": "Použít anotaci",
     "apply-all": "Vybrat a použít vše",
+    "search-other": "Hledat výskyty v jiných dokumentech",
+    "save-other": "Hledat výskyty v dalších dokumentech a hned je anotovat",
     "changes": "Změny",
     "undo": "Vrátit poslední změnu",
     "download": "Uložit sloučené TEI do souboru",
@@ -247,6 +271,50 @@
     "confirm-reload": "Zrušit aktuální anotace a znovu načíst zdroj?",
     "modify": "Použít úpravy základního textu",
     "modify-info": "Upozornění: nejde o anotaci, při sloučení se změní základní text.",
-    "permission": "Oprávnění byla odepřena: nemáte povoleno ukládat anotace."
+    "permission": "Oprávnění byla odepřena: nemáte povoleno ukládat anotace.",
+    "ner": {
+      "title": "Rozpoznání pojmenovaných entit (NER)",
+      "description": "Pokusit se v textu rozpoznat pojmenované entity a označit je jako anotace.",
+      "run": "Spustit",
+      "model": "Vybrat model",
+      "denied": "Nalezeny neuložené změny: buď je uložte, nebo odmítněte."
+    },
+    "confirm-discard-title": "Odmítnout",
+    "confirm-discard": "Odmítnout seznam výskytů?",
+    "doc-count": "{{count}} z {{total}}",
+    "toggle": "Zobrazit/skrýt náhled/ovládací panel",
+    "add-entity": "Vytvořit entitu",
+    "edit-entity": "Upravit entitu",
+    "edit-reference": "Hledat/upravit odkaz",
+    "hints": {
+      "modify": "marked entity of same type but different key",
+      "incomplete": "označeno jako objekt téhož typu, ale bez identifikátoru",
+      "unmarked": "neoznačený výskyt v textu",
+      "open-in-tab": "Otevřít dokument v nové kartě a zkontrolovat"
+    }
+  },
+  "ner": {
+    "title": "Natrénovat model pro rozpoznání entit",
+    "not-found": "Tato funkce vyžaduje spuštěnou službu TEI Publisher NER, kterou se nepodařilo kontaktovat.",
+    "found": "Nalezen TEI Publisher NER se spaCy, verze",
+    "name-placeholder": "Název vytvářeného modelu",
+    "name": "Název",
+    "path": "Cesta",
+    "path-placeholder": "Relativní cesta k dokumentu nebo kolekci",
+    "path-info": "Zadejte cestu k dokumentu nebo kolekci, které slouží jako vstup pro trénování. A to relativně k výchozí kolekci dat TEI Publisheru (data root).",
+    "lang-info": "Můžete natrénovat nový model, u něhož musíte zadat jazyk. Nebo zvolte rozšíření existujícího modelu uvedeného níže a jazyk neuvádějte.",
+    "language-placeholder": "Jazyk, pro který se model vytváří",
+    "language": "Jazyk",
+    "language-error": "Musíte uvést jazyk, nebo základní model",
+    "model": "Základní model",
+    "model-placeholder": "Základní model, který se rozšíří nebo zkopíruje",
+    "vectors": "Ze základního modelu zkopírovat pouze vektory",
+    "output": "Výstup trénování",
+    "prepare": "Příprava trénovacích dat",
+    "start": "Spustit"
+  },
+  "timeline": {
+    "unknown": "bez data",
+    "clear": "Vymazat výběr data"
   }
 }

@@ -173,8 +173,9 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
             }
 
             #trigger {
-                display: flex;
-                align-items:center
+                display: grid;
+                align-items:center;
+                grid-template-columns:auto auto;
             }
 
             iron-icon {

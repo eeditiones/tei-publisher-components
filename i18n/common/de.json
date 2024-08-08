@@ -46,7 +46,10 @@
   },
   "browse": {
     "description": "Diese Anwendung dient vorrangig zum Experimentieren mit verschiedenen Dokumenten und deren Transformationen über das TEI Processing Model. Es können eigene Dateien hochgeladen und neue ODDs erstellt werden.",
-    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei-demo', Passwort: 'demo').",
+    "login": "zum Hochladen eigener Dateien oder Zugriff auf administrative Funktionen (Standardnutzer: 'tei', Passwort: 'simple').",
+    "login-1": "Anmelden als ",
+    "login-2": "mit Passwort",
+    "login-3": "um mit eigenen Dateien und ODDs zu experimentieren",
     "sort": "Sortiere nach",
     "filter": "Filtere nach",
     "filterPlaceholder": "Filter",
@@ -60,6 +63,9 @@
     "confirmDeletion": "Möchten Sie die Datei wirklich löschen?",
     "confirmDeletion_plural": "Möchten Sie wirklich {{count}} Dateien löschen?",
     "documents": "Dokumente",
+    "documents-removed": "Dokumente gelöscht",
+    "document-not-found": "Dokument nicht gefunden",
+    "document-remove-failed": "Löschen des Dokuments fehlgeschlagen",
     "collections": "Lokale Sammlung",
     "dts": "Distributed Text Services (experimentell)",
     "test": {
@@ -77,6 +83,10 @@
     "markdown": {
       "title": "Markdown-Beispiel",
       "description": "Ein Beispiel zur Verwendung von Markdown für statische Inhalte."
+    },
+    "annotate": {
+      "title": "Annotierte Dokumente",
+      "description": "Beschreibbare Sammlung zum Annotieren von Dokumenten."
     },
     "up": "Übergeordnetes Verzeichnis"
   },
@@ -111,11 +121,15 @@
     "reset": "Zurücksetzen",
     "placeholder": "Suche nach",
     "sections": "Abschnitte durchsuchen",
-    "headings": "Überschriften durchsuchen"
+    "headings": "Überschriften durchsuchen",
+    "title": "Titel suchen",
+    "content": "Inhalte durchsuchen",
+    "scope": "Suchbereich"
   },
   "dts": {
     "endpoint": "Server wählen",
-    "note": "Experimentell: Zugriff auf externe Editionen über DTS API"
+    "note": "Experimentell: Zugriff auf externe Editionen über DTS API",
+    "requires-login": "Anmeldung erforderlich"
   },
   "odd": {
     "files": "ODD Dateien",
@@ -134,6 +148,9 @@
       "save": "Speichern",
       "saving": "Speichern ...",
       "saved": "Gespeichert",
+      "unsaved": "Es gibt nicht gespeicherte Änderungen, die im Export enthalten sein werden. Trotzdem fortfahren?",
+      "download": "ODD herunterladen",
+      "save-as": "ODD in Verzeichnis speichern",
       "denied": "Fehlende Berechtigung",
       "denied-message": "Sie haben keine Berechtigung zum Speichern von {{odd}}",
       "reload": "Neu laden",
@@ -172,7 +189,10 @@
   "facets": {
     "show": "Zeige 50 häufigste",
     "genre": "Genre",
-    "language": "Sprache"
+    "language": "Sprache",
+    "feature": "Feature",
+    "form": "Art der Quelle",
+    "period": "Zeitraum"
   },
   "appgen": {
     "account": {
@@ -214,38 +234,43 @@
     "success": "Deine App wurde erfolgreich generiert!"
   },
   "annotations": {
-    "abbreviation": "Abkürzung",
-    "delete": "Annotation löschen",
     "edit": "Annotation ändern",
-    "no-properties": "Keine Eigenschaften vorhanden.",
-    "occurrences": "Vorkommen im Text",
-    "organisation": "Organisation",
-    "person": "Person",
-    "place": "Ort",
-    "term": "Term",
-    "date": "Datum",
-    "apply": "Anwenden",
-    "correction": "Korrektur",
-    "reference": "Referenz",
-    "expansion": "Erweiterung",
-    "changes": "Änderungen",
-    "reg": "Regularisierung",
-    "hi": "Hervorhebung",
-    "app": "Apparatus",
-    "download": "Ergebnis als lokale Datei speichern",
-    "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
-    "undo": "Letzten Arbeitsschritt rückgängig machen",
-    "lookup": "Entität suchen",
-    "preview": "Voransicht erneuern",
+    "delete": "Annotation löschen",
     "save": "Änderungen ins TEI speichern",
-    "confirm-reload": "Annotationen verwerfen und Quelle neu laden?",
-    "confirm-reload-title": "Quelle neu laden?",
-    "confirm-restore-title": "Annotationen wiederherstellen?",
+    "no-properties": "Keine Eigenschaften vorhanden.",
+    "person": "Person",
+    "organisation": "Organisation",
+    "place": "Ort",
+    "term": "Begriff",
+    "date": "Datum",
+    "reg": "Regularisierung",
+    "app": "Apparatus",
+    "hi": "Hervorhebung",
     "ref": "Link (ref)",
+    "pb": "Seitenumbruch (pb)",
+    "pagenum": "Seitenzahl (@n)",
+    "facs": "Bildadresse (@facs)",
+    "abbreviation": "Abkürzung",
+    "occurrences": "Vorkommen im Text",
+    "correction": "Korrektur",
+    "expansion": "Auflösung",
+    "reference": "Referenz",
+    "lookup": "Entität suchen",
+    "apply": "Anwenden",
+    "apply-all": "Alle selektieren und anwenden",
+    "search-other": "Suche nach Vorkommnissen in anderen Dokumenten",
+    "save-other": "Suche nach Vorkommnissen in anderen Dokumenten und wende die Annotationen unmittelbar an",
+    "changes": "Änderungen",
+    "undo": "Letzten Arbeitsschritt rückgängig machen",
+    "download": "Ergebnis als lokale Datei speichern",
     "reload": "Quelle neu laden",
+    "preview": "Voransicht aktualisieren",
+    "confirm-restore-title": "Annotationen wiederherstellen",
+    "restore": "Es wurden Annotationen für dieses Dokument aus einer früheren Sitzung gefunden. Möchtest Du diese wiederherstellen?",
+    "confirm-reload-title": "Quelle neu laden",
+    "confirm-reload": "Annotationen verwerfen und Quelle neu laden?",
     "modify": "Änderung am Text vornehmen",
     "modify-info": "Achtung: dies ist keine Annotation. Die Änderung wird beim Merge auf den Transkriptionstext angewandt.",
-    "apply-all": "Alle selektieren und anwenden",
     "permission": "Zugriff verweigert: keine Berechtigung zum Speichern von Annotationen.",
     "ner": {
       "title": "Automatische Entitätenerkennung",
@@ -253,6 +278,19 @@
       "run": "Ausführen",
       "model": "Wähle ein Modell",
       "denied": "Ungespeicherte Änderungen gefunden: bitte zuerst speichern oder verwerfen."
+    },
+    "confirm-discard-title": "Verwerfen",
+    "confirm-discard": "Liste anderer Vorkommen verwerfen?",
+    "doc-count": "{{count}} von {{total}}",
+    "toggle": "Ein-/Ausblenden der Vorschau/Kontrollleiste",
+    "add-entity": "Entität hinzufügen",
+    "edit-entity": "Entität bearbeiten",
+    "edit-reference": "Referenz suchen/bearbeiten",
+    "hints": {
+      "modify": "markierte Entität desselben Typs, aber mit anderem Schlüssel",
+      "incomplete": "markiert mit gleichem Typ, aber ohne Schlüsselangabe",
+      "unmarked": "nicht markiertes Vorkommen im Text",
+      "open-in-tab": "Dokument in neuem Tab zur Überprüfung öffnen"
     }
   },
   "ner": {

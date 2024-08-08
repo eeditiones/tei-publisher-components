@@ -3,11 +3,18 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { createConnectors } from "./authority/connectors.js";
+import "./pb-restricted.js";
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
 /**
  * Performs authority lookups via configurable connectors.
+ * 
+ * @fires pb-authority-select - Fired when user selects an entry from the list
+ * @fires pb-authority-edit-entity - Fired when user clicks the edit button next to an entry
+ * @fires pb-authority-new-entity - Fired when user clicks the add new entity button
+ * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and 
+ * authority type
  */
 export class PbAuthorityLookup extends pbMixin(LitElement) {
   static get properties() {
@@ -35,6 +42,15 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       stopwords: {
         type: String
       },
+      /**
+       * A list of space- or comma-separated group names, whose members will be
+       * allowed to add or edit entries in the local register (if enabled).
+       * 
+       * @default "tei"
+       */
+      group: {
+        type: String
+      },
       _results: {
         type: Array,
       },
@@ -49,6 +65,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.sortByLabel = false;
     this._results = [];
     this._authorities = {};
+    this.group = 'tei';
   }
 
   connectedCallback() {
@@ -78,17 +95,26 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     return html`
       <paper-input
         id="query"
-        label="${translate('Search for')}"
+        label="${translate('annotations.lookup')}"
         always-float-label
         value="${this.query}"
         @change="${this._queryChanged}"
       >
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
+        ${
+          this._authorities[this.type] && this._authorities[this.type].editable ?
+          html`
+            <pb-restricted group="${this.group}" slot="suffix">
+              <paper-icon-button icon="icons:add" @click="${this._addEntity}" title="${translate('annotations.add-entity')}"></paper-icon-button>
+            </pb-restricted>
+            ` : null
+        }
       </paper-input>
+      <slot name="authform"></slot>
       <div id="output">
-        <table part="output">
+        <ul part="output">
           ${this._results.map(item => this._formatItem(item))}
-        </table>
+        </ul>
       </div>
     `;
   }
@@ -100,7 +126,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log('<pb-authority-lookup> Retrieving info for %s from %s', id, register);
+    console.log('<pb-authority-lookup> Retrieving info for %s from %s using %s', id, register, authority.constructor.name);
     let info = await authority.info(id, container);
     if (info.strings) {
       info = Object.assign(info, {
@@ -112,41 +138,72 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
   _formatItem(item) {
     return html`
-      <tr>
-        <td>
-          <paper-icon-button
-            icon="icons:add"
-            @click="${() => this._select(item)}"
-          ></paper-icon-button>
-        </td>
-        <td>
-          <div>
+      <li>
+          <div class="icons">
+              <paper-icon-button
+                  icon="icons:link"
+                  @click="${() => this._select(item)}"
+                  title="link to"
+              ></paper-icon-button>
+          </div>
+          <div class="link">
             ${item.link
               ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
               : html`${unsafeHTML(item.label)}`
             }
           </div>
-          ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
-        </td>
-        <td>${item.occurrences > 0 ? html`<span class="occurrences" part="occurrences">${item.occurrences}</span>` : null}</td>
-        <td>${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` : null}</td>
-        <td><span class="register" part="register">${item.register}</span></td>
-      </tr>
+        ${item.occurrences > 0 ? html`<div><span class="occurrences" part="occurrences">${item.occurrences}</span></div>` : null}
+        ${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` :null}
+        <div><span class="register" part="register">${item.register}</span></div>
+
+        ${ 
+          this._authorities[this.type] && this._authorities[this.type].editable ?
+            html`
+            <pb-restricted group="${this.group}">
+              <div class="icons">
+                  <paper-icon-button
+                      icon="editor:mode-edit"
+                      @click="${() => this._editEntity(item)}"
+                      title="${translate('annotations.edit-entity')}"
+                  ></paper-icon-button>
+              </div>
+            </pb-restricted>` : null 
+        }
+        ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
+
+      </li>
     `;
   }
 
+
   _select(item) {
     const connector = this._authorities[item.register];
-    if (connector) {
-      connector.select(item);
-    }
     const options = {
       strings: item.strings,
+      type: item.register,
       properties: {
         ref: item.id,
       }
     };
-    this.emitTo('pb-authority-select', options);
+    if (connector) {
+      connector
+        .select(item)
+        .then(() => this.emitTo('pb-authority-select', options))
+        .catch((e) => this.emitTo('pb-authority-error', {status: e.message}));
+    } else {
+      this.emitTo('pb-authority-select', options);
+    }
+  }
+
+  _editEntity(item) {
+    const connector = this._authorities[item.register];
+    if (connector) {
+      connector
+        .select(item)
+        .then(() => this.emitTo('pb-authority-edit-entity', {id: item.id, type: item.register}));
+    } else {
+      this.emitTo('pb-authority-edit-entity', {id: item.id, type: item.register});
+    }
   }
 
   _queryChanged() {
@@ -165,6 +222,10 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       this.emitTo('pb-end-update');
       this.shadowRoot.getElementById('query').focus();
     });
+  }
+
+  _addEntity() {
+    this.emitTo('pb-authority-new-entity', {query: this.query, type: this.type});
   }
 
   _occurrences(items) {
@@ -215,19 +276,45 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         display: flex;
         flex-direction: column;
       }
+
+      header {
+        display: flex;
+        align-items: center;
+      }
+
+      .link {
+        flex-grow: 2;
+      }
       #output {
         overflow: auto;
         /*FireFox*/
         scrollbar-width: none;
       }
 
-      #output table {
+      /*
+      #output .icons{
+          visibility: hidden;
+      }
+      #output .icons:hover{
+          visibility: visible;
+      }
+      */
+
+      #output ul {
         width: 100%;
+        padding: 0;
+        list-style: none;
       }
-      #output td {
-        vertical-align: top;
-        padding-bottom: 8px;
+      #output li {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+          border-bottom: 1px solid #efefef;
       }
+        #output li:hover{
+            background:#efefef;
+        }
       #output td:nth-child(3), #output td:nth-child(4), #output td:nth-child(5) {
         text-align: right;
         vertical-align: middle;
@@ -235,6 +322,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
       .details, .source, .register, .occurrences {
         font-size: .85rem;
+          width: 100%;
       }
 
       .source, .register, .occurrences {

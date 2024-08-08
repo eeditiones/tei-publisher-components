@@ -30,6 +30,21 @@ describe('translate labels', () => {
         expect(node.title).to.equal('Download');
     });
 
+    it('reacts to change of options', async () => {
+        const el = await waitForPage(`
+                <pb-page require-language language="en" api-version="1.0.0">
+                    <pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n>
+                </pb-page>
+            `, 'pb-i18n-update');
+
+        const node = el.querySelector('pb-i18n[key="browse.items"]');
+        node.options = { count: 222 };
+        expect(node._translated).to.equal('Found 222 items');
+
+        node.setAttribute('options', JSON.stringify({ count: 333 }));
+        expect(node._translated).to.equal('Found 333 items');
+    });
+
     it('reacts to language change', async () => {
         const el = await waitForPage(`
                 <pb-page require-language api-version="1.0.0">

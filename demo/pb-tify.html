@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-document Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <style>
+        main {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 70vh;
+        }
+    </style>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-tify.js"></script>
+    <script type="module" src="../src/pb-facs-link.js"></script>
+    <script type="module" src="../src/pb-events.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" api-version="1.0">
+                <!-- Display facsimile -->
+                <main>
+                    <ul>
+                        <li><pb-facs-link trigger="click" facs="https://teipublisher.com/exist/apps/tei-publisher/api/iiif/test/F-rom.xml" emit-on-load="false">Shakespeare's Romeo and Juliet</pb-facs-link></li>
+                        <li><pb-facs-link trigger="click" facs="https://teipublisher.com/exist/apps/tei-publisher/api/iiif/test/F-rom.xml" order="4">Shakespeare's Romeo and Juliet: page 4</pb-facs-link></li>
+                        <li><pb-facs-link trigger="click" facs="https://manifests.sub.uni-goettingen.de/iiif/presentation/PPN623133725/manifest">Historia Astronomiae</pb-facs-link></li>
+                    </ul>
+                    <pb-tify manifest="https://teipublisher.com/exist/apps/tei-publisher/api/iiif/test/F-rom.xml"></pb-tify>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

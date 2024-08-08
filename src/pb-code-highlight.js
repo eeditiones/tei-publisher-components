@@ -51,6 +51,7 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
              * The code to be highlighted as a string. If not set,
              * this will be populated from either a template child element
              * or the element's text content.
+             * The value of the property can be changed programmatically from JavaScript.
              */
             code: {
                 type: String
@@ -118,6 +119,14 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
     updated(changedProperties) {
         super.updated(changedProperties);
         if (changedProperties.has('code')) {
+            //if the code property is changed, the content of the <code> element is replaced
+            const pre = this.shadowRoot.getElementById("pb-code-highlight");
+            if(pre != null) {
+                const code = document.createElement("code");
+                code.textContent = this.code; //textContent property keeps new lines in the code
+                pre.replaceChildren(code);
+                
+            }
             this.highlight();
         }
     }
@@ -130,7 +139,7 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
         if (this.code) {
             return html`
                 ${this._themeStyles}
-                <pre class="${this.lineNumbers ? 'line-numbers' : ''} language-${this.language}"><code>${this.code}</code></pre>
+                <pre id="pb-code-highlight" class="${this.lineNumbers ? 'line-numbers' : ''} language-${this.language}"><code>${this.code}</code></pre>
             `;
         }
         return html`<pre class="line-numbers"><code><code></pre>`;

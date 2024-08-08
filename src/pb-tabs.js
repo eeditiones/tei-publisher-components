@@ -11,6 +11,8 @@ import { registry } from "./urls.js";
  * @slot tab - tab area
  * @slot page - page area
  * @csspart pages - wrapper around the tab pages
+ * @fires pb-tab - fired if selected tab changes. Details contain number of 
+ * selected tab in propery `selected`.
  */
 export class PbTabs extends pbMixin(LitElement) {
     static get properties() {
@@ -43,11 +45,19 @@ export class PbTabs extends pbMixin(LitElement) {
         });
     }
 
+    firstUpdated() {
+        super.firstUpdated();
+        this.emitTo('pb-tab', { selected: this.selected });
+    }
+
     _switchTab(ev) {
         const current = parseInt(ev.detail.value, 10);
         if (this.selected === current) {
             return;
         }
+
+        this.emitTo('pb-tab', { selected: current });
+
         this.selected = current;
         if (this._initialized) {
             registry.commit(this, { tab: this.selected });

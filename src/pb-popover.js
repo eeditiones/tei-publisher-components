@@ -122,6 +122,9 @@ export class PbPopover extends pbMixin(LitElement) {
             trigger: {
                 type: String
             },
+            touch: {
+                type: String
+            },
             popupClass: {
                 type: String,
                 attribute: 'popup-class'
@@ -143,6 +146,7 @@ export class PbPopover extends pbMixin(LitElement) {
         this.for = null;
         this.theme = null;
         this.placement = null;
+        this.touch = null;
         this.fallbackPlacement = null;
         this.popupClass = null;
         this.stopPropagation = false;
@@ -182,6 +186,10 @@ export class PbPopover extends pbMixin(LitElement) {
         }
         if (!this.trigger) {
             this.trigger = getCSSProperty(this, '--pb-popover-trigger', null);
+        }
+        if (!this.touch) {
+            const prop = getCSSProperty(this, '--pb-popover-touch', 'hold');
+            this.touch = prop === "true" ? true : prop;
         }
     }
 
@@ -300,7 +308,7 @@ export class PbPopover extends pbMixin(LitElement) {
                 ignoreAttributes: true,
                 boundary: 'viewport',
                 maxWidth: 'none',
-                touch: 'hold',
+                touch: this.touch,
                 hideOnClick: false,
                 trigger: this.trigger
             };

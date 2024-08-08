@@ -6,6 +6,7 @@ export class Custom extends Registry {
 
   constructor(endpoint, configElem) {
     super(configElem);
+    this._editable = configElem.hasAttribute('edit');
     this._endpoint = endpoint;
     this._connectors = createConnectors(endpoint, configElem);
     this._connectors.forEach((connector) => {
@@ -16,6 +17,10 @@ export class Custom extends Registry {
       this._endpoint,
       this._connectors,
     );
+  }
+
+  get editable() {
+    return this._editable;
   }
 
   async query(key) {
@@ -68,6 +73,7 @@ export class Custom extends Registry {
             resolve({
               id: json.id,
               strings: json.strings,
+              editable: this._editable
             });
             return;
           }
@@ -98,13 +104,13 @@ export class Custom extends Registry {
     let entry;
     for (const connector of this._connectors) {
       // eslint-disable-next-line no-await-in-loop
-      entry = await connector.getRecord(item.id);
+      entry = await connector.getRecord(item.id).catch(() => null);
       if (entry) {
         break;
       }
     }
     if (!entry) {
-      return Promise.reject(`No record found for ID ${item.id}`);
+      return Promise.resolve(item);
     }
     return fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`, {
       method: 'POST',
@@ -115,6 +121,11 @@ export class Custom extends Registry {
 			},
 			body: JSON.stringify(entry),
     })
-      .then((response) => response.json());
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      return Promise.reject(Error(response.status.toString()));
+    });
   }
 }

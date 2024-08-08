@@ -55,7 +55,7 @@ export class Airtable extends Registry {
 
   _init() {
       window.ESGlobalBridge.requestAvailability();
-      const path = resolveURL('https://cdn.jsdelivr.net/npm/airtable@0.11.1/build/airtable.browser.js');
+      const path = resolveURL('../lib/airtable.browser.js');
       window.ESGlobalBridge.instance.load('airtable', path);
       window.addEventListener(
         'es-bridge-airtable-loaded',
@@ -115,13 +115,7 @@ export class Airtable extends Registry {
 
   info(key, container) {
     return new Promise((resolve, reject) => {
-      const options = {
-        fields: this.fields,
-        filterByFormula: `RECORD_ID()='${key}'`
-      };
-      this.base(this.table)
-      .select(options)
-      .firstPage((err, records) => {
+      this.base(this.table).find(key, (err, record) => {
         if (err) {
           switch (err.statusCode) {
             case 404:
@@ -133,9 +127,8 @@ export class Airtable extends Registry {
           }
           return;
         }
-        const record = records[0];
         if (Object.keys(record.fields).length === 0) {
-          console.warn(`Retrieved an empty record for %s from table %s`, key, this.table);
+          reject(`No record found for ${key} in table ${this.table}`);
           return;
         }
         let strings = [];
@@ -149,11 +142,12 @@ export class Airtable extends Registry {
         });
         const regex = new RegExp(this.tokenizeChars);
         this.tokenize.forEach((key) => {
-          strings = strings.concat(data[key].split(regex));
+          if (data[key]) {
+            strings = strings.concat(data[key].split(regex));
+          }
         });
         strings = strings.filter(tok => !/^\d+$/.test(tok));
         strings.sort((s1, s2) => s2.length - s1.length);
-        console.log(strings);
         container.innerHTML = expandTemplate(this.infoExpr, data);
 
         resolve({
@@ -161,6 +155,6 @@ export class Airtable extends Registry {
           strings
         });
       });
-    })
+    });
   }
 }
