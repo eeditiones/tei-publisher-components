@@ -633,8 +633,8 @@ class PbViewAnnotate extends PbView {
     const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
     const adjustedRange = {
       context: startRange.parent,
-      start: startRange.offset,
-      end: info.before ? startRange.offset : endRange.offset,
+      start: (info.position === 'after') ? endRange.offset : startRange.offset,
+      end: (info === undefined || info.position === 'before') ? startRange.offset : endRange.offset,
       text: info.before ? '' : range.cloneContents().textContent,
       before: info.before
     };
