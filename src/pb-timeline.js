@@ -442,7 +442,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     if (this.dataObj.data.length === 1) {
       return this.dataObj.data[0].category;
     }
-    return `${this.dataObj.data[0].category} – ${this.dataObj.data[this.dataObj.data.length - 1].category}`;
+    return `${this.dataObj.data[0].selectionStart} – ${this.dataObj.data[this.dataObj.data.length - 1].selectionEnd}`;
   }
 
   getSelectedStartDateStr() {
