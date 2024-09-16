@@ -52,6 +52,33 @@ Install  `@teipublisher/pb-components` into your project:
 npm install --save @teipublisher/pb-components
 ```
 
+## Loading from a local devserver
+
+Notice: requires a TEI-publisher/master after 04.09.2020
+
+
+For development and debugging purposes it's sometimes useful to run a local copy of the
+components from a local devserver. The devserver is already present in the pb-components project and
+can be run via npm.
+
+In order for your TEI-Publisher app to know form where to load the components you have to adapt `modules/config.xqm`:
+* look for the variable `$config:webcomponents-cdn` and set it to `http://localhost:8000`
+* look for variable `$config:webcomponents` and set it to "dev";
+
+For the full process:
+* fork or clone this repository to your local disk
+* make sure you have npm installed
+* make sure you've made the above settings
+* run 'npm i` to install dependencies
+* run `npm run start` to start the devserver on http://localhost:8000
+
+### Browser plugins for CORS
+
+When you work from within TEI-Publisher and requests components from dev-server you will run into CORS issues. There are browser plugins (and maybe others) to disable CORS for your development. 
+
+For instance: 
+https://mybrowseraddon.com/access-control-allow-origin.html
+
 ## Extending
 
 If you wish to extend the library with your own components, there's a [template project](https://github.com/eeditiones/pb-extension-template) available, which you may fork.
