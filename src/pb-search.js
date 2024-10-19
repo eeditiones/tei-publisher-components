@@ -206,6 +206,9 @@ export class PbSearch extends pbMixin(LitElement) {
             .buttons{
                 margin-top:1rem;
             }
+	    form {
+                margin: 0;
+            }
         `;
     }
 

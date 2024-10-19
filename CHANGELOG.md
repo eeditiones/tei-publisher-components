@@ -1,3 +1,10 @@
+## [2.24.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.2...v2.24.3) (2024-10-10)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** allow placing element after selected text ([f7272c6](https://github.com/eeditiones/tei-publisher-components/commit/f7272c66d202fa4311324588b54b11af9fb4dd86))
+
 ## [2.24.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.1...v2.24.2) (2024-07-23)
 
 
