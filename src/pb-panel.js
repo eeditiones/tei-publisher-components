@@ -182,26 +182,26 @@ export class PbPanel extends pbMixin(LitElement) {
         if (this.active >= templates.length) {
             this.active = templates.length - 1;
         }
-        console.log('<pb-panel> showing panel %s', this.active);
-        this.querySelectorAll('._pb_panel').forEach(div => div.style.display = 'none');
-        const existingPanel = this.querySelector('._pb_panel' + this.active);
-        if (existingPanel) {
-            existingPanel.style.display = '';
-        } else {
-            const template = templates[this.active];
-            const clone = document.importNode(template.content, true);
-            const div = document.createElement('div');
-            div.className = '_pb_panel _pb_panel' + this.active;
-            div.appendChild(clone);
-            this.appendChild(div);
+      console.log('<pb-panel> showing panel %s', this.active);
+      // Close other panels
+      for (const panel of this.querySelectorAll('._pb_panel')) {
+        panel.remove();
+      }
 
-            this.emitTo('pb-panel', {
-                panel: this,
-                active: this.active
-            });
+      // Open the correct one
+      const template = templates[this.active];
+      const clone = document.importNode(template.content, true);
+      const div = document.createElement('div');
+      div.className = `_pb_panel _pb_panel${  this.active}`;
+      div.appendChild(clone);
+      this.appendChild(div);
 
-            // this.refresh();
-        }
+      this.emitTo('pb-panel', {
+        panel: this,
+        active: this.active
+      });
+
+      // this.refresh();
     }
 
     refresh() {
