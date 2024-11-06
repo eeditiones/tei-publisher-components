@@ -6,7 +6,7 @@ const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher";
 
 /**
  * Viewer for demo code.
- * 
+ *
  * @customElement  pb-demo-snippet
  * @polymer
  * @appliesMixin pbMixin
@@ -28,7 +28,10 @@ export class PbDemoSnippet extends LitElement {
             },
             _editCodeLabel: {
                 type: String
-            }
+            },
+            _requirePbTify: {
+                type: Boolean
+            },
         };
     }
 
@@ -37,10 +40,12 @@ export class PbDemoSnippet extends LitElement {
         this.title = 'TEI Publisher Webcomponents Example';
         this.code = 'Loading ...';
         this._showCodeLabel = 'demo.showCode.show';
+        this._requirePbTify = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
+        this._requirePbTify = !!this.getAttribute('require-pb-tify');
         const template = this.querySelector('template');
         this.code = PbDemoSnippet.removeIndent(template.innerHTML);
         this.code = this.code.replace(/\s*<style[\s\S]*>[\s\S]*?<\/style>\s*/g, '');
@@ -75,6 +80,7 @@ body {
 }
 
 ${PbDemoSnippet.removeIndent(css)}`;
+
         const cpHtml = `
 <html>
     <head>
@@ -82,15 +88,20 @@ ${PbDemoSnippet.removeIndent(css)}`;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-        <title>${ this.title}</title>
+        <title>${this.title}</title>
         <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js"></script>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-components-bundle.js"></script>
         <script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-leaflet-map.js"></script>
     </head>
 
     <body>
-    ${ cpCode}
+    ${cpCode}
     </body>
+    ${
+        this._requirePbTify
+            ? '<script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-tify.js"></script>'
+            : ''
+    }
 </html>`;
 
         const cpOptions = {
