@@ -211,7 +211,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 this.search ? html`
                     <iron-form id="form">
                         <form action="">
-                            <paper-input id="search" name="search" label="Search" @keyup="${(e) => e.keyCode == 13 ? this._submit() : null}">
+                            <paper-input id="search" name="search" label="Search" value="${this._params.search || ''}" @keyup="${(e) => e.keyCode == 13 ? this._submit() : null}">
                                 <paper-icon-button icon="search" @click="${this._submit}" slot="suffix"></paper-icon-button>
                             </paper-input>
                         </form>
