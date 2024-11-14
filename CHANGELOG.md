@@ -1,3 +1,10 @@
+## [2.24.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.3...v2.24.4) (2024-11-14)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** respect existing search parameter when using included search feature ([7abdd8f](https://github.com/eeditiones/tei-publisher-components/commit/7abdd8fb67368f0a864a14354c98839e527dda94))
+
 ## [2.24.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.2...v2.24.3) (2024-10-10)
 
 
