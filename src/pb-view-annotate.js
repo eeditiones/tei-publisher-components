@@ -250,6 +250,9 @@ class PbViewAnnotate extends PbView {
       caseSensitive: {
         type: Boolean
       },
+      showPopup:{
+          type:Boolean
+      },
       ...super.properties,
     };
   }
@@ -268,6 +271,7 @@ class PbViewAnnotate extends PbView {
   connectedCallback() {
     super.connectedCallback();
 
+    this.showPopup = this.getAttribute('popup') !== 'false';
     let isMouseDown = false;
 
     this._inHandler = false;
@@ -910,7 +914,16 @@ class PbViewAnnotate extends PbView {
       }
     }
 
-    this._createTooltip(span);
+    if(this.popup){
+        this._createTooltip(span);
+    }else{
+        span.addEventListener('click', (ev) =>{
+            const data = JSON.parse(span.dataset.annotation);
+            const text = span.textContent;
+            this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
+        });
+    }
+
   }
 
   _clearMarkers() {
