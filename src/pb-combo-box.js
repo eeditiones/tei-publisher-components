@@ -63,9 +63,11 @@ export class PbComboBox extends pbMixin(LitElement) {
             },
             /**
              * Preload all items from the remote data source at startup
+             * Must be of type string because tom-select supports setting
+             * that property to "focus" (load data on focus)
              */
             preload: {
-                type: Boolean
+                type: String
             },
             /**
              * Name of the event to be emitted when the user leaves the form control
@@ -160,6 +162,12 @@ export class PbComboBox extends pbMixin(LitElement) {
                 options.searchField = [];
                 options.preload = this.preload;
                 options.load = (query, callback) => {
+                    if (this._select) {
+                      // The default behaviour of tom-select is to keep existing items when loading
+                      // again from the source. We want to show only items the server provides, so
+                      // we need to clear "stale" items before fetching.
+                      this._select.clearOptions();
+                    }
                     fetch(`${url}?query=${encodeURIComponent(query)}`, {
                         method: 'GET',
                         mode: 'cors',
