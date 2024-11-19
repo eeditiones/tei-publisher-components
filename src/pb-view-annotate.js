@@ -914,7 +914,7 @@ class PbViewAnnotate extends PbView {
       }
     }
 
-    if(this.popup){
+    if(this.showPopup){
         this._createTooltip(span);
     }else{
         span.addEventListener('click', (ev) =>{
