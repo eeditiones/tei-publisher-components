@@ -1,3 +1,10 @@
+## [2.24.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.4...v2.24.5) (2024-11-21)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** Clear items before refetching ([b6fdf68](https://github.com/eeditiones/tei-publisher-components/commit/b6fdf68040484df01de23ee28f6461f525ce5423))
+
 ## [2.24.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.3...v2.24.4) (2024-11-14)
 
 
