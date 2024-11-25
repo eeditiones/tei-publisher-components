@@ -100,6 +100,12 @@ export class GND extends Registry {
         if (json.professionOrOccupation && json.professionOrOccupation.length > 0) {
           output.profession = json.professionOrOccupation.map((prof) => prof.label);
         }
+        if (json.preferredNameEntityForThePerson && json.preferredNameEntityForThePerson.length > 0) {
+          json.preferredNameEntityForThePerson.map((fullName) => {
+            output.surname = fullName.surname[0];
+            output.forename = fullName.forename[0]
+          })
+        }
         return output;
       })
       .catch(() => Promise.reject());
