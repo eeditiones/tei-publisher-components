@@ -41,6 +41,9 @@ export class GND extends Registry {
       case 'organization':
         filter = 'CorporateBody';
         break;
+      case 'work':
+        filter = 'Work';
+        break;
       default:
         filter = 'Person';
         break;
@@ -103,7 +106,13 @@ export class GND extends Registry {
         if (json.preferredNameEntityForThePerson && json.preferredNameEntityForThePerson.length > 0) {
           json.preferredNameEntityForThePerson.map((fullName) => {
             output.surname = fullName.surname[0];
-            output.forename = fullName.forename[0]
+            output.forename = fullName.forename[0];
+          })
+        }
+        if (json.firstAuthor && json.firstAuthor.length > 0) {
+          json.firtAuthor.map((author) => {
+            output.author = author.label;
+            output.authorId = author.id;
           })
         }
         return output;
