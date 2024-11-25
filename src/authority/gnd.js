@@ -110,7 +110,7 @@ export class GND extends Registry {
           })
         }
         if (json.firstAuthor && json.firstAuthor.length > 0) {
-          json.firtAuthor.map((author) => {
+          json.firstAuthor.map((author) => {
             output.author = author.label;
             output.authorId = author.id;
           })
