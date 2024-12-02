@@ -1,3 +1,10 @@
+## [2.24.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.5...v2.24.6) (2024-12-02)
+
+
+### Bug Fixes
+
+* **pb-collapse:** too much space between trigger icon and text ([9b153b6](https://github.com/eeditiones/tei-publisher-components/commit/9b153b6056c2b1b9108656dad31a9b50670f8243))
+
 ## [2.24.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.4...v2.24.5) (2024-11-21)
 
 
