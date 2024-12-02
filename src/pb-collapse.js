@@ -175,7 +175,7 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
             #trigger {
                 display: grid;
                 align-items:center;
-                grid-template-columns:auto auto;
+                grid-template-columns:min-content auto;
             }
 
             iron-icon {
