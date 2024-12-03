@@ -41,8 +41,8 @@ export class GND extends Registry {
         filter = 'CorporateBody';
         break;
       case 'work':
-          filter = 'Work';
-          break;
+        filter = 'Work';
+        break;
       default:
         filter = 'Person';
         break;
