@@ -68,7 +68,7 @@ function _initMath(context, formulas) {
                 source = formula.innerHTML.replaceAll(/&\w+;/g, function (m) {
                     return {
                         '&amp;': '&',
-                        '&lt' : '<'
+                        '&lt;' : '<'
                     }[m];
                 });
                 chtml = window.MathJax.tex2chtml(source, options);
