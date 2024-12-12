@@ -1,3 +1,11 @@
+## [2.24.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.6...v2.24.7) (2024-12-12)
+
+
+### Bug Fixes
+
+* **pb-formula:** fix typo ([bace492](https://github.com/eeditiones/tei-publisher-components/commit/bace4928116a22eec3109f14f3f3de9fd8575ae3))
+* **pb-formula:** replace XML entities ([cd95621](https://github.com/eeditiones/tei-publisher-components/commit/cd95621077131ba080092f9c2213db32fc87da55))
+
 ## [2.24.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.5...v2.24.6) (2024-12-02)
 
 
