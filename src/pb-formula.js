@@ -65,7 +65,12 @@ function _initMath(context, formulas) {
                 chtml = window.MathJax.mathml2chtml(source, options);
             } else {
                 window.MathJax.texReset();
-                source = formula.innerHTML;
+                source = formula.innerHTML.replaceAll(/&\w+;/g, function (m) {
+                    return {
+                        '&amp;': '&',
+                        '&lt;' : '<'
+                    }[m];
+                });
                 chtml = window.MathJax.tex2chtml(source, options);
             }
             formula.innerHTML = '';
