@@ -1,3 +1,10 @@
+## [2.24.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.7...v2.24.8) (2025-01-14)
+
+
+### Bug Fixes
+
+* **pb-login:** if "auto" is set, show login dialog as modal to prevent users from accessing content ([82256bc](https://github.com/eeditiones/tei-publisher-components/commit/82256bc9ccfece2e844e9555138b57fc910f1800))
+
 ## [2.24.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.6...v2.24.7) (2024-12-12)
 
 
