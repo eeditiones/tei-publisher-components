@@ -149,7 +149,7 @@ export class PbLogin extends pbMixin(LitElement) {
             }
             </a>
 
-            <paper-dialog id="loginDialog">
+            <paper-dialog id="loginDialog" ?modal="${this.auto}">
                 <h2>${translate('login.login')}</h2>
                 <paper-dialog-scrollable>
                     <form action="login">
