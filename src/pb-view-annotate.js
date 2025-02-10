@@ -498,6 +498,10 @@ class PbViewAnnotate extends PbView {
       throw new Error('An error occurred. The annotation may not be displayed. You should consider saving and reloading the document.');
     }
     this._rangesMap.set(span, teiRange);
+    // pass annotation to event for processing by foreign component
+    const data = JSON.parse(span.dataset.annotation);
+    const text = span.textContent;
+    this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
 
     if (!batch) {
       this.refreshMarkers();
@@ -910,7 +914,16 @@ class PbViewAnnotate extends PbView {
       }
     }
 
+    if(this.showPopup){
     this._createTooltip(span);
+    }else{
+        const data = JSON.parse(span.dataset.annotation);
+        const text = span.textContent;
+        span.addEventListener('click', (ev) =>{
+            this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
+        });
+    }
+
   }
 
   _clearMarkers() {
