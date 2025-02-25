@@ -62,6 +62,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
             resizable: {
                 type: Boolean
             },
+            subforms: {
+                type: String
+            },
             perPage: {
                 type: Number,
                 attribute: 'per-page'
@@ -97,10 +100,6 @@ export class PbTableGrid extends pbMixin(LitElement) {
         super.connectedCallback();
 
         this.subscribeTo('pb-search-resubmit', (ev) => {
-            this._params = Object.assign({}, ev.detail.params);
-            for (const [k,v] of Object.entries(this._params)) {
-                if (v === null) { delete this._params[k] }
-            }
             this._submit();
         });
 
@@ -177,6 +176,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                             if (form) {
                                 Object.assign(this._params, form.serializeForm());
                             }
+                            this._params = this._paramsFromSubforms(this._params);
                             this._params.limit = limit;
                             this._params.start = page * limit + 1;
                             if (this.language) {
@@ -184,7 +184,14 @@ export class PbTableGrid extends pbMixin(LitElement) {
                             }
                             registry.commit(this, this._params);
 
-                            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(this._params).toString()}`;
+                            // copy params and remove null values
+                            const urlParams = Object.assign({}, this._params);
+                            Object.keys(urlParams).forEach(key => {
+                                if (urlParams[key] === null) {
+                                    delete urlParams[key];
+                                }
+                            });
+                            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(urlParams).toString()}`;
                         }
                     }
                 }
@@ -203,6 +210,17 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
     _submit() {
         this.grid.forceRender();
+    }
+
+    _paramsFromSubforms(params) {
+        if (this.subforms) {
+            document.querySelectorAll(this.subforms).forEach((form) => {
+                if (form.serializeForm) {
+                    Object.assign(params, form.serializeForm());
+                }
+            });
+        }
+        return params;
     }
 
     render() {
