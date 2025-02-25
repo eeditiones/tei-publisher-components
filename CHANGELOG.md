@@ -1,3 +1,11 @@
+## [2.24.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.8...v2.24.9) (2025-02-25)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** add "subforms" attribute to append parameters from other forms similar to pb-search et al ([c9ec6cf](https://github.com/eeditiones/tei-publisher-components/commit/c9ec6cfb7edb8403ec1ff75251dfad0322cd851e))
+* **pb-table-grid:** support i18n on column headers by interpreting label as i18n key ([63e9ed6](https://github.com/eeditiones/tei-publisher-components/commit/63e9ed6d4b4cb97ef3f1df6dc6673952267a7c18))
+
 ## [2.24.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.7...v2.24.8) (2025-01-14)
 
 
