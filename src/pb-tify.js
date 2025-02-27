@@ -43,6 +43,7 @@ export class PbTify extends pbMixin(LitElement) {
         super();
         this.cssPath = '../css/tify';
         this._initialPages = null;
+        this._currentPage = null;
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -112,15 +113,22 @@ export class PbTify extends pbMixin(LitElement) {
 
             // extend tify's setPage function to allow emitting an event
             const {app} = this._tify;
-            this._setPage = app.setPage;
+            const originalSetPage = app.setPage;
 
             app.setPage = (pages) => {
                 const page = Array.isArray(pages) ? pages[0] : pages;
+                if(this._currentPage === page) {
+                    return;
+                }
+
                 const canvas = app.$root.canvases[page - 1];
                 
                 this._switchPage(canvas);
-                this._setPage(pages);
+                originalSetPage(pages);
+                this._currentPage = page;
             };
+
+            this._setPage = app.setPage;
         });
 
         this._tify.mount(this._container);
