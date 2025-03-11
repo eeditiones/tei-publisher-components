@@ -3,10 +3,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
 import '@polymer/iron-icons';
 import { minVersion } from './utils.js';
 
@@ -104,10 +100,14 @@ export class PbLogin extends pbMixin(LitElement) {
         this._hasFocus = true;
     }
 
+    createRenderRoot() {
+        return this;
+    }
+
     firstUpdated() {
         super.firstUpdated();
-        this._checkLogin = this.shadowRoot.getElementById('checkLogin');
-        this._loginDialog = this.shadowRoot.getElementById('loginDialog');
+        this._checkLogin = this.renderRoot.querySelector('.checkLogin');
+        this._loginDialog = this.renderRoot.querySelector('dialog');
 
         window.addEventListener('blur', () => {
             this._hasFocus = false;
@@ -149,28 +149,34 @@ export class PbLogin extends pbMixin(LitElement) {
             }
             </a>
 
-            <paper-dialog id="loginDialog" ?modal="${this.auto}">
-                <h2>${translate('login.login')}</h2>
-                <paper-dialog-scrollable>
+            <dialog ?modal="${this.auto}">
+                <article>
+                    <header>
+                        <h2>${translate('login.login')}</h2>
+                    </header>
                     <form action="login">
-                        <paper-input id="user" name="user" label="${translate('login.user')}" value="${this.user}" autofocus></paper-input>
-                        <paper-input id="password" name="password" label="${translate('login.password')}" type="password"></paper-input>
-                        <input id="logout" type="hidden" name="logout"></input>
+                        <label>
+                            ${translate('login.user')}
+                            <input name="user" placeholder="${translate('login.user')}" value="${this.user}" autofocus></input>
+                        </label>
+                        <label>
+                            ${translate('login.password')}
+                            <input name="password" placeholder="${translate('login.password')}" type="password"></input>
+                        </label>
                     </form>
-                    <slot name="information"></slot>
                     ${this._invalid ?
                 html`
                             <p id="message" part="message-invalid">${translate('login.invalid')}<span part="group-invalid">${this.group ? html` (${translate('login.requiredGroup', { group: this.group })})` : null}</span>.
                             </p>
                         `: null
             }
-                </paper-dialog-scrollable>
-                <div class="buttons">
-                    <paper-button autofocus @click="${this._confirmLogin}">${translate(this.loginLabel)}</paper-button>
-                </div>
-            </paper-dialog>
+                    <footer class="buttons">
+                        <button autofocus @click="${this._confirmLogin}">${translate(this.loginLabel)}</button>
+                    </footer>
+                </article>
+            </dialog>
 
-            <iron-ajax id="checkLogin" with-credentials
+            <iron-ajax class="checkLogin" with-credentials
                 handle-as="json" @response="${this._handleResponse}" @error="${this._handleError}"
                 method="post"
                 content-type="application/x-www-form-urlencoded"></iron-ajax>
@@ -183,13 +189,13 @@ export class PbLogin extends pbMixin(LitElement) {
                 display: block;
             }
 
-            paper-dialog {
+            dialog {
                 min-width: 320px;
                 max-width: 640px;
                 min-height: 128px;
             }
 
-            paper-dialog h2 {
+            dialog h2 {
                 background-color: #607D8B;
                 padding: 16px 8px;
                 margin-top: 0;
@@ -217,13 +223,13 @@ export class PbLogin extends pbMixin(LitElement) {
             };
             this._checkLogin.generateRequest();
         } else {
-            this._loginDialog.open();
+            this._loginDialog.show();
         }
     }
 
     _confirmLogin() {
-        this.user = this.shadowRoot.getElementById('user').value;
-        this.password = this.shadowRoot.getElementById('password').value;
+        this.user = this.renderRoot.querySelector('[name=user]').value;
+        this.password = this.renderRoot.querySelector('[name=password]').value;
         this._checkLogin.body = {
             user: this.user,
             password: this.password
@@ -244,10 +250,10 @@ export class PbLogin extends pbMixin(LitElement) {
             resp.userChanged = this.loggedIn;
             this.loggedIn = false;
             this.password = null;
-            if (this._loginDialog.opened) {
+            if (this._loginDialog.open) {
                 this._invalid = true;
             } else if (this.auto) {
-                this._loginDialog.open();
+                this._loginDialog.show();
             }
         }
         this.emitTo('pb-login', resp);
@@ -270,10 +276,10 @@ export class PbLogin extends pbMixin(LitElement) {
             userChanged: this.loggedIn,
             user: null
         };
-        if (this._loginDialog.opened) {
+        if (this._loginDialog.open) {
             this._invalid = true;
         } else if (this.auto) {
-            this._loginDialog.open();
+            this._loginDialog.show();
         }
 
         registry.currentUser = null;
