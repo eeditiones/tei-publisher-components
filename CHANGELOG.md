@@ -1,3 +1,15 @@
+# [2.25.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.9...v2.25.0) (2025-03-13)
+
+
+### Bug Fixes
+
+* **pb-tify:** prevent flickering when requested page equals current page ([3d97de1](https://github.com/eeditiones/tei-publisher-components/commit/3d97de1c201eef6dbe091b74cae5f74d544837b2))
+
+
+### Features
+
+* **pb-tify:** add support for pb-facs-link coordinates (rectangle highlighting) ([67ab02f](https://github.com/eeditiones/tei-publisher-components/commit/67ab02f2fc4879aa2b3dc5ca14df3bade70f6d7b))
+
 ## [2.24.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.8...v2.24.9) (2025-02-25)
 
 
