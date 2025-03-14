@@ -156,11 +156,16 @@ export class PbComboBox extends pbMixin(LitElement) {
         waitOnce('pb-page-ready', () => {
             const options = {};
             if (this.source) {
+                let controller = new AbortController()
                 const url = this.toAbsoluteURL(this.source);
                 options.labelField = 'text';
                 options.valueField = 'value';
                 options.searchField = [];
                 options.preload = this.preload;
+                // Make sure options are loaded even if the user clears the search field
+                if(this.preload) {
+                    options.shouldLoad = () => true
+                }
                 options.load = (query, callback) => {
                     if (this._select) {
                       // The default behaviour of tom-select is to keep existing items when loading
@@ -168,10 +173,16 @@ export class PbComboBox extends pbMixin(LitElement) {
                       // we need to clear "stale" items before fetching.
                       this._select.clearOptions();
                     }
+                    // Abort previous request (if any)
+                    if (controller) {
+                        controller.abort();
+                    }
+                    controller = new AbortController();
                     fetch(`${url}?query=${encodeURIComponent(query)}`, {
                         method: 'GET',
                         mode: 'cors',
-                        credentials: 'same-origin'
+                        credentials: 'same-origin',
+                        signal: controller.signal
                     })
                     .then(response => response.json())
                     .then(json => {
