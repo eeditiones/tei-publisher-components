@@ -1,3 +1,10 @@
+## [2.25.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.0...v2.25.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** abort requests to prevent race condition ([8ccf2ce](https://github.com/eeditiones/tei-publisher-components/commit/8ccf2ce6f3d1e55520cc1488445de3c92d99cb64))
+
 # [2.25.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.9...v2.25.0) (2025-03-13)
 
 
