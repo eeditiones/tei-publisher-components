@@ -43,6 +43,7 @@ export class PbTify extends pbMixin(LitElement) {
         super();
         this.cssPath = '../css/tify';
         this._initialPages = null;
+        this._currentPage = null;
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -78,6 +79,10 @@ export class PbTify extends pbMixin(LitElement) {
                 } else if (this._setPage) {
                     this._setPage(this._initialPages);
                 }
+
+                if (ev.detail.coordinates) {
+                    this._addOverlay(ev.detail.coordinates);
+                }
             }
         });
 
@@ -112,15 +117,22 @@ export class PbTify extends pbMixin(LitElement) {
 
             // extend tify's setPage function to allow emitting an event
             const {app} = this._tify;
-            this._setPage = app.setPage;
+            const originalSetPage = app.setPage;
 
             app.setPage = (pages) => {
                 const page = Array.isArray(pages) ? pages[0] : pages;
+                if(this._currentPage === page) {
+                    return;
+                }
+
                 const canvas = app.$root.canvases[page - 1];
                 
                 this._switchPage(canvas);
-                this._setPage(pages);
+                originalSetPage(pages);
+                this._currentPage = page;
             };
+
+            this._setPage = app.setPage;
         });
 
         this._tify.mount(this._container);
@@ -137,6 +149,43 @@ export class PbTify extends pbMixin(LitElement) {
             console.log('<pb-tify> page changed, emitting refresh with params %o', params);
             this.emitTo('pb-refresh', params);
         }
+    }
+
+    _addOverlay(coordinates) {
+        if (!Array.isArray(coordinates) || coordinates.length !== 4) {
+            console.error('coords incomplete or missing (array of 4 numbers expected)', coordinates);
+            return;
+        }
+
+        const { viewer } = this._tify;
+        const { viewport } = viewer;
+        const overlayId = 'runtime-overlay';
+        
+        if(this.overlay) {
+            viewer.removeOverlay(this.overlay);
+        }
+
+        const viewportBounds = viewport.getBounds();
+
+        const [x1, y1, w, h] = coordinates;
+        const rect = viewport.imageToViewportRectangle(x1, y1, w, h);
+
+        // Scroll into view if necessary
+        if (!viewportBounds.containsPoint(rect.getTopLeft())) {
+            viewer.viewport.panTo(rect.getCenter());
+        }
+
+        // Add overlay to viewer
+        const overlay = document.createElement('div');
+        this.overlay = overlay
+        overlay.id = overlayId;
+        overlay.style.border = 'var(--pb-facsimile-border, none)';
+        overlay.style.outline = 'var(--pb-facsimile-outline, 4px solid rgba(0, 0, 128, 0.5))';
+        overlay.style.background = 'var(--pb-facsimile-background, rgba(0, 0, 128, 0.05))';
+        viewer.addOverlay({
+            element: overlay,
+            location: rect
+        });
     }
 
     createRenderRoot() {

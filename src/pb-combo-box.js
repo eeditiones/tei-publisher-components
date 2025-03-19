@@ -63,9 +63,11 @@ export class PbComboBox extends pbMixin(LitElement) {
             },
             /**
              * Preload all items from the remote data source at startup
+             * Must be of type string because tom-select supports setting
+             * that property to "focus" (load data on focus)
              */
             preload: {
-                type: Boolean
+                type: String
             },
             /**
              * Name of the event to be emitted when the user leaves the form control
@@ -154,16 +156,33 @@ export class PbComboBox extends pbMixin(LitElement) {
         waitOnce('pb-page-ready', () => {
             const options = {};
             if (this.source) {
+                let controller = new AbortController()
                 const url = this.toAbsoluteURL(this.source);
                 options.labelField = 'text';
                 options.valueField = 'value';
                 options.searchField = [];
                 options.preload = this.preload;
+                // Make sure options are loaded even if the user clears the search field
+                if(this.preload) {
+                    options.shouldLoad = () => true
+                }
                 options.load = (query, callback) => {
+                    if (this._select) {
+                      // The default behaviour of tom-select is to keep existing items when loading
+                      // again from the source. We want to show only items the server provides, so
+                      // we need to clear "stale" items before fetching.
+                      this._select.clearOptions();
+                    }
+                    // Abort previous request (if any)
+                    if (controller) {
+                        controller.abort();
+                    }
+                    controller = new AbortController();
                     fetch(`${url}?query=${encodeURIComponent(query)}`, {
                         method: 'GET',
                         mode: 'cors',
-                        credentials: 'same-origin'
+                        credentials: 'same-origin',
+                        signal: controller.signal
                     })
                     .then(response => response.json())
                     .then(json => {

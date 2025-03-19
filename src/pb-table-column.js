@@ -50,7 +50,7 @@ export class PbTableColumn extends LitElement {
 
     data() {
         const config = { 
-            name: this.label,
+            name: html(`<pb-i18n key="${this.label}">${this.label}</pb-i18n>`),
             sort: { enabled: this.sort },
             formatter: (cell) => html(cell)
         };
