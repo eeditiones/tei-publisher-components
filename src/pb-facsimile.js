@@ -190,6 +190,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.subscribeTo('pb-start-update', this._clearAll.bind(this));
         this.subscribeTo('pb-load-facsimile', (e) => {
             const { element, order } = e.detail
+            if(this._checkUrlExists(e.detail.url)) return;
             const itemOrder = this._facsimiles.map(item => item.getOrder ? item.getOrder() : Number.POSITIVE_INFINITY )
             const insertAt = itemOrder.reduce((result, next, index) => {
                 if (order < next) return result;
@@ -204,6 +205,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
         });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
     }
+
+    
 
     firstUpdated() {
         try{
@@ -461,6 +464,9 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.viewer.viewport.goHome();
     }
 
+    _checkUrlExists(url) {
+        return this._facsimiles.some((element) => element.__facs === url);
+    }
 
 }
 if (!customElements.get('pb-facsimile')) {
