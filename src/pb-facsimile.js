@@ -206,8 +206,6 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
     }
 
-    
-
     firstUpdated() {
         try{
             window.ESGlobalBridge.requestAvailability();
