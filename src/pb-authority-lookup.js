@@ -51,6 +51,27 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       group: {
         type: String
       },
+      /**
+       * The authority type to use. Should correspond to a name defined for one of the connectors.
+       */
+      type: {
+        type: String,
+        reflect: true,
+      },
+      /**
+       * Do not show occurrences count, which would be fetched from the server.
+       */
+      noOccurrences: {
+        type: Boolean,
+        attribute: 'no-occurrences',
+      },
+      /**
+       * Automatically start a lookup when the query parameter is set on initialization.
+       */
+      autoLookup: {
+        type: Boolean,
+        attribute: 'auto',
+      },
       _results: {
         type: Array,
       },
@@ -65,6 +86,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     this.sortByLabel = false;
     this._results = [];
     this._authorities = {};
+    this.noOccurrences = false;
     this.group = 'tei';
   }
 
@@ -86,6 +108,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     waitOnce('pb-page-ready', () => {
       const connectors = createConnectors(this.getEndpoint(), this);
       connectors.forEach(connector => { this._authorities[connector.register] = connector });
+      if (this.autoLookup) {
+        this._query();
+      }
     });
 
     console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
@@ -220,7 +245,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           this._results = merged;
       });
       this.emitTo('pb-end-update');
-      this.shadowRoot.getElementById('query').focus();
+      // this.shadowRoot.getElementById('query').focus();
     });
   }
 
@@ -229,6 +254,9 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   }
 
   _occurrences(items) {
+    if (this.noOccurrences) {
+      return Promise.resolve(items);
+    }
     const params = new FormData();
     params.append('register', this.type);
     items.forEach((item) => {
