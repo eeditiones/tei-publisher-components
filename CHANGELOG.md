@@ -1,3 +1,10 @@
+## [2.25.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.1...v2.25.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add attributes so the element can be configured via html and not just by sending an event ([fb7a6aa](https://github.com/eeditiones/tei-publisher-components/commit/fb7a6aae18b836dcec0db79339ae266a17204132))
+
 ## [2.25.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.0...v2.25.1) (2025-03-14)
 
 
