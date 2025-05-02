@@ -36,7 +36,7 @@
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@babel/runtime": "7.11.2",
+    "@babel/runtime": "7.27.1",
     "@cwmr/paper-autocomplete": "^4.0.0",
     "@jinntec/jinn-codemirror": "^1.13.5",
     "@lrnwebcomponents/es-global-bridge": "^7.0.4",
