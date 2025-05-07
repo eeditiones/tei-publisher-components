@@ -115,7 +115,7 @@
     "lint-staged": "^10.4.0",
     "recursive-copy": "^2.0.14",
     "rimraf": "^5.0.1",
-    "rollup": "^1.21.0",
+    "rollup": "^2.79.2",
     "rollup-plugin-analyzer": "^3.2.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.3.0",
