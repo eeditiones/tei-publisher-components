@@ -116,7 +116,7 @@
     "recursive-copy": "^2.0.14",
     "rimraf": "^5.0.1",
     "rollup": "^2.79.2",
-    "rollup-plugin-analyzer": "^3.2.3",
+    "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-modify": "^3.0.0",
