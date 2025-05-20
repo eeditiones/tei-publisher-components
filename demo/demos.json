@@ -51,7 +51,8 @@
     "demo/pb-grid.html": "Demo"
   },
   "pb-highlight": {
-    "demo/pb-highlight.html": "Demo"
+    "demo/pb-highlight.html": "Demo",
+    "demo/pb-highlight2.html": "Demo"
   },
   "pb-i18n": {
     "demo/pb-i18n.html": "Demo"
