@@ -1,3 +1,10 @@
+## [2.25.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.25.3) (2025-05-30)
+
+
+### Bug Fixes
+
+* **pb-timeline:** Fix the timeframe label for some edge cases ([e6a8fbe](https://github.com/eeditiones/tei-publisher-components/commit/e6a8fbe915906ab51186cba2875ee0f107ba41e9))
+
 ## [2.25.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.1...v2.25.2) (2025-04-11)
 
 
