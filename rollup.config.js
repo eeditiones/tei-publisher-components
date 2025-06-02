@@ -131,6 +131,10 @@ export default [
                         dest: 'lib/web-midi-player'
                     },
                     {
+                        src: './src/assets/pb-styles.css',
+                        dest: 'css'
+                    },
+                    {
                         src: './src/assets/components.css',
                         dest: 'css'
                     }

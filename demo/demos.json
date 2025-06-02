@@ -173,5 +173,8 @@
   },
   "pb-tify": {
     "demo/pb-tify.html": "Demo"
+  },
+  "pb-dialog": {
+    "demo/pb-dialog.html": "Demo"
   }
 }
