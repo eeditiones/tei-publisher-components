@@ -1,10 +1,18 @@
 {
-    "branches": "master",
+    "branches": [
+        "main",
+        {
+            "name": "next",
+            "prerelease": true,
+            "channel": "next"
+        }
+    ],
     "repositoryUrl": "https://github.com/eeditiones/tei-publisher-components",
     "debug": "true",
     "plugins": [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
+        "@semantic-release/changelog",
         "@semantic-release/npm",
         "@semantic-release/github",
         [
