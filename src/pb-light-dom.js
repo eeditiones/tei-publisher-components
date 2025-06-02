@@ -19,7 +19,7 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
      * @param {string|undefined|null} slotName - name of the slot to fill, if its a named slot
      * @returns {Array<Node>} an array of cloned nodes
      */
-    fillSlot(slotName = null, fallback = []) {
+    fillSlot(slotName = null, fallback = null) {
         if (!slotName) {
             const slots = this._content.querySelectorAll(':scope > :not([slot])');
             return Array.from(slots).map(node => {
@@ -34,7 +34,7 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
                 /** @type {Element} */ (clone).removeAttribute('slot');
                 return [clone];
             }
-            return fallback;
+            return fallback || [];
         }
     }
 };
