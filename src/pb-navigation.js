@@ -37,6 +37,9 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
              */
             rendition : {
                 type: String
+            },
+            _url: {
+                type: String
             }
         };
     }
@@ -64,6 +67,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     _update(ev) {
+        this._url = this._computeURL(ev.detail.data);
         if (this.direction === 'forward') {
             if (ev.detail.data.next) {
                 this.disabled = false;
@@ -77,13 +81,22 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
         }
     }
 
-    _handleClick() {
+    _computeURL(data) {
+        if (this.direction === 'backward') {
+            return data.previousId ? `?id=${data.previousId}` : `?root=${data.previous}`;
+        } else if (this.direction === 'forward') {
+            return data.nextId ? `?id=${data.nextId}` : `?root=${data.next}`;
+        }
+    }
+
+    _handleClick(ev) {
+        ev.preventDefault();
         this.emitTo('pb-navigate', { direction: this.direction });
     }
 
     render() {
         return html`
-            <a id="button" @click="${this._handleClick}"><slot></slot></a>
+            <a id="button" @click="${this._handleClick}" href="${this._url}"><slot></slot></a>
         `;
     }
 
