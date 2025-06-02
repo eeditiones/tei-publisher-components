@@ -1,3 +1,10 @@
+## [2.26.1-next.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0...v2.26.1-next.1) (2025-06-02)
+
+
+### Bug Fixes
+
+* **pb-light-dom:** parameter error ([fed63dc](https://github.com/eeditiones/tei-publisher-components/commit/fed63dc08a8c2e680b395acb76e881a764af1753))
+
 # [2.26.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.26.0) (2025-06-02)
 
 
