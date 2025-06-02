@@ -16,10 +16,10 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
      * When the class is used without shadow DOM, use this method to find elements which should be
      * rendered in the slot.
      * 
-     * @param {string|undefined} slotName - name of the slot to fill, if its a named slot
+     * @param {string|undefined|null} slotName - name of the slot to fill, if its a named slot
      * @returns {Array<Node>} an array of cloned nodes
      */
-    fillSlot(slotName = undefined, fallback) {
+    fillSlot(slotName = null, fallback = []) {
         if (!slotName) {
             const slots = this._content.querySelectorAll(':scope > :not([slot])');
             return Array.from(slots).map(node => {
@@ -34,7 +34,7 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
                 /** @type {Element} */ (clone).removeAttribute('slot');
                 return [clone];
             }
-            return fallback || [];
+            return fallback;
         }
     }
 };

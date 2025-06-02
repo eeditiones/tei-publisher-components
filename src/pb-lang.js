@@ -1,19 +1,17 @@
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { pbLightDom } from './pb-light-dom.js';
 
 /**
  * A dropdown for switching the interface language.
  *
- * @slot - unnamed default slot for dropdown menu options
+ * @slot - unnamed default slot for dropdown menu options given as <option> elements
  * @fires pb-i18n-language - Sends selected language
  * @fires pb-i18n-update - When received, sets the selected language to the one received from the event
- * @cssprop --pb-lang-input-color - Color of the text in the language field
- * @cssprop --pb-lang-label-color - Color of the language field label
  */
-export class PbLang extends pbMixin(LitElement) {
+export class PbLang extends pbLightDom(pbMixin(LitElement)) {
+    
     static get properties() {
         return {
             ...super.properties,
@@ -52,38 +50,25 @@ export class PbLang extends pbMixin(LitElement) {
     }
 
     render() {
+        const slotted = this.fillSlot();
         return html`
-            ${this.nolabel?
-                html`
-                    <paper-dropdown-menu>
-                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
-                            attr-for-selected="value" @selected-item-changed="${this._changed}">
-                            <slot></slot>
-                        </paper-listbox>
-                    </paper-dropdown-menu>`:
-                html`
-                    <paper-dropdown-menu label="${translate(this.label)}">
-                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
-                            attr-for-selected="value" @selected-item-changed="${this._changed}">
-                            <slot></slot>
-                        </paper-listbox>
-                    </paper-dropdown-menu>`
+            <select name="select" @change="${this._changed}" aria-label="${this.nolabel ? this.selected : translate(this.label)}">
+            ${
+                slotted.map(option => {
+                    if (option instanceof HTMLElement) {
+                        return html`
+                            <option value="${option.getAttribute('value')}" ?selected=${option.getAttribute('value') === this.selected}>${option.textContent}</option>
+                        `;
+                    }
+                    return '';
+                })
             }
+            </select>
         `;
     }
 
-    static get styles() {
-        return css`
-            :host {
-                display: block;
-                --paper-input-container-input-color: var(--pb-lang-input-color, black);
-                --paper-input-container-color: var(--pb-lang-label-color, --paper-grey-100);
-            }
-        `;
-    }
-
-    _changed() {
-        const lang = this.shadowRoot.getElementById('menu').selected;
+    _changed(e) {
+        const lang = e.target.value;
         if (lang !== this.selected) {
             console.log('<pb-lang> Language changed to %s', lang);
             this.emitTo('pb-i18n-language', { 'language': lang });
