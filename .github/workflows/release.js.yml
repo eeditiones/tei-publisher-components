@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - master
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+      - next
 
 jobs:
   release:
