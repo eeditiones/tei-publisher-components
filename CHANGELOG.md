@@ -1,3 +1,17 @@
+# [2.26.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.26.0) (2025-06-02)
+
+
+### Bug Fixes
+
+* **pb-navigation:** show URL in href on the link tag, so it's visible for crawlers ([732a82a](https://github.com/eeditiones/tei-publisher-components/commit/732a82ad388748bee30a6fdbbdc3c0638f2bdbd4))
+* **pb-timeline:** Fix the timeframe label for some edge cases ([55393a3](https://github.com/eeditiones/tei-publisher-components/commit/55393a3555be07408f9b386224e39d7f30a2b1ef))
+
+
+### Features
+
+* **pb-lang:** drop shadow dom, output standard select instead ([d7fe596](https://github.com/eeditiones/tei-publisher-components/commit/d7fe59644d7567ede14cd85a41be776e53ceb700))
+* **pb-login,pb-dialog:** switch to light dom ([da441f7](https://github.com/eeditiones/tei-publisher-components/commit/da441f728e1bcc0636ef3afdcfb2ed034f99abc1))
+
 ## [2.25.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.25.3) (2025-05-30)
 
 
