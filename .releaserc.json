@@ -1,5 +1,12 @@
 {
-    "branches": ["master", "next"],
+    "branches": [
+        "master",
+        {
+            "name": "next",
+            "prerelease": true,
+            "channel": "next"
+        }
+    ],
     "repositoryUrl": "https://github.com/eeditiones/tei-publisher-components",
     "debug": "true",
     "plugins": [
