@@ -1,3 +1,10 @@
+## [2.26.1-next.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.1-next.2...v2.26.1-next.3) (2025-06-03)
+
+
+### Bug Fixes
+
+* **pb-light-dom:** accept more than one element into one slot ([961321c](https://github.com/eeditiones/tei-publisher-components/commit/961321cef08888d76c4278f2de362ffd0860aab2))
+
 ## [2.26.1-next.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.1-next.1...v2.26.1-next.2) (2025-06-03)
 
 
