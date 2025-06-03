@@ -9,7 +9,6 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
         super.connectedCallback();
         this._content = document.createElement('div');
         this._content.innerHTML = this.innerHTML;
-        console.log(this._content);
     }
 
     /**
@@ -28,11 +27,13 @@ export const pbLightDom = (superclass) => class PbLightDom extends superclass {
                 return clone;
             });
         } else {
-            const slot = this._content.querySelector(`:scope > [slot="${slotName}"]`);
-            if (slot) {
-                const clone = slot.cloneNode(true);
-                /** @type {Element} */ (clone).removeAttribute('slot');
-                return [clone];
+            const slot = this._content.querySelectorAll(`:scope > [slot="${slotName}"]`);
+            if (slot.length > 0) {
+                return Array.from(slot).map(node => {
+                    const clone = node.cloneNode(true);
+                    /** @type {Element} */ (clone).removeAttribute('slot');
+                    return clone;
+                });
             }
             return fallback || [];
         }
