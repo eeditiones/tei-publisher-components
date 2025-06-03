@@ -1,3 +1,10 @@
+## [2.26.1-next.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.1-next.1...v2.26.1-next.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* **pb-message:** move to dialog without shadow dom ([dc6673c](https://github.com/eeditiones/tei-publisher-components/commit/dc6673c52a3094a3fe72fd813e5ced2a6590be3b))
+
 ## [2.26.1-next.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0...v2.26.1-next.1) (2025-06-02)
 
 
