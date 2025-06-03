@@ -4,6 +4,7 @@
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
         <title>pb-message Demo</title>
+        <link rel="stylesheet" href="../css/pb-styles.css">
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
@@ -37,7 +38,7 @@
                         }
                         function confirm() {
                             document.getElementById('msg')
-                                .confirm("a confirmation message", 'confirm?')
+                                .confirm('confirm?', "a confirmation message")
                                 .then(
                                     () => { document.getElementById('output').innerHTML = 'Confirmed!'; },
                                     () => { document.getElementById('output').innerHTML = 'Dismissed!'; }

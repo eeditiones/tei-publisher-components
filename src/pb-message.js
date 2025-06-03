@@ -1,26 +1,13 @@
-import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-dialog/paper-dialog';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
-import '@polymer/paper-button/paper-button';
+import { LitElement, html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from "./pb-i18n.js";
+import { pbLightDom } from './pb-light-dom.js';
+import './pb-dialog.js';
 
 /**
  * Show a dialog with buttons. Used by ODD editor.
  */
-export class PbMessage extends LitElement {
-
-    static get styles() {
-        return css`
-            :host {
-                display:block;
-            }
-            
-            paper-dialog{
-                min-width:300px;
-            }
-        `;
-    }
+export class PbMessage extends pbLightDom(LitElement) {
 
     static get properties() {
         return {
@@ -57,31 +44,21 @@ export class PbMessage extends LitElement {
 
     render() {
         return html`
-        <paper-dialog id="modal">
-            <h2 id="title">${unsafeHTML(this.title)}</h2>
-            <paper-dialog-scrollable id="message" class="message" tabindex="0">
-            ${ this.message ? unsafeHTML(this.message) : html`<slot></slot>` }
-            </paper-dialog-scrollable>
+        <pb-dialog>
+            <h2 slot="title">${unsafeHTML(this.title)}</h2>
+            ${ this.message ? unsafeHTML(this.message) : null }
 
-            <div class="buttons">
-                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>
-                <paper-button id="confirm" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.yes')}</paper-button>
-                <paper-button id="reject" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</paper-button>
-            </div>
-        </paper-dialog>
+            <button class="close" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</button>
+            <button class="confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.yes')}</button>
+            <button class="reject" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</button>
+        </pb-dialog>
         `;
     }
 
     firstUpdated() {
         // this.shadowRoot.getElementById('modal').open();
-        this.modal = this.shadowRoot.getElementById('modal');
+        this.modal = this.renderRoot.querySelector('pb-dialog');
 
-    }
-
-    updated() {
-        if (this.modal) {
-            this.modal.notifyResize();
-        }
     }
 
     /**
@@ -92,10 +69,8 @@ export class PbMessage extends LitElement {
      */
     show(title, message) {
         this.type = 'message';
-        this.set(title, message);
-        this.modal.noCancelOnOutsideClick = false;
-        this.modal.noCancelOnEscKey = false;
-        this.modal.open();
+        this.set(`<h1>${title}</h1>`, `<p>${message}</p>`);
+        this.modal.openDialog();
     }
 
     /**
@@ -109,12 +84,10 @@ export class PbMessage extends LitElement {
      */
     confirm(title, message) {
         this.type = 'confirm';
-        this.set(title, message);
-        this.modal.noCancelOnOutsideClick = true;
-        this.modal.noCancelOnEscKey = true;
-        this.modal.open();
-        const confirm = this.shadowRoot.getElementById('confirm');
-        const cancel = this.shadowRoot.getElementById('reject');
+        this.set(`<h1>${title}</h1>`, `<p>${message}</p>`);
+        this.modal.openDialog();
+        const confirm = this.renderRoot.querySelector('.confirm');
+        const cancel = this.renderRoot.querySelector('.reject');
         return new Promise((resolve, reject) => {
             confirm.addEventListener('click', resolve, { once: true });
             cancel.addEventListener('click', reject, { once: true })
@@ -125,11 +98,12 @@ export class PbMessage extends LitElement {
         if (title || message) {
             if (title) {
                 this.title = title;
+                this.modal.title = this.title;
             }
             if (message) {
                 this.message = message;
+                this.modal.message = this.message;
             }
-            this.modal.notifyResize();
         }
     }
 

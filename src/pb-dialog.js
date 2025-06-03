@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin';
 import { pbLightDom } from './pb-light-dom';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
 /**
  * A simple dialog component using the HTML5 <dialog> element (no shadow DOM).
@@ -16,7 +17,9 @@ export class PbDialog extends pbLightDom(pbMixin(LitElement)) {
         return {
             ...super.properties,
             open: { type: Boolean, reflect: true },
-            modal: { type: Boolean, reflect: true }
+            modal: { type: Boolean, reflect: true },
+            title: { type: String, reflect: true },
+            message: { type: String, reflect: true }
         };
     }
 
@@ -25,6 +28,8 @@ export class PbDialog extends pbLightDom(pbMixin(LitElement)) {
         this.open = false;
         this.modal = true;
         this._escListener = this._onEsc.bind(this);
+        this.title = null;
+        this.message = null;
     }
 
     _onEsc(e) {
@@ -58,10 +63,10 @@ export class PbDialog extends pbLightDom(pbMixin(LitElement)) {
             <dialog @click="${(e) => e.target === this._dialog && this.modal && this.closeDialog()}" ?modal="${this.modal}">
                 <article>
                     <header>
-                        ${ this.fillSlot('title') }
+                        ${ this.title ? unsafeHTML(this.title) : this.fillSlot('title') }
                         <button rel="prev" aria-label="Close" @click="${this.closeDialog}">&times;</button>
                     </header>
-                    ${ this.fillSlot() }
+                    ${ this.message ? unsafeHTML(this.message) : this.fillSlot() }
                     <footer>
                         ${ this.fillSlot('footer') }
                     </footer>

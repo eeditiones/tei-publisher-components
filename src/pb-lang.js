@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { pbLightDom } from './pb-light-dom.js';
@@ -23,12 +23,6 @@ export class PbLang extends pbLightDom(pbMixin(LitElement)) {
             },
             selected: {
                 type: String
-            },
-            /**
-             * suppresses the label
-             */
-            nolabel:{
-                type:Boolean
             }
         };
     }
@@ -52,7 +46,7 @@ export class PbLang extends pbLightDom(pbMixin(LitElement)) {
     render() {
         const slotted = this.fillSlot();
         return html`
-            <select name="select" @change="${this._changed}" aria-label="${this.nolabel ? this.selected : translate(this.label)}">
+            <select name="select" @change="${this._changed}" aria-label="${translate(this.label)}" title="${translate(this.label)}">
             ${
                 slotted.map(option => {
                     if (option instanceof HTMLElement) {
