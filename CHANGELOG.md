@@ -1,3 +1,10 @@
+## [2.25.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.3...v2.25.4) (2025-06-04)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** collapse the layer control by default, so it doesn't use too much space ([78f160f](https://github.com/eeditiones/tei-publisher-components/commit/78f160fa9e87799453354b19b6186c1c53d2b48b))
+
 ## [2.25.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.25.3) (2025-05-30)
 
 
