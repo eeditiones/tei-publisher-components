@@ -451,7 +451,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             }).addTo(this._map);
             return;
         }
-        const layers = L.control.layers(null, null, { collapsed: false });
+        const layers = L.control.layers(null, null, { collapsed: true });
         this._layers.forEach(config => {
             let layer;
             switch (config.type) {

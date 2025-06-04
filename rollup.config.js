@@ -95,6 +95,10 @@ export default [
                         dest: './css/leaflet'
                     },
                     {
+                        src: './node_modules/leaflet/dist/images/layers.png',
+                        dest: './css/leaflet/images'
+                    },
+                    {
                         src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js',
                         dest: './lib'
                     },
