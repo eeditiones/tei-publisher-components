@@ -1,19 +1,35 @@
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
+import { themableMixin } from './theming.js';
 
 /**
  * A dropdown for switching the interface language.
  *
+ * @slot select - Optional select element to use for language selection. If not provided, a default one will be created.
  * @slot - unnamed default slot for dropdown menu options
  * @fires pb-i18n-language - Sends selected language
  * @fires pb-i18n-update - When received, sets the selected language to the one received from the event
  * @cssprop --pb-lang-input-color - Color of the text in the language field
- * @cssprop --pb-lang-label-color - Color of the language field label
  */
-export class PbLang extends pbMixin(LitElement) {
+export class PbLang extends themableMixin(pbMixin(LitElement)) {
+    static get styles() {
+        return css`
+            :host {
+                display: inline-block;
+            }
+            ::slotted(*) {
+                display: none;
+            }
+            ::slotted(select) {
+                display: inline-block;
+            }
+            select {
+                color: var(--pb-lang-input-color, inherit);
+            }
+        `;
+    }
+
     static get properties() {
         return {
             ...super.properties,
@@ -25,12 +41,6 @@ export class PbLang extends pbMixin(LitElement) {
             },
             selected: {
                 type: String
-            },
-            /**
-             * suppresses the label
-             */
-            nolabel:{
-                type:Boolean
             }
         };
     }
@@ -45,45 +55,50 @@ export class PbLang extends pbMixin(LitElement) {
 
         this.subscribeTo('pb-i18n-update', (ev) => {
             this.selected = ev.detail.language.replace(/^([^-]+).*$/, '$1');
+            this._syncOptions();
         }, []);
         waitOnce('pb-i18n-update', (options) => {
             this.selected = options.language.replace(/^([^-]+).*$/, '$1');
+            this._syncOptions();
         });
     }
 
     render() {
         return html`
-            ${this.nolabel?
-                html`
-                    <paper-dropdown-menu>
-                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
-                            attr-for-selected="value" @selected-item-changed="${this._changed}">
-                            <slot></slot>
-                        </paper-listbox>
-                    </paper-dropdown-menu>`:
-                html`
-                    <paper-dropdown-menu label="${translate(this.label)}">
-                        <paper-listbox id="menu" slot="dropdown-content" class="dropdown-content" selected="${this.selected}"
-                            attr-for-selected="value" @selected-item-changed="${this._changed}">
-                            <slot></slot>
-                        </paper-listbox>
-                    </paper-dropdown-menu>`
-            }
+            <select name="select" @change="${this._changed}" aria-label="${translate(this.label)}" title="${translate(this.label)}"></select>
+            <slot @slotchange="${this._syncOptions}"></slot>
         `;
     }
 
-    static get styles() {
-        return css`
-            :host {
-                display: block;
-                --paper-input-container-input-color: var(--pb-lang-input-color, black);
-                --paper-input-container-color: var(--pb-lang-label-color, --paper-grey-100);
-            }
-        `;
+    _syncOptions() {
+        // First try to find select in light DOM (slotted)
+        let select = this.querySelector('select');
+        // If not found, look in shadow DOM (default)
+        if (!select) {
+            select = this.shadowRoot.querySelector('select');
+        }
+        if (!select) return;
+
+        // Clear existing options
+        select.innerHTML = '';
+
+        // Get all option elements from the light DOM
+        const options = Array.from(this.querySelectorAll('option, paper-item'));
+        options.forEach(option => {
+            const newOption = document.createElement('option');
+            newOption.value = option.value || option.getAttribute('value');
+            newOption.textContent = option.textContent;
+            select.appendChild(newOption);
+        });
+
+        // Set the selected value
+        if (this.selected) {
+            select.value = this.selected;
+        }
     }
 
-    _changed() {
-        const lang = this.shadowRoot.getElementById('menu').selected;
+    _changed(e) {
+        const lang = e.target.value;
         if (lang !== this.selected) {
             console.log('<pb-lang> Language changed to %s', lang);
             this.emitTo('pb-i18n-language', { 'language': lang });
