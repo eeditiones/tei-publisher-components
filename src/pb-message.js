@@ -1,23 +1,19 @@
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-dialog/paper-dialog';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
 import '@polymer/paper-button/paper-button';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from "./pb-i18n.js";
+import './pb-dialog.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Show a dialog with buttons. Used by ODD editor.
  */
-export class PbMessage extends LitElement {
+export class PbMessage extends themableMixin(LitElement) {
 
     static get styles() {
         return css`
             :host {
                 display:block;
-            }
-            
-            paper-dialog{
-                min-width:300px;
             }
         `;
     }
@@ -57,31 +53,26 @@ export class PbMessage extends LitElement {
 
     render() {
         return html`
-        <paper-dialog id="modal">
-            <h2 id="title">${unsafeHTML(this.title)}</h2>
-            <paper-dialog-scrollable id="message" class="message" tabindex="0">
+        <pb-dialog>
+            <h2 id="title" slot="title">${unsafeHTML(this.title)}</h2>
+            <div id="message" class="message" tabindex="0">
             ${ this.message ? unsafeHTML(this.message) : html`<slot></slot>` }
-            </paper-dialog-scrollable>
-
-            <div class="buttons">
-                <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isConfirm()}">${translate('dialogs.close')}</paper-button>
-                <paper-button id="confirm" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.yes')}</paper-button>
-                <paper-button id="reject" dialog-confirm="dialog-confirm" autofocus="autofocus" ?hidden="${this.isMessage()}">${translate('dialogs.no')}</paper-button>
             </div>
-        </paper-dialog>
+
+            <div class="buttons" slot="footer">
+            ${ this.isMessage() ? html`<button class="close" autofocus="autofocus">${translate('dialogs.close')}</button>` : html`
+                <button class="confirm" autofocus="autofocus">${translate('dialogs.yes')}</button>
+                <button class="reject" autofocus="autofocus">${translate('dialogs.no')}</button>
+            `}
+            </div>
+        </pb-dialog>
         `;
     }
 
     firstUpdated() {
         // this.shadowRoot.getElementById('modal').open();
-        this.modal = this.shadowRoot.getElementById('modal');
+        this.modal = this.renderRoot.querySelector('pb-dialog');
 
-    }
-
-    updated() {
-        if (this.modal) {
-            this.modal.notifyResize();
-        }
     }
 
     /**
@@ -93,9 +84,18 @@ export class PbMessage extends LitElement {
     show(title, message) {
         this.type = 'message';
         this.set(title, message);
-        this.modal.noCancelOnOutsideClick = false;
-        this.modal.noCancelOnEscKey = false;
-        this.modal.open();
+        this.modal.openDialog();
+
+        return new Promise((resolve, reject) => {
+            // Wait for the next render cycle to ensure elements are available
+            requestAnimationFrame(() => {
+                const close = this.renderRoot.querySelector('.close');
+                close.addEventListener('click', () => {
+                    this.modal.closeDialog();
+                    resolve({ once: true });
+                });
+            });
+        });
     }
 
     /**
@@ -110,14 +110,22 @@ export class PbMessage extends LitElement {
     confirm(title, message) {
         this.type = 'confirm';
         this.set(title, message);
-        this.modal.noCancelOnOutsideClick = true;
-        this.modal.noCancelOnEscKey = true;
-        this.modal.open();
-        const confirm = this.shadowRoot.getElementById('confirm');
-        const cancel = this.shadowRoot.getElementById('reject');
+        this.modal.openDialog();
+
         return new Promise((resolve, reject) => {
-            confirm.addEventListener('click', resolve, { once: true });
-            cancel.addEventListener('click', reject, { once: true })
+            // Wait for the next render cycle to ensure elements are available
+            requestAnimationFrame(() => {
+                const confirm = this.renderRoot.querySelector('.confirm');
+                const cancel = this.renderRoot.querySelector('.reject');
+                confirm.addEventListener('click', () => {
+                    this.modal.closeDialog();
+                    resolve({ once: true });
+                });
+                cancel.addEventListener('click', () => {
+                    this.modal.closeDialog();
+                    reject({ once: true });
+                });
+            });
         });
     }
 
@@ -129,7 +137,6 @@ export class PbMessage extends LitElement {
             if (message) {
                 this.message = message;
             }
-            this.modal.notifyResize();
         }
     }
 
