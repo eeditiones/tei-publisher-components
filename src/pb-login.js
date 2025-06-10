@@ -3,12 +3,9 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
 import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
-import '@polymer/iron-icons';
 import { minVersion } from './utils.js';
+import './pb-dialog.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Handles login/logout. Shows a link which opens a login dialog if clicked.
@@ -20,7 +17,7 @@ import { minVersion } from './utils.js';
  * @csspart message-invalid - Block displayed if login is invalid
  * @csspart group-invalid - Text displayed if login is invalid concerning group
  */
-export class PbLogin extends pbMixin(LitElement) {
+export class PbLogin extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             ...super.properties,
@@ -107,7 +104,12 @@ export class PbLogin extends pbMixin(LitElement) {
     firstUpdated() {
         super.firstUpdated();
         this._checkLogin = this.shadowRoot.getElementById('checkLogin');
-        this._loginDialog = this.shadowRoot.getElementById('loginDialog');
+        this._loginDialog = this.shadowRoot.querySelector('pb-dialog');
+
+        this.renderRoot.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this._confirmLogin();
+        });
 
         window.addEventListener('blur', () => {
             this._hasFocus = false;
@@ -141,71 +143,49 @@ export class PbLogin extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <a href="#" @click="${this._show}" role="button" title="${this.user ? this.user : this.loginLabel}">
+            <a href="#" @click="${this._show}" title="${this.user ? this.user : this.loginLabel}" part="trigger">
                 ${
-            this.loggedIn ?
-                html`<iron-icon icon="${this.logoutIcon}"></iron-icon> <span class="label">${translate(this.logoutLabel, { user: this.user })}</span>` :
-                html`<iron-icon icon="${this.loginIcon}"></iron-icon> <span class="label">${translate(this.loginLabel)}</span>`
-            }
+                this.loggedIn ?
+                html`
+                    <slot name="icon-login">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16" part="icon">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                        </svg>
+                    </slot>
+                ` :
+                html`
+                    <slot name="icon-logout" part="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16" part="icon">
+                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                            <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                        </svg>
+                    </slot>
+                `
+                }
+                <span class="label" part="label">${translate(this.loggedIn ? this.logoutLabel : this.loginLabel, { user: this.user })}</span>
             </a>
 
-            <paper-dialog id="loginDialog" ?modal="${this.auto}">
-                <h2>${translate('login.login')}</h2>
-                <paper-dialog-scrollable>
-                    <form action="login">
-                        <paper-input id="user" name="user" label="${translate('login.user')}" value="${this.user}" autofocus></paper-input>
-                        <paper-input id="password" name="password" label="${translate('login.password')}" type="password"></paper-input>
-                        <input id="logout" type="hidden" name="logout"></input>
-                    </form>
+            <form action="login">
+                <pb-dialog ?modal="${this.auto}">
+                    <h2 slot="title">${translate('login.login')}</h2>
+                    <label>
+                        ${ translate('login.user') }
+                        <input name="user" value="${this.user}" autofocus></input>
+                    </label>
+                    <label>
+                        ${ translate('login.password') }
+                        <input name="password" type="password"></input>
+                    </label>
                     <slot name="information"></slot>
-                    ${this._invalid ?
-                html`
-                            <p id="message" part="message-invalid">${translate('login.invalid')}<span part="group-invalid">${this.group ? html` (${translate('login.requiredGroup', { group: this.group })})` : null}</span>.
-                            </p>
-                        `: null
-            }
-                </paper-dialog-scrollable>
-                <div class="buttons">
-                    <paper-button autofocus @click="${this._confirmLogin}">${translate(this.loginLabel)}</paper-button>
-                </div>
-            </paper-dialog>
+                    ${ this._invalid ? html`<p id="message" part="message-invalid">${translate('login.invalid')}<span part="group-invalid">${this.group ? html` (${translate('login.requiredGroup', { group: this.group })})` : null}</span>.</p>` : null }
+                    <button autofocus slot="footer">${translate('login.login')}</button>
+                </pb-dialog>
+            </form>
 
             <iron-ajax id="checkLogin" with-credentials
                 handle-as="json" @response="${this._handleResponse}" @error="${this._handleError}"
                 method="post"
                 content-type="application/x-www-form-urlencoded"></iron-ajax>
-        `;
-    }
-
-    static get styles() {
-        return css`
-            :host {
-                display: block;
-            }
-
-            paper-dialog {
-                min-width: 320px;
-                max-width: 640px;
-                min-height: 128px;
-            }
-
-            paper-dialog h2 {
-                background-color: #607D8B;
-                padding: 16px 8px;
-                margin-top: 0;
-                color: #F0F0F0;
-            }
-
-            a {
-                color: var(--pb-login-link-color, --pb-link-color);
-                text-decoration: none;
-                display: flex;
-                gap:0.5rem;
-            }
-
-            #message {
-                color: var(--paper-red-800);
-            }
         `;
     }
 
@@ -217,13 +197,13 @@ export class PbLogin extends pbMixin(LitElement) {
             };
             this._checkLogin.generateRequest();
         } else {
-            this._loginDialog.open();
+            this._loginDialog.openDialog();
         }
     }
 
     _confirmLogin() {
-        this.user = this.shadowRoot.getElementById('user').value;
-        this.password = this.shadowRoot.getElementById('password').value;
+        this.user = this.renderRoot.querySelector('input[name="user"]').value;
+        this.password = this.renderRoot.querySelector('input[name="password"]').value;
         this._checkLogin.body = {
             user: this.user,
             password: this.password
@@ -239,15 +219,15 @@ export class PbLogin extends pbMixin(LitElement) {
             this.user = resp.user;
             this.groups = resp.groups;
             this._invalid = false;
-            this._loginDialog.close();
+            this._loginDialog.closeDialog();
         } else {
             resp.userChanged = this.loggedIn;
             this.loggedIn = false;
             this.password = null;
-            if (this._loginDialog.opened) {
+            if (this._loginDialog.open) {
                 this._invalid = true;
             } else if (this.auto) {
-                this._loginDialog.open();
+                this._loginDialog.openDialog();
             }
         }
         this.emitTo('pb-login', resp);
@@ -270,10 +250,10 @@ export class PbLogin extends pbMixin(LitElement) {
             userChanged: this.loggedIn,
             user: null
         };
-        if (this._loginDialog.opened) {
+        if (this._loginDialog.open) {
             this._invalid = true;
         } else if (this.auto) {
-            this._loginDialog.open();
+            this._loginDialog.openDialog();
         }
 
         registry.currentUser = null;
@@ -307,6 +287,14 @@ export class PbLogin extends pbMixin(LitElement) {
             return exists;
         }
         return true;
+    }
+
+    static get styles() {
+        return css`
+            #message {
+                color: var(--pb-login-message-invalid-color, var(--pb-error-color, #f44336));
+            }
+        `;
     }
 
     /**
