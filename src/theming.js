@@ -55,16 +55,10 @@ function loadResource(url) {
  * @returns {CSSStyleSheet|null} a new CSSStylesheet or null
  */
 export function importStyles(elem) {
-    const page = document.querySelector('pb-page');
-    if (!page) {
-        return null;
-    }
-    const theme = page.stylesheet;
+    const theme = getThemeCSS();
     if (!theme) {
-        // no component styles defined
         return null;
     }
-
     const selectors = getSelectors(elem).join('|');
     if (themeMap.has(selectors)) {
         return themeMap.get(selectors);
@@ -80,6 +74,19 @@ export function importStyles(elem) {
     console.log('<theming> caching stylesheet for %s', selectors);
     themeMap.set(selectors, adoptedSheet);
     return adoptedSheet;
+}
+
+export function getThemeCSS() {
+    const page = document.querySelector('pb-page');
+    if (!page) {
+        return null;
+    }
+    const theme = page.stylesheet;
+    if (!theme) {
+        // no component styles defined
+        return null;
+    }
+    return theme;
 }
 
 /**
@@ -140,7 +147,7 @@ export const themableMixin = (superclass) => class ThemableMixin extends supercl
     connectedCallback() {
         super.connectedCallback();
         waitOnce('pb-page-ready', (options) => {
-            const theme = importStyles(this);
+            const theme = getThemeCSS();
             if (theme) {
                 this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
             }

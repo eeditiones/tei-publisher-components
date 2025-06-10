@@ -267,12 +267,11 @@ export class PbPage extends pbMixin(LitElement) {
             this.apiVersion = apiVersion;
         }
 
-        const stylesheetURLs = [
-            // TODO: replace with this.toAbsoluteURL
-            this.toAbsoluteURL('resources/css/components.css', this.endpoint)
-        ];
+        const stylesheetURLs = [];
         if (this.theme) {
             stylesheetURLs.push(this.toAbsoluteURL(this.theme, this.endpoint));
+        } else {
+            stylesheetURLs.push('components.css');
         }
         console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
         this._themeSheet = await loadStylesheets(stylesheetURLs);
