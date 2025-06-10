@@ -60,7 +60,7 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
 
     render() {
         return html`
-            <dialog @click="${(e) => e.target === this._dialog && this.modal && this.closeDialog()}" ?modal="${this.modal}">
+            <dialog @click="${(e) => e.target === this._dialog && this.modal && this.closeDialog()}">
                 <article>
                     <header>
                         ${this.title ? unsafeHTML(this.title) : html`<slot name="title"></slot>`}
@@ -72,46 +72,6 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
                     </footer>
                 </article>
             </dialog>
-        `;
-    }
-
-    static get styles() {
-        return css`
-            dialog {
-                min-width: var(--pb-dialog-min-width, 300px);
-                max-width: 100vw;
-                max-height: 100vh;
-                border-radius: var(--pb-dialog-border-radius, 6px);
-                box-shadow: var(--pb-dialog-box-shadow, 0 2px 16px rgba(0, 0, 0, 0.3));
-                border: var(--pb-dialog-border, none);
-                padding: 0;
-            }
-
-            dialog::backdrop {
-                background: var(--pb-dialog-backdrop-color, rgba(0, 0, 0, 0.4));
-            }
-
-            dialog>article>*, dialog>article>::slotted(*) {
-                padding-left: var(--pb-dialog-padding-horizontal, 1rem);
-                padding-right: var(--pb-dialog-padding-horizontal, 1rem);
-            }
-            
-            dialog>article>header {
-                border-bottom: 1px solid var(--pb-dialog-border-color, #e0e0e0);
-                display: flex;
-                margin-bottom: var(--pb-dialog-padding-vertical, 1rem);
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            dialog>article>footer {
-                display: flex;
-                justify-content: flex-end;
-                gap: 0.5rem;
-                padding-top: var(--pb-dialog-padding-vertical, 1rem);
-                padding-bottom: var(--pb-dialog-padding-vertical, 1rem);
-                border-top: 1px solid var(--pb-dialog-border-color, #e0e0e0);
-            }
         `;
     }
     
