@@ -200,8 +200,9 @@ export class PbDownload extends pbMixin(LitElement) {
         if (this.dialog) {
             const dialog = document.getElementById(this.dialog);
 
-            //todo: this will error when dialog is not found or defined on element.
-            dialog.open();
+            if (dialog) {
+                dialog.openDialog();
+            }
 
             const token = this._token;
             const downloadCheck = window.setInterval(() => {
@@ -209,7 +210,9 @@ export class PbDownload extends pbMixin(LitElement) {
                 if (cookieValue === token) {
                     window.clearInterval(downloadCheck);
                     Cookies.remove("simple.token");
-                    dialog.close();
+                    if (dialog) {
+                        dialog.closeDialog();
+                    }
                 }
             });
         }
