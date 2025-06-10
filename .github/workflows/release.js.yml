@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - next
+      - next-3
 
 jobs:
   release:
