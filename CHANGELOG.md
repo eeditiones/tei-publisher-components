@@ -1,3 +1,19 @@
+# [2.26.0-next-3.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.4...v2.26.0-next-3.1) (2025-06-10)
+
+
+### Bug Fixes
+
+* **pb-dialog:** move dialog default CSS to components.css ([ece99c9](https://github.com/eeditiones/tei-publisher-components/commit/ece99c9bdb37cd70c81bbe54691d3263043e19a2))
+* **pb-download:** use pb-dialog instead of paper-dialog ([ddc4879](https://github.com/eeditiones/tei-publisher-components/commit/ddc48793d66c126df3ae023f15a4342c5b6f6661))
+
+
+### Features
+
+* **pb-dialog:** add pb-dialog component to replace paper-dialog ([c05b760](https://github.com/eeditiones/tei-publisher-components/commit/c05b760ce6b63fc8d4893c354ad4731a1b619fff))
+* **pb-lang:** switch to standard select ([9a4a01a](https://github.com/eeditiones/tei-publisher-components/commit/9a4a01abcb87dbe0cde5e4a4deeb5ba0a94c0a61))
+* **pb-login:** drop polymer, use pb-dialog ([ffee19f](https://github.com/eeditiones/tei-publisher-components/commit/ffee19fa27f1e8520c8c3e9a877100b981e38ddf))
+* **pb-message:** replace paper-dialog with pb-dialog ([e60c401](https://github.com/eeditiones/tei-publisher-components/commit/e60c401153bd2756c0d081a09e70f2be31ab2526))
+
 ## [2.25.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.3...v2.25.4) (2025-06-04)
 
 
