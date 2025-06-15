@@ -316,5 +316,11 @@
   "timeline": {
     "unknown": "undated",
     "clear": "Clear date selection"
+  },
+  "toolbar": {
+    "zoom": {
+      "in": "Zoom in",
+      "out": "Zoom out"
+    }
   }
 }
