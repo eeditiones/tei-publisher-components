@@ -167,14 +167,14 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
 
             <form action="login">
                 <pb-dialog ?modal="${this.auto}">
-                    <h2 slot="title">${translate('login.login')}</h2>
+                    <div slot="title">${translate('login.login')}</div>
                     <label>
                         ${ translate('login.user') }
-                        <input name="user" value="${this.user}" autofocus></input>
+                        <input name="user" value="${this.user}" autofocus placeholder="${translate('login.user')}"></input>
                     </label>
                     <label>
                         ${ translate('login.password') }
-                        <input name="password" type="password"></input>
+                        <input name="password" type="password" placeholder="${translate('login.password')}"></input>
                     </label>
                     <slot name="information"></slot>
                     ${ this._invalid ? html`<p id="message" part="message-invalid">${translate('login.invalid')}<span part="group-invalid">${this.group ? html` (${translate('login.requiredGroup', { group: this.group })})` : null}</span>.</p>` : null }
