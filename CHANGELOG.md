@@ -1,3 +1,15 @@
+# [2.26.0-next-3.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.1...v2.26.0-next-3.2) (2025-06-15)
+
+
+### Bug Fixes
+
+* **pb-login:** do not enforce h2 for title, add placeholders ([d888703](https://github.com/eeditiones/tei-publisher-components/commit/d88870319a5c18e02a02b0bbbccf1ea678548916))
+
+
+### Features
+
+* **pb-zoom:** replace paper button ([cddb36f](https://github.com/eeditiones/tei-publisher-components/commit/cddb36fddd35e4e31b6bbd1a98af1f3c9275a92e))
+
 # [2.26.0-next-3.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.4...v2.26.0-next-3.1) (2025-06-10)
 
 
