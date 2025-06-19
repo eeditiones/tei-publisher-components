@@ -88,6 +88,7 @@ export class PbLang extends themableMixin(pbMixin(LitElement)) {
     constructor() {
         super();
         this.label = 'language';
+        this.display = 'value';
     }
 
     connectedCallback() {
