@@ -1,3 +1,10 @@
+# [2.26.0-next-3.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.2...v2.26.0-next-3.3) (2025-06-19)
+
+
+### Bug Fixes
+
+* **pb-lang:** use details/summary structure instead of select ([cdc2dcd](https://github.com/eeditiones/tei-publisher-components/commit/cdc2dcda188e2feef88fec45a6263569d4be9887))
+
 # [2.26.0-next-3.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.1...v2.26.0-next-3.2) (2025-06-15)
 
 
