@@ -21,11 +21,41 @@ export class PbLang extends themableMixin(pbMixin(LitElement)) {
             ::slotted(*) {
                 display: none;
             }
-            ::slotted(select) {
+            details {
+                position: relative;
                 display: inline-block;
             }
-            select {
+            summary {
                 color: var(--pb-lang-input-color, inherit);
+                cursor: pointer;
+                list-style: none;
+                padding: 0.5em;
+            }
+            summary::-webkit-details-marker {
+                display: none;
+            }
+            ul {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                max-height: 80vh;
+                overflow-y: auto;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+            li {
+                list-style: none;
+                padding: 0.5em 1em;
+                cursor: pointer;
+            }
+            li:hover {
+                background: #f0f0f0;
             }
         `;
     }
@@ -41,6 +71,16 @@ export class PbLang extends themableMixin(pbMixin(LitElement)) {
             },
             selected: {
                 type: String
+            },
+            /**
+             * How should the selected value be displayed?
+             *
+             * - `text` - Display the text content of the selected option
+             * - other - Attribute name to use
+             */
+            display: {
+                type: String,
+                default: 'value'
             }
         };
     }
@@ -65,36 +105,40 @@ export class PbLang extends themableMixin(pbMixin(LitElement)) {
 
     render() {
         return html`
-            <select name="select" @change="${this._changed}" aria-label="${translate(this.label)}" title="${translate(this.label)}"></select>
+            <details>
+                <summary aria-label="${translate(this.label)}" title="${translate(this.label)}"></summary>
+                <ul></ul>
+            </details>
             <slot @slotchange="${this._syncOptions}"></slot>
         `;
     }
 
     _syncOptions() {
-        // First try to find select in light DOM (slotted)
-        let select = this.querySelector('select');
-        // If not found, look in shadow DOM (default)
-        if (!select) {
-            select = this.shadowRoot.querySelector('select');
-        }
-        if (!select) return;
+        const ul = this.shadowRoot.querySelector('ul');
+        const summary = this.shadowRoot.querySelector('summary');
+        if (!ul || !summary) return;
 
         // Clear existing options
-        select.innerHTML = '';
+        ul.innerHTML = '';
 
         // Get all option elements from the light DOM
         const options = Array.from(this.querySelectorAll('option, paper-item'));
         options.forEach(option => {
-            const newOption = document.createElement('option');
-            newOption.value = option.value || option.getAttribute('value');
-            newOption.textContent = option.textContent;
-            select.appendChild(newOption);
+            const li = document.createElement('li');
+            li.textContent = option.textContent;
+            li.dataset.value = option.value || option.getAttribute('value');
+            
+            if (li.dataset.value === this.selected) {
+                summary.textContent = this.display === 'text' ? option.textContent : option[this.display];
+            }
+            
+            li.addEventListener('click', () => {
+                this._changed({ target: { value: li.dataset.value } });
+                this.shadowRoot.querySelector('details').removeAttribute('open');
+            });
+            
+            ul.appendChild(li);
         });
-
-        // Set the selected value
-        if (this.selected) {
-            select.value = this.selected;
-        }
     }
 
     _changed(e) {
