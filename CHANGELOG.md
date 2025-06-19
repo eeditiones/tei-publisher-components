@@ -1,3 +1,10 @@
+# [2.26.0-next-3.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.3...v2.26.0-next-3.4) (2025-06-19)
+
+
+### Bug Fixes
+
+* **pb-lang:** default value not displayed ([89426bf](https://github.com/eeditiones/tei-publisher-components/commit/89426bf97620976320b321b55d4b5ec0d39ffc1d))
+
 # [2.26.0-next-3.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.2...v2.26.0-next-3.3) (2025-06-19)
 
 
