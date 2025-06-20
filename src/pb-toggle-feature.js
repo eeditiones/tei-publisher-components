@@ -2,12 +2,13 @@ import { LitElement, html } from 'lit-element';
 import '@polymer/paper-checkbox';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from "./urls.js";
+import {themableMixin} from "./theming.js";
 
 /**
  * @param {{ selector: any; command: string; state: boolean; }} newConfig
  * @param {any[]} configs
  */
- export function addSelector(newConfig, configs) {
+export function addSelector(newConfig, configs) {
     const idx = configs.findIndex((item) => item.selector === newConfig.selector);
     if (idx > -1) {
         configs[idx] = newConfig;
@@ -19,11 +20,11 @@ import { registry } from "./urls.js";
 /**
  * Enable or disable a particular display feature by setting a predefined or custom parameter.
  * Toggling display features can be done server-side or client-side.
- * 
+ *
  * It is important that `pb-toggle-feature` emits and subscribes to the same channel as the target `pb-view`.
- * 
+ *
  * # Server side toggling
- * 
+ *
  * You may set the following view parameters which correspond to the properties supported by `pb-view`:
  *
  * | Parameter | Description |
@@ -64,22 +65,22 @@ import { registry } from "./urls.js";
  * ```
  *
  * # Client side toggling
- * 
+ *
  * The component can also be used to toggle features client-side, i.e. without requiring a server-roundtrip.
  * To enable this, the `selector` property should be set to a CSS3 selector targetting the HTML elements
  * to toggle. In `on` state, the selected elements will be assigned a class `.toggled`.
- * 
+ *
  * ```html
  * <pb-toggle-feature name="normalized" selector=".choice,.choice-alternate,br">Normalized View</pb-toggle-feature>
  * ```
- * 
+ *
  * Note that the name attribute is still required: it is used to determine if the feature is in on or off state by
  * looking at request parameters.
- * 
+ *
  * Instead of toggling the class, you can also completely disable the elements selected - provided that they are
  * publisher components implementing the corresponding `command` method of `pb-mixin`. To disable elements instead of
  * toggling, set the `action` property to *disable*.
- * 
+ *
  * ```html
  * <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover" action="disable" default="off">Plain Reading View</pb-toggle-feature>
  * ```
@@ -88,7 +89,7 @@ import { registry } from "./urls.js";
  * @fires pb-global-toggle - Fired if property `global` is set. Will be caught by the surrounding `pb-page`
  * @fires pb-update - When received, sets the features passed from the event
  */
-export class PbToggleFeature extends pbMixin(LitElement) {
+export class PbToggleFeature extends themableMixin(pbMixin(LitElement)) {
 
     static get properties() {
         return {
@@ -101,7 +102,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
                 type: String
             },
             /**
-             * (optional) CSS selector: selects the elements to toggle client side (sets or unsets a 
+             * (optional) CSS selector: selects the elements to toggle client side (sets or unsets a
              * CSS class `.toggled`). Setting this property will not trigger a reload as everything is
              * handled by javascript.
              */
@@ -164,7 +165,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             },
             /**
              * If set, toggle the state of elements which reside
-             * in the surrounding HTML context below `pb-page` 
+             * in the surrounding HTML context below `pb-page`
              * (means: elements which are not inside a `pb-view` or `pb-load`).
              */
             global: {
@@ -187,7 +188,8 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
     render() {
         return html`
-            <paper-checkbox id="checkbox" @change="${this._changed}" .checked="${this.checked}" .disabled="${this.disabled}"><slot></slot></paper-checkbox>
+            <input type="checkbox" id="checkbox" @change="${this._changed}" .checked="${this.checked}" .disabled="${this.disabled}"></input>
+            <label for="checkbox"><slot></slot></label>
         `;
     }
 
@@ -201,7 +203,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
 
         const param = registry.state[this.name];
         this._setChecked(param);
-        
+
         const newState = {};
         newState[this.name] = this.checked ? this.on : this.off;
         registry.replace(this, newState);
@@ -212,10 +214,10 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         waitOnce('pb-page-ready', () => {
             if (this.global) {
                 this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: {
-                    selector: this.selector,
-                    command: this.action,
-                    state: this.checked
-                }, bubbles: true, composed: true }));
+                        selector: this.selector,
+                        command: this.action,
+                        state: this.checked
+                    }, bubbles: true, composed: true }));
             } else if (this.selector) {
                 this.emitTo('pb-toggle', {refresh: false});
             }
