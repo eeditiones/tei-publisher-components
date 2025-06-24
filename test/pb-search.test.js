@@ -15,8 +15,12 @@ describe.skip('serialize URL parameters', () => {
         <main>
           <pb-search id="search-form">
             <div class="targets">
-              <paper-checkbox name="tei-target" value="tei-text" selected="selected">Search sections</paper-checkbox>
-              <paper-checkbox name="tei-target" value="tei-head" selected="selected">Search headings</paper-checkbox>
+                <input id="tei-text"  type="checkbox" name="tei-target" value="tei-text" selected="selected">
+                <label for="tei-text"><pb-i18n key="search.sections">Search sections</pb-i18n></label>
+
+                <input id="tei-head" type="checkbox" name="tei-target" value="tei-head" selected="selected">
+                <label for="tei-head"><pb-i18n key="search.headings">Search headings</pb-i18n></label>
+
             </div>
           </pb-search>
           <pb-load url="templates/search-results.html"></pb-load>
