@@ -1,3 +1,15 @@
+# [2.26.0-next-3.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.4...v2.26.0-next-3.5) (2025-07-02)
+
+
+### Bug Fixes
+
+* **pb-ajax:** contained pb-message should initially be display=none to avoid taking space ([84df915](https://github.com/eeditiones/tei-publisher-components/commit/84df9159bf3dad8dcd200f2e5a4e6bbd744cf37e))
+
+
+### Features
+
+* **pb-toggle-feature:** replace paper with native checkbox ([b1da06c](https://github.com/eeditiones/tei-publisher-components/commit/b1da06c70745646effb082e67556f7f6691c46e7))
+
 # [2.26.0-next-3.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.3...v2.26.0-next-3.4) (2025-06-19)
 
 
