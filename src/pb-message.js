@@ -13,7 +13,7 @@ export class PbMessage extends themableMixin(LitElement) {
     static get styles() {
         return css`
             :host {
-                display:block;
+                display: block;
             }
         `;
     }
@@ -40,6 +40,10 @@ export class PbMessage extends themableMixin(LitElement) {
             message: {
                 type: String,
                 reflect: true
+            },
+            open: {
+                type: Boolean,
+                reflect: true
             }
         };
     }
@@ -49,6 +53,7 @@ export class PbMessage extends themableMixin(LitElement) {
         this.title = '';
         this.message = '';
         this.type = 'message'; // defaults to 'message'
+        this.open = false;
     }
 
     render() {
@@ -84,6 +89,7 @@ export class PbMessage extends themableMixin(LitElement) {
     show(title, message) {
         this.type = 'message';
         this.set(title, message);
+        this.open = true;
         this.modal.openDialog();
 
         return new Promise((resolve, reject) => {
@@ -91,6 +97,7 @@ export class PbMessage extends themableMixin(LitElement) {
             requestAnimationFrame(() => {
                 const close = this.renderRoot.querySelector('.close');
                 close.addEventListener('click', () => {
+                    this.open = false;
                     this.modal.closeDialog();
                     resolve({ once: true });
                 });
@@ -110,6 +117,7 @@ export class PbMessage extends themableMixin(LitElement) {
     confirm(title, message) {
         this.type = 'confirm';
         this.set(title, message);
+        this.open = true;
         this.modal.openDialog();
 
         return new Promise((resolve, reject) => {
@@ -118,10 +126,12 @@ export class PbMessage extends themableMixin(LitElement) {
                 const confirm = this.renderRoot.querySelector('.confirm');
                 const cancel = this.renderRoot.querySelector('.reject');
                 confirm.addEventListener('click', () => {
+                    this.open = false;
                     this.modal.closeDialog();
                     resolve({ once: true });
                 });
                 cancel.addEventListener('click', () => {
+                    this.open = false;
                     this.modal.closeDialog();
                     reject({ once: true });
                 });

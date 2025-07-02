@@ -147,7 +147,6 @@ export class PbDownload extends pbMixin(LitElement) {
 
             a {
                 text-decoration: var(--pb-download-text-decoration, none);
-                color: var(--pb-download-color);
             }
         `;
     }

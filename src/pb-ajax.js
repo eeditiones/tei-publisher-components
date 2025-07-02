@@ -1,7 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
 import { pbMixin } from './pb-mixin.js';
 import { get as i18n } from "./pb-i18n.js";
 import './pb-message.js';
@@ -75,6 +73,7 @@ export class PbAjax extends pbMixin(LitElement) {
         this.method = 'get';
         this.confirm = null;
         this.quiet = false;
+        this._running = false;
     }
 
     connectedCallback() {
@@ -95,7 +94,6 @@ export class PbAjax extends pbMixin(LitElement) {
                 @response="${this._handleResponse}"></iron-ajax>
             <pb-message id="confirmDialog"></pb-message>
             <slot name="title" style="display: none"></slot>
-            <progress id="progress" max="100"></progress>
         `;
     }
 
@@ -104,8 +102,7 @@ export class PbAjax extends pbMixin(LitElement) {
         const slot = this.shadowRoot.querySelector('slot[name=title]');
         this._dialogTitle = '';
         slot.assignedNodes().forEach(node => {this._dialogTitle += node.innerHTML});
-        this.button = this.querySelector('paper-button');
-        this.progress = this.shadowRoot.querySelector('progress');
+        this.button = this.renderRoot.getElementById('button');
     }
 
     static get styles() {
@@ -116,18 +113,21 @@ export class PbAjax extends pbMixin(LitElement) {
             slot[name="title"] {
                 margin: 0;
             }
-            progress{
-                width: 100%;
-                display: none;
-            }
-            progress.running{
+            pb-message[open] {
                 display: block;
+            }
+            pb-message:not([open]) {
+                display: none;
             }
         `;
     }
 
     _handleClick(ev) {
         ev.preventDefault();
+        if (this._running) {
+            return;
+        }
+        this._running = true;
         if (this.confirm) {
             const dialog = this.shadowRoot.getElementById('confirmDialog');
             dialog.confirm(this._dialogTitle, i18n(this.confirm))
@@ -139,31 +139,14 @@ export class PbAjax extends pbMixin(LitElement) {
     }
 
     async trigger() {
-        this._disable();
         const loader = this.shadowRoot.getElementById('loadContent');
         loader.url = `${this.getEndpoint()}/${this.url}`;
         this.emitTo('pb-start-update');
         await this.shadowRoot.getElementById('loadContent').generateRequest();
     }
 
-    _enable(){
-        if(this.button){
-            this.button.removeAttribute('disabled');
-            this.button.removeAttribute('readonly');
-            this.progress.classList.remove('running');
-        }
-    }
-    _disable(){
-        if(this.button){
-            this.button.setAttribute('disabled','disabled');
-            this.button.setAttribute('readonly','readonly');
-            this.progress.classList.add('running');
-        }
-    }
-
-
     _handleResponse() {
-        this._enable();
+        this._running = false;
         const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
         this._message = resp;
         if (!this.quiet) {
@@ -179,7 +162,7 @@ export class PbAjax extends pbMixin(LitElement) {
     }
 
     _handleError() {
-        this._enable();
+        this._running = false;
         const loader = this.shadowRoot.getElementById('loadContent');
         const msg = loader.lastError.response;
         const parser = new DOMParser();
