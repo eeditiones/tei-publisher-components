@@ -1,3 +1,15 @@
+# [2.26.0-next-3.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.5...v2.26.0-next-3.6) (2025-07-18)
+
+
+### Bug Fixes
+
+* **pb-search:** autocomplete not working ([626fdd8](https://github.com/eeditiones/tei-publisher-components/commit/626fdd8c52510ee7c61a9240c8b94a9e6d0cc10c))
+
+
+### Features
+
+* **pb-search:** replace paper with native elements ([03679ea](https://github.com/eeditiones/tei-publisher-components/commit/03679ea0b52c547b7b55f5fb04bd34894c833d90))
+
 # [2.26.0-next-3.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.4...v2.26.0-next-3.5) (2025-07-02)
 
 
