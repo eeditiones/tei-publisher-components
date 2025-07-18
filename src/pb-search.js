@@ -3,8 +3,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from "./urls.js";
 import { translate } from "./pb-i18n.js";
 import '@polymer/iron-ajax';
-import '@polymer/iron-form';
-import '@polymer/iron-icon';
 import {themableMixin} from "./theming.js";
 
 /**
@@ -109,10 +107,6 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
     }
 
     firstUpdated() {
-        const ironform = this.shadowRoot.getElementById('ironform');
-        ironform.addEventListener('iron-form-response', (event) =>
-            event.detail.completes.then((r) => this.emitTo('pb-search', r.parseResponse()))
-        );
         waitOnce('pb-page-ready', (options) => {
             const loader = this.shadowRoot.getElementById('autocompleteLoader');
             const url = this.source || "api/search/autocomplete";
@@ -148,27 +142,25 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
 
     render() {
         return html`
-            <iron-form id="ironform" allow-redirect="${this.redirect}">
-                <form id="searchPageForm" method="get" action="${this.action}" accept="text/html">
-                    <slot name="beforeInput"></slot>
-                    <div class="input-wrapper">
-                        <span class="icon" @click="${this._doSearch}">&#128269;</span>
-                        <input
-                            id="search"
-                            name="query"
-                            type="search"
-                            placeholder="${translate(this.placeHolder)}"
-                            .value="${this.value}"
-                            @keyup="${this._handleEnter}"
-                            list="suggestions"
-                        />
-                        <datalist id="suggestions"></datalist>
-                    </div>
-                    <slot></slot>
-                    <slot name="searchButton"></slot>
+            <form id="searchPageForm" method="get" action="${this.action}" accept="text/html" @submit="${this._handleSubmit}">
+                <slot name="beforeInput"></slot>
+                <div class="input-wrapper">
+                    <input
+                        id="search"
+                        name="query"
+                        type="search"
+                        placeholder="${translate(this.placeHolder)}"
+                        .value="${this.value}"
+                        @keyup="${this._handleEnter}"
+                        list="suggestions"
+                        part="input"
+                    />
+                    <datalist id="suggestions"></datalist>
+                    <slot name="searchButton" part="search-button"></slot>
                     <slot name="resetButton"></slot>
-                </form>
-            </iron-form>
+                </div>
+                <slot></slot>
+            </form>
             <iron-ajax
                 id="autocompleteLoader"
                 verbose
@@ -182,41 +174,54 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
     static get styles() {
         return css`
             :host {
-                --input-label-color: var(--pb-search-label-color, #303030);
-                --input-color: var(--pb-search-input-color, #000);
-                --input-focus-color: var(--pb-search-focus-color, #303030);
+                display: inline-block;
             }
             .input-wrapper {
                 display: flex;
                 align-items: center;
-                border-bottom: 1px solid var(--input-label-color);
             }
-            input[type="search"] {
-                flex: 1;
-                border: none;
-                outline: none;
-                font-size: 1rem;
-                color: var(--input-color);
-                background: transparent;
-                padding: 0.5rem;
-            }
-            input[type="search"]:focus {
-                border-bottom: 2px solid var(--input-focus-color);
-            }
-            .icon {
-                padding: 0 0.5rem;
-                cursor: pointer;
+            #search {
+                flex: 2;
             }
         `;
     }
 
+    _serializeForm() {
+        const form = this.shadowRoot.getElementById('searchPageForm');
+        const formData = new FormData(form);
+        const json = {};
+        // @ts-ignore - FormData.entries() is supported in modern browsers
+        for (let [key, value] of formData.entries()) {
+            json[key] = value;
+        }
+        
+        // Also collect form controls from slots
+        const formControls = this.querySelectorAll('input, select, textarea');
+        formControls.forEach(control => {
+            if (control.name && control.type !== 'button' && control.type !== 'submit' && control.type !== 'reset') {
+                if (control.type === 'checkbox' || control.type === 'radio') {
+                    if (control.checked) {
+                        json[control.name] = control.value;
+                    }
+                } else {
+                    json[control.name] = control.value;
+                }
+            }
+        });
+        
+        return json;
+    }
+
     _doSearch(pagination = false) {
-        let json = this.shadowRoot.getElementById('ironform').serializeForm();
+        let json = this._serializeForm();
         json = this._paramsFromSubforms(json);
-        delete json['autocomplete-custom-template'];
         json.start = pagination ? this.start : 1;
         if (this.redirect) {
-            window.location.href = `${this.action}?${new URLSearchParams(json)}`;
+            const params = new URLSearchParams();
+            Object.keys(json).forEach(key => {
+                params.append(key, json[key]);
+            });
+            window.location.href = `${this.action}?${params}`;
         } else {
             registry.commit(this, json);
             this.emitTo('pb-load', {
@@ -224,6 +229,11 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
                 "params": json
             });
         }
+    }
+
+    _handleSubmit(e) {
+        e.preventDefault();
+        this._doSearch();
     }
 
     _paramsFromSubforms(params) {
@@ -239,22 +249,26 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
 
     _handleEnter(e) {
         if (e.keyCode === 13) {
-            this._doSearch();
+            return this._doSearch();
+        }
+        const value = this.shadowRoot.getElementById('search').value;
+        if (value.length > 2) {
+            const loader = this.shadowRoot.getElementById('autocompleteLoader');
+            loader.params = {
+                query: value
+            };
+            loader.generateRequest();
         }
     }
 
     _doSubmit() {
-        this.shadowRoot.getElementById('ironform').submit();
+        this._doSearch();
     }
 
     _reset() {
-        console.log('reset')
-        this.shadowRoot.getElementById('ironform').reset();
-        const params = registry.state;
-        console.log('reset',params)
-
-        registry.commit(this, {},true);
-
+        const form = this.shadowRoot.getElementById('searchPageForm');
+        form.reset();
+        registry.commit(this, {}, true);
     }
 
     _updateSuggestions() {
@@ -262,9 +276,10 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
         const datalist = this.shadowRoot.getElementById('suggestions');
         if (loader.lastResponse) {
             datalist.innerHTML = '';
-            loader.lastResponse.forEach(item => {
+            loader.lastResponse.forEach(({text, value}) => {
                 const option = document.createElement('option');
-                option.value = item;
+                option.value = value;
+                option.innerText = text;
                 datalist.appendChild(option);
             });
         }
