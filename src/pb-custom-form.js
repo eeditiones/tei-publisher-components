@@ -135,7 +135,7 @@ export class PbCustomForm extends PbLoad {
                 (name === 'input' && (control.type === 'button' || control.type === 'submit' || control.type === 'reset'))
             ) {
                 event = 'click';
-            } else if (name === 'paper-input' || (control instanceof HTMLInputElement && control.type === 'text')) {
+            } else if (name === 'paper-input' || (control instanceof HTMLInputElement && (control.type === 'text' || control.type === 'search'))) {
                 event = 'keyup';
             } else if (name === 'paper-dropdown-menu') {
                 event = 'value-changed';
