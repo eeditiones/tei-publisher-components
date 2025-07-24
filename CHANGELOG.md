@@ -1,3 +1,11 @@
+# [2.26.0-next-3.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.6...v2.26.0-next-3.7) (2025-07-24)
+
+
+### Bug Fixes
+
+* **pb-custom-form:** also handle key up for input[type=search] ([96bd084](https://github.com/eeditiones/tei-publisher-components/commit/96bd08490b79b15ed6a714575bc1f335f4563818))
+* **pb-download,pb-edit-xml:** make themable ([85c5834](https://github.com/eeditiones/tei-publisher-components/commit/85c583448ce9778b7cb061f69b259293fffa3b26))
+
 # [2.26.0-next-3.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.5...v2.26.0-next-3.6) (2025-07-18)
 
 
