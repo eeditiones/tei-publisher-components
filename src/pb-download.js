@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import 'js-cookie/src/js.cookie.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Generate a link to download a resource. Optionally shows a dialog during the download.
@@ -11,7 +12,8 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
  * @cssprop --pb-download-color - Color of the download title label
  * @cssprop --pb-download-text-decoration - Extra effects for the download title label
  */
-export class PbDownload extends pbMixin(LitElement) {
+export class PbDownload extends themableMixin(pbMixin(LitElement)) {
+    
     static get properties() {
         return {
             ...super.properties,

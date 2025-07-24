@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { themableMixin } from './theming.js';
 
 
 /**
@@ -8,7 +9,8 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
  * @slot - unnamed default slot for the link text
  * @slot - unnamed slot for the link text when eXide tab is already opened
  */
-export class PbEditXml extends pbMixin(LitElement) {
+export class PbEditXml extends themableMixin(pbMixin(LitElement)) {
+    
     static get properties() {
         return {
             ...super.properties,
@@ -73,7 +75,6 @@ export class PbEditXml extends pbMixin(LitElement) {
             }
 
             a {
-                color: inherit;
                 text-decoration: none;
             }
         `;
