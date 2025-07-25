@@ -6,8 +6,6 @@ import { translate } from "./pb-i18n.js";
 import { typesetMath } from "./pb-formula.js";
 import { loadStylesheets, themableMixin } from "./theming.js";
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -1392,15 +1390,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 }
                     <div id="footnotes" part="footnotes">${this._footnotes}</div>
                 </div>
-                <paper-dialog id="errorDialog">
-                    <h2>${translate('dialogs.error')}</h2>
-                    <paper-dialog-scrollable></paper-dialog-scrollable>
-                    <div class="buttons">
-                        <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-                        ${translate('dialogs.close')}
-                        </paper-button>
-                    </div>
-                </paper-dialog>
                 <iron-ajax
                     id="loadContent"
                     verbose
