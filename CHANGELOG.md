@@ -1,3 +1,11 @@
+# [2.26.0-next-3.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.7...v2.26.0-next-3.8) (2025-07-25)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** drop paper-input and paper-icon-button ([47edcd2](https://github.com/eeditiones/tei-publisher-components/commit/47edcd29b52e99a40309c4e8a2d5e394003c8813))
+* **pb-view:** remove unused paper-dialog ([90463df](https://github.com/eeditiones/tei-publisher-components/commit/90463df6f1fe7720d676a5e79dbc9b7586217c82))
+
 # [2.26.0-next-3.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.6...v2.26.0-next-3.7) (2025-07-24)
 
 
