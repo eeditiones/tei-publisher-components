@@ -1,3 +1,10 @@
+# [2.26.0-next-3.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.8...v2.26.0-next-3.9) (2025-07-26)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** fix styling ([6272717](https://github.com/eeditiones/tei-publisher-components/commit/6272717f9ad8c126ce97e220099c45ef6f1923e6))
+
 # [2.26.0-next-3.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.7...v2.26.0-next-3.8) (2025-07-25)
 
 
