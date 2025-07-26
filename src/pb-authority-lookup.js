@@ -11,7 +11,7 @@ import "./pb-restricted.js";
  * 
  * @fires pb-authority-select - Fired when user selects an entry from the list
  * @fires pb-authority-edit-entity - Fired when user clicks the edit button next to an entry
- * @fires pb-authority-new-entity - Fired when user clicks the add new entity button
+ * @fires pb-authority-new-entity - Fiaured when user clicks the add new entity button
  * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and 
  * authority type
  */
@@ -167,36 +167,110 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
   _formatItem(item) {
     return html`
         <li>
-            <button @click="${() => this._select(item)}" title="link to">
-                <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M208 352h-64a96 96 0 010-192h64M304 160h64a96 96 0 010 192h-64M163.29 256h187.42" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="36"/></svg>
-            </button>
-            <div class="link">
+            <div>
+                <button @click="${() => this._select(item)}" title="link to">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M208 352h-64a96 96 0 010-192h64M304 160h64a96 96 0 010 192h-64M163.29 256h187.42" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="36"/></svg>
+                </button>
                 ${item.link
                 ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
                 : html`${unsafeHTML(item.label)}`
                 }
+                <div class="badges">
+                    ${item.occurrences > 0 ? html`<span class="occurrences badge" part="occurrences">${item.occurrences}</span>` : null}
+                    ${item.provider ? html`<span class="source badge" part="source">${item.provider}</span>` :null}
+                    <span class="register badge" part="register">${item.register}</span>
+                    ${
+                    this._authorities[this.type] && this._authorities[this.type].editable ?
+                        html`
+                        <pb-restricted group="${this.group}">
+                            <button
+                                @click="${() => this._editEntity(item)}"
+                                title="${translate('annotations.edit-entity')}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M459.94 53.25a16.06 16.06 0 00-23.22-.56L424.35 65a8 8 0 000 11.31l11.34 11.32a8 8 0 0011.34 0l12.06-12c6.1-6.09 6.67-16.01.85-22.38zM399.34 90L218.82 270.2a9 9 0 00-2.31 3.93L208.16 299a3.91 3.91 0 004.86 4.86l24.85-8.35a9 9 0 003.93-2.31L422 112.66a9 9 0 000-12.66l-9.95-10a9 9 0 00-12.71 0z"/></svg>
+                            </button>
+                        </pb-restricted>` : null 
+                    }
+                </div>
             </div>
-            ${item.occurrences > 0 ? html`<div><span class="occurrences badge" part="occurrences">${item.occurrences}</span></div>` : null}
-            ${item.provider ? html`<div><span class="source badge" part="source">${item.provider}</span></div>` :null}
-            <div><span class="register badge" part="register">${item.register}</span></div>
-
-        ${ 
-          this._authorities[this.type] && this._authorities[this.type].editable ?
-            html`
-            <pb-restricted group="${this.group}">
-                <button
-                    @click="${() => this._editEntity(item)}"
-                    title="${translate('annotations.edit-entity')}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M459.94 53.25a16.06 16.06 0 00-23.22-.56L424.35 65a8 8 0 000 11.31l11.34 11.32a8 8 0 0011.34 0l12.06-12c6.1-6.09 6.67-16.01.85-22.38zM399.34 90L218.82 270.2a9 9 0 00-2.31 3.93L208.16 299a3.91 3.91 0 004.86 4.86l24.85-8.35a9 9 0 003.93-2.31L422 112.66a9 9 0 000-12.66l-9.95-10a9 9 0 00-12.71 0z"/></svg>
-                </button>
-            </pb-restricted>` : null 
-        }
-        ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
-
+            ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
       </li>
     `;
   }
 
+    static get styles() {
+        return css`
+        :host {
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        header > input {
+            flex-grow: 1;
+        }
+
+        .link {
+            flex-grow: 2;
+        }
+    
+        #output {
+            overflow: auto;
+            /*FireFox*/
+            scrollbar-width: none;
+        }
+
+        #output > ul {
+            width: 100%;
+            padding: 0;
+            list-style: none;
+        }
+
+        #output > ul > li {
+            border-bottom: 1px solid var(--pb-color-border);
+        }
+
+        #output > ul > li > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: .125rem;
+        }
+
+        #output > ul > li > div > a {
+            flex-grow: 2;
+        }
+
+        .badges {
+            display: inline-flex;
+            gap: .125rem;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: .75rem;
+            border-radius: 4px;
+            padding: 4px;
+            color: var(--pb-color-inverse);
+        }
+
+        .source {
+            background-color: #637b8c;
+        }
+        .register {
+            background-color: var(--pb-color-lighter, #35424b);
+        }
+        .occurrences {
+            background-color: var(--pb-color-focus, #f6a623);
+        }
+    `;
+    }
 
   _select(item) {
     const connector = this._authorities[item.register];
@@ -293,78 +367,6 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
           resolve(items);
         });
       });
-  }
-
-  static get styles() {
-    return css`
-        :host {
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        header > input {
-            flex-grow: 1;
-        }
-
-        .link {
-            flex-grow: 2;
-        }
-    
-        #output {
-            overflow: auto;
-            /*FireFox*/
-            scrollbar-width: none;
-        }
-
-        #output ul {
-            width: 100%;
-            padding: 0;
-            list-style: none;
-        }
-
-        #output li {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: .125rem;
-            border-bottom: 1px solid #efefef;
-        }
-        #output li:hover{
-            background:#efefef;
-        }
-        #output li button {
-            display: block;
-        }
-        #output td:nth-child(3), #output td:nth-child(4), #output td:nth-child(5) {
-            text-align: right;
-            vertical-align: middle;
-        }
-
-        .badge {
-            font-size: .85rem;
-            border-radius: 4px;
-            padding: 4px;
-            color: var(--pb-color-inverse);
-        }
-
-        .source {
-            background-color: #637b8c;
-        }
-        .register {
-            background-color: var(--pb-color-lighter, #35424b);
-        }
-        .occurrences {
-            background-color: var(--pb-color-focus, #f6a623);
-        }
-    `;
   }
 }
 customElements.define('pb-authority-lookup', PbAuthorityLookup);
