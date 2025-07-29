@@ -45,7 +45,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 padding:0;
                 height:auto;
             }
-            
+
             #layout {
                 width: 100%;
                 display: grid;
@@ -131,15 +131,13 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 white-space: nowrap;
             }
 
-            /* todo: this doesn't work - should refactor to have the complete trigger exposed here (move out of pb-collapse) */
-            pb-collapse#meta ::slotted(.collapse-trigger){
-                /*height:56px;*/
+            details {
+                --details-transition-duration:0.8s;
+            }
+            details[open] {
+                padding: 0;
             }
 
-            iron-collapse {
-                --iron-collapse-transition-duration:0.8s;
-            }
-            
             pb-message#errorMsg{
                 background: var(--paper-red-500);
                 color:white;
@@ -148,19 +146,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 height:100%;
                 overflow:auto;
             }
-            
+
             paper-tab{
                 width:100px;
             }
-            
+
             .editingView {
                 width:100%;
             }
-            
+
             vaadin-tabs{
                 margin-top:10px;
             }
-            
+
             vaadin-tab{
                 background:var(--paper-grey-200);
                 padding:0 6px;
@@ -300,7 +298,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 handle-as="json" content-type="application/x-www-form-urlencoded"
                 with-credentials
                 method="GET"></iron-ajax>
-                
+
         <iron-ajax id="saveOdd"
                 handle-as="json"
                 with-credentials></iron-ajax>
@@ -315,7 +313,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                             <pb-edit-xml id="editSource"><paper-icon-button icon="code" title="${translate('odd.editor.odd-source')}"></paper-icon-button></pb-edit-xml>
                             <paper-icon-button @click="${() => this.save(true)}" icon="icons:cloud-download" title="${fsSupported ? translate('odd.editor.save-as'): translate('odd.editor.download')}"></paper-icon-button>
                             <paper-icon-button @click="${this._reload}" icon="refresh" title="${translate('odd.editor.reload')}"></paper-icon-button>
-                            <paper-icon-button @click="${() => this.save(false)}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}" 
+                            <paper-icon-button @click="${() => this.save(false)}" icon="save" title="${translate('odd.editor.save')} ${this.display('save')}"
                                 ?disabled="${!this.loggedIn}"></paper-icon-button>
                         </span>
                     </h3>
@@ -328,7 +326,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                     <div id="jump-to">
                         <paper-autocomplete id="jumpTo" label="${translate('odd.editor.jump-to')}" always-float-label="always-float-label"></paper-autocomplete>
                     </div>
-                    
+
                     <h3>${translate('odd.editor.specs')}</h3>
             </div>
             <div id="navlist">
@@ -340,7 +338,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 `)}
             </div>
             <section class="specs" id="specs">
-    
+
                 <paper-card class="metadata">
                     <pb-collapse id="meta">
                         <h4 slot="collapse-trigger" class="panel-title">
@@ -372,21 +370,21 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                         </div>
                     </pb-collapse>
                 </paper-card>
-    
+
                 <!-- todo: import elementspec to make it function  -->
-    
+
                 <div class="editingView">
                     <vaadin-tabs id="tabs" selected="${this.tabIndex}">
                         ${repeat(this.tabs, (i) => i.id, (i, index) =>
                 html`
                             <vaadin-tab name="${i}" @click="${(e) => this._selectTab(e, i)}"><span style="padding-right:20px;">${i}</span><paper-icon-button icon="close" @click="${(ev) => this._closeTabHandler(ev, index)}"></paper-icon-button></vaadin-tab>
-                        `)}                    
+                        `)}
                     </vaadin-tabs>
-                                       
+
                     <div id="currentElement"></div>
                 </div>
             </section>
-            
+
         </div>
 
 
@@ -921,7 +919,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 "output-root": this.outputRoot,};
             saveOdd.body = data;
         }
-        
+
         const request = saveOdd.generateRequest();
         request.completes
             .then((req) => {
@@ -956,9 +954,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             document.dispatchEvent(new CustomEvent('pb-end-update'));
             return;
         }
-        
+
         let msg;
-        
+
         if (this.lessThanApiVersion('1.0.0')) {
             const report = data.report.map(PbOddEditor._renderReport);
             msg = `<div class="list-group">${report.join('')}</div>`;
@@ -966,9 +964,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             const report = data.report;
             msg = `<div class="list-group">${report}</div>`;
         }
-        
+
         this.shadowRoot.getElementById('dialog').set(i18n("odd.editor.saved"), msg);
-        
+
         this._hasChanges = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
 

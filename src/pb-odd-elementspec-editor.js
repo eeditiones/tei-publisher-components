@@ -12,7 +12,7 @@ import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-styles/color';
 import '@polymer/paper-item/paper-item';
-import '@polymer/iron-collapse/iron-collapse';
+
 import './pb-message.js';
 import './pb-odd-model-editor.js';
 
@@ -95,8 +95,8 @@ export class PbOddElementspecEditor extends LitElement {
             }
 
             /*todo: this does not take effect*/
-            iron-collapse.models{
-                --iron-collapse-transition-duration:0.4s;
+            details.models{
+                --details-transition-duration:0.4s;
             }
             
             .models{

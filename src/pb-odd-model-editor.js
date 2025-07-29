@@ -13,7 +13,7 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-styles/color.js';
-import '@polymer/iron-collapse/iron-collapse.js';
+
 import "@jinntec/jinn-codemirror/dist/src/jinn-codemirror";
 
 import { cmpVersion } from './utils.js';
@@ -149,7 +149,7 @@ export class PbOddModelEditor extends LitElement {
                 display:inline;
                 align-self:stretch;
             }
-            
+
             .group {
                 margin: 0;
                 font-size: 16px;
@@ -199,20 +199,25 @@ export class PbOddModelEditor extends LitElement {
             :host([currentselection]) > form > header > h4 > .btn-group{
                 display: inline-block;
             }
-            iron-collapse{
+            details {
+                display: block;
+            }
+
+            details summary {
+                display: none;
             }
 
             .renditions{
                 margin-top:10px;
             }
-            
+
             .details{
                 padding:0px 50px 20px 20px;
                 background:var(--paper-grey-200);
             }
-            
-            .editor {
-                margin-bottom: 20px;
+
+            details:not([open]) {
+                padding: 0;
             }
 
             .editor label {
@@ -425,12 +430,12 @@ export class PbOddModelEditor extends LitElement {
         }
         return html`
         <form>
-            <header> 
+            <header>
                 <h4>
                     <paper-icon-button id="toggle"
                                        icon="${this.icon}" @click="${this.toggle}"
                                        class="model-collapse"></paper-icon-button>
-                                       
+
                     <span class="modelType">${this.type}<span class="behaviour" ?hidden="${this._isGroupOrSequence()}">${this.behaviour}</span></span>
 
                     <span class="btn-group">
@@ -470,7 +475,8 @@ export class PbOddModelEditor extends LitElement {
                     <div class="predicate">${this.predicate}</div>
                 </p>
             </header>
-            <iron-collapse id="details" ?opened="${this.show}" class="details">
+            <details ?open="${this.show}" class="details">
+                <summary style="display: none;"></summary>
                 <div class="horizontal">
                     <paper-dropdown-menu class="selectOutput" label="Output">
                         <paper-listbox id="output" slot="dropdown-content" attr-for-selected="value"
@@ -494,13 +500,13 @@ export class PbOddModelEditor extends LitElement {
                 <div class="editor">
                     <label>Predicate</label>
                     <jinn-codemirror id="predicate"
-                        code="${this.predicate}"   
+                        code="${this.predicate}"
                         mode="xquery"
                         linter="${this.endpoint}/${cmpVersion(this.apiVersion, '1.0.0') < 0 ? 'modules/editor.xql' : 'api/lint'}"
                         placeholder="${translate('odd.editor.model.predicate-placeholder')}"
                         @update="${this._updatePredicate}"></jinn-codemirror>
                 </div>
-               
+
                 ${this._isModel()
                 ? html`
                         <div>
@@ -519,13 +525,13 @@ export class PbOddModelEditor extends LitElement {
                                 <span></span>
                             </div>
 
-                                
-    
+
+
                             <paper-input id="css" .value="${this.css}"
                                 placeholder="${translate('odd.editor.model.css-class-placeholder')}"
                                 label="CSS Class"
                                 @change="${this._inputCss}"></paper-input>
-                            
+
                             <div class="editor">
                                 <label>Template</label>
                                 <jinn-codemirror id="template"
@@ -538,20 +544,20 @@ export class PbOddModelEditor extends LitElement {
                                             title="Select element around current cursor position">&lt;|></paper-button>
                                         <paper-button data-mode="xml" data-command="encloseWith" data-key="mod-e mod-e"
                                             title="Enclose selection in new element">&lt;...&gt;</paper-button>
-                                        <paper-button data-mode="xml" data-command="removeEnclosing" title="Remove enclosing tags" 
+                                        <paper-button data-mode="xml" data-command="removeEnclosing" title="Remove enclosing tags"
                                             data-key="mod-e mod-r" class="sep">&lt;X></paper-button>
                                         <paper-button data-mode="html" data-command="selectElement" data-key="mod-e mod-s"
                                             title="Select element around current cursor position">&lt;|></paper-button>
                                         <paper-button data-mode="html" data-command="encloseWith" data-key="mod-e mod-e"
                                             title="Enclose selection in new element">&lt;...&gt;</paper-button>
-                                        <paper-button data-mode="html" data-command="removeEnclosing" title="Remove enclosing tags" 
+                                        <paper-button data-mode="html" data-command="removeEnclosing" title="Remove enclosing tags"
                                             data-key="mod-e mod-r" class="sep">&lt;X></paper-button>
                                         <paper-button data-key="mod-e mod-p" data-command="snippet" data-params="[[\${_}]]" title="Insert template variable">[[...]]</paper-button>
                                     </div>
                                 </jinn-codemirror>
                             </div>
                         </div>
-        
+
                         <div class="parameters">
                             <div class="group">
                                 <span class="title">Parameters</span>
@@ -560,7 +566,7 @@ export class PbOddModelEditor extends LitElement {
                             </div>
                             ${repeat(this.parameters, (parameter) => parameter.name, (parameter, index) =>
                         html`
-                                <pb-odd-parameter-editor 
+                                <pb-odd-parameter-editor
                                        behaviour="${this.behaviour}"
                                        name="${parameter.name}"
                                        value="${parameter.value}"
@@ -597,11 +603,11 @@ export class PbOddModelEditor extends LitElement {
                     `
                 : ''
             }
-            </iron-collapse>
-            
+            </details>
+
             <div class="models">
                 ${repeat(this.model.models, (model, index) => html`
-                <pb-odd-model-editor 
+                <pb-odd-model-editor
                     behaviour="${model.behaviour || 'inline'}"
                     predicate="${model.predicate}"
                     type="${model.type}"
@@ -625,9 +631,9 @@ export class PbOddModelEditor extends LitElement {
                     hasParent
                     ></pb-odd-model-editor>
             `)}
-    
-            </div> 
-        </form> 
+
+            </div>
+        </form>
         <pb-message id="dialog"></pb-message>
         `;
     }
