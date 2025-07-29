@@ -1,3 +1,10 @@
+# [2.26.0-next-3.10](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.9...v2.26.0-next-3.10) (2025-07-29)
+
+
+### Features
+
+* **pb-collapse, pb-odd-editor:** remove iron-collapse and use standard ([628f782](https://github.com/eeditiones/tei-publisher-components/commit/628f78278cca122a77ab5f0fadd1bb26a4dc8ed3))
+
 # [2.26.0-next-3.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.8...v2.26.0-next-3.9) (2025-07-26)
 
 
