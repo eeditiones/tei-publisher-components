@@ -1,3 +1,10 @@
+## [2.25.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.4...v2.25.5) (2025-08-16)
+
+
+### Bug Fixes
+
+* **i18n:** correct pl labels ([f861af7](https://github.com/eeditiones/tei-publisher-components/commit/f861af774050accc0a5479ae40a5be94c8f87f2f))
+
 ## [2.25.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.3...v2.25.4) (2025-06-04)
 
 
