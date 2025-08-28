@@ -7,49 +7,45 @@ import '../src/pb-restricted.js';
 import '../src/pb-login.js';
 
 describe('restricted sections', () => {
-    afterEach(cleanup);
-    
-    it('should show restricted section', async () => {
-        const el = (
-            await fixture(`
-                <pb-page endpoint="${ __karma__.config.endpoint }">
+  afterEach(cleanup);
+
+  it('should show restricted section', async () => {
+    const el = await fixture(`
+                <pb-page endpoint="${__karma__.config.endpoint}">
                     <pb-restricted login="loginElem">
                         <p>RESTRICTED</p>
                         <p slot="fallback">FALLBACK</p>
                     </pb-restricted>
                     <pb-login id="loginElem" user="tei" password="${__karma__.config.passwd}"></pb-login>
                 </pb-page>
-            `)
-        );
-        await oneEvent(document, 'pb-login');
+            `);
+    await oneEvent(document, 'pb-login');
 
-        const restricted = el.querySelector('pb-restricted');
-        const slot = restricted.shadowRoot.querySelector('slot');
-        expect(slot.assignedElements()[0].innerHTML).to.equal('RESTRICTED');
-    });
+    const restricted = el.querySelector('pb-restricted');
+    const slot = restricted.shadowRoot.querySelector('slot');
+    expect(slot.assignedElements()[0].innerHTML).to.equal('RESTRICTED');
+  });
 
-    it('should show fallback', async () => {
-        const el = (
-            await fixture(`
-                <pb-page endpoint="${ __karma__.config.endpoint }">
+  it('should show fallback', async () => {
+    const el = await fixture(`
+                <pb-page endpoint="${__karma__.config.endpoint}">
                     <pb-restricted login="loginElem">
                         <p>RESTRICTED</p>
                         <p slot="fallback">FALLBACK</p>
                     </pb-restricted>
                     <pb-login id="loginElem" user="tei" password="INVALID"></pb-login>
                 </pb-page>
-            `)
-        );
-        await oneEvent(document, 'pb-login');
+            `);
+    await oneEvent(document, 'pb-login');
 
-        const restricted = el.querySelector('pb-restricted');
-        expect(restricted).to.have.class('fallback');
-        const slot = restricted.shadowRoot.querySelector('slot');
-        expect(slot.assignedElements()[0].innerHTML).to.equal('FALLBACK');
-    });
+    const restricted = el.querySelector('pb-restricted');
+    expect(restricted).to.have.class('fallback');
+    const slot = restricted.shadowRoot.querySelector('slot');
+    expect(slot.assignedElements()[0].innerHTML).to.equal('FALLBACK');
+  });
 
-    it('should set display to none if no fallback', async () => {
-      const el = await fixture(`
+  it('should set display to none if no fallback', async () => {
+    const el = await fixture(`
         <pb-page endpoint="${__karma__.config.endpoint}">
             <pb-restricted login="loginElem">
                 <p>RESTRICTED</p>
@@ -57,9 +53,9 @@ describe('restricted sections', () => {
             <pb-login id="loginElem" user="tei" password="INVALID"></pb-login>
         </pb-page>
       `);
-      await oneEvent(document, 'pb-login');
+    await oneEvent(document, 'pb-login');
 
-      const restricted = el.querySelector('pb-restricted');
-      expect(restricted).not.to.have.class('fallback');
-    });
+    const restricted = el.querySelector('pb-restricted');
+    expect(restricted).not.to.have.class('fallback');
+  });
 });

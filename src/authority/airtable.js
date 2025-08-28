@@ -4,11 +4,11 @@ import { resolveURL } from '../utils.js';
 
 function expandTemplate(template = '', options) {
   return template.replace(/\${([^}]+)}/g, (match, p) => {
-      let replacement;
-      if (options[p]) {
-          replacement = options[p];
-      }
-      return replacement || '';
+    let replacement;
+    if (options[p]) {
+      replacement = options[p];
+    }
+    return replacement || '';
   });
 }
 
@@ -23,7 +23,6 @@ function getTemplate(configElem, selector) {
 }
 
 export class Airtable extends Registry {
-
   constructor(configElem) {
     super(configElem);
     this.apiKey = configElem.getAttribute('api-key');
@@ -45,7 +44,7 @@ export class Airtable extends Registry {
       this.tokenize = [this.fields[0]];
     }
 
-    this.tokenizeChars = configElem.getAttribute('tokenize-regex') || "\\W";
+    this.tokenizeChars = configElem.getAttribute('tokenize-regex') || '\\W';
 
     this.infoExpr = getTemplate(configElem, '.info');
     this.detailExpr = getTemplate(configElem, '.detail');
@@ -54,14 +53,12 @@ export class Airtable extends Registry {
   }
 
   _init() {
-      window.ESGlobalBridge.requestAvailability();
-      const path = resolveURL('../lib/airtable.browser.js');
-      window.ESGlobalBridge.instance.load('airtable', path);
-      window.addEventListener(
-        'es-bridge-airtable-loaded',
-        this._initAirtable.bind(this),
-        { once: true },
-      );
+    window.ESGlobalBridge.requestAvailability();
+    const path = resolveURL('../lib/airtable.browser.js');
+    window.ESGlobalBridge.instance.load('airtable', path);
+    window.addEventListener('es-bridge-airtable-loaded', this._initAirtable.bind(this), {
+      once: true,
+    });
   }
 
   _initAirtable() {
@@ -76,7 +73,7 @@ export class Airtable extends Registry {
     const options = {
       fields: this.fields,
       // Selecting the first 3 records in Grid view:
-      maxRecords: 100
+      maxRecords: 100,
     };
     if (this.view) {
       options.view = this.view;
@@ -95,13 +92,15 @@ export class Airtable extends Registry {
           }
           records.forEach(record => {
             const data = {};
-            this.fields.forEach((field) => { data[field] = record.get(field); });
+            this.fields.forEach(field => {
+              data[field] = record.get(field);
+            });
             const result = {
               register: this._register,
               id: record.id,
               label: expandTemplate(this.labelExpr, data),
               details: expandTemplate(this.detailExpr, data),
-              provider: 'airtable'
+              provider: 'airtable',
             };
             results.push(result);
           });
@@ -133,7 +132,7 @@ export class Airtable extends Registry {
         }
         let strings = [];
         const data = {};
-        this.fields.forEach((field) => {
+        this.fields.forEach(field => {
           const value = record.get(field);
           if (value) {
             data[field] = value;
@@ -141,7 +140,7 @@ export class Airtable extends Registry {
           }
         });
         const regex = new RegExp(this.tokenizeChars);
-        this.tokenize.forEach((key) => {
+        this.tokenize.forEach(key => {
           if (data[key]) {
             strings = strings.concat(data[key].split(regex));
           }
@@ -152,7 +151,7 @@ export class Airtable extends Registry {
 
         resolve({
           id: record.id,
-          strings
+          strings,
         });
       });
     });

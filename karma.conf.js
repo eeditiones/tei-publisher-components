@@ -12,29 +12,31 @@ module.exports = config => {
         // npm run test -- --grep test/bar/*
         { pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module' },
         { pattern: 'i18n/**/*', watched: false, included: false, served: true },
-        { pattern: 'demo/*.json', watched: false, included: false, served: true }
+        { pattern: 'demo/*.json', watched: false, included: false, served: true },
       ],
       proxies: {
         '/demo': '/base/demo',
         '/demo/i18n': '/base/demo/i18n',
-        '/i18n': '/base/i18n'
+        '/i18n': '/base/i18n',
       },
 
       // see the karma-esm docs for all options
       esm: {
         // if you are using 'bare module imports' you will need this option
-        nodeResolve: true
+        nodeResolve: true,
       },
       concurrency: 1,
       client: {
-        endpoint: config.endpoint ? config.endpoint : 'http://localhost:8080/exist/apps/tei-publisher',
+        endpoint: config.endpoint
+          ? config.endpoint
+          : 'http://localhost:8080/exist/apps/tei-publisher',
         passwd: config.passwd ? config.passwd : 'simple',
         mocha: {
-          timeout: 10000
-        }
+          timeout: 10000,
+        },
       },
-      hostname: '127.0.0.1'
-    })
+      hostname: '127.0.0.1',
+    }),
   );
   return config;
 };

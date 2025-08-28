@@ -9,7 +9,7 @@ const versionTag = `@${json.version}`;
 const dir = path.join('docs', versionTag);
 const latest = path.resolve(path.join('docs', '@latest'));
 const dist = path.join(dir, 'dist');
-fs.mkdirSync(dist, { recursive: true});
+fs.mkdirSync(dist, { recursive: true });
 
 console.log('[gh-pages] Copying files to %s', dir);
 copy('dist', dist);
@@ -20,8 +20,10 @@ copy('css', path.join(dir, 'css'));
 copy('src', path.join(dir, 'src'));
 
 try {
-    fs.unlinkSync(latest);
-} catch(e) { /* */ }
+  fs.unlinkSync(latest);
+} catch (e) {
+  /* */
+}
 fs.symlinkSync(path.resolve(dir), latest, 'dir');
 
 const redirect = fs.readFileSync(path.join('demo', 'redirect.js'), 'utf-8');

@@ -29,11 +29,11 @@ export class Registry {
   set name(name) {
     this._register = name;
   }
-  
+
   get editable() {
     return false;
   }
-  
+
   /**
    * Query the authority and return a RegistryResult.
    *
@@ -69,11 +69,11 @@ export class Registry {
 
   /**
    * Retrieve a raw JSON record for the given key as returned by the endpoint.
-   * 
+   *
    * @param {string} key the key to look up
    * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
    */
   async getRecord(key) {
-      return Promise.reject();
+    return Promise.reject();
   }
 }
