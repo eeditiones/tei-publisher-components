@@ -12,11 +12,11 @@ import '@polymer/iron-ajax';
  * The document to be viewed is determined by the `pb-document` element the property
  * `src` points to. If not overwritten, `pb-view` will use the settings defined by
  * the connected document, like view type, ODD etc.
- * 
+ *
  * `pb-view` can display an entire document or just a fragment of it
  * as defined by the properties `xpath`, `xmlId` or `nodeId`. The most common use case
  * is to set `xpath` to point to a specific part of a document.
- * 
+ *
  * Navigating to the next or previous fragment would usually be triggered by a separate
  * `pb-navigation` element, which sends a `pb-navigate` event to the `pb-view`. However,
  * `pb-view` also implements automatic loading of next/previous fragments if the user
@@ -48,7 +48,7 @@ import '@polymer/iron-ajax';
  * @cssprop --pb-view-scroll-margin-top - Applied to any element with an id
  * @csspart content - The root div around the displayed content
  * @csspart footnotes - div containing the footnotes
-  
+
  * @fires pb-start-update - Fired before the element updates its content
  * @fires pb-update - Fired when the component received content from the server
  * @fires pb-end-update - Fired after the element has finished updating its content
@@ -94,6 +94,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             */
             view: {
                 type: String
+            },
+            /**
+             * Controls the pagination-by-div algorithm: if a page would have less than
+             * `fill` elements, it tries to fill
+             * up the page by pulling following divs in. When set to 0, it will never
+             * attempt to fill up the page. For the annotation editor this should
+             * always be 0.
+             */
+            fill: {
+                type: Number
             },
             /**
             * An eXist nodeId. If specified, selects the root of the fragment of the document
@@ -193,7 +203,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             },
             /**
             * The reading direction, i.e. 'ltr' or 'rtl'.
-            * 
+            *
             * @type {"ltr"|"rtl"}
             */
             direction: {
@@ -217,7 +227,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             /**
              * If set, a refresh will be triggered if a `pb-i18n-update` event is received,
              * e.g. due to the user selecting a different interface language.
-             * 
+             *
              * Also requires `requireLanguage` to be set on the surrounding `pb-page`.
              * See there for more information.
              */
@@ -236,7 +246,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
              * Experimental: if enabled, the view will incrementally load new document fragments if the user tries to scroll
              * beyond the start or end of the visible text. The feature inserts a small blank section at the top
              * and bottom. If this section becomes visible, a load operation will be triggered.
-             * 
+             *
              * Note: only browsers implementing the `IntersectionObserver` API are supported. Also the feature
              * does not work in two-column mode or with animations.
              */
@@ -259,8 +269,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
              * When method `wait` is called, it will wait until all referenced
              * components signal with a `pb-ready` event that they are ready and listening
              * to events.
-             * 
-             * `pb-view` by default sets this property to select `pb-toggle-feature` and `pb-select-feature` 
+             *
+             * `pb-view` by default sets this property to select `pb-toggle-feature` and `pb-select-feature`
              * elements.
              */
             waitFor: {
@@ -270,7 +280,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             /**
              * By default, navigating to next/previous page will update browser parameters,
              * so reloading the page will load the correct position within the document.
-             * 
+             *
              * Set this property to disable location tracking for the component altogether.
              */
             disableHistory: {
@@ -289,7 +299,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 attribute: 'before-update-event'
             },
             /**
-             * If set, do not scroll the view to target node (e.g. given in URL hash) 
+             * If set, do not scroll the view to target node (e.g. given in URL hash)
              * after content was loaded.
              */
             noScroll: {
@@ -401,6 +411,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             if (this.view !== 'single') {
                 newState.root = this.nodeId;
             }
+            if (this.fill) {
+                newState.fill = this.fill;
+            }
             console.log('id: %s; state: %o', this.id, newState);
             registry.replace(this, newState);
 
@@ -506,7 +519,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     /**
      * Returns the ODD used to render content.
-     * 
+     *
      * @returns the ODD being used
      */
     getOdd() {
@@ -581,6 +594,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 this.columnSeparator = ev.detail.columnSeparator;
             }
             this.view = ev.detail.view || this.getView();
+            this.fill = ev.detail.fill || this.fill;
             if (ev.detail.xpath) {
                 this.xpath = ev.detail.xpath;
                 this.nodeId = null;
@@ -648,7 +662,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         }
 
         const loadContent = this.shadowRoot.getElementById('loadContent');
-        
+
         if (this.static !== null) {
             this._staticUrl(params).then((url) => {
                 loadContent.url = url;
@@ -689,7 +703,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
             });
             return urlComponents.join('&');
         }
-        
+
         const index = await fetch(`index.json`)
             .then((response) => response.json());
         const paramNames = ['odd', 'view', 'xpath', 'map'];
@@ -729,7 +743,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         } else {
             message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
         }
-        
+
         let content;
         if (this.notFound != null) {
             content = `<p>${this.notFound}</p>`;
@@ -764,7 +778,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
         if (this._scrollTarget) {
             this.updateComplete.then(() => {
-                const target = this.shadowRoot.getElementById(this._scrollTarget) || 
+                const target = this.shadowRoot.getElementById(this._scrollTarget) ||
                     this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
                 if (target) {
                     window.requestAnimationFrame(() =>
@@ -1025,6 +1039,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         }
         params.odd = this.getOdd() + '.odd';
         params.view = this.getView();
+        params.fill = this.fill;
         if (pos) {
             params['root'] = pos;
         }
@@ -1120,7 +1135,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
      * Check the number of fragments which were already loaded in infinite
      * scroll mode. If they exceed `infiniteScrollMax`, remove either the
      * first or last fragment from the DOM, depending on the scroll direction.
-     * 
+     *
      * @param {string} direction either 'forward' or 'backward'
      */
     _checkChunks(direction) {
@@ -1165,7 +1180,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         const properties = registry.getState(this);
         if (properties) {
             this._setState(properties);
-            
+
         }
 
         if (ev.detail.refresh) {
@@ -1212,6 +1227,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 // otherwise use value for alternate view returned from server
                 this.nodeId = this.switchView;
             }
+        }
+        if (properties.fill && !this.getAttribute('fill')) {
+            this.fill = properties.fill;
         }
         if (properties.xpath && !this.getAttribute('xpath')) {
             this.xpath = properties.xpath;
@@ -1273,9 +1291,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 -ms-overflow-style: none;
             }
 
-            :host(.noscroll)::-webkit-scrollbar { 
+            :host(.noscroll)::-webkit-scrollbar {
                 width: 0 !important;
-                display: none; 
+                display: none;
             }
 
             [id] {
@@ -1355,7 +1373,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
                 0% {
                     background-position: 3rem 0;
                 }
-                
+
                 100% {
                     background-position: 0 0;
                 }

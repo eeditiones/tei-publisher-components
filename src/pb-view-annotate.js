@@ -268,6 +268,9 @@ class PbViewAnnotate extends PbView {
   connectedCallback() {
     super.connectedCallback();
 
+    // fill should always be 0 when doing annotations!!!
+    this.fill = 0;
+
     let isMouseDown = false;
 
     this._inHandler = false;
