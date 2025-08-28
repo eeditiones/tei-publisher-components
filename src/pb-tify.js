@@ -1,18 +1,18 @@
 import { LitElement } from 'lit-element';
-import "tify";
+import 'tify';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 
 function _injectStylesheet(path) {
-    const style = document.querySelector(`link#pb-tify`);
-    if (!style) {
-        const elem = document.createElement('link');
-        elem.type = 'text/css';
-        elem.rel = 'stylesheet';
-        elem.id = `pb-tify`;
-        elem.href = `${resolveURL(path)}/tify.css`;
-        document.head.appendChild(elem);
-    }
+  const style = document.querySelector(`link#pb-tify`);
+  if (!style) {
+    const elem = document.createElement('link');
+    elem.type = 'text/css';
+    elem.rel = 'stylesheet';
+    elem.id = `pb-tify`;
+    elem.href = `${resolveURL(path)}/tify.css`;
+    document.head.appendChild(elem);
+  }
 }
 
 /**
@@ -26,170 +26,170 @@ function _injectStylesheet(path) {
  * `order` property in the event (see `pb-facs-link`). Page counts start at 1.
  */
 export class PbTify extends pbMixin(LitElement) {
-    static get properties() {
-        return {
-            /**
-             * URL pointing to a IIIF presentation manifest. Relative paths
-             * are interpreted relative to the API endpoint.
-             */
-            manifest: {
-                type: String
-            },
-            ...super.properties
-        };
-    }
+  static get properties() {
+    return {
+      /**
+       * URL pointing to a IIIF presentation manifest. Relative paths
+       * are interpreted relative to the API endpoint.
+       */
+      manifest: {
+        type: String,
+      },
+      ...super.properties,
+    };
+  }
 
-    constructor() {
-        super();
-        this.cssPath = '../css/tify';
-        this._initialPages = null;
-        this._currentPage = null;
-    }
+  constructor() {
+    super();
+    this.cssPath = '../css/tify';
+    this._initialPages = null;
+    this._currentPage = null;
+  }
 
-    attributeChangedCallback(name, oldVal, newVal) {
-        super.attributeChangedCallback(name, oldVal, newVal);
-        
-        if (name === 'manifest' && newVal) {
-            this.manifest = newVal;
-            this._initViewer();
+  attributeChangedCallback(name, oldVal, newVal) {
+    super.attributeChangedCallback(name, oldVal, newVal);
+
+    if (name === 'manifest' && newVal) {
+      this.manifest = newVal;
+      this._initViewer();
+    }
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    _injectStylesheet(this.cssPath);
+
+    this._container = document.createElement('div');
+    this._container.style.height = '100%';
+    this._container.style.width = '100%';
+    this.appendChild(this._container);
+
+    this.subscribeTo('pb-show-annotation', ev => {
+      if (ev.detail) {
+        this._initialPages = ev.detail.order ? Number(ev.detail.order) : Number.POSITIVE_INFINITY;
+        if (this._initialPages === Number.POSITIVE_INFINITY) {
+          this._initialPages = 1;
         }
-    }
-
-    async connectedCallback() {
-        super.connectedCallback();
-
-        _injectStylesheet(this.cssPath);
-
-        this._container = document.createElement('div');
-        this._container.style.height = '100%';
-        this._container.style.width = '100%';
-        this.appendChild(this._container);
-        
-        this.subscribeTo('pb-show-annotation', (ev) => {
-            if (ev.detail) {
-                this._initialPages = ev.detail.order ? Number(ev.detail.order) : Number.POSITIVE_INFINITY;
-                if (this._initialPages === Number.POSITIVE_INFINITY) {
-                    this._initialPages = 1;
-                }
-                const url = ev.detail.file || ev.detail.url;
-                if (url && url !== this.manifest) {
-                    this.manifest = ev.detail.file;
-                    this._initViewer();
-                // check if tify is already initialized
-                } else if (this._setPage) {
-                    this._setPage(this._initialPages);
-                }
-
-                if (ev.detail.coordinates) {
-                    this._addOverlay(ev.detail.coordinates);
-                }
-            }
-        });
-
-        this.signalReady();
-    }
-
-    firstUpdated() {
-        super.firstUpdated();
-
-        waitOnce('pb-page-ready', () => {
-            this._initViewer();
-        });
-    }
-
-    _initViewer() {
-        if (!this.manifest) {
-            return;
+        const url = ev.detail.file || ev.detail.url;
+        if (url && url !== this.manifest) {
+          this.manifest = ev.detail.file;
+          this._initViewer();
+          // check if tify is already initialized
+        } else if (this._setPage) {
+          this._setPage(this._initialPages);
         }
 
-        if (this._tify) {
-            this._tify.destroy();
+        if (ev.detail.coordinates) {
+          this._addOverlay(ev.detail.coordinates);
         }
+      }
+    });
 
-        this._tify = new Tify({
-            manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint())
-        });
-        this._tify.ready.then(() => { 
-            // open initial page if set earlier via pb-load-facsimile event
-            if (this._initialPages) {
-                this._tify.setPage(this._initialPages);
-            }
+    this.signalReady();
+  }
 
-            // extend tify's setPage function to allow emitting an event
-            const {app} = this._tify;
-            const originalSetPage = app.setPage;
+  firstUpdated() {
+    super.firstUpdated();
 
-            app.setPage = (pages) => {
-                const page = Array.isArray(pages) ? pages[0] : pages;
-                if(this._currentPage === page) {
-                    return;
-                }
+    waitOnce('pb-page-ready', () => {
+      this._initViewer();
+    });
+  }
 
-                const canvas = app.$root.canvases[page - 1];
-                
-                this._switchPage(canvas);
-                originalSetPage(pages);
-                this._currentPage = page;
-            };
-
-            this._setPage = app.setPage;
-        });
-
-        this._tify.mount(this._container);
+  _initViewer() {
+    if (!this.manifest) {
+      return;
     }
 
-    _switchPage(canvas) {
-        const rendering = canvas.rendering;
-        if (rendering && rendering.length > 0) {
-            const url = new URL(rendering[0]['@id']);
-            const params = {};
-            url.searchParams.forEach((value, key) => {
-                params[key] = value;
-            })
-            console.log('<pb-tify> page changed, emitting refresh with params %o', params);
-            this.emitTo('pb-refresh', params);
-        }
+    if (this._tify) {
+      this._tify.destroy();
     }
 
-    _addOverlay(coordinates) {
-        if (!Array.isArray(coordinates) || coordinates.length !== 4) {
-            console.error('coords incomplete or missing (array of 4 numbers expected)', coordinates);
-            return;
+    this._tify = new Tify({
+      manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint()),
+    });
+    this._tify.ready.then(() => {
+      // open initial page if set earlier via pb-load-facsimile event
+      if (this._initialPages) {
+        this._tify.setPage(this._initialPages);
+      }
+
+      // extend tify's setPage function to allow emitting an event
+      const { app } = this._tify;
+      const originalSetPage = app.setPage;
+
+      app.setPage = pages => {
+        const page = Array.isArray(pages) ? pages[0] : pages;
+        if (this._currentPage === page) {
+          return;
         }
 
-        const { viewer } = this._tify;
-        const { viewport } = viewer;
-        const overlayId = 'runtime-overlay';
-        
-        if(this.overlay) {
-            viewer.removeOverlay(this.overlay);
-        }
+        const canvas = app.$root.canvases[page - 1];
 
-        const viewportBounds = viewport.getBounds();
+        this._switchPage(canvas);
+        originalSetPage(pages);
+        this._currentPage = page;
+      };
 
-        const [x1, y1, w, h] = coordinates;
-        const rect = viewport.imageToViewportRectangle(x1, y1, w, h);
+      this._setPage = app.setPage;
+    });
 
-        // Scroll into view if necessary
-        if (!viewportBounds.containsPoint(rect.getTopLeft())) {
-            viewer.viewport.panTo(rect.getCenter());
-        }
+    this._tify.mount(this._container);
+  }
 
-        // Add overlay to viewer
-        const overlay = document.createElement('div');
-        this.overlay = overlay
-        overlay.id = overlayId;
-        overlay.style.border = 'var(--pb-facsimile-border, none)';
-        overlay.style.outline = 'var(--pb-facsimile-outline, 4px solid rgba(0, 0, 128, 0.5))';
-        overlay.style.background = 'var(--pb-facsimile-background, rgba(0, 0, 128, 0.05))';
-        viewer.addOverlay({
-            element: overlay,
-            location: rect
-        });
+  _switchPage(canvas) {
+    const { rendering } = canvas;
+    if (rendering && rendering.length > 0) {
+      const url = new URL(rendering[0]['@id']);
+      const params = {};
+      url.searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+      console.log('<pb-tify> page changed, emitting refresh with params %o', params);
+      this.emitTo('pb-refresh', params);
+    }
+  }
+
+  _addOverlay(coordinates) {
+    if (!Array.isArray(coordinates) || coordinates.length !== 4) {
+      console.error('coords incomplete or missing (array of 4 numbers expected)', coordinates);
+      return;
     }
 
-    createRenderRoot() {
-        return this;
+    const { viewer } = this._tify;
+    const { viewport } = viewer;
+    const overlayId = 'runtime-overlay';
+
+    if (this.overlay) {
+      viewer.removeOverlay(this.overlay);
     }
+
+    const viewportBounds = viewport.getBounds();
+
+    const [x1, y1, w, h] = coordinates;
+    const rect = viewport.imageToViewportRectangle(x1, y1, w, h);
+
+    // Scroll into view if necessary
+    if (!viewportBounds.containsPoint(rect.getTopLeft())) {
+      viewer.viewport.panTo(rect.getCenter());
+    }
+
+    // Add overlay to viewer
+    const overlay = document.createElement('div');
+    this.overlay = overlay;
+    overlay.id = overlayId;
+    overlay.style.border = 'var(--pb-facsimile-border, none)';
+    overlay.style.outline = 'var(--pb-facsimile-outline, 4px solid rgba(0, 0, 128, 0.5))';
+    overlay.style.background = 'var(--pb-facsimile-background, rgba(0, 0, 128, 0.05))';
+    viewer.addOverlay({
+      element: overlay,
+      location: rect,
+    });
+  }
+
+  createRenderRoot() {
+    return this;
+  }
 }
 customElements.define('pb-tify', PbTify);

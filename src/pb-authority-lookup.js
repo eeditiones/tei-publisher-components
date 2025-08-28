@@ -1,19 +1,19 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { translate } from "./pb-i18n.js";
-import { createConnectors } from "./authority/connectors.js";
-import "./pb-restricted.js";
+import { translate } from './pb-i18n.js';
+import { createConnectors } from './authority/connectors.js';
+import './pb-restricted.js';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-icon-button';
 
 /**
  * Performs authority lookups via configurable connectors.
- * 
+ *
  * @fires pb-authority-select - Fired when user selects an entry from the list
  * @fires pb-authority-edit-entity - Fired when user clicks the edit button next to an entry
  * @fires pb-authority-new-entity - Fired when user clicks the add new entity button
- * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and 
+ * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and
  * authority type
  */
 export class PbAuthorityLookup extends pbMixin(LitElement) {
@@ -32,7 +32,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
        */
       sortByLabel: {
         type: Boolean,
-        attribute: 'sort-by-label'
+        attribute: 'sort-by-label',
       },
       /**
        * A list of comma-separated stopwords which should be excluded
@@ -40,16 +40,16 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
        * HTML text
        */
       stopwords: {
-        type: String
+        type: String,
       },
       /**
        * A list of space- or comma-separated group names, whose members will be
        * allowed to add or edit entries in the local register (if enabled).
-       * 
+       *
        * @default "tei"
        */
       group: {
-        type: String
+        type: String,
       },
       /**
        * The authority type to use. Should correspond to a name defined for one of the connectors.
@@ -95,19 +95,21 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
 
     this._stopwordSet = new Set();
     if (this.stopwords) {
-      this.stopwords.split(/\s*,\s*/).forEach((sw) => this._stopwordSet.add(sw.toLowerCase()));
+      this.stopwords.split(/\s*,\s*/).forEach(sw => this._stopwordSet.add(sw.toLowerCase()));
     }
 
     this.subscribeTo('pb-authority-lookup', ev => {
-        this.query = ev.detail.query;
-        this.type = ev.detail.type;
-        this._results = [];
-        this._query();
+      this.query = ev.detail.query;
+      this.type = ev.detail.type;
+      this._results = [];
+      this._query();
     });
 
     waitOnce('pb-page-ready', () => {
       const connectors = createConnectors(this.getEndpoint(), this);
-      connectors.forEach(connector => { this._authorities[connector.register] = connector });
+      connectors.forEach(connector => {
+        this._authorities[connector.register] = connector;
+      });
       if (this.autoLookup) {
         this._query();
       }
@@ -126,14 +128,17 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         @change="${this._queryChanged}"
       >
         <iron-icon icon="icons:search" slot="prefix"></iron-icon>
-        ${
-          this._authorities[this.type] && this._authorities[this.type].editable ?
-          html`
-            <pb-restricted group="${this.group}" slot="suffix">
-              <paper-icon-button icon="icons:add" @click="${this._addEntity}" title="${translate('annotations.add-entity')}"></paper-icon-button>
-            </pb-restricted>
-            ` : null
-        }
+        ${this._authorities[this.type] && this._authorities[this.type].editable
+          ? html`
+              <pb-restricted group="${this.group}" slot="suffix">
+                <paper-icon-button
+                  icon="icons:add"
+                  @click="${this._addEntity}"
+                  title="${translate('annotations.add-entity')}"
+                ></paper-icon-button>
+              </pb-restricted>
+            `
+          : null}
       </paper-input>
       <slot name="authform"></slot>
       <div id="output">
@@ -151,11 +156,16 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log('<pb-authority-lookup> Retrieving info for %s from %s using %s', id, register, authority.constructor.name);
+    console.log(
+      '<pb-authority-lookup> Retrieving info for %s from %s using %s',
+      id,
+      register,
+      authority.constructor.name,
+    );
     let info = await authority.info(id, container);
     if (info.strings) {
       info = Object.assign(info, {
-        strings: info.strings.filter((s) => s && !this._stopwordSet.has(s.toLowerCase()))
+        strings: info.strings.filter(s => s && !this._stopwordSet.has(s.toLowerCase())),
       });
     }
     return info;
@@ -164,42 +174,41 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   _formatItem(item) {
     return html`
       <li>
-          <div class="icons">
-              <paper-icon-button
-                  icon="icons:link"
-                  @click="${() => this._select(item)}"
-                  title="link to"
-              ></paper-icon-button>
-          </div>
-          <div class="link">
-            ${item.link
-              ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
-              : html`${unsafeHTML(item.label)}`
-            }
-          </div>
-        ${item.occurrences > 0 ? html`<div><span class="occurrences" part="occurrences">${item.occurrences}</span></div>` : null}
-        ${item.provider ? html`<div><span class="source" part="source">${item.provider}</span></div>` :null}
+        <div class="icons">
+          <paper-icon-button
+            icon="icons:link"
+            @click="${() => this._select(item)}"
+            title="link to"
+          ></paper-icon-button>
+        </div>
+        <div class="link">
+          ${item.link
+            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
+            : html`${unsafeHTML(item.label)}`}
+        </div>
+        ${item.occurrences > 0
+          ? html`<div><span class="occurrences" part="occurrences">${item.occurrences}</span></div>`
+          : null}
+        ${item.provider
+          ? html`<div><span class="source" part="source">${item.provider}</span></div>`
+          : null}
         <div><span class="register" part="register">${item.register}</span></div>
 
-        ${ 
-          this._authorities[this.type] && this._authorities[this.type].editable ?
-            html`
-            <pb-restricted group="${this.group}">
+        ${this._authorities[this.type] && this._authorities[this.type].editable
+          ? html` <pb-restricted group="${this.group}">
               <div class="icons">
-                  <paper-icon-button
-                      icon="editor:mode-edit"
-                      @click="${() => this._editEntity(item)}"
-                      title="${translate('annotations.edit-entity')}"
-                  ></paper-icon-button>
+                <paper-icon-button
+                  icon="editor:mode-edit"
+                  @click="${() => this._editEntity(item)}"
+                  title="${translate('annotations.edit-entity')}"
+                ></paper-icon-button>
               </div>
-            </pb-restricted>` : null 
-        }
+            </pb-restricted>`
+          : null}
         ${item.details ? html`<div class="details" part="details">${item.details}</div>` : null}
-
       </li>
     `;
   }
-
 
   _select(item) {
     const connector = this._authorities[item.register];
@@ -208,13 +217,13 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
       type: item.register,
       properties: {
         ref: item.id,
-      }
+      },
     };
     if (connector) {
       connector
         .select(item)
         .then(() => this.emitTo('pb-authority-select', options))
-        .catch((e) => this.emitTo('pb-authority-error', {status: e.message}));
+        .catch(e => this.emitTo('pb-authority-error', { status: e.message }));
     } else {
       this.emitTo('pb-authority-select', options);
     }
@@ -225,24 +234,23 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     if (connector) {
       connector
         .select(item)
-        .then(() => this.emitTo('pb-authority-edit-entity', {id: item.id, type: item.register}));
+        .then(() => this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register }));
     } else {
-      this.emitTo('pb-authority-edit-entity', {id: item.id, type: item.register});
+      this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
     }
   }
 
   _queryChanged() {
     this._results = [];
-      this.query = this.shadowRoot.getElementById('query').value;
-      this._query();
+    this.query = this.shadowRoot.getElementById('query').value;
+    this._query();
   }
 
   _query() {
     this.emitTo('pb-start-update');
     this._authorities[this.type].query(this.query).then(results => {
-      this._occurrences(results.items)
-        .then((merged) => {
-          this._results = merged;
+      this._occurrences(results.items).then(merged => {
+        this._results = merged;
       });
       this.emitTo('pb-end-update');
       // this.shadowRoot.getElementById('query').focus();
@@ -250,7 +258,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
   }
 
   _addEntity() {
-    this.emitTo('pb-authority-new-entity', {query: this.query, type: this.type});
+    this.emitTo('pb-authority-new-entity', { query: this.query, type: this.type });
   }
 
   _occurrences(items) {
@@ -259,13 +267,13 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
     }
     const params = new FormData();
     params.append('register', this.type);
-    items.forEach((item) => {
+    items.forEach(item => {
       params.append('id', item.id);
     });
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
         method: 'POST',
-        body: params
+        body: params,
       })
         .then(response => {
           if (response.ok) {
@@ -273,7 +281,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           }
         })
         .then(json => {
-          items.forEach((item) => {
+          items.forEach(item => {
             if (json[item.id]) {
               item.occurrences = json[item.id];
             } else {
@@ -295,7 +303,7 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
           });
           resolve(items);
         });
-      });
+    });
   }
 
   static get styles() {
@@ -334,26 +342,33 @@ export class PbAuthorityLookup extends pbMixin(LitElement) {
         list-style: none;
       }
       #output li {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          align-items: center;
-          border-bottom: 1px solid #efefef;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        border-bottom: 1px solid #efefef;
       }
-        #output li:hover{
-            background:#efefef;
-        }
-      #output td:nth-child(3), #output td:nth-child(4), #output td:nth-child(5) {
+      #output li:hover {
+        background: #efefef;
+      }
+      #output td:nth-child(3),
+      #output td:nth-child(4),
+      #output td:nth-child(5) {
         text-align: right;
         vertical-align: middle;
       }
 
-      .details, .source, .register, .occurrences {
-        font-size: .85rem;
-          width: 100%;
+      .details,
+      .source,
+      .register,
+      .occurrences {
+        font-size: 0.85rem;
+        width: 100%;
       }
 
-      .source, .register, .occurrences {
+      .source,
+      .register,
+      .occurrences {
         border-radius: 4px;
         padding: 4px;
         color: var(--pb-color-inverse);

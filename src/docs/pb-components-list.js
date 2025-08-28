@@ -3,7 +3,7 @@ import '@polymer/paper-item';
 
 /**
  * Displays a list of components to view.
- * 
+ *
  * @fires pb-api-component if a component name is clicked
  */
 export class PbComponentsList extends LitElement {

@@ -3,13 +3,12 @@ import { Registry } from './registry.js';
 import { createConnectors } from './connectors.js';
 
 export class Custom extends Registry {
-
   constructor(endpoint, configElem) {
     super(configElem);
     this._editable = configElem.hasAttribute('edit');
     this._endpoint = endpoint;
     this._connectors = createConnectors(endpoint, configElem);
-    this._connectors.forEach((connector) => {
+    this._connectors.forEach(connector => {
       connector.name = this.name;
     });
     console.log(
@@ -39,7 +38,7 @@ export class Custom extends Registry {
               label: item.label,
               link: item.link,
               details: item.details,
-              provider: 'local'
+              provider: 'local',
             });
             localResults.add(item.id);
           });
@@ -48,7 +47,7 @@ export class Custom extends Registry {
           for (const connector of this._connectors) {
             // eslint-disable-next-line no-await-in-loop
             const dr = await connector.query(key);
-            results = results.concat(dr.items.filter((result) => !localResults.has(result.id)));
+            results = results.concat(dr.items.filter(result => !localResults.has(result.id)));
             totalItems += dr.totalItems;
           }
           resolve({
@@ -65,15 +64,15 @@ export class Custom extends Registry {
     }
     const id = key;
     return new Promise((resolve, reject) => {
-      fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(id)}`)
-        .then(async (response) => {
+      fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(id)}`).then(
+        async response => {
           if (response.ok) {
             const json = await response.json();
             container.innerHTML = json.details;
             resolve({
               id: json.id,
               strings: json.strings,
-              editable: this._editable
+              editable: this._editable,
             });
             return;
           }
@@ -87,17 +86,18 @@ export class Custom extends Registry {
                 }
               } catch (e) {
                 // not found: continue
-              };
+              }
             }
           }
           reject();
-        });
+        },
+      );
     });
   }
 
   /**
-   * 
-   * @param {any} item 
+   *
+   * @param {any} item
    * @returns {Promise}
    */
   async select(item) {
@@ -112,16 +112,18 @@ export class Custom extends Registry {
     if (!entry) {
       return Promise.resolve(item);
     }
-    return fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`, {
-      method: 'POST',
-      mode: "cors",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(entry),
-    })
-    .then((response) => {
+    return fetch(
+      `${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(entry),
+      },
+    ).then(response => {
       if (response.ok) {
         return response.json();
       }

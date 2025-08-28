@@ -8,29 +8,22 @@ import { LitElement, html, css } from 'lit-element';
  * @demo demo/seed-element.html
  */
 export class SeedElement extends LitElement {
+  static get styles() {
+    return css``;
+  }
 
-    static get styles() {
-        return css`
-        `;
-    }
+  static get properties() {
+    return {};
+  }
 
-    static get properties() {
-        return {
-        };
-    }
+  constructor() {
+    super();
+  }
 
-    constructor(){
-        super();
-    }
+  render() {
+    return html``;
+  }
 
-    render() {
-        return html`
-        `;
-    }
-
-    firstUpdated(_changedProperties) {
-    }
-
-
+  firstUpdated(_changedProperties) {}
 }
 customElements.define('seed-element', SeedElement);

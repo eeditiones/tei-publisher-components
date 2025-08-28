@@ -9,40 +9,40 @@ const PB_COMPONENTS_VERSION = null;
  * from `package.json` at build time.
  */
 export class PbVersion extends LitElement {
-    static get properties() {
-        return {
-            version: {
-                type: String,
-                reflect: true
-            },
-            ...super.properties
-        };
-    }
+  static get properties() {
+    return {
+      version: {
+        type: String,
+        reflect: true,
+      },
+      ...super.properties,
+    };
+  }
 
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.version = PB_COMPONENTS_VERSION;
-    }
+    this.version = PB_COMPONENTS_VERSION;
+  }
 
-    connectedCallback() {
-        super.connectedCallback();
-        if (!this.version) {
-            const pkg = resolveURL('../package.json');
-            fetch(pkg)
-                .then((response) => response.json())
-                .then((data) => {
-                    this.version = data.version;
-                });
-        }
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.version) {
+      const pkg = resolveURL('../package.json');
+      fetch(pkg)
+        .then(response => response.json())
+        .then(data => {
+          this.version = data.version;
+        });
     }
+  }
 
-    render() {
-        return html`<span>${this.version ? this.version : 'unknown' }</span>`;
-    }
+  render() {
+    return html`<span>${this.version ? this.version : 'unknown'}</span>`;
+  }
 
-    createRenderRoot() {
-        return this;
-    }
+  createRenderRoot() {
+    return this;
+  }
 }
 customElements.define('pb-version', PbVersion);

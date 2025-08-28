@@ -6,7 +6,7 @@ const codePenEndpoint = "https://teipublisher.com/exist/apps/tei-publisher";
 
 /**
  * Viewer for demo code.
- * 
+ *
  * @customElement  pb-demo-snippet
  * @polymer
  * @appliesMixin pbMixin

@@ -57,7 +57,7 @@ function _renderSection(title, data, hasDefaults = false) {
 
 /**
  * Core viewer showing the element documentation and demos.
- * 
+ *
  * @cssprop --pb-header-background-color - Background color of the header
  * @cssprop --pb-header-color - Color of header text
  */
@@ -235,7 +235,7 @@ export class PbComponentView extends LitElement {
             }
 
             h1, h2 {
-                font-family: "Oswald",Verdana,"Helvetica", sans-serif; 
+                font-family: "Oswald",Verdana,"Helvetica", sans-serif;
                 font-weight: 400;
                 line-height: 1.2;
             }
@@ -266,7 +266,7 @@ export class PbComponentView extends LitElement {
                 margin-left: 10px;
                 margin-right: 20px;
             }
-            
+
             iframe {
                 border: 0;
                 width: 100%;
@@ -284,7 +284,7 @@ export class PbComponentView extends LitElement {
                 padding-bottom: 8px;
                 border-bottom: 1px solid #a0a0a0;
             }
-            
+
             td {
                 padding: 8px 4px;
                 width: 25%;

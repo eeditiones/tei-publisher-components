@@ -8,7 +8,7 @@ import { PbComponentView } from './pb-component-view.js';
 /**
  * An API viewer for webcomponents based on the JSON format produced
  * by web-component-analyzer.
- * 
+ *
  * @slot logo - HTML to show as logo on top of the drawer
  * @listens pb-api-component if another webcomponent should be shown
  */

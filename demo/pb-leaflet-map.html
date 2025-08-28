@@ -64,7 +64,7 @@
                  * which does itself send the `pb-update` event, e.g. `pb-view`.
                  */
                 document.addEventListener('WebComponentsReady', () => {
-                    pbEvents.subscribe('pb-ready', null, function() {
+                    pbEvents.subscribe('pb-ready', null, () => {
                         document.dispatchEvent(new CustomEvent('pb-update', { 
                             detail: { 
                                 root: document.getElementById('locations')
