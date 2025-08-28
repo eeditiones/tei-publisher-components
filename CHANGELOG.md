@@ -1,3 +1,10 @@
+# [2.26.0-next-3.11](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.10...v2.26.0-next-3.11) (2025-08-28)
+
+
+### Bug Fixes
+
+* **pb-view:** add an attribute to set the "fill" parameter on requests. ([e6f3836](https://github.com/eeditiones/tei-publisher-components/commit/e6f3836cbde99133ba861dc71216397997bbb291))
+
 # [2.26.0-next-3.10](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.9...v2.26.0-next-3.10) (2025-07-29)
 
 
