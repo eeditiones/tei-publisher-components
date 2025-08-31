@@ -64,7 +64,7 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
                 <article>
                     <header>
                         ${this.title ? unsafeHTML(this.title) : html`<slot name="title"></slot>`}
-                        <button rel="prev" aria-label="Close" @click="${this.closeDialog}">&times;</button>
+                        <button rel="prev" aria-label="Close" @click="${this.closeDialog}"></button>
                     </header>
                     ${this.message ? unsafeHTML(this.message) : html`<slot></slot>`}
                     <footer>
@@ -74,9 +74,36 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
             </dialog>
         `;
     }
-    
+
     firstUpdated() {
         this._dialog = this.renderRoot.querySelector('dialog');
+    }
+
+    static get styles() {
+        return css`
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            button[rel="prev"] {
+                display: block;
+                height: 1rem;
+                width: 1rem;
+                background-image: var(--pb-dialog-background-image, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(136, 145, 164)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E"));
+                background-position: center;
+                background-size: auto 1rem;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                border: none;
+            }
+            footer {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 16px;
+            }
+        `;
     }
 }
 

@@ -20,16 +20,10 @@ dialog>article>::slotted(*) {
 
 dialog>article>header {
     border-bottom: 1px solid var(--pb-dialog-border-color, #e0e0e0);
-    display: flex;
-    margin-bottom: var(--pb-dialog-padding-vertical, 1rem);
-    justify-content: space-between;
-    align-items: center;
+    margin-bottom: var(--pb-dialog-padding-vertical, 1rem);    align-items: center;
 }
 
 dialog>article>footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
     padding-top: var(--pb-dialog-padding-vertical, 1rem);
     padding-bottom: var(--pb-dialog-padding-vertical, 1rem);
     border-top: 1px solid var(--pb-dialog-border-color, #e0e0e0);
