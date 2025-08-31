@@ -1,3 +1,11 @@
+# [2.26.0-next-3.12](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.11...v2.26.0-next-3.12) (2025-08-31)
+
+
+### Bug Fixes
+
+* **pb-dialog:** include background svg for close button in default ([98d043d](https://github.com/eeditiones/tei-publisher-components/commit/98d043dae1e0669078cc1adac354b9273b23ed31))
+* **pb-login:** login/logout icons were swapped ([7b43326](https://github.com/eeditiones/tei-publisher-components/commit/7b4332604d44768b0c22f08edeba8ea6c4d6acdf))
+
 # [2.26.0-next-3.11](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.10...v2.26.0-next-3.11) (2025-08-28)
 
 
