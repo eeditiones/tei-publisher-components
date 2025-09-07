@@ -18,3 +18,4 @@ lib/*
 !lib/openseadragon.min.js
 docs/
 *.iml
+.notes.md
