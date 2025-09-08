@@ -1,16 +1,18 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
-import '@polymer/paper-progress';
+import { themableMixin } from './theming.js';
 
 /**
  * A progress bar which becomes active when signal `pb-start-update` is
  * being sent and is deactivated on `pb-end-update`.
+ * 
+ * Uses a native `<progress>` element.
  *
  * @fires pb-start-update - When received, activates the progress bar
  * @fires pb-end-update - When received, disables the progress bar
  
  */
-export class PbProgress extends pbMixin(LitElement) {
+export class PbProgress extends themableMixin(pbMixin(LitElement)) {
     static get properties() {
         return {
             ...super.properties,
@@ -35,7 +37,7 @@ export class PbProgress extends pbMixin(LitElement) {
     render() {
         this.style.visibility = this._disabled ? 'hidden' : 'visible';
         return html`
-            <paper-progress id="progress" indeterminate ?disabled="${this._disabled}"></paper-progress>
+            <progress id="progress" indeterminate ?disabled="${this._disabled}"></progress>
         `;
     }
 
@@ -46,7 +48,7 @@ export class PbProgress extends pbMixin(LitElement) {
                 visibility: hidden;
             }
 
-            paper-progress {
+            progress {
                 width: 100%;
             }
         `;

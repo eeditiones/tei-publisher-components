@@ -37,11 +37,11 @@
                     if (started) {
                         started = false;
                         btn.innerHTML = 'Click to start';
-                        document.dispatchEvent(new CustomEvent('pb-end-update'));
+                        pbEvents.emit('pb-end-update');
                     } else {
                         started = true;
                         btn.innerHTML = 'Click to stop';
-                        document.dispatchEvent(new CustomEvent('pb-start-update'));
+                        pbEvents.emit('pb-start-update');
                     }
                 });
             </script>
