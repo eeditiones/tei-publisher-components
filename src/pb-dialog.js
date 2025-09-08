@@ -4,7 +4,9 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { themableMixin } from './theming.js';
 
 /**
- * A simple dialog component using the HTML5 <dialog> element
+ * A simple dialog component using the HTML5 <dialog> element.
+ * 
+ * Any button with the attribute `rel="prev"` will close the dialog when clicked.
  *
  * @slot - Content of the dialog
  * @slot title - Title of the dialog
@@ -64,7 +66,7 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
                 <article>
                     <header>
                         ${this.title ? unsafeHTML(this.title) : html`<slot name="title"></slot>`}
-                        <button rel="prev" aria-label="Close" @click="${this.closeDialog}"></button>
+                        <button rel="prev" aria-label="Close"></button>
                     </header>
                     ${this.message ? unsafeHTML(this.message) : html`<slot></slot>`}
                     <footer>
@@ -77,6 +79,9 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
 
     firstUpdated() {
         this._dialog = this.renderRoot.querySelector('dialog');
+        // Add click listeners to close buttons in both shadow and light DOM
+        [...this._dialog.querySelectorAll('button[rel="prev"]'), ...this.querySelectorAll('button[rel="prev"]')]
+            .forEach(button => button.addEventListener('click', this.closeDialog.bind(this)));
     }
 
     static get styles() {
