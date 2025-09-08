@@ -24,6 +24,8 @@ COPY i18n/common/* resources/i18n/common/
 
 RUN ant
 
+WORKDIR /tmp
+
 ADD http://exist-db.org/exist/apps/public-repo/public/roaster-${ROUTER_VERSION}.xar 001.xar
 ADD https://github.com/eeditiones/tei-publisher-lib/releases/latest/download/tei-publisher-lib.xar 002.xar
 
@@ -42,7 +44,7 @@ ARG USR=nonroot
 USER ${USR}
 
 # Copy EXPATH dependencies
-ONBUILD COPY --from=builder --chown=${USR} /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/003.xar
+ONBUILD COPY --from=builder --chown=${USR} /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
 ONBUILD COPY --from=builder --chown=${USR} /tmp/*.xar /exist/autodeploy/
 
 
