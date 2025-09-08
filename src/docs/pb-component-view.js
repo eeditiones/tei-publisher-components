@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import * as marked from 'marked/lib/marked.js';
+import { Marked, Renderer } from 'marked';
+import markedFootnote from 'marked-footnote';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import '@vaadin/vaadin-tabs/vaadin-tabs';
 import '@vaadin/vaadin-tabs/vaadin-tab';
@@ -8,22 +9,32 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '../pb-code-highlight.js';
 
-const renderer = new window.marked.Renderer();
-renderer.code = function code(code, infostring, escaped) {
-    return `<pb-code-highlight language="${infostring}" line-numbers>
-        <template>${code}</template>
-    </pb-code-highlight>`;
-};
+// Create custom renderer
+class CustomRenderer extends Renderer {
+    code(token) {
+        const { text, lang } = token;
+        return `<pb-code-highlight language="${lang || ''}" line-numbers>
+            <template>${text}</template>
+        </pb-code-highlight>`;
+    }
+}
 
-window.marked.setOptions({
-    renderer
-});
+// Create marked instance with footnote extension and custom renderer
+const markedInstance = new Marked()
+    .use(markedFootnote())
+    .setOptions({
+        renderer: new CustomRenderer()
+    });
+
+// Make it globally available for backward compatibility
+// @ts-ignore
+window.marked = markedInstance;
 
 function _md(md) {
     if (!md) {
         return null;
     }
-    return html`${unsafeHTML(window.marked(md))}`;
+    return html`${unsafeHTML(markedInstance.parse(md))}`;
 }
 
 function _renderSection(title, data, hasDefaults = false) {
@@ -194,7 +205,9 @@ export class PbComponentView extends LitElement {
         }
 
         const src = Object.keys(this._component.demo)[this._tab - 1];
+        // @ts-ignore
         if (this._target) {
+            // @ts-ignore
             return `${src}?_target=${this._target}&_api=${this._api}`;
         }
         return src;

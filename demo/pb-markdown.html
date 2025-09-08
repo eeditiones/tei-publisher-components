@@ -31,6 +31,28 @@
                     .toolbar {
                         display: flex;
                     }
+                    /* Footnote styles */
+                    [data-footnote-ref]::before {
+                        content: '[';
+                    }
+                    [data-footnote-ref]::after {
+                        content: ']';
+                    }
+                    .footnotes {
+                        margin-top: 2em;
+                        padding-top: 1em;
+                        border-top: 1px solid #ccc;
+                    }
+                    .footnotes h2 {
+                        font-size: 1.2em;
+                        margin-bottom: 0.5em;
+                    }
+                    .footnotes ol {
+                        padding-left: 1.5em;
+                    }
+                    .footnotes li {
+                        margin-bottom: 0.5em;
+                    }
                 </style>
                 <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
                     <div class="toolbar">
@@ -53,6 +75,22 @@
                     return
                         $i * 2
                     ```
+                    </pb-markdown>
+                    <h1 class="example">Footnotes</h1>
+                    <pb-markdown>
+                    # Footnotes Example
+
+                    Here is a simple footnote[^1]. With some additional text after it[^note] and another footnote[^bignote].
+
+                    [^1]: This is the first footnote.
+                    [^note]: This is a footnote with a label.
+                    [^bignote]: Here's one with multiple paragraphs and code.
+
+                        Indent paragraphs to include them in the footnote.
+
+                        `{ my code }`
+
+                        Add as many paragraphs as you like.
                     </pb-markdown>
                     <h1 class="example">Markdown using literal HTML</h1>
                     <pb-markdown>

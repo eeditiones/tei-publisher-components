@@ -1,19 +1,30 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import * as marked from 'marked/lib/marked.js';
+import { Marked, Renderer } from 'marked';
+import markedFootnote from 'marked-footnote';
 import './pb-code-highlight.js';
 
-const renderer = new window.marked.Renderer();
-renderer.code = function code(code, infostring, escaped) {
-    return `<pb-code-highlight language="${infostring}" line-numbers>
-        <template>${code}</template>
-    </pb-code-highlight>`;
-};
+// Create custom renderer
+class CustomRenderer extends Renderer {
+    code(token) {
+        const { text, lang } = token;
+        return `<pb-code-highlight language="${lang || ''}" line-numbers>
+            <template>${text}</template>
+        </pb-code-highlight>`;
+    }
+}
 
-window.marked.setOptions({
-    renderer
-});
+// Create marked instance with footnote extension and custom renderer
+const markedInstance = new Marked()
+    .use(markedFootnote())
+    .setOptions({
+        renderer: new CustomRenderer()
+    });
+
+// Make it globally available for backward compatibility
+// @ts-ignore
+window.marked = markedInstance;
 
 function removeIndent(input) {
     const indents = input.match(/^[^\S]*(?=\S)/gm);
@@ -31,15 +42,15 @@ function removeIndent(input) {
 
 /**
  * A component to render markdown. Content to render may either
- * 
+ *
  * 1. be specified via the `content` property
  * 2. included in the body of the element
  * 3. loaded from an external URL
- * 
+ *
  * Using option 2, if the markdown includes embedded HTML, make sure to wrap
  * the content into an `template` HTML element to prevent the browser from interpreting
  * it.
- * 
+ *
  * Using option 3, you can either specify an absolute or relative URL. Relative URLs
  * will be interpreted relative to the endpoint set by `pb-page`.
  */
@@ -98,18 +109,24 @@ export class PbMarkdown extends pbMixin(LitElement) {
 
     _load(server) {
         const url = this.toAbsoluteURL(this._url, server);
-        fetch(url, { credentials: "same-origin" })
-            .then((response) => response.text())
-            .catch(() => {
-                console.error(
-                    "<pb-markdown> failed to load content from %s",
-                    url.toString()
-                );
-                return Promise.resolve(this.content);
-            })
-            .then((text) => {
-                this.content = text;
-            });
+        this.emitTo('pb-start-update');
+        try {
+            fetch(url, { credentials: "same-origin" })
+                .then((response) => response.text())
+                .catch(() => {
+                    console.error(
+                        "<pb-markdown> failed to load content from %s",
+                        url.toString()
+                    );
+                    return Promise.resolve(this.content);
+                })
+                .then((text) => {
+                    console.log(text);
+                    this.content = text;
+                });
+        } finally {
+            this.emitTo('pb-end-update');
+        }
     }
 
     createRenderRoot() {
@@ -120,7 +137,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
         if (!this.content) {
             return null;
         }
-        return html`<div>${unsafeHTML(window.marked(this.content))}</div>`;
+        return html`<div>${unsafeHTML(markedInstance.parse(this.content))}</div>`;
     }
 
     zoom(direction) {
@@ -136,4 +153,5 @@ export class PbMarkdown extends pbMixin(LitElement) {
         }
     }
 }
+// @ts-ignore
 customElements.define('pb-markdown', PbMarkdown);
