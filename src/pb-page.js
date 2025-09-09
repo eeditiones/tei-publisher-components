@@ -247,6 +247,12 @@ export class PbPage extends pbMixin(LitElement) {
       return;
     }
 
+    // Ensure attribute-provided endpoint is honored even before first update
+    const attrEndpoint = this.getAttribute('endpoint');
+    if (attrEndpoint) {
+      this.endpoint = attrEndpoint;
+    }
+
     registry.configure(
       this.urlPath === 'path',
       this.idHash,
@@ -321,6 +327,8 @@ export class PbPage extends pbMixin(LitElement) {
         language: this._i18nInstance.language,
       });
     }
+
+    
   }
 
   firstUpdated() {
@@ -409,13 +417,18 @@ export class PbPage extends pbMixin(LitElement) {
       }
     });
 
+    // React to language change events by updating i18n and notifying listeners
     this.subscribeTo('pb-i18n-language', ev => {
       const { language } = ev.detail;
-      this._i18nInstance.changeLanguage(language).then(t => {
-        this._updateI18n(t);
-        this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
-      }, []);
+      this._i18nInstance.changeLanguage(language).then(
+        t => {
+          this._updateI18n(t);
+          this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
+        },
+        [],
+      );
     });
+
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
     this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
