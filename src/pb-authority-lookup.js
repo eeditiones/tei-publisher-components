@@ -11,7 +11,7 @@ import './pb-restricted.js';
  *
  * @fires pb-authority-select - Fired when user selects an entry from the list
  * @fires pb-authority-edit-entity - Fired when user clicks the edit button next to an entry
- * @fires pb-authority-new-entity - Fiaured when user clicks the add new entity button
+ * @fires pb-authority-new-entity - Fired when user clicks the add new entity button
  * @fires pb-authority-lookup - When received, starts a lookup using the passed in query string and
  * authority type
  */
