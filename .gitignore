@@ -19,3 +19,6 @@ lib/*
 docs/
 *.iml
 migration_plan/
+test/cypress/screenshots/
+test/cypress/videos/
+test/cypress/downloads/
