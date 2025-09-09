@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { Registry } from './registry.js'
+import { Registry } from './registry.js';
 
 // Todo:
 // - strings <- types
@@ -7,26 +7,28 @@ import { Registry } from './registry.js'
 // - test with other providers, inside custom connector
 // - documentation
 
-async function getServiceManifest (endpoint) {
-	const response = await fetch(endpoint);
-	const data = await response.json();
+async function getServiceManifest(endpoint) {
+  const response = await fetch(endpoint);
+  const data = await response.json();
   return data;
 }
 
 export class ReconciliationService extends Registry {
   constructor(configElem) {
-    super(configElem)
+    super(configElem);
     this.endpoint = configElem.getAttribute('endpoint');
     this.debug = configElem.getAttribute('debug');
-    getServiceManifest(this.endpoint).then((result) => {
+    getServiceManifest(this.endpoint).then(result => {
       this.ORConfig = result;
       if (this.debug) {
         console.log(
-          'OpenReconcile connector for register \'%s\' at endpoint <%s>. Using config: %o',
-          this._register, this.endpoint, this.ORConfig
+          "OpenReconcile connector for register '%s' at endpoint <%s>. Using config: %o",
+          this._register,
+          this.endpoint,
+          this.ORConfig,
         );
       }
-    })
+    });
   }
 
   /**
@@ -37,57 +39,54 @@ export class ReconciliationService extends Registry {
   async query(key) {
     const results = [];
     const paramsObj = {
-                        q1: {
-                          query: key
-                        }
-                      };
+      q1: {
+        query: key,
+      },
+    };
 
-    return new Promise((resolve) => {
-        fetch(this.endpoint, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: "queries=".concat(JSON.stringify(paramsObj))
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            json.q1.result.forEach((item) => {
-              if (this.ORConfig.view) {
-                this.view = this.ORConfig.view.url.replace('{{id}}', item.id);
-              } else {
-                this.view = item.id;
-              }
-              if (item.description) {
-                this.description = item.description;
-              } else if (item.type) {
-                this.description = item.type.map(t => t.name.toString() ).join(', ')
-              } else {
-                this.description = ""
-              }
-              const result = {
-                  register: this._register,
-                  id: (this._prefix ? `${this._prefix}-${item.id}` : item.id),
-                  label: item.name,
-                  link: this.view,
-                  details: this.description,
-                  provider: 'OpenReconcile'
-              };
-              results.push(result);
-            });
-            if (this.debug) {
-              console.log(
-                  'OpenReconcile results: %o',
-                  results
-              );
+    return new Promise(resolve => {
+      fetch(this.endpoint, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'queries='.concat(JSON.stringify(paramsObj)),
+      })
+        .then(response => response.json())
+        .then(json => {
+          json.q1.result.forEach(item => {
+            if (this.ORConfig.view) {
+              this.view = this.ORConfig.view.url.replace('{{id}}', item.id);
+            } else {
+              this.view = item.id;
             }
-            resolve({
-                totalItems: json.q1.result.length,
-                items: results,
-            });
-        })
-    })
+            if (item.description) {
+              this.description = item.description;
+            } else if (item.type) {
+              this.description = item.type.map(t => t.name.toString()).join(', ');
+            } else {
+              this.description = '';
+            }
+            const result = {
+              register: this._register,
+              id: this._prefix ? `${this._prefix}-${item.id}` : item.id,
+              label: item.name,
+              link: this.view,
+              details: this.description,
+              provider: 'OpenReconcile',
+            };
+            results.push(result);
+          });
+          if (this.debug) {
+            console.log('OpenReconcile results: %o', results);
+          }
+          resolve({
+            totalItems: json.q1.result.length,
+            items: results,
+          });
+        });
+    });
   }
 
   /**
@@ -103,7 +102,7 @@ export class ReconciliationService extends Registry {
       return Promise.resolve({});
     }
     if (!this.ORConfig.preview) {
-      container.innerHTML = 'no \'preview\' information in endpoint\'s manifest';
+      container.innerHTML = "no 'preview' information in endpoint's manifest";
       return Promise.resolve();
     }
 
@@ -111,14 +110,14 @@ export class ReconciliationService extends Registry {
       const rawid = this._prefix ? id.substring(this._prefix.length + 1) : id;
       const url = this.ORConfig.preview.url.replace('{{id}}', encodeURIComponent(rawid));
       fetch(url)
-      .then(response => response.text())
-      .then((output) => {
-        container.innerHTML = output;
-        resolve({
-          id: this._prefix ? `${this._prefix}-${rawid}` : rawid
-        });
-      })
-      .catch(() => reject());
+        .then(response => response.text())
+        .then(output => {
+          container.innerHTML = output;
+          resolve({
+            id: this._prefix ? `${this._prefix}-${rawid}` : rawid,
+          });
+        })
+        .catch(() => reject());
     });
   }
 }

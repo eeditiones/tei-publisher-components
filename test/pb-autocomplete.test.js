@@ -5,13 +5,11 @@ import '../src/pb-page.js';
 import '@polymer/paper-item';
 import '@polymer/iron-form';
 
-
 describe('simple autocomplete with static suggestions', () => {
-    afterEach(cleanup);
+  afterEach(cleanup);
 
-    it('submits in form', async () => {
-        const el = (
-            await waitForPage(`
+  it('submits in form', async () => {
+    const el = await waitForPage(`
                 <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
@@ -21,10 +19,9 @@ describe('simple autocomplete with static suggestions', () => {
                         </form>
                     </iron-form>
                 </pb-page>
-            `)
-        );
+            `);
 
-        const form = el.querySelector('iron-form');
-        expect(form.serializeForm()).to.deep.equal({'lang': 'pl'});
-    });
+    const form = el.querySelector('iron-form');
+    expect(form.serializeForm()).to.deep.equal({ lang: 'pl' });
+  });
 });

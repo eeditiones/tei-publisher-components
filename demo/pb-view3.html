@@ -77,7 +77,7 @@
                 <script>
                     window.addEventListener('DOMContentLoaded', () => {
                         pbEvents.subscribe('before-transcription-update', 'transcription', (ev) => {
-                            const root = ev.detail.root;
+                            const {root} = ev.detail;
                             // walk through all .tei-name elements and insert a node before each
                             root.querySelectorAll('.tei-name').forEach((name) => {
                                 // create a span with text 'Name' and orange color

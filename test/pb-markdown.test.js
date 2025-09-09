@@ -5,10 +5,10 @@ import '../src/pb-page.js';
 import '../src/pb-markdown.js';
 
 describe('render markdown', () => {
-    afterEach(cleanup);
+  afterEach(cleanup);
 
-    it('renders markdown passed as content', async () => {
-        const el = await waitForPage(`
+  it('renders markdown passed as content', async () => {
+    const el = await waitForPage(`
                 <pb-page endpoint="${__karma__.config.endpoint}">
                     <pb-markdown>
                     # Embedding Markdown
@@ -22,18 +22,17 @@ describe('render markdown', () => {
                 </pb-page>
             `);
 
-        const markdown = el.querySelector('pb-markdown');
-        const h1 = markdown.querySelector('h1');
-        expect(h1).dom.to.equal('<h1 id="embedding-markdown">Embedding Markdown</h1>');
-        const highlight = markdown.querySelector('pb-code-highlight');
-        expect(highlight).to.exist;
-        const code = highlight.shadowRoot.querySelector('code');
-        expect(code.classList.contains('language-xquery')).to.be.true;
-    });
-    it('renders embedded HTML', async () => {
-        const el = (
-            await waitForPage(`
-                <pb-page endpoint="${ __karma__.config.endpoint }">
+    const markdown = el.querySelector('pb-markdown');
+    const h1 = markdown.querySelector('h1');
+    expect(h1).dom.to.equal('<h1 id="embedding-markdown">Embedding Markdown</h1>');
+    const highlight = markdown.querySelector('pb-code-highlight');
+    expect(highlight).to.exist;
+    const code = highlight.shadowRoot.querySelector('code');
+    expect(code.classList.contains('language-xquery')).to.be.true;
+  });
+  it('renders embedded HTML', async () => {
+    const el = await waitForPage(`
+                <pb-page endpoint="${__karma__.config.endpoint}">
                     <pb-markdown>
                         <template>
                             # Embedding Markdown
@@ -42,11 +41,10 @@ describe('render markdown', () => {
                         </template>
                     </pb-markdown>
                 </pb-page>
-            `)
-        );
+            `);
 
-        const markdown = el.querySelector('pb-markdown');
-        const pre = markdown.querySelector('pre');
-        expect(pre).dom.to.equal('<pre>Include HTML</pre>');
-    })
+    const markdown = el.querySelector('pb-markdown');
+    const pre = markdown.querySelector('pre');
+    expect(pre).dom.to.equal('<pre>Include HTML</pre>');
+  });
 });

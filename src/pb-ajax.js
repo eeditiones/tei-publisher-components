@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import '@polymer/iron-ajax';
 import { pbMixin } from './pb-mixin.js';
-import { get as i18n } from "./pb-i18n.js";
+import { get as i18n } from './pb-i18n.js';
 import './pb-message.js';
 
 /**
@@ -21,165 +21,169 @@ import './pb-message.js';
 
  */
 export class PbAjax extends pbMixin(LitElement) {
-    static get properties() {
-        return {
-            ...super.properties,
-            /**
-             * the URL to send a request to
-             */
-            url: {
-                type: String
-            },
-            /**
-             * Title of link that triggers the request
-             */
-            title: {
-                type: String
-            },
-            /**
-             * HTTP method to use, e.g. 'get', 'post', 'delete' ...
-             */
-            method: {
-                type: String
-            },
-            /**
-             * If set, emits an event with the given name to the channel
-             * this component is subscribed to.
-             */
-            event: {
-                type: String
-            },
-            /**
-             * If set, display a confirmation dialog with the message text given in
-             * this property. The user may cancel the action.
-             */
-            confirm: {
-                type: String
-            },
-            /**
-             * Set to not show the server's response
-             */
-            quiet: {
-                type: Boolean
-            },
-            _message: {
-                type: String
-            }
-        };
+  static get properties() {
+    return {
+      ...super.properties,
+      /**
+       * the URL to send a request to
+       */
+      url: {
+        type: String,
+      },
+      /**
+       * Title of link that triggers the request
+       */
+      title: {
+        type: String,
+      },
+      /**
+       * HTTP method to use, e.g. 'get', 'post', 'delete' ...
+       */
+      method: {
+        type: String,
+      },
+      /**
+       * If set, emits an event with the given name to the channel
+       * this component is subscribed to.
+       */
+      event: {
+        type: String,
+      },
+      /**
+       * If set, display a confirmation dialog with the message text given in
+       * this property. The user may cancel the action.
+       */
+      confirm: {
+        type: String,
+      },
+      /**
+       * Set to not show the server's response
+       */
+      quiet: {
+        type: Boolean,
+      },
+      _message: {
+        type: String,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.method = 'get';
+    this.confirm = null;
+    this.quiet = false;
+    this._running = false;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.subscribeTo('pb-update', this._onUpdate.bind(this));
+  }
+
+  render() {
+    return html`
+      <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
+      <iron-ajax
+        id="loadContent"
+        verbose
+        handle-as="text"
+        method="${this.method}"
+        with-credentials
+        @error="${this._handleError}"
+        @response="${this._handleResponse}"
+      ></iron-ajax>
+      <pb-message id="confirmDialog"></pb-message>
+      <slot name="title" style="display: none"></slot>
+    `;
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+    const slot = this.shadowRoot.querySelector('slot[name=title]');
+    this._dialogTitle = '';
+    slot.assignedNodes().forEach(node => {
+      this._dialogTitle += node.innerHTML;
+    });
+    this.button = this.renderRoot.getElementById('button');
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+      }
+      slot[name='title'] {
+        margin: 0;
+      }
+      pb-message[open] {
+        display: block;
+      }
+      pb-message:not([open]) {
+        display: none;
+      }
+    `;
+  }
+
+  _handleClick(ev) {
+    ev.preventDefault();
+    if (this._running) {
+      return;
+    }
+    this._running = true;
+    if (this.confirm) {
+      const dialog = this.shadowRoot.getElementById('confirmDialog');
+      dialog
+        .confirm(this._dialogTitle, i18n(this.confirm))
+        .then(() => this.trigger())
+        .catch(() => console.log('<pb-ajax> Action cancelled'));
+    } else {
+      this.trigger();
+    }
+  }
+
+  async trigger() {
+    const loader = this.shadowRoot.getElementById('loadContent');
+    loader.url = `${this.getEndpoint()}/${this.url}`;
+    this.emitTo('pb-start-update');
+    await this.shadowRoot.getElementById('loadContent').generateRequest();
+  }
+
+  _handleResponse() {
+    this._running = false;
+    const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
+    this._message = resp;
+    if (!this.quiet) {
+      const dialog = this.shadowRoot.getElementById('confirmDialog');
+      dialog.show(this._dialogTitle, this._message);
     }
 
-    constructor() {
-        super();
-        this.method = 'get';
-        this.confirm = null;
-        this.quiet = false;
-        this._running = false;
+    this.emitTo('pb-end-update');
+
+    if (this.event) {
+      this.emitTo(this.event);
     }
+  }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.subscribeTo('pb-update', this._onUpdate.bind(this));
+  _handleError() {
+    this._running = false;
+    const loader = this.shadowRoot.getElementById('loadContent');
+    const msg = loader.lastError.response;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(msg, 'application/xml');
+    const node = doc.querySelector('message');
+    if (node) {
+      this._message = node.textContent;
+    } else {
+      this._message = msg;
     }
+    const dialog = this.shadowRoot.getElementById('confirmDialog');
+    dialog.show(i18n('dialogs.error'), this._message);
+    this.emitTo('pb-end-update');
+  }
 
-    render() {
-        return html`
-            <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
-            <iron-ajax
-                id="loadContent"
-                verbose
-                handle-as="text"
-                method="${this.method}"
-                with-credentials
-                @error="${this._handleError}"
-                @response="${this._handleResponse}"></iron-ajax>
-            <pb-message id="confirmDialog"></pb-message>
-            <slot name="title" style="display: none"></slot>
-        `;
-    }
-
-    firstUpdated() {
-        super.firstUpdated();
-        const slot = this.shadowRoot.querySelector('slot[name=title]');
-        this._dialogTitle = '';
-        slot.assignedNodes().forEach(node => {this._dialogTitle += node.innerHTML});
-        this.button = this.renderRoot.getElementById('button');
-    }
-
-    static get styles() {
-        return css`
-            :host {
-                display: block;
-            }
-            slot[name="title"] {
-                margin: 0;
-            }
-            pb-message[open] {
-                display: block;
-            }
-            pb-message:not([open]) {
-                display: none;
-            }
-        `;
-    }
-
-    _handleClick(ev) {
-        ev.preventDefault();
-        if (this._running) {
-            return;
-        }
-        this._running = true;
-        if (this.confirm) {
-            const dialog = this.shadowRoot.getElementById('confirmDialog');
-            dialog.confirm(this._dialogTitle, i18n(this.confirm))
-                .then(() => this.trigger())
-                .catch(() => console.log('<pb-ajax> Action cancelled'));
-        } else {
-            this.trigger();
-        }
-    }
-
-    async trigger() {
-        const loader = this.shadowRoot.getElementById('loadContent');
-        loader.url = `${this.getEndpoint()}/${this.url}`;
-        this.emitTo('pb-start-update');
-        await this.shadowRoot.getElementById('loadContent').generateRequest();
-    }
-
-    _handleResponse() {
-        this._running = false;
-        const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
-        this._message = resp;
-        if (!this.quiet) {
-            const dialog = this.shadowRoot.getElementById('confirmDialog');
-            dialog.show(this._dialogTitle, this._message);
-        }
-
-        this.emitTo('pb-end-update');
-
-        if (this.event) {
-            this.emitTo(this.event);
-        }
-    }
-
-    _handleError() {
-        this._running = false;
-        const loader = this.shadowRoot.getElementById('loadContent');
-        const msg = loader.lastError.response;
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(msg, "application/xml");
-        const node = doc.querySelector('message');
-        if (node) {
-            this._message = node.textContent;
-        } else {
-            this._message = msg;
-        }
-        const dialog = this.shadowRoot.getElementById('confirmDialog');
-        dialog.show(i18n('dialogs.error'), this._message);
-        this.emitTo('pb-end-update');
-    }
-
-    _onUpdate(ev) {
-        this.shadowRoot.getElementById('loadContent').params = ev.detail.params;
-    }
+  _onUpdate(ev) {
+    this.shadowRoot.getElementById('loadContent').params = ev.detail.params;
+  }
 }
 customElements.define('pb-ajax', PbAjax);

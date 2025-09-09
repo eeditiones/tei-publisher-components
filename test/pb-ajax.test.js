@@ -8,26 +8,26 @@ import '../src/pb-ajax.js';
 import '../src/pb-login.js';
 
 describe('recompile ODD', () => {
-    afterEach(cleanup);
+  afterEach(cleanup);
 
-    it('recompiles and shows message', async function() {
-        this.timeout(20000);
+  it('recompiles and shows message', async function () {
+    this.timeout(20000);
 
-        const el = (await waitForPage(`
-            <pb-page endpoint="${ __karma__.config.endpoint }">
+    const el = await waitForPage(`
+            <pb-page endpoint="${__karma__.config.endpoint}">
                 <pb-ajax url="api/version">
                     <paper-button raised>Version</paper-button><span slot="title">Version</span>
                 </pb-ajax>
             </pb-page>
-        `));
+        `);
 
-        const ajax = el.querySelector('pb-ajax');
+    const ajax = el.querySelector('pb-ajax');
 
-        ajax.trigger();
+    ajax.trigger();
 
-        await oneEvent(document, 'pb-end-update');
+    await oneEvent(document, 'pb-end-update');
 
-        const message = ajax.shadowRoot.querySelector('pb-message');
-        expect(message.message).to.contain('"eXist"');
-    });
+    const message = ajax.shadowRoot.querySelector('pb-message');
+    expect(message.message).to.contain('"eXist"');
+  });
 });

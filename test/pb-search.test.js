@@ -29,22 +29,16 @@ describe.skip('serialize URL parameters', () => {
     `);
 
     const inputJSON = {
-      "autocomplete-custom-template": undefined,
-      "query": "test",
-      "start": 1,
-      "tei-target": [
-        "tei-text",
-        "tei-head"
-      ]
+      'autocomplete-custom-template': undefined,
+      query: 'test',
+      start: 1,
+      'tei-target': ['tei-text', 'tei-head'],
     };
 
     const resultJSON = {
-      "query": "test",
-      "start": "1",
-      "tei-target": [
-        "tei-text",
-        "tei-head"
-      ]
+      query: 'test',
+      start: '1',
+      'tei-target': ['tei-text', 'tei-head'],
     };
 
     // console.log("json ", inputJSON);
@@ -54,13 +48,13 @@ describe.skip('serialize URL parameters', () => {
     const queryString = window.TeiPublisher.url.search;
     // console.log("querystring:",queryString);
 
-    expect(queryString).to.equal("?query=test&start=1&tei-target=tei-text&tei-target=tei-head");
-    expect(queryString).to.not.equal("?query=test&start=1&tei-target=tei-text%2Ctei-head");
+    expect(queryString).to.equal('?query=test&start=1&tei-target=tei-text&tei-target=tei-head');
+    expect(queryString).to.not.equal('?query=test&start=1&tei-target=tei-text%2Ctei-head');
 
     const parameters = searchForm.getParameters();
     expect(JSON.stringify(parameters)).to.equal(JSON.stringify(resultJSON));
 
-    const teiTargetParam = searchForm.getParameter("tei-target");
+    const teiTargetParam = searchForm.getParameter('tei-target');
     expect(JSON.stringify(teiTargetParam)).to.equal('["tei-text","tei-head"]');
   });
 });

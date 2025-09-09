@@ -1,9 +1,9 @@
 import { cmpVersion } from './utils.js';
 
 if (!window.TeiPublisher) {
-    window.TeiPublisher = {};
+  window.TeiPublisher = {};
 
-    TeiPublisher.url = new URL(window.location.href);
+  TeiPublisher.url = new URL(window.location.href);
 }
 
 /**
@@ -21,7 +21,7 @@ const initEventsFired = new Map();
 export const defaultChannel = '__default__';
 
 export function clearPageEvents() {
-    initEventsFired.clear();
+  initEventsFired.clear();
 }
 
 /**
@@ -33,16 +33,20 @@ export function clearPageEvents() {
  * @param {Function} callback
  */
 export function waitOnce(name, callback) {
-    if (initEventsFired.has(name)) {
-        callback(initEventsFired.get(name));
-    } else {
-        document.addEventListener(name, (ev) => {
-            initEventsFired.set(name, ev.detail);
-            callback(ev.detail);
-        }, {
-            once: true
-        });
-    }
+  if (initEventsFired.has(name)) {
+    callback(initEventsFired.get(name));
+  } else {
+    document.addEventListener(
+      name,
+      ev => {
+        initEventsFired.set(name, ev.detail);
+        callback(ev.detail);
+      },
+      {
+        once: true,
+      },
+    );
+  }
 }
 
 /**
@@ -52,18 +56,18 @@ export function waitOnce(name, callback) {
  * @returns {String[]} an array of channel names
  */
 export function getEmittedChannels(elem) {
-    const emitConfig = elem.getAttribute('emit-config');
-    if (emitConfig) {
-        const json = JSON.parse(emitConfig);
-        return Object.keys(json);
-    }
+  const emitConfig = elem.getAttribute('emit-config');
+  if (emitConfig) {
+    const json = JSON.parse(emitConfig);
+    return Object.keys(json);
+  }
 
-    const emitAttr = elem.getAttribute('emit');
-    if (emitAttr) {
-        return [emitAttr]
-    }
+  const emitAttr = elem.getAttribute('emit');
+  if (emitAttr) {
+    return [emitAttr];
+  }
 
-    return [defaultChannel];
+  return [defaultChannel];
 }
 
 /**
@@ -73,16 +77,16 @@ export function getEmittedChannels(elem) {
  * @returns {String[]} an array of channel names
  */
 export function getSubscribedChannels(elem) {
-    const subscribeConfig = elem.getAttribute('subscribe-config');
-    if (subscribeConfig) {
-        const json = JSON.parse(subscribeConfig);
-        return Object.keys(json);
-    }
-    const subscribeAttr = elem.getAttribute('subscribe');
-    if (subscribeAttr) {
-        return [subscribeAttr];
-    }
-    return [defaultChannel];
+  const subscribeConfig = elem.getAttribute('subscribe-config');
+  if (subscribeConfig) {
+    const json = JSON.parse(subscribeConfig);
+    return Object.keys(json);
+  }
+  const subscribeAttr = elem.getAttribute('subscribe');
+  if (subscribeAttr) {
+    return [subscribeAttr];
+  }
+  return [defaultChannel];
 }
 
 /**
@@ -100,93 +104,93 @@ export function getSubscribedChannels(elem) {
  * @polymer
  * @mixinFunction
  */
-export const pbMixin = (superclass) => class PbMixin extends superclass {
-
+export const pbMixin = superclass =>
+  class PbMixin extends superclass {
     static get properties() {
-        return {
-            /**
-             * The name of the channel to subscribe to. Only events on a channel corresponding
-             * to this property are listened to.
-             */
-            subscribe: {
-                type: String
-            },
-            /**
-             * Configuration object to define a channel/event mapping. Every property
-             * in the object is interpreted as the name of a channel and its value should
-             * be an array of event names to listen to.
-             */
-            subscribeConfig: {
-                type: Object,
-                attribute: 'subscribe-config'
-            },
-            /**
-             * The name of the channel to send events to.
-             */
-            emit: {
-                type: String
-            },
-            /**
-             * Configuration object to define a channel/event mapping. Every property
-             * in the object is interpreted as the name of a channel and its value should
-             * be an array of event names to be dispatched.
-             */
-            emitConfig: {
-                type: Object,
-                attribute: 'emit-config'
-            },
-            /**
-             * A selector pointing to other components this component depends on.
-             * When method `wait` is called, it will wait until all referenced
-             * components signal with a `pb-ready` event that they are ready and listening
-             * to events.
-             */
-            waitFor: {
-                type: String,
-                attribute: 'wait-for'
-            },
-            _isReady: {
-                type: Boolean
-            },
-            /**
-             * Common property to disable the functionality associated with a component.
-             * `pb-highlight` and `pb-popover` react to this.
-             */
-            disabled: {
-                type: Boolean,
-                reflect: true
-            },
-            _endpoint: {
-                type: String
-            },
-            _apiVersion: {
-                type: String
-            }
-        }
+      return {
+        /**
+         * The name of the channel to subscribe to. Only events on a channel corresponding
+         * to this property are listened to.
+         */
+        subscribe: {
+          type: String,
+        },
+        /**
+         * Configuration object to define a channel/event mapping. Every property
+         * in the object is interpreted as the name of a channel and its value should
+         * be an array of event names to listen to.
+         */
+        subscribeConfig: {
+          type: Object,
+          attribute: 'subscribe-config',
+        },
+        /**
+         * The name of the channel to send events to.
+         */
+        emit: {
+          type: String,
+        },
+        /**
+         * Configuration object to define a channel/event mapping. Every property
+         * in the object is interpreted as the name of a channel and its value should
+         * be an array of event names to be dispatched.
+         */
+        emitConfig: {
+          type: Object,
+          attribute: 'emit-config',
+        },
+        /**
+         * A selector pointing to other components this component depends on.
+         * When method `wait` is called, it will wait until all referenced
+         * components signal with a `pb-ready` event that they are ready and listening
+         * to events.
+         */
+        waitFor: {
+          type: String,
+          attribute: 'wait-for',
+        },
+        _isReady: {
+          type: Boolean,
+        },
+        /**
+         * Common property to disable the functionality associated with a component.
+         * `pb-highlight` and `pb-popover` react to this.
+         */
+        disabled: {
+          type: Boolean,
+          reflect: true,
+        },
+        _endpoint: {
+          type: String,
+        },
+        _apiVersion: {
+          type: String,
+        },
+      };
     }
 
     constructor() {
-        super();
-        this._isReady = false;
-        this.disabled = false;
-        this._subscriptions = new Map();
+      super();
+      this._isReady = false;
+      this.disabled = false;
+      this._subscriptions = new Map();
     }
 
     connectedCallback() {
-        super.connectedCallback();
-        waitOnce('pb-page-ready', (options) => {
-            this._endpoint = options.endpoint;
-            this._apiVersion = options.apiVersion;
-        });
+      super.connectedCallback();
+      waitOnce('pb-page-ready', options => {
+        this._endpoint = options.endpoint;
+        this._apiVersion = options.apiVersion;
+      });
     }
 
     disconnectedCallback() {
-        super.disconnectedCallback();
-        this._subscriptions.forEach((handlers, type) => {
-            handlers.forEach((handler) => {
-                document.removeEventListener(type, handler);
-            });
+      super.disconnectedCallback();
+      this._subscriptions.forEach((handlers, type) => {
+        handlers.forEach(handler => {
+          document.removeEventListener(type, handler);
         });
+      });
     }
 
     /**
@@ -200,9 +204,9 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {Boolean} state the state to set the setting to
      */
     command(command, state) {
-        if (command === 'disable') {
-            this.disabled = state;
-        }
+      if (command === 'disable') {
+        this.disabled = state;
+      }
     }
 
     /**
@@ -213,49 +217,49 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {Function} callback function to be called when all components are ready
      */
     wait(callback) {
-        const _checkAndWait = () => {
-            const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
-            const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
-            const targetCount = targets.length;
-            if (targetCount === 0) {
-                // selector did not return any targets
-                callback();
-                return;
+      const _checkAndWait = () => {
+        const targetNodes = Array.from(document.querySelectorAll(this.waitFor));
+        const targets = targetNodes.filter(target => this.emitsOnSameChannel(target));
+        const targetCount = targets.length;
+        if (targetCount === 0) {
+          // selector did not return any targets
+          callback();
+          return;
+        }
+        let count = targetCount;
+        targets.forEach(target => {
+          if (target._isReady) {
+            count -= 1;
+            if (count === 0) {
+              callback();
             }
-            let count = targetCount;
-            targets.forEach((target) => {
-                if (target._isReady) {
-                    count -= 1;
-                    if (count === 0) {
-                        callback();
-                    }
-                    return;
-                }
-                const handler = target.addEventListener('pb-ready', (ev) => {
-                    if (ev.detail.source === this) {
-                        // same source: ignore
-                        return;
-                    }
-                    count -= 1;
-                    if (count === 0) {
-                        target.removeEventListener('pb-ready', handler);
-                        callback();
-                    }
-                });
-            });
-        }
-
-        if (!this.waitFor) {
-            callback();
             return;
-        }
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                _checkAndWait();
-            });
-        } else {
-            _checkAndWait();
-        }
+          }
+          const handler = target.addEventListener('pb-ready', ev => {
+            if (ev.detail.source === this) {
+              // same source: ignore
+              return;
+            }
+            count -= 1;
+            if (count === 0) {
+              target.removeEventListener('pb-ready', handler);
+              callback();
+            }
+          });
+        });
+      };
+
+      if (!this.waitFor) {
+        callback();
+        return;
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          _checkAndWait();
+        });
+      } else {
+        _checkAndWait();
+      }
     }
 
     /**
@@ -266,29 +270,29 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param callback function to be called when `pb-ready` is received
      */
     waitForChannel(callback) {
-        // check first if a `pb-ready` event has already been received on one of the channels
-        if (this.subscribeConfig) {
-            for (const key in this.subscribeConfig) {
-                this.subscribeConfig[key].forEach(t => {
-                    if (t === 'pb-ready' && readyEventsFired.has(key)) {
-                        return callback();
-                    }
-                });
+      // check first if a `pb-ready` event has already been received on one of the channels
+      if (this.subscribeConfig) {
+        for (const key in this.subscribeConfig) {
+          this.subscribeConfig[key].forEach(t => {
+            if (t === 'pb-ready' && readyEventsFired.has(key)) {
+              return callback();
             }
-        } else if (
-            (this.subscribe && readyEventsFired.has(this.subscribe)) ||
-            (!this.subscribe && readyEventsFired.has('__default__'))
-        ) {
-            return callback();
+          });
         }
+      } else if (
+        (this.subscribe && readyEventsFired.has(this.subscribe)) ||
+        (!this.subscribe && readyEventsFired.has('__default__'))
+      ) {
+        return callback();
+      }
 
-        const listeners = this.subscribeTo('pb-ready', (ev) => {
-            if (ev.detail._source == this) {
-                return;
-            }
-            listeners.forEach(listener => document.removeEventListener('pb-ready', listener));
-            callback();
-        });
+      const listeners = this.subscribeTo('pb-ready', ev => {
+        if (ev.detail._source == this) {
+          return;
+        }
+        listeners.forEach(listener => document.removeEventListener('pb-ready', listener));
+        callback();
+      });
     }
 
     /**
@@ -301,7 +305,7 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @deprecated Use exported `waitOnce` function
      */
     static waitOnce(name, callback) {
-        waitOnce(name, callback);
+      waitOnce(name, callback);
     }
 
     /**
@@ -309,10 +313,10 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * Emits an event to all channels the component is registered with.
      */
     signalReady(name = 'pb-ready', data) {
-        this._isReady = true;
-        initEventsFired.set(name, data);
-        this.dispatchEvent(new CustomEvent(name, { detail: { data, source: this } }));
-        this.emitTo(name, data);
+      this._isReady = true;
+      initEventsFired.set(name, data);
+      this.dispatchEvent(new CustomEvent(name, { detail: { data, source: this } }));
+      this.emitTo(name, data);
     }
 
     /**
@@ -322,13 +326,13 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @param {Element} other the other element to compare with
      */
     emitsOnSameChannel(other) {
-        const myChannels = getSubscribedChannels(this);
-        const otherChannels = getEmittedChannels(other);
-        if (myChannels.length === 0 && otherChannels.length === 0) {
-            // both emit to the default channel
-            return true;
-        }
-        return myChannels.some((channel) => otherChannels.includes(channel));
+      const myChannels = getSubscribedChannels(this);
+      const otherChannels = getEmittedChannels(other);
+      if (myChannels.length === 0 && otherChannels.length === 0) {
+        // both emit to the default channel
+        return true;
+      }
+      return myChannels.some(channel => otherChannels.includes(channel));
     }
 
     /**
@@ -342,25 +346,25 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the emit property. Pass empty array to target the default channel.
      */
     subscribeTo(type, listener, channels) {
-        let chs;
-        if (channels) {
-            chs = channels.length === 0 ? [defaultChannel] : channels;
-        } else {
-            chs = getSubscribedChannels(this);
-        }
-        const handlers = chs.map(key => {
-            const handle = ev => {
-                if (!ev.detail || !ev.detail.key || ev.detail.key !== key) {
-                    return;
-                }
-                listener(ev);
-            };
-            document.addEventListener(type, handle);
-            return handle;
-        });
-        // add new handlers to list of active subscriptions
-        this._subscriptions.set(type, handlers);
-        return handlers;
+      let chs;
+      if (channels) {
+        chs = channels.length === 0 ? [defaultChannel] : channels;
+      } else {
+        chs = getSubscribedChannels(this);
+      }
+      const handlers = chs.map(key => {
+        const handle = ev => {
+          if (!ev.detail || !ev.detail.key || ev.detail.key !== key) {
+            return;
+          }
+          listener(ev);
+        };
+        document.addEventListener(type, handle);
+        return handle;
+      });
+      // add new handlers to list of active subscriptions
+      this._subscriptions.set(type, handlers);
+      return handlers;
     }
 
     /**
@@ -373,28 +377,28 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      *      the 'emit' property setting. Pass empty array to target the default channel.
      */
     emitTo(type, options, channels) {
-        let chs;
-        if (channels) {
-            chs = channels.length === 0 ? [defaultChannel] : channels;
-        } else {
-            chs = getEmittedChannels(this);
-        }
-        chs.forEach(ch => this._emit(ch, type, options));
+      let chs;
+      if (channels) {
+        chs = channels.length === 0 ? [defaultChannel] : channels;
+      } else {
+        chs = getEmittedChannels(this);
+      }
+      chs.forEach(ch => this._emit(ch, type, options));
     }
 
     _emit(key, type, options) {
-        if (type === 'pb-ready') {
-            readyEventsFired.add(key);
-        }
+      if (type === 'pb-ready') {
+        readyEventsFired.add(key);
+      }
 
-        // eslint-disable-next-line prefer-object-spread
-        const detail = Object.assign({ key, _source: this }, options);
-        const ev = new CustomEvent(type, {
-            detail,
-            composed: true,
-            bubbles: true
-        });
-        this.dispatchEvent(ev);
+      // eslint-disable-next-line prefer-object-spread
+      const detail = Object.assign({ key, _source: this }, options);
+      const ev = new CustomEvent(type, {
+        detail,
+        composed: true,
+        bubbles: true,
+      });
+      this.dispatchEvent(ev);
     }
 
     /**
@@ -403,67 +407,68 @@ export const pbMixin = (superclass) => class PbMixin extends superclass {
      * @returns the document component or undefined if not set/found
      */
     getDocument() {
-        if (this.src) {
-            const doc = document.getElementById(this.src);
-            if (doc) {
-                return doc;
-            }
+      if (this.src) {
+        const doc = document.getElementById(this.src);
+        if (doc) {
+          return doc;
         }
-        return null;
+      }
+      return null;
     }
 
     getParameter(name, fallback) {
-        const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
-        if (params && params.length == 1) {
-            return params[0];
-        } else if (params && params.length > 1) {
-            return params
-        }
-        return fallback;
+      const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
+      if (params && params.length == 1) {
+        return params[0];
+      }
+      if (params && params.length > 1) {
+        return params;
+      }
+      return fallback;
     }
 
     getParameters() {
-        const params = {};
-        for (let key of TeiPublisher.url.searchParams.keys()) {
-            params[key] = this.getParameter(key);
-        }
-        return params;
+      const params = {};
+      for (const key of TeiPublisher.url.searchParams.keys()) {
+        params[key] = this.getParameter(key);
+      }
+      return params;
     }
 
     getUrl() {
-        return TeiPublisher.url;
+      return TeiPublisher.url;
     }
 
     getEndpoint() {
-        return this._endpoint;
+      return this._endpoint;
     }
 
     toAbsoluteURL(relative, server) {
-        if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
-            return relative;
-        }
-        const endpoint = server === '' ? '' : (server || this.getEndpoint());
-        let base;
-        if (endpoint === '.') {
-            base = new URL(window.location.href);
-            // loaded in iframe
-        } else if (window.location.protocol === 'about:') {
-            base = document.baseURI
-        } else {
-            base = new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);
-        }
-        return new URL(relative, base).href;
+      if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
+        return relative;
+      }
+      const endpoint = server === '' ? '' : server || this.getEndpoint();
+      let base;
+      if (endpoint === '.') {
+        base = new URL(window.location.href);
+        // loaded in iframe
+      } else if (window.location.protocol === 'about:') {
+        base = document.baseURI;
+      } else {
+        base = new URL(`${endpoint}/`, `${window.location.protocol}//${window.location.host}`);
+      }
+      return new URL(relative, base).href;
     }
 
     minApiVersion(requiredVersion) {
-        return cmpVersion(this._apiVersion, requiredVersion) >= 0;
+      return cmpVersion(this._apiVersion, requiredVersion) >= 0;
     }
 
     lessThanApiVersion(requiredVersion) {
-        return cmpVersion(this._apiVersion, requiredVersion) < 0;
+      return cmpVersion(this._apiVersion, requiredVersion) < 0;
     }
 
     compareApiVersion(requiredVersion) {
-        return cmpVersion(this._apiVersion, requiredVersion);
+      return cmpVersion(this._apiVersion, requiredVersion);
     }
-}
+  };

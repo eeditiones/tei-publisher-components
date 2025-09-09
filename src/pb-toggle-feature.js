@@ -1,20 +1,20 @@
 import { LitElement, html } from 'lit-element';
 import '@polymer/paper-checkbox';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { registry } from "./urls.js";
-import {themableMixin} from "./theming.js";
+import { registry } from './urls.js';
+import { themableMixin } from './theming.js';
 
 /**
  * @param {{ selector: any; command: string; state: boolean; }} newConfig
  * @param {any[]} configs
  */
 export function addSelector(newConfig, configs) {
-    const idx = configs.findIndex((item) => item.selector === newConfig.selector);
-    if (idx > -1) {
-        configs[idx] = newConfig;
-    } else {
-        configs.push(newConfig);
-    }
+  const idx = configs.findIndex(item => item.selector === newConfig.selector);
+  if (idx > -1) {
+    configs[idx] = newConfig;
+  } else {
+    configs.push(newConfig);
+  }
 }
 
 /**
@@ -90,193 +90,200 @@ export function addSelector(newConfig, configs) {
  * @fires pb-update - When received, sets the features passed from the event
  */
 export class PbToggleFeature extends themableMixin(pbMixin(LitElement)) {
+  static get properties() {
+    return {
+      ...super.properties,
+      /**
+       * The name of the feature (required). This will correspond to the name of the custom parameter
+       * passed to the ODD.
+       */
+      name: {
+        type: String,
+      },
+      /**
+       * (optional) CSS selector: selects the elements to toggle client side (sets or unsets a
+       * CSS class `.toggled`). Setting this property will not trigger a reload as everything is
+       * handled by javascript.
+       */
+      selector: {
+        type: String,
+      },
+      /**
+       * In combination with a selector specifies the action to be taken, currently one of
+       * `toggle` (default) or `disable`.
+       */
+      action: {
+        type: String,
+      },
+      /**
+       * Value to set the parameter to when the feature is enabled.
+       */
+      on: {
+        type: String,
+      },
+      /**
+       * Value to set the parameter to when the feature is disabled.
+       */
+      off: {
+        type: String,
+      },
+      /**
+       * The default setting: either 'on' or 'off'
+       */
+      default: {
+        type: String,
+      },
+      /**
+       * Additional properties to set on the pb-view if toggle is in 'on' state.
+       * Possible properties are 'view', 'odd' and 'columnSeparator'.
+       */
+      propertiesOn: {
+        type: Object,
+        attribute: 'properties-on',
+      },
+      /**
+       * Additional properties to set on the pb-view if toggle is in 'off' state.
+       * Possible properties are 'view', 'odd' and 'columnSeparator'.
+       */
+      propertiesOff: {
+        type: Object,
+        attribute: 'properties-off',
+      },
+      checked: {
+        type: Boolean,
+      },
+      /**
+       * If set to false (the default), `pb-toggle-feature` will pass its properties to the
+       * connected view before this loads content for the first time. If true,
+       * `pb-toggle-feature` will initialize its state depending on the setting of the view.
+       * This only makes sense for the special properties 'view' and 'odd' though.
+       */
+      initFromView: {
+        type: Boolean,
+        attribute: 'init-from-view',
+      },
+      /**
+       * If set, toggle the state of elements which reside
+       * in the surrounding HTML context below `pb-page`
+       * (means: elements which are not inside a `pb-view` or `pb-load`).
+       */
+      global: {
+        type: Boolean,
+      },
+    };
+  }
 
-    static get properties() {
-        return {
-            ...super.properties,
-            /**
-             * The name of the feature (required). This will correspond to the name of the custom parameter
-             * passed to the ODD.
-             */
-            name: {
-                type: String
-            },
-            /**
-             * (optional) CSS selector: selects the elements to toggle client side (sets or unsets a
-             * CSS class `.toggled`). Setting this property will not trigger a reload as everything is
-             * handled by javascript.
-             */
-            selector: {
-                type: String
-            },
-            /**
-             * In combination with a selector specifies the action to be taken, currently one of
-             * `toggle` (default) or `disable`.
-             */
-            action: {
-                type: String
-            },
-            /**
-             * Value to set the parameter to when the feature is enabled.
-             */
-            on: {
-                type: String
-            },
-            /**
-             * Value to set the parameter to when the feature is disabled.
-             */
-            off: {
-                type: String
-            },
-            /**
-             * The default setting: either 'on' or 'off'
-             */
-            default: {
-                type: String
-            },
-            /**
-             * Additional properties to set on the pb-view if toggle is in 'on' state.
-             * Possible properties are 'view', 'odd' and 'columnSeparator'.
-             */
-            propertiesOn: {
-                type: Object,
-                attribute: 'properties-on'
-            },
-            /**
-             * Additional properties to set on the pb-view if toggle is in 'off' state.
-             * Possible properties are 'view', 'odd' and 'columnSeparator'.
-             */
-            propertiesOff: {
-                type: Object,
-                attribute: 'properties-off'
-            },
-            checked: {
-                type: Boolean
-            },
-            /**
-             * If set to false (the default), `pb-toggle-feature` will pass its properties to the
-             * connected view before this loads content for the first time. If true,
-             * `pb-toggle-feature` will initialize its state depending on the setting of the view.
-             * This only makes sense for the special properties 'view' and 'odd' though.
-             */
-            initFromView: {
-                type: Boolean,
-                attribute: 'init-from-view'
-            },
-            /**
-             * If set, toggle the state of elements which reside
-             * in the surrounding HTML context below `pb-page`
-             * (means: elements which are not inside a `pb-view` or `pb-load`).
-             */
-            global: {
-                type: Boolean
-            }
-        };
-    }
+  constructor() {
+    super();
+    this.default = 'on';
+    this.on = 'on';
+    this.off = 'off';
+    this.action = 'toggle';
+    this.propertiesOn = {};
+    this.propertiesOff = {};
+    this.initFromView = false;
+    this.global = false;
+  }
 
-    constructor() {
-        super();
-        this.default = 'on';
-        this.on = 'on';
-        this.off = 'off';
-        this.action = 'toggle';
-        this.propertiesOn = {};
-        this.propertiesOff = {};
-        this.initFromView = false;
-        this.global = false;
-    }
-
-    render() {
-        return html`
+  render() {
+    return html`
             <input type="checkbox" id="checkbox" @change="${this._changed}" .checked="${this.checked}" .disabled="${this.disabled}"></input>
             <label for="checkbox"><slot></slot></label>
         `;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    registry.subscribe(this, state => {
+      const param = state[this.name];
+      this._setChecked(param);
+    });
+
+    const param = registry.state[this.name];
+    this._setChecked(param);
+
+    const newState = {};
+    newState[this.name] = this.checked ? this.on : this.off;
+    registry.replace(this, newState);
+    this._saveState();
+
+    this.signalReady();
+
+    waitOnce('pb-page-ready', () => {
+      if (this.global) {
+        this.dispatchEvent(
+          new CustomEvent('pb-global-toggle', {
+            detail: {
+              selector: this.selector,
+              command: this.action,
+              state: this.checked,
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      } else if (this.selector) {
+        this.emitTo('pb-toggle', { refresh: false });
+      }
+    });
+  }
+
+  _setChecked(param) {
+    if (typeof param !== 'undefined') {
+      this.checked = param === this.on;
+    } else {
+      this.checked = this.default === this.on;
     }
+  }
 
-    connectedCallback() {
-        super.connectedCallback();
-
-        registry.subscribe(this, (state) => {
-            const param = state[this.name];
-            this._setChecked(param);
-        });
-
-        const param = registry.state[this.name];
-        this._setChecked(param);
-
-        const newState = {};
-        newState[this.name] = this.checked ? this.on : this.off;
-        registry.replace(this, newState);
-        this._saveState();
-
-        this.signalReady();
-
-        waitOnce('pb-page-ready', () => {
-            if (this.global) {
-                this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: {
-                        selector: this.selector,
-                        command: this.action,
-                        state: this.checked
-                    }, bubbles: true, composed: true }));
-            } else if (this.selector) {
-                this.emitTo('pb-toggle', {refresh: false});
-            }
-        });
+  attributeChangedCallback(name, oldVal, newVal) {
+    super.attributeChangedCallback(name, oldVal, newVal);
+    switch (name) {
+      case this.on:
+        this.propertiesOn[this.name] = newVal;
+        break;
+      case this.off:
+        this.propertiesOff[this.name] = newVal;
+        break;
+      default:
+        break;
     }
+  }
 
-    _setChecked(param) {
-        if (typeof param !== 'undefined') {
-            this.checked = param === this.on;
-        } else {
-            this.checked = this.default === this.on;
-        }
+  _changed() {
+    this.checked = this.shadowRoot.getElementById('checkbox').checked;
+
+    this._saveState();
+    if (!this.global) {
+      this.emitTo('pb-toggle', { refresh: !this.selector });
+    } else {
+      const state = {};
+      state[this.name] = this.checked ? this.on : this.off;
+      registry.commit(this, state);
     }
+  }
 
-    attributeChangedCallback(name, oldVal, newVal) {
-        super.attributeChangedCallback(name, oldVal, newVal);
-        switch (name) {
-            case this.on:
-                this.propertiesOn[this.name] = newVal;
-                break;
-            case this.off:
-                this.propertiesOff[this.name] = newVal;
-                break;
-            default:
-                break;
-        }
+  _saveState() {
+    const state = registry.getState(this);
+    state[this.name] = this.checked ? this.on : this.off;
+    Object.assign(state, this.checked ? this.propertiesOn : this.propertiesOff);
+    if (this.selector) {
+      const config = {
+        selector: this.selector,
+        command: this.action,
+        state: this.checked,
+      };
+      if (this.global) {
+        this.dispatchEvent(
+          new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }),
+        );
+      } else {
+        state.selectors = state.selectors || [];
+        addSelector(config, state.selectors);
+      }
     }
-
-    _changed() {
-        this.checked = this.shadowRoot.getElementById('checkbox').checked;
-
-        this._saveState();
-        if (!this.global) {
-            this.emitTo('pb-toggle', {refresh: !this.selector});
-        } else {
-            const state = {};
-            state[this.name] = this.checked ? this.on : this.off;
-            registry.commit(this, state);
-        }
-    }
-
-    _saveState() {
-        const state = registry.getState(this);
-        state[this.name] = this.checked ? this.on : this.off;
-        Object.assign(state, this.checked ? this.propertiesOn : this.propertiesOff);
-        if (this.selector) {
-            const config = {
-                selector: this.selector,
-                command: this.action,
-                state: this.checked
-            };
-            if (this.global) {
-                this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }));
-            } else {
-                state.selectors = state.selectors || [];
-                addSelector(config, state.selectors);
-            }
-        }
-    }
+  }
 }
 
 customElements.define('pb-toggle-feature', PbToggleFeature);

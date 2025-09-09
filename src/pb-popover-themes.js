@@ -1,10 +1,12 @@
 import { css } from 'lit-element';
 
 export function camelize(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) => {
-        if (+match === 0) return "";
-        return index === 0 ? match.toLowerCase() : match.toUpperCase();
-    }).replace('-', '');
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) => {
+      if (+match === 0) return '';
+      return index === 0 ? match.toLowerCase() : match.toUpperCase();
+    })
+    .replace('-', '');
 }
 
 export const base = `

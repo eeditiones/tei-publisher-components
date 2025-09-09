@@ -6,10 +6,10 @@ import '@polymer/paper-item';
 import '@polymer/iron-form';
 
 describe('simple select', () => {
-    afterEach(cleanup);
+  afterEach(cleanup);
 
-    it('submits in form', async () => {
-        const el = await waitForPage(`
+  it('submits in form', async () => {
+    const el = await waitForPage(`
             <pb-page endpoint="." api-version="1.0.0">
                 <iron-form id="form">
                     <form action="">
@@ -24,19 +24,19 @@ describe('simple select', () => {
                 </iron-form>
             </pb-page>
         `);
-        
-        const form = el.querySelector('iron-form');
-        const select = el.querySelector('pb-select');
 
-        expect(form.serializeForm()).to.deep.equal({'key': '1'});
-        expect(select.value).to.equal('1');
+    const form = el.querySelector('iron-form');
+    const select = el.querySelector('pb-select');
 
-        select.value = "2";
-        await select.updateComplete;
-        expect(form.serializeForm()).to.deep.equal({'key': '2'});
-    });
-    it('supports multiple selection', async () => {
-        const el = await waitForPage(`
+    expect(form.serializeForm()).to.deep.equal({ key: '1' });
+    expect(select.value).to.equal('1');
+
+    select.value = '2';
+    await select.updateComplete;
+    expect(form.serializeForm()).to.deep.equal({ key: '2' });
+  });
+  it('supports multiple selection', async () => {
+    const el = await waitForPage(`
                 <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
@@ -52,19 +52,19 @@ describe('simple select', () => {
                 </pb-page>
             `);
 
-        const form = el.querySelector('iron-form');
-        const select = el.querySelector('pb-select');
-        expect(form.serializeForm()).to.deep.equal({'key': "1"});
-        expect(select.values).to.deep.equal(['1']);
+    const form = el.querySelector('iron-form');
+    const select = el.querySelector('pb-select');
+    expect(form.serializeForm()).to.deep.equal({ key: '1' });
+    expect(select.values).to.deep.equal(['1']);
 
-        select.values = ["2", "3"];
-        await select.updateComplete;
-        expect(select.values).to.deep.equal(['2', '3']);
-        
-        expect(form.serializeForm()).to.deep.equal({'key': ["2", "3"]});
-    });
-    it('works in standard HTML form', async () => {
-        const el = await waitForPage(`
+    select.values = ['2', '3'];
+    await select.updateComplete;
+    expect(select.values).to.deep.equal(['2', '3']);
+
+    expect(form.serializeForm()).to.deep.equal({ key: ['2', '3'] });
+  });
+  it('works in standard HTML form', async () => {
+    const el = await waitForPage(`
                 <pb-page endpoint="." api-version="1.0.0">
                     <form action="" id="form">
                         <pb-select label="Items" name="key" values='["1", "2"]' multi>
@@ -78,17 +78,17 @@ describe('simple select', () => {
                 </pb-page>
             `);
 
-        const form = el.querySelector('form');
-        const data = new URLSearchParams(new FormData(form)).toString();
-        expect(data).to.equal('key=1&key=2');
-    });
+    const form = el.querySelector('form');
+    const data = new URLSearchParams(new FormData(form)).toString();
+    expect(data).to.equal('key=1&key=2');
+  });
 });
 
 describe('select initialized from remote data source', () => {
-    afterEach(cleanup);
+  afterEach(cleanup);
 
-    it('submits in form', async () => {
-        const el = await waitForPage(`
+  it('submits in form', async () => {
+    const el = await waitForPage(`
                 <pb-page endpoint="." api-version="1.0.0">
                     <iron-form id="form">
                         <form action="">
@@ -98,14 +98,14 @@ describe('select initialized from remote data source', () => {
                 </pb-page>
             `);
 
-        const select = el.querySelector('pb-select');
-        await waitUntil(() => select._items.length > 0);
-        
-        const form = el.querySelector('iron-form');
-        expect(form.serializeForm()).to.deep.equal({'lang': 'de'});
+    const select = el.querySelector('pb-select');
+    await waitUntil(() => select._items.length > 0);
 
-        select.value = "en";
-        await select.updateComplete;
-        expect(form.serializeForm()).to.deep.equal({'lang': 'en'});
-    });
+    const form = el.querySelector('iron-form');
+    expect(form.serializeForm()).to.deep.equal({ lang: 'de' });
+
+    select.value = 'en';
+    await select.updateComplete;
+    expect(form.serializeForm()).to.deep.equal({ lang: 'en' });
+  });
 });

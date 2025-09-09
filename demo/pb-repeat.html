@@ -56,9 +56,7 @@
                         form.addEventListener('iron-form-presubmit', (ev) => {
                             ev.preventDefault();
                             const data = form.serializeForm();
-                            const queryString = Object.keys(data).map((key) => {
-                                return key + '=' + data[key]
-                            }).join('&');
+                            const queryString = Object.keys(data).map((key) => `${key  }=${  data[key]}`).join('&');
                             document.getElementById('output').innerText = queryString;
                         });
                     });

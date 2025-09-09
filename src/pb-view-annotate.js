@@ -1,9 +1,9 @@
 import '@polymer/paper-icon-button';
-import { css, html } from "lit-element";
+import { css, html } from 'lit-element';
 import tippy from 'tippy.js';
-import uniqolor from "uniqolor/src/index";
-import { PbView } from "./pb-view.js";
-import { loadTippyStyles } from "./pb-popover.js";
+import uniqolor from 'uniqolor/src/index';
+import { PbView } from './pb-view.js';
+import { loadTippyStyles } from './pb-popover.js';
 import { get as i18n } from './pb-i18n.js';
 
 /**
@@ -79,7 +79,10 @@ function rangeToPoint(node, offset, position = 'start') {
     const child = container.childNodes[offset];
     return {
       parent: container.getAttribute('data-tei'),
-      offset: position === 'end' ? absoluteOffset(container, child, 0) - 1 : absoluteOffset(container, child, 0),
+      offset:
+        position === 'end'
+          ? absoluteOffset(container, child, 0) - 1
+          : absoluteOffset(container, child, 0),
     };
   }
   const container = /** @type {Element} */ (node.parentNode).closest('[data-tei]');
@@ -88,9 +91,8 @@ function rangeToPoint(node, offset, position = 'start') {
       parent: container.getAttribute('data-tei'),
       offset: absoluteOffset(container, node, offset),
     };
-  } else {
-    console.error('No container with data-tei found for %o', node.parentNode);
   }
+  console.error('No container with data-tei found for %o', node.parentNode);
 }
 
 function ancestors(node, selector) {
@@ -173,7 +175,10 @@ function kwicText(str, start, end, words = 3) {
     }
     p1 += 1;
   }
-  return `... ${str.substring(p0, start)}<mark>${str.substring(start, end)}</mark>${str.substring(end, p1 + 1)} ...`;
+  return `... ${str.substring(p0, start)}<mark>${str.substring(start, end)}</mark>${str.substring(
+    end,
+    p1 + 1,
+  )} ...`;
 }
 
 function collectText(node) {
@@ -197,7 +202,7 @@ function collectText(node) {
 
 function clearProperties(teiRange) {
   const cleaned = {};
-  Object.keys(teiRange.properties).forEach((key) => {
+  Object.keys(teiRange.properties).forEach(key => {
     const val = teiRange.properties[key];
     if (val && val.length > 0) {
       cleaned[key] = val;
@@ -234,21 +239,21 @@ class PbViewAnnotate extends PbView {
        * like to use @key for some elements, but @corresp for others.
        */
       key: {
-        type: String
+        type: String,
       },
       /**
        * Optional mapping of annotation type names to key properties
        */
       keyMap: {
         type: Object,
-        attribute: 'key-map'
+        attribute: 'key-map',
       },
       /**
        * When searching the displayed text for other potential occurrences of an entity,
        * should the search be done in case-sensitive manner?
        */
       caseSensitive: {
-        type: Boolean
+        type: Boolean,
       },
       ...super.properties,
     };
@@ -332,8 +337,12 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
 
-    this.addEventListener('pb-disable', () => { this._disabled = true; });
-    this.addEventListener('pb-enable', () => { this._disabled = false; });
+    this.addEventListener('pb-disable', () => {
+      this._disabled = true;
+    });
+    this.addEventListener('pb-enable', () => {
+      this._disabled = false;
+    });
 
     this._resizeHandler();
   }
@@ -428,17 +437,19 @@ class PbViewAnnotate extends PbView {
 
   _handleContent() {
     super._handleContent();
-    this.updateComplete.then(() => setTimeout(() => {
-      this._initAnnotationColors();
-      this._annotationStyles();
-      this.updateAnnotations();
-      this._markIncompleteAnnotations();
-      if (this._scrollTop) {
-        this.scrollTop = this._scrollTop;
-        this._scrollTop = undefined;
-      }
-      this.emitTo('pb-annotations-loaded');
-    }, 300));
+    this.updateComplete.then(() =>
+      setTimeout(() => {
+        this._initAnnotationColors();
+        this._annotationStyles();
+        this.updateAnnotations();
+        this._markIncompleteAnnotations();
+        if (this._scrollTop) {
+          this.scrollTop = this._scrollTop;
+          this._scrollTop = undefined;
+        }
+        this.emitTo('pb-annotations-loaded');
+      }, 300),
+    );
   }
 
   _updateAnnotation(teiRange, silent = false, batch = false) {
@@ -488,7 +499,9 @@ class PbViewAnnotate extends PbView {
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
-    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${teiRange.before ? 'before' : ''}`;
+    span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${
+      teiRange.before ? 'before' : ''
+    }`;
     span.dataset.type = teiRange.type;
     span.dataset.annotation = JSON.stringify(teiRange.properties);
 
@@ -498,7 +511,9 @@ class PbViewAnnotate extends PbView {
       if (silent) {
         return null;
       }
-      throw new Error('An error occurred. The annotation may not be displayed. You should consider saving and reloading the document.');
+      throw new Error(
+        'An error occurred. The annotation may not be displayed. You should consider saving and reloading the document.',
+      );
     }
     this._rangesMap.set(span, teiRange);
 
@@ -510,7 +525,7 @@ class PbViewAnnotate extends PbView {
   }
 
   updateAnnotations(silent = false) {
-    this._ranges.forEach((teiRange) => {
+    this._ranges.forEach(teiRange => {
       let span;
       switch (teiRange.type) {
         case 'delete':
@@ -538,9 +553,7 @@ class PbViewAnnotate extends PbView {
   }
 
   _getSelection() {
-    return this.shadowRoot.getSelection
-      ? this.shadowRoot.getSelection()
-      : window.getSelection();
+    return this.shadowRoot.getSelection ? this.shadowRoot.getSelection() : window.getSelection();
   }
 
   _selectionChanged() {
@@ -579,7 +592,11 @@ class PbViewAnnotate extends PbView {
           }
         }, 100);
       }
-      this.emitTo('pb-selection-changed', { hasContent: true, range, selected:  selection.toString()});
+      this.emitTo('pb-selection-changed', {
+        hasContent: true,
+        range,
+        selected: selection.toString(),
+      });
     } else {
       this._clearSelection();
       this.emitTo('pb-selection-changed', { hasContent: false });
@@ -608,7 +625,7 @@ class PbViewAnnotate extends PbView {
 
   _clearSelection() {
     const markerLayer = this.shadowRoot.getElementById('marker-layer');
-    markerLayer.querySelectorAll('.selection-marker').forEach((oldMarker) => {
+    markerLayer.querySelectorAll('.selection-marker').forEach(oldMarker => {
       markerLayer.removeChild(oldMarker);
     });
   }
@@ -636,10 +653,10 @@ class PbViewAnnotate extends PbView {
     const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
     const adjustedRange = {
       context: startRange.parent,
-      start: (info.position === 'after') ? endRange.offset : startRange.offset,
-      end: (info === undefined || info.position === 'before') ? startRange.offset : endRange.offset,
+      start: info.position === 'after' ? endRange.offset : startRange.offset,
+      end: info === undefined || info.position === 'before' ? startRange.offset : endRange.offset,
       text: info.before ? '' : range.cloneContents().textContent,
-      before: info.before
+      before: info.before,
     };
     if (info.type) {
       adjustedRange.type = info.type;
@@ -710,7 +727,7 @@ class PbViewAnnotate extends PbView {
       const selection = this._getSelection();
       selection.removeAllRanges();
       selection.addRange(newRange);
-    } catch(e) {
+    } catch (e) {
       console.error('<pb-view-annotate> %s', e.message);
     } finally {
       this._inHandler = false;
@@ -734,14 +751,14 @@ class PbViewAnnotate extends PbView {
       range = clearProperties(range);
       this.emitTo('pb-annotations-changed', { ranges: this._ranges });
     } else {
-        let range = this._rangesMap.get(span);
-        if (range) {
-          range.properties = properties;
-          range = clearProperties(range);
-          this.emitTo('pb-annotations-changed', { ranges: this._ranges });
-        } else {
-          console.error('no range found for edit span %o', span);
-        }
+      let range = this._rangesMap.get(span);
+      if (range) {
+        range.properties = properties;
+        range = clearProperties(range);
+        this.emitTo('pb-annotations-changed', { ranges: this._ranges });
+      } else {
+        console.error('no range found for edit span %o', span);
+      }
     }
     const jsonOld = JSON.parse(span.dataset.annotation);
     const json = Object.assign(jsonOld || {}, properties);
@@ -804,7 +821,12 @@ class PbViewAnnotate extends PbView {
       editBtn.addEventListener('click', () => {
         const data = JSON.parse(span.dataset.annotation);
         const text = span.textContent;
-        this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
+        this.emitTo('pb-annotation-edit', {
+          target: span,
+          type: span.dataset.type,
+          properties: data,
+          text,
+        });
       });
       div.appendChild(editBtn);
     }
@@ -842,19 +864,21 @@ class PbViewAnnotate extends PbView {
       onTrigger: (instance, ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        const type = span.dataset.type;
+        const { type } = span.dataset;
         const data = JSON.parse(span.dataset.annotation) || {};
         const color = this._annotationColors.get(type);
         typeInd.innerHTML = type;
         typeInd.style.backgroundColor = `var(--pb-annotation-${type})`;
-        typeInd.style.color = `var(${color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'})`;
+        typeInd.style.color = `var(${
+          color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'
+        })`;
         if (data[this.getKey(type)]) {
           this.emitTo('pb-annotation-detail', {
             type,
             id: data[this.getKey(type)],
             container: info,
             span,
-            ready: () => instance.setContent(wrapper)
+            ready: () => instance.setContent(wrapper),
           });
         } else {
           // show properties as key/value table
@@ -866,7 +890,7 @@ class PbViewAnnotate extends PbView {
             info.appendChild(p);
           } else {
             const table = document.createElement('table');
-            keys.forEach((key) => {
+            keys.forEach(key => {
               const tr = document.createElement('tr');
               const tdKey = document.createElement('td');
               tdKey.innerHTML = key;
@@ -882,7 +906,7 @@ class PbViewAnnotate extends PbView {
       },
       onClickOutside: (instance, ev) => {
         instance.hideWithInteractivity(ev);
-      }
+      },
     });
   }
 
@@ -895,7 +919,7 @@ class PbViewAnnotate extends PbView {
    */
   _showMarker(span, root, rootRect, margin = 0) {
     const rects = span.getClientRects();
-    const type = span.dataset.type;
+    const { type } = span.dataset;
     if (!span.classList.contains('before')) {
       for (let i = 0; i < rects.length; i++) {
         const rect = rects[i];
@@ -932,20 +956,18 @@ class PbViewAnnotate extends PbView {
     const markerLayer = this.shadowRoot.getElementById('marker-layer');
     markerLayer.style.display = 'none';
     this._clearMarkers();
-    root.querySelectorAll('.annotation')
-      .forEach(span => {
-        if (span._tippy) {
-          span._tippy.destroy();
-        }
-        this._showMarker(span, markerLayer, rootRect, ancestors(span, 'annotation') * 5);
-      });
-      markerLayer.style.display = 'block';
+    root.querySelectorAll('.annotation').forEach(span => {
+      if (span._tippy) {
+        span._tippy.destroy();
+      }
+      this._showMarker(span, markerLayer, rootRect, ancestors(span, 'annotation') * 5);
+    });
+    markerLayer.style.display = 'block';
   }
 
   search(type, tokens) {
     function escape(token) {
-      let regex = token.replace(/[/.?+*\\]/g, (m) => `\\${m}`)
-        .replace(/[\s\n\t]+/g, '\\s+');
+      let regex = token.replace(/[/.?+*\\]/g, m => `\\${m}`).replace(/[\s\n\t]+/g, '\\s+');
       if (/^\w/.test(regex)) {
         regex = `\\b${regex}`;
       }
@@ -969,7 +991,8 @@ class PbViewAnnotate extends PbView {
     if (!tokens || tokens.length === 0) {
       return result;
     }
-    const expr = tokens.filter(token => token && token.length > 0)
+    const expr = tokens
+      .filter(token => token && token.length > 0)
       .map(token => escape(token))
       .join('|');
     console.log(`<pb-view-annotate> Searching content for ${expr}...`);
@@ -980,7 +1003,7 @@ class PbViewAnnotate extends PbView {
       filter,
     );
     while (walker.nextNode()) {
-      let node = walker.currentNode;
+      const node = walker.currentNode;
       const matches = Array.from(node.textContent.matchAll(regex));
       for (const match of matches) {
         const end = match.index + match[0].length;
@@ -1055,8 +1078,8 @@ class PbViewAnnotate extends PbView {
   }
 
   _markIncompleteAnnotations() {
-    const elem = this.shadowRoot.getElementById('view')
-    elem.querySelectorAll('.annotation.authority').forEach((annotation) => {
+    const elem = this.shadowRoot.getElementById('view');
+    elem.querySelectorAll('.annotation.authority').forEach(annotation => {
       if (annotation.dataset.type) {
         const data = JSON.parse(annotation.dataset.annotation);
         const key = this.getKey(annotation.dataset.type);
@@ -1073,16 +1096,19 @@ class PbViewAnnotate extends PbView {
     this._annotationColors = new Map();
     const types = new Set();
     const elem = this.shadowRoot.getElementById('view');
-    elem.querySelectorAll('.annotation').forEach((annotation) => {
+    elem.querySelectorAll('.annotation').forEach(annotation => {
       if (annotation.dataset.type) {
         types.add(annotation.dataset.type);
       }
     });
-    types.forEach((type) => {
-      this._annotationColors.set(type, uniqolor(`annotation-${type.repeat(4)}`, {
-        saturation: 70,
-        lightness: [30, 60]
-      }));
+    types.forEach(type => {
+      this._annotationColors.set(
+        type,
+        uniqolor(`annotation-${type.repeat(4)}`, {
+          saturation: 70,
+          lightness: [30, 60],
+        }),
+      );
     });
     this.emitTo('pb-annotation-colors', { colors: this._annotationColors });
   }
@@ -1092,16 +1118,19 @@ class PbViewAnnotate extends PbView {
       return;
     }
 
-    this._annotationColors.set(type, uniqolor(`annotation-${type.repeat(4)}`, {
-      saturation: 70,
-      lightness: [30, 60]
-    }));
+    this._annotationColors.set(
+      type,
+      uniqolor(`annotation-${type.repeat(4)}`, {
+        saturation: 70,
+        lightness: [30, 60],
+      }),
+    );
     this._annotationStyles();
     this.emitTo('pb-annotation-colors', { colors: this._annotationColors });
   }
 
   _annotationStyles() {
-    const view = this.shadowRoot.getElementById('view')
+    const view = this.shadowRoot.getElementById('view');
     let styles = view.querySelector('_annotation-styles');
     if (styles) {
       styles.parentNode.removeChild(styles);
@@ -1122,8 +1151,12 @@ class PbViewAnnotate extends PbView {
             315deg,
             var(--pb-annotation-${type}),
             var(--pb-annotation-${type}) 5px,
-            var(${color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'}) 5px,
-            var(${color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'}) 10px
+            var(${
+              color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'
+            }) 5px,
+            var(${
+              color.isLight ? '--pb-annotation-stripes-light' : '--pb-annotation-stripes-dark'
+            }) 10px
           );
           color: var(${color.isLight ? '--pb-color-primary' : '--pb-color-inverse'});
         }
@@ -1147,13 +1180,13 @@ class PbViewAnnotate extends PbView {
       super.styles,
       css`
         .annotation-type {
-            display: inline-block;
-            text-align: right;
-            padding: 4px;
+          display: inline-block;
+          text-align: right;
+          padding: 4px;
         }
 
         .annotation-popup .toolbar {
-            margin-top: 1em;
+          margin-top: 1em;
         }
 
         .annotation-popup table {
@@ -1169,21 +1202,21 @@ class PbViewAnnotate extends PbView {
         }
 
         .annotation {
-            pointer-events: none;
-            cursor: pointer;
+          pointer-events: none;
+          cursor: pointer;
         }
 
         .annotation::after {
-            content: attr(data-type);
-            margin-left: 4px;
-            pointer-events: all;
-            font-family: var(--pb-base-font-family);
-            font-size: .8rem;
-            font-style: normal;
-            font-weight: normal;
-            text-decoration: none;
-            font-variant: normal;
-            padding: 2px;
+          content: attr(data-type);
+          margin-left: 4px;
+          pointer-events: all;
+          font-family: var(--pb-base-font-family);
+          font-size: 0.8rem;
+          font-style: normal;
+          font-weight: normal;
+          text-decoration: none;
+          font-variant: normal;
+          padding: 2px;
         }
 
         .annotation.before::after {
@@ -1191,12 +1224,13 @@ class PbViewAnnotate extends PbView {
           border-radius: 4px;
         }
 
-        [part=highlight] {
+        [part='highlight'] {
           border: 3px solid rgb(255, 174, 0);
           border-radius: 8px;
-        }`
+        }
+      `,
     ];
   }
-};
+}
 
 customElements.define('pb-view-annotate', PbViewAnnotate);

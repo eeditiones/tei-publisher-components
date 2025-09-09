@@ -1,31 +1,31 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { SearchResultService } from "./search-result-service.js";
-import { ParseDateService } from "./parse-date-service.js";
-import { pbMixin } from "./pb-mixin.js";
+import { SearchResultService } from './search-result-service.js';
+import { ParseDateService } from './parse-date-service.js';
+import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
 import '@polymer/iron-icons';
 import '@polymer/paper-icon-button';
-import { translate } from "./pb-i18n.js";
+import { translate } from './pb-i18n.js';
 
 /**
  * A timeline component to display time series data in a bar chart like view.
  *
  * Time series data can be displayed in one of 6 different scales:
- * 
+ *
  * - by decade (10Y)
  * - by 5 years (5Y)
  * - by years (Y)
  * - by month (M)
  * - by week (W)
  * - by day (D)
- * 
+ *
  * The endpoint is expected to return a JSON object. Each property should either be a date or the special
  * marker `?`, which indicates undated resources.
  * The value associated with each entry
- * should either correspond to a count of resources or an object with properties `count` and `info`. 
+ * should either correspond to a count of resources or an object with properties `count` and `info`.
  * `info` should be an array, containing HTML to be shown in a list within the tooltips.
- * Expected JSON: 
+ * Expected JSON:
  * ```javascript
  * {
  *  "1852-01-14": {
@@ -52,17 +52,17 @@ import { translate } from "./pb-i18n.js";
  *   <span slot="label">Angezeigter Zeitraum: </span>
  * </pb-timeline>
  * ```
- * See https://www.briefedition.alfred-escher.ch/briefe/ for a running sample. The source code of the webpage is here: https://github.com/stazh/briefedition-escher. Relevant files are: 
+ * See https://www.briefedition.alfred-escher.ch/briefe/ for a running sample. The source code of the webpage is here: https://github.com/stazh/briefedition-escher. Relevant files are:
  * - [templates/people.html](https://github.com/stazh/briefedition-escher/blob/master/templates/people.html#L91) - usage of pb-timeline
  * - [modules/custom-api.json](https://github.com/stazh/briefedition-escher/blob/master/modules/custom-api.json#L1080) - `/api/timeline` endpoint delivering required JSON object
- * 
+ *
  * @slot label - Inserted before the label showing the currently displayed time range
- * 
+ *
  * @fires pb-timeline-date-changed - Triggered when user clicks on a single entry
  * @fires pb-timeline-daterange-changed - Triggered when user selects a range of entries
  * @fires pb-timeline-reset-selection - Requests that the timeline is reset to initial state
  * @fires pb-timeline-loaded - Timeline was loaded
- * 
+ *
  * @cssprop --pb-timeline-height
  * @cssprop --pb-timeline-padding
  * @cssprop --pb-timeline-color-highlight
@@ -72,17 +72,15 @@ import { translate } from "./pb-i18n.js";
  * @cssprop --pb-timeline-color-bin
  * @cssprop --pb-timeline-title-font-size
  * @cssprop --pb-timeline-tooltip-font-size
- * 
+ *
  * @csspart label
  * @csspart tooltip
  * @csspart title
  */
 export class PbTimeline extends pbMixin(LitElement) {
-
-
-    static get styles() {
+  static get styles() {
     return css`
-      :host{
+      :host {
         display: block;
       }
       .hidden {
@@ -121,8 +119,9 @@ export class PbTimeline extends pbMixin(LitElement) {
         // justify-content: center;
         position: relative;
       }
-      .bin-container.border-left, .bin-container.unknown {
-        border-left: 1px solid rgba(0,0,0,0.4);
+      .bin-container.border-left,
+      .bin-container.unknown {
+        border-left: 1px solid rgba(0, 0, 0, 0.4);
       }
       .bin-container.unknown {
         margin-left: 40px;
@@ -221,8 +220,9 @@ export class PbTimeline extends pbMixin(LitElement) {
         top: -13px;
         right: -10px;
       }
-      #tooltip::after { /* small triangle that points to top */
-        content: "";
+      #tooltip::after {
+        /* small triangle that points to top */
+        content: '';
         position: absolute;
         bottom: 100%;
         left: 10px;
@@ -236,7 +236,7 @@ export class PbTimeline extends pbMixin(LitElement) {
         left: auto;
       }
       /* pure css close button for tooltip */
-      .close{
+      .close {
         position: relative;
         display: inline-block;
         width: 50px;
@@ -247,7 +247,8 @@ export class PbTimeline extends pbMixin(LitElement) {
       .close.rounded.black {
         cursor: pointer;
       }
-      .close::before, .close::after {
+      .close::before,
+      .close::after {
         content: '';
         position: absolute;
         height: 2px;
@@ -263,82 +264,85 @@ export class PbTimeline extends pbMixin(LitElement) {
       .close::after {
         transform: rotate(-45deg);
       }
-      .close.thick::before, .close.thick::after {
+      .close.thick::before,
+      .close.thick::after {
         height: 4px;
         margin-top: -2px;
       }
-      .close.black::before, .close.black::after {
+      .close.black::before,
+      .close.black::after {
         height: 8px;
         margin-top: -4px;
       }
-      .close.rounded::before, .close.rounded::after {
+      .close.rounded::before,
+      .close.rounded::after {
         border-radius: 5px;
       }
     `;
   }
 
-    static get properties() {
-        return {
-          ...super.properties,
-            /**
-             * start date for timeline to display
-             */
-            startDate:{
-                type: String,
-                reflect: true,
-                attribute: 'start-date'
-            },
-            /**
-             * endDate for timeline to display
-             */
-            endDate: {
-                type: String,
-                reflect: true,
-                attribute: 'end-date'
-            },
-            /**
-             * The scope for the timeline. Must be one of the pre-defined scopes.
-             * If not set, the component automatically tries to determine the best scope fitting the
-             * given time series.
-             */
-            scope:{
-                type: String
-            },
-            /**
-             * The scopes to consider for automatic scoping.
-             * 
-             * Defaults to ["D", "W", "M", "Y", "5Y", "10Y"]
-             */
-            scopes: {
-              type: Array
-            },
-            maxInterval: {
-              type: Number,
-              attribute: 'max-interval'
-            },
-            /**
-             * Endpoint to load timeline data from. Expects response to be an
-             * object with key value pairs for (date, hits).
-             *
-             * Will be reloaded whenever 'start-date' or 'end-date' attributes change.
-             */
-            url:{
-                type: String
-            },
-            /**
-             * If set, data will be retrieved automatically on first load.
-             */
-            auto: {
-              type: Boolean
-            },
-            resettable: {
-              type: Boolean
-            },
-            _language: {
-              type: String
-            }
-        };
-    }
+  static get properties() {
+    return {
+      ...super.properties,
+      /**
+       * start date for timeline to display
+       */
+      startDate: {
+        type: String,
+        reflect: true,
+        attribute: 'start-date',
+      },
+      /**
+       * endDate for timeline to display
+       */
+      endDate: {
+        type: String,
+        reflect: true,
+        attribute: 'end-date',
+      },
+      /**
+       * The scope for the timeline. Must be one of the pre-defined scopes.
+       * If not set, the component automatically tries to determine the best scope fitting the
+       * given time series.
+       */
+      scope: {
+        type: String,
+      },
+      /**
+       * The scopes to consider for automatic scoping.
+       *
+       * Defaults to ["D", "W", "M", "Y", "5Y", "10Y"]
+       */
+      scopes: {
+        type: Array,
+      },
+      maxInterval: {
+        type: Number,
+        attribute: 'max-interval',
+      },
+      /**
+       * Endpoint to load timeline data from. Expects response to be an
+       * object with key value pairs for (date, hits).
+       *
+       * Will be reloaded whenever 'start-date' or 'end-date' attributes change.
+       */
+      url: {
+        type: String,
+      },
+      /**
+       * If set, data will be retrieved automatically on first load.
+       */
+      auto: {
+        type: Boolean,
+      },
+      resettable: {
+        type: Boolean,
+      },
+      _language: {
+        type: String,
+      },
+    };
+  }
 
   constructor() {
     super();
@@ -348,7 +352,7 @@ export class PbTimeline extends pbMixin(LitElement) {
     this.startDate = '';
     this.endDate = '';
     this.scope = '';
-    this.scopes = ["D", "W", "M", "Y", "5Y", "10Y"];
+    this.scopes = ['D', 'W', 'M', 'Y', '5Y', '10Y'];
     this.maxInterval = 60;
     this.url = '';
     this.auto = false;
@@ -366,29 +370,29 @@ export class PbTimeline extends pbMixin(LitElement) {
       loader.url = url;
       loader.generateRequest();
     });
-    this.subscribeTo('pb-i18n-update', (ev) => {
+    this.subscribeTo('pb-i18n-update', ev => {
       this._language = ev.detail.language;
     });
   }
 
   firstUpdated() {
-    this.bins = this.shadowRoot.querySelectorAll(".bin-container");
-    this.tooltip = this.shadowRoot.getElementById("tooltip");
+    this.bins = this.shadowRoot.querySelectorAll('.bin-container');
+    this.tooltip = this.shadowRoot.getElementById('tooltip');
 
     // global mouseup event
-    document.addEventListener("mouseup", () => {
+    document.addEventListener('mouseup', () => {
       this._mouseUp();
-    })
+    });
     // pb-timeline-daterange-changed event:
     // changes daterange selection (marks bins on histogram)
     // is triggered by the componeent itself but can be also triggered
     // from outside by another component
-    document.addEventListener("pb-timeline-daterange-changed", (event) => {
-      const startDateStr = event.detail.startDateStr;
-      const endDateStr = event.detail.endDateStr;
-      if (this._fullRangeSelected(startDateStr, endDateStr)){
+    document.addEventListener('pb-timeline-daterange-changed', event => {
+      const { startDateStr } = event.detail;
+      const { endDateStr } = event.detail;
+      if (this._fullRangeSelected(startDateStr, endDateStr)) {
         // do not mark the whole histogram, reset selection instead
-        console.log("_fullRangeSelected() is true");
+        console.log('_fullRangeSelected() is true');
         this.resetSelection();
         return;
       }
@@ -398,38 +402,35 @@ export class PbTimeline extends pbMixin(LitElement) {
     // resets selection (remove marking of all selected bins)
     // is triggered by the componeent itself but can be also triggered
     // from outside by another component
-    document.addEventListener("pb-timeline-reset-selection", () => {
+    document.addEventListener('pb-timeline-reset-selection', () => {
       this.resetSelection();
       this._hideTooltip();
     });
   }
 
-    /**
-     * checks if 'scope' has changed and re-applies dataset accordingly
-     *
-     * @param changedProperties
-     */
-  updated (changedProperties){
-    if(changedProperties.has('scope')){
-
-        if(this.searchResult){
-            if(this.scopes.includes(this.scope)){
-                this.setData(this.searchResult.export(this.scope));
-            }else{
-                console.error('unknown scope ', this.scope);
-            }
+  /**
+   * checks if 'scope' has changed and re-applies dataset accordingly
+   *
+   * @param changedProperties
+   */
+  updated(changedProperties) {
+    if (changedProperties.has('scope')) {
+      if (this.searchResult) {
+        if (this.scopes.includes(this.scope)) {
+          this.setData(this.searchResult.export(this.scope));
+        } else {
+          console.error('unknown scope ', this.scope);
         }
-
+      }
     }
   }
-
 
   setData(dataObj) {
     this.dataObj = dataObj;
     this.maxValue = Math.max(...this.dataObj.data.map(binObj => binObj.value));
     this.requestUpdate();
     this.updateComplete.then(() => {
-      this.bins = this.shadowRoot.querySelectorAll(".bin-container");
+      this.bins = this.shadowRoot.querySelectorAll('.bin-container');
       this.resetSelection();
       this._resetTooltip();
     });
@@ -442,35 +443,39 @@ export class PbTimeline extends pbMixin(LitElement) {
     if (this.dataObj.data.length === 1) {
       return this.dataObj.data[0].category;
     }
-    return `${this.dataObj.data[0].selectionStart} – ${this.dataObj.data[this.dataObj.data.length - 1].selectionEnd}`;
+    return `${this.dataObj.data[0].selectionStart} – ${
+      this.dataObj.data[this.dataObj.data.length - 1].selectionEnd
+    }`;
   }
 
   getSelectedStartDateStr() {
-    return this.shadowRoot.querySelectorAll(".bin-container.selected")[0].dataset.selectionstart;
+    return this.shadowRoot.querySelectorAll('.bin-container.selected')[0].dataset.selectionstart;
   }
 
   getSelectedEndDateStr() {
-    const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
+    const selectedBins = this.shadowRoot.querySelectorAll('.bin-container.selected');
     return selectedBins[selectedBins.length - 1].dataset.selectionend;
   }
 
   getSelectedCategories() {
-    const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
+    const selectedBins = this.shadowRoot.querySelectorAll('.bin-container.selected');
     const categories = [];
-    selectedBins.forEach((bin) => categories.push(bin.dataset.category));
+    selectedBins.forEach(bin => categories.push(bin.dataset.category));
     return categories;
   }
 
   getSelectedItemCount() {
-    const selectedBins = this.shadowRoot.querySelectorAll(".bin-container.selected");
+    const selectedBins = this.shadowRoot.querySelectorAll('.bin-container.selected');
     let count = 0;
-    selectedBins.forEach((bin) => { count += parseInt(bin.dataset.value); });
+    selectedBins.forEach(bin => {
+      count += parseInt(bin.dataset.value);
+    });
     return count;
   }
 
   resetSelection() {
     this.bins.forEach(bin => {
-      bin.classList.remove("selected");
+      bin.classList.remove('selected');
     });
     this._resetSelectionProperty();
     this._hideTooltip();
@@ -479,8 +484,9 @@ export class PbTimeline extends pbMixin(LitElement) {
   select(startDateStr, endDateStr) {
     this.bins.forEach(bin => {
       if (bin.dataset.isodatestr >= startDateStr && bin.dataset.isodatestr <= endDateStr) {
-        bin.classList.add("selected");
-      } else {bin.classList.remove("selected");
+        bin.classList.add('selected');
+      } else {
+        bin.classList.remove('selected');
       }
     });
     this._displayTooltip();
@@ -488,7 +494,7 @@ export class PbTimeline extends pbMixin(LitElement) {
   }
 
   _fullRangeSelected(startDateStr, endDateStr) {
-    const matchingStartDate = startDateStr = this.bins[0].dataset.isodatestr;
+    const matchingStartDate = (startDateStr = this.bins[0].dataset.isodatestr);
     const matchingEndDate = endDateStr === this.bins[this.bins.length - 1].dataset.isodatestr;
     return matchingStartDate && matchingEndDate;
   }
@@ -509,7 +515,12 @@ export class PbTimeline extends pbMixin(LitElement) {
         const startDateStr = new ParseDateService().run(start);
         const endDateStr = new ParseDateService().run(end);
         const itemCount = this.getSelectedItemCount();
-        this._dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, this.getSelectedCategories(), itemCount);
+        this._dispatchTimelineDaterangeChangedEvent(
+          startDateStr,
+          endDateStr,
+          this.getSelectedCategories(),
+          itemCount,
+        );
       }
     }
   }
@@ -518,22 +529,24 @@ export class PbTimeline extends pbMixin(LitElement) {
     if (this.mousedown) {
       this._brushing(event);
       this._showtooltipSelection();
-    } else if (this.selection.start === undefined) { // no selection currently made
+    } else if (this.selection.start === undefined) {
+      // no selection currently made
       this._showtooltip(event);
     }
   }
 
   _mouseenter() {
-    if (this.dataObj) { // if data is loaded
+    if (this.dataObj) {
+      // if data is loaded
       this._displayTooltip();
     }
   }
 
   _getMousePosition(mouseEvent) {
-    let rect = this.shadowRoot.querySelector(".wrapper").getBoundingClientRect();
-    let x = mouseEvent.clientX - rect.left + 1; //x position within the element.
-    let y = mouseEvent.clientY - rect.top + 1;  //y position within the element.
-    return { x: x, y: y };
+    const rect = this.shadowRoot.querySelector('.wrapper').getBoundingClientRect();
+    const x = mouseEvent.clientX - rect.left + 1; // x position within the element.
+    const y = mouseEvent.clientY - rect.top + 1; // y position within the element.
+    return { x, y };
   }
 
   _brushing(event) {
@@ -543,8 +556,13 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   _dispatchTimelineDaterangeChangedEvent(startDateStr, endDateStr, categories, itemCount) {
     if (startDateStr === '????-??-??') {
-      this.emitTo('pb-timeline-date-changed', { startDateStr: null, endDateStr: null, categories: ['?'], count: itemCount });
-    } else if(startDateStr === endDateStr) {
+      this.emitTo('pb-timeline-date-changed', {
+        startDateStr: null,
+        endDateStr: null,
+        categories: ['?'],
+        count: itemCount,
+      });
+    } else if (startDateStr === endDateStr) {
       if (this.dataObj.scope !== 'D') {
         this.emitTo('pb-timeline-daterange-changed', {
           startDateStr,
@@ -552,16 +570,16 @@ export class PbTimeline extends pbMixin(LitElement) {
           scope: this.dataObj.scope,
           categories,
           count: itemCount,
-          label: this.label
+          label: this.label,
         });
       } else {
-        this.emitTo('pb-timeline-date-changed', { 
-          startDateStr, 
-          endDateStr: null, 
-          scope: this.dataObj.scope, 
-          categories, 
+        this.emitTo('pb-timeline-date-changed', {
+          startDateStr,
+          endDateStr: null,
+          scope: this.dataObj.scope,
+          categories,
           count: itemCount,
-          label: this.label
+          label: this.label,
         });
       }
     } else {
@@ -571,7 +589,7 @@ export class PbTimeline extends pbMixin(LitElement) {
         categories,
         scope: this.dataObj.scope,
         count: itemCount,
-        label: this.label
+        label: this.label,
       });
     }
   }
@@ -584,59 +602,69 @@ export class PbTimeline extends pbMixin(LitElement) {
     const interval = this._getElementInterval(event.currentTarget);
     let offset;
     if (interval[0] < interval[2]) {
-      offset = Math.round((((interval[0] + interval[1]) / 2)) - 10);
+      offset = Math.round((interval[0] + interval[1]) / 2 - 10);
       this.tooltip.classList.remove('right');
     } else {
-      offset = Math.round((((interval[0] + interval[1]) / 2) - this.tooltip.offsetWidth)) + 10;
+      offset = Math.round((interval[0] + interval[1]) / 2 - this.tooltip.offsetWidth) + 10;
       this.tooltip.classList.add('right');
     }
-    this.tooltip.style.left = offset + "px";
+    this.tooltip.style.left = `${offset}px`;
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
     const info = event.currentTarget.querySelector('.info');
-    this.tooltip.querySelector("#tooltip-text").innerHTML = 
-      `<div><strong>${datestr}</strong>: ${value}</div><ul>${info ? info.innerHTML : ''}</ul>`;
+    this.tooltip.querySelector(
+      '#tooltip-text',
+    ).innerHTML = `<div><strong>${datestr}</strong>: ${value}</div><ul>${
+      info ? info.innerHTML : ''
+    }</ul>`;
   }
 
   _showtooltipSelection() {
     const selectedBins = this._getSelectedBins();
     const intervalStart = this._getElementInterval(selectedBins[0])[0]; // get first selected element left boundary
-    const intervalEnd = this._getElementInterval(selectedBins[selectedBins.length-1])[1]; // get last selected element right boundary
+    const intervalEnd = this._getElementInterval(selectedBins[selectedBins.length - 1])[1]; // get last selected element right boundary
     const interval = [intervalStart, intervalEnd];
-    const label = `${selectedBins[0].dataset.selectionstart} - ${selectedBins[selectedBins.length-1].dataset.selectionend}`;
+    const label = `${selectedBins[0].dataset.selectionstart} - ${
+      selectedBins[selectedBins.length - 1].dataset.selectionend
+    }`;
     const value = selectedBins.map(bin => Number(bin.dataset.value)).reduce((a, b) => a + b);
     const valueFormatted = this._numberWithCommas(value);
-    this.tooltip.querySelector("#tooltip-text").innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
-    this.tooltip.querySelector("#tooltip-close").classList.remove("hidden");
-    this.tooltip.classList.add("draggable");
-    const offset = Math.round((((interval[0] + interval[1]) / 2) - this.tooltip.offsetWidth / 2));
-    this.tooltip.style.left = offset + "px";
+    this.tooltip.querySelector(
+      '#tooltip-text',
+    ).innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
+    this.tooltip.querySelector('#tooltip-close').classList.remove('hidden');
+    this.tooltip.classList.add('draggable');
+    const offset = Math.round((interval[0] + interval[1]) / 2 - this.tooltip.offsetWidth / 2);
+    this.tooltip.style.left = `${offset}px`;
   }
 
   _resetTooltip() {
     this._hideTooltip();
     this.tooltip.style.left = '-1000px';
-    this.tooltip.querySelector("#tooltip-text").innerHTML = "";
+    this.tooltip.querySelector('#tooltip-text').innerHTML = '';
   }
 
   _hideTooltip() {
     if (this.selection.start === undefined) {
-      this.tooltip.classList.add("hidden");
-      this.tooltip.classList.remove("draggable");
-      this.tooltip.querySelector("#tooltip-close").classList.add("hidden");
+      this.tooltip.classList.add('hidden');
+      this.tooltip.classList.remove('draggable');
+      this.tooltip.querySelector('#tooltip-close').classList.add('hidden');
     }
   }
 
   _displayTooltip() {
-    this.tooltip.classList.remove("hidden");
+    this.tooltip.classList.remove('hidden');
   }
 
   _getElementInterval(nodeElement) {
-    let rect = this.shadowRoot.querySelector(".wrapper").getBoundingClientRect();
-    let bin = nodeElement;
-    let interval = [bin.getBoundingClientRect().x, bin.getBoundingClientRect().x + bin.getBoundingClientRect().width]
-    let x1 = interval[0] - rect.left + 1; //x position within the element.
-    let x2 = interval[1] - rect.left + 1; //x position within the element.
+    const rect = this.shadowRoot.querySelector('.wrapper').getBoundingClientRect();
+    const bin = nodeElement;
+    const interval = [
+      bin.getBoundingClientRect().x,
+      bin.getBoundingClientRect().x + bin.getBoundingClientRect().width,
+    ];
+    const x1 = interval[0] - rect.left + 1; // x position within the element.
+    const x2 = interval[1] - rect.left + 1; // x position within the element.
     return [x1, x2, rect.width / 2];
   }
 
@@ -645,16 +673,16 @@ export class PbTimeline extends pbMixin(LitElement) {
   }
 
   _getSelectedBins() {
-    return Array.prototype.slice.call(this.bins).filter(binContainer => {
-      return binContainer.classList.contains("selected");
-    });
+    return Array.prototype.slice
+      .call(this.bins)
+      .filter(binContainer => binContainer.classList.contains('selected'));
   }
 
   _resetSelectionProperty() {
     this.selection = {
       start: undefined,
-      end: undefined
-    }
+      end: undefined,
+    };
   }
 
   _applySelectionToBins() {
@@ -663,18 +691,19 @@ export class PbTimeline extends pbMixin(LitElement) {
       const elInterval = this._getElementInterval(bin);
       // if (this.intervalsOverlapping(elInterval, selectionInterval)) {
       if (this._areOverlapping(elInterval, selectionInterval)) {
-        bin.classList.add("selected");
+        bin.classList.add('selected');
       } else {
-        bin.classList.remove("selected");
+        bin.classList.remove('selected');
       }
-    })
+    });
   }
 
   _numberWithCommas(input) {
-    return new Intl.NumberFormat(this._language, {style: 'decimal'}).format(input);
+    return new Intl.NumberFormat(this._language, { style: 'decimal' }).format(input);
   }
 
-  _areOverlapping(A, B) { // check if 2 intervals are overlapping
+  _areOverlapping(A, B) {
+    // check if 2 intervals are overlapping
     return B[0] < A[0] ? B[1] > A[0] : B[0] < A[1];
   }
 
@@ -682,27 +711,33 @@ export class PbTimeline extends pbMixin(LitElement) {
     return html`
       <div class="label" part="label">
         <span class="label"><slot name="label"></slot>${this.label}</span>
-        ${
-          this.resettable ? html`
-            <paper-icon-button id="clear" icon="icons:clear" title="${translate('timeline.clear')}"
-            @click="${this._dispatchPbTimelineResetSelectionEvent}"></paper-icon-button>
-          ` : null
-        }
+        ${this.resettable
+          ? html`
+              <paper-icon-button
+                id="clear"
+                icon="icons:clear"
+                title="${translate('timeline.clear')}"
+                @click="${this._dispatchPbTimelineResetSelectionEvent}"
+              ></paper-icon-button>
+            `
+          : null}
       </div>
-      <div class="wrapper ${!this.dataObj || this.dataObj.data.length <= 1 ? 'empty' : ''}"
+      <div
+        class="wrapper ${!this.dataObj || this.dataObj.data.length <= 1 ? 'empty' : ''}"
         @mouseenter="${this._mouseenter}"
-        @mouseleave="${this._hideTooltip}">
-        ${this.dataObj ? this.renderBins() : ""}
-        ${this.renderTooltip()}
+        @mouseleave="${this._hideTooltip}"
+      >
+        ${this.dataObj ? this.renderBins() : ''} ${this.renderTooltip()}
         <iron-ajax
-            id="loadData"
-            verbose
-            handle-as="json"
-            method="get"
-            with-credentials
-            @response="${this._handleResponse}"
-            url="${this.url}?start=${this.startDate}&end=${this.endDate}"
-            ?auto="${this.auto}"></iron-ajax>
+          id="loadData"
+          verbose
+          handle-as="json"
+          method="get"
+          with-credentials
+          @response="${this._handleResponse}"
+          url="${this.url}?start=${this.startDate}&end=${this.endDate}"
+          ?auto="${this.auto}"
+        ></iron-ajax>
       </div>
     `;
   }
@@ -715,7 +750,8 @@ export class PbTimeline extends pbMixin(LitElement) {
           id="tooltip-close"
           class="hidden"
           @click="${this._dispatchPbTimelineResetSelectionEvent}"
-          ><span class="close rounded black"></span>
+        >
+          <span class="close rounded black"></span>
         </div>
       </div>
     `;
@@ -723,10 +759,11 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   renderBins() {
     return html`
-      ${this.dataObj.data.map((binObj, indx) => {
-        return html`
-          <div class="bin-container ${binObj.seperator ? "border-left" : ""}
-            ${indx % 2 === 0 ? "grey" : "white"} ${binObj.category === '?' ? 'unknown' : ''}"
+      ${this.dataObj.data.map(
+        (binObj, indx) => html`
+          <div
+            class="bin-container ${binObj.seperator ? 'border-left' : ''}
+            ${indx % 2 === 0 ? 'grey' : 'white'} ${binObj.category === '?' ? 'unknown' : ''}"
             data-tooltip="${binObj.tooltip}"
             data-category="${binObj.category}"
             data-selectionstart="${binObj.selectionStart}"
@@ -735,20 +772,24 @@ export class PbTimeline extends pbMixin(LitElement) {
             data-datestr="${binObj.dateStr}"
             data-value="${binObj.value}"
             @mousemove="${this._mouseMove}"
-            @mousedown="${this._mouseDown}">
-            <div class="bin" style="height: ${(binObj.value / this.maxValue) * this.maxHeight * this.multiplier}px"></div>
-            <p class="bin-title
-              ${this.dataObj.binTitleRotated ? "rotated" : ""}
+            @mousedown="${this._mouseDown}"
+          >
+            <div
+              class="bin"
+              style="height: ${(binObj.value / this.maxValue) * this.maxHeight * this.multiplier}px"
+            ></div>
+            <p
+              class="bin-title
+              ${this.dataObj.binTitleRotated ? 'rotated' : ''}
               ${this.scope}"
-              >${binObj.binTitle ? binObj.binTitle : ""}
+            >
+              ${binObj.binTitle ? binObj.binTitle : ''}
             </p>
-            ${binObj.title ? html`
-              <p class="bins-title" part="title">${binObj.title}</p>
-            ` : ""}
+            ${binObj.title ? html` <p class="bins-title" part="title">${binObj.title}</p> ` : ''}
             ${this.renderInfo(binObj)}
           </div>
-        `;
-      })}
+        `,
+      )}
     `;
   }
 
@@ -756,34 +797,35 @@ export class PbTimeline extends pbMixin(LitElement) {
     if (binObj.info && binObj.info.length > 0 && binObj.info.length <= 10) {
       return html`
         <ul class="info">
-        ${ binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`) }
+          ${binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`)}
         </ul>
       `;
     }
     return null;
   }
 
-    async _handleResponse (){
-        await this.updateComplete;
-        const loader = this.shadowRoot.getElementById('loadData');
-        const data = loader.lastResponse;
+  async _handleResponse() {
+    await this.updateComplete;
+    const loader = this.shadowRoot.getElementById('loadData');
+    const data = loader.lastResponse;
 
-        let newJsonData = {};
-        if (this.startDate && this.endDate) {
-          Object.keys(data).filter(key => key >= this.startDate && key < this.endDate).forEach(key => {
-              newJsonData[key] = data[key];
-          });
-        } else {
-          newJsonData = data;
-        }
-        this.searchResult = new SearchResultService(newJsonData, this.maxInterval, this.scopes);
-        this.setData(this.searchResult.export(this.scope));
-        this.emitTo('pb-timeline-loaded', {
-          value: true,
-          label: this.label
+    let newJsonData = {};
+    if (this.startDate && this.endDate) {
+      Object.keys(data)
+        .filter(key => key >= this.startDate && key < this.endDate)
+        .forEach(key => {
+          newJsonData[key] = data[key];
         });
+    } else {
+      newJsonData = data;
     }
-
+    this.searchResult = new SearchResultService(newJsonData, this.maxInterval, this.scopes);
+    this.setData(this.searchResult.export(this.scope));
+    this.emitTo('pb-timeline-loaded', {
+      value: true,
+      label: this.label,
+    });
+  }
 }
 
 customElements.define('pb-timeline', PbTimeline);
