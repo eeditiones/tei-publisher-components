@@ -1,3 +1,11 @@
+## [2.25.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.5...v2.25.6) (2025-09-09)
+
+
+### Bug Fixes
+
+* **docker:** allign image ([45fcfe6](https://github.com/eeditiones/tei-publisher-components/commit/45fcfe682d4413baaf6413e3801201f46d7b0f0a)), closes [#244](https://github.com/eeditiones/tei-publisher-components/issues/244)
+* **docker:** minor fixes ([34ad702](https://github.com/eeditiones/tei-publisher-components/commit/34ad702e6e72455096421cfa6f77a9a921cf2b31))
+
 ## [2.25.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.4...v2.25.5) (2025-08-16)
 
 
