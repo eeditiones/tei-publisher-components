@@ -1,41 +1,12 @@
-ARG EXIST_VERSION=6.2.0
-
-# START STAGE 1
-FROM openjdk:8-jdk-slim as builder
-
-USER root
-
-ENV ANT_VERSION 1.10.15
-ENV ANT_HOME /etc/ant-${ANT_VERSION}
-
-WORKDIR /tmp
-
-RUN apt-get update && apt-get install -y \
-    git \
-    curl
-
-RUN curl -L -o apache-ant-${ANT_VERSION}-bin.tar.gz https://downloads.apache.org/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
-    && mkdir ant-${ANT_VERSION} \
-    && tar -zxvf apache-ant-${ANT_VERSION}-bin.tar.gz \
-    && mv apache-ant-${ANT_VERSION} ${ANT_HOME} \
-    && rm apache-ant-${ANT_VERSION}-bin.tar.gz \
-    && rm -rf ant-${ANT_VERSION} \
-    && rm -rf ${ANT_HOME}/manual \
-    && unset ANT_VERSION
-
-ENV PATH ${PATH}:${ANT_HOME}/bin
-
-RUN apt-get update && apt-get install -y nodejs npm
-
-FROM builder as tei
-
-ARG TEMPLATING_VERSION=1.1.0
-ARG PUBLISHER_LIB_VERSION=3.0.0
-ARG ROUTER_VERSION=1.8.0
+ARG EXIST_VERSION=release
+ARG BUILD=local
 ARG PUBLISHER_VERSION=master
 
-# add key
-RUN  mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+# START STAGE 1
+FROM ghcr.io/eeditiones/builder:latest AS builder
+
+ARG ROUTER_VERSION=1.10.0
+ARG PUBLISHER_VERSION
 
 # Build tei-publisher-app
 RUN  git clone https://github.com/eeditiones/tei-publisher-app.git \
@@ -53,38 +24,75 @@ COPY i18n/common/* resources/i18n/common/
 
 RUN ant
 
-RUN curl -L -o /tmp/roaster-${ROUTER_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/roaster-${ROUTER_VERSION}.xar
-RUN curl -L -o /tmp/tei-publisher-lib-${PUBLISHER_LIB_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-${PUBLISHER_LIB_VERSION}.xar
-RUN curl -L -o /tmp/templating-${TEMPLATING_VERSION}.xar http://exist-db.org/exist/apps/public-repo/public/templating-${TEMPLATING_VERSION}.xar
+WORKDIR /tmp
 
-FROM existdb/existdb:${EXIST_VERSION}
+ADD http://exist-db.org/exist/apps/public-repo/public/roaster-${ROUTER_VERSION}.xar 001.xar
+ADD https://github.com/eeditiones/tei-publisher-lib/releases/latest/download/tei-publisher-lib.xar 002.xar
 
-COPY --from=tei /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
-COPY --from=tei /tmp/*.xar /exist/autodeploy/
+FROM duncdrum/existdb:${EXIST_VERSION} AS build_local
 
-ENV DATA_DIR /exist-data
+ARG USR=root
+USER ${USR}
 
-ENV JAVA_TOOL_OPTIONS \
-    -Dfile.encoding=UTF8 \
-    -Dsun.jnu.encoding=UTF-8 \
-    -Djava.awt.headless=true \
-    -Dorg.exist.db-connection.cacheSize=${CACHE_MEM:-256}M \
-    -Dorg.exist.db-connection.pool.max=${MAX_BROKER:-20} \
-    -Dlog4j.configurationFile=/exist/etc/log4j2.xml \
-    -Dexist.home=/exist \
-    -Dexist.configurationFile=/exist/etc/conf.xml \
-    -Djetty.home=/exist \
-    -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
-    -XX:+UnlockExperimentalVMOptions \
-    -XX:+UseCGroupMemoryLimitForHeap \
-    -XX:+UseG1GC \
-    -XX:+UseStringDeduplication \
-    -XX:MaxRAMFraction=1 \
-    -XX:+ExitOnOutOfMemoryError \
-    -Dorg.exist.db-connection.files=${DATA_DIR} \
-    -Dorg.exist.db-connection.recovery.journal-dir=${DATA_DIR}
+ONBUILD COPY --from=builder /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
+ONBUILD COPY --from=builder /tmp/*.xar /exist/autodeploy/
 
-# pre-populate the database by launching it once
-RUN [ "java", \
-    "org.exist.start.Main", "client", "-l", \
-    "--no-gui",  "--xpath", "system:get-version()" ]
+# TODO(DP): Tagging scheme add EXIST_VERSION to the tag
+FROM  ghcr.io/jinntec/base:main AS build_prod
+
+ARG USR=nonroot
+USER ${USR}
+
+# Copy EXPATH dependencies
+ONBUILD COPY --from=builder --chown=${USR} /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
+ONBUILD COPY --from=builder --chown=${USR} /tmp/*.xar /exist/autodeploy/
+
+
+FROM build_${BUILD}
+
+ARG USR
+USER ${USR}
+
+WORKDIR /exist
+
+# ARG ADMIN_PASS=none
+
+ARG CACHE_MEM
+ARG MAX_BROKER
+ARG JVM_MAX_RAM_PERCENTAGE
+ARG HTTP_PORT=8080
+ARG HTTPS_PORT=8443
+
+ARG NER_ENDPOINT=http://localhost:8001
+ARG CONTEXT_PATH=auto
+ARG PROXY_CACHING=false
+
+ENV JDK_JAVA_OPTIONS="\
+    -Dteipublisher.ner-endpoint=${NER_ENDPOINT} \
+    -Dteipublisher.context-path=${CONTEXT_PATH} \
+    -Dteipublisher.proxy-caching=${PROXY_CACHING}"
+
+# ENV JAVA_TOOL_OPTIONS="\
+#   -Dfile.encoding=UTF8 \
+#   -Dsun.jnu.encoding=UTF-8 \
+#   -Djava.awt.headless=true \
+#   -Dorg.exist.db-connection.cacheSize=${CACHE_MEM:-256}M \
+#   -Dorg.exist.db-connection.pool.max=${MAX_BROKER:-20} \
+#   -Dlog4j.configurationFile=/exist/etc/log4j2.xml \
+#   -Dexist.home=/exist \
+#   -Dexist.configurationFile=/exist/etc/conf.xml \
+#   -Djetty.home=/exist \
+#   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
+#   -Dteipublisher.ner-endpoint=${NER_ENDPOINT} \
+#   -Dteipublisher.context-path=${CONTEXT_PATH} \
+#   -Dteipublisher.proxy-caching=${PROXY_CACHING} \
+#   -XX:+UseG1GC \
+#   -XX:+UseStringDeduplication \
+#   -XX:+UseContainerSupport \
+#   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
+#   -XX:+ExitOnOutOfMemoryError"
+
+# pre-populate the database by launching it once and change default pw
+RUN [ "java", "org.exist.start.Main", "client", "--no-gui",  "-l", "-u", "admin", "-P", "" ]
+
+EXPOSE ${HTTP_PORT} ${HTTPS_PORT}
