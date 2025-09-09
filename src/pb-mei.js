@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import '@lrnwebcomponents/es-global-bridge';
-import createVerovioModule from 'verovio/dist/verovio-module.mjs';
-import { VerovioToolkit } from 'verovio/dist/verovio.mjs';
+// Use package export maps supported by verovio 3.x
+import createVerovioModule from 'verovio/wasm';
+import { VerovioToolkit } from 'verovio/esm';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';

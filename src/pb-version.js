@@ -21,20 +21,8 @@ export class PbVersion extends LitElement {
 
   constructor() {
     super();
-
-    this.version = PB_COMPONENTS_VERSION;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (!this.version) {
-      const pkg = resolveURL('../package.json');
-      fetch(pkg)
-        .then(response => response.json())
-        .then(data => {
-          this.version = data.version;
-        });
-    }
+    // Version is injected at build time; avoid runtime fetches
+    this.version = PB_COMPONENTS_VERSION || null;
   }
 
   render() {
