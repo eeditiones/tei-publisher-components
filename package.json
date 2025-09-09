@@ -12,6 +12,9 @@
     "webcomponents",
     "litelement"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "npm run clean && rollup -c rollup.config.js",
     "build:production": "npm run clean && rollup -c rollup.config.js --environment BUILD:production",
