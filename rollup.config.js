@@ -1,4 +1,5 @@
 import resolve from '@rollup/plugin-node-resolve';
+import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
@@ -40,6 +41,12 @@ export default [
     },
     external: ['module', 'fs', 'path', 'url'],
     plugins: [
+      alias({
+        entries: [
+          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
+          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+        ],
+      }),
       replace({
         preventAssignment: true,
         'process.env.NODE_ENV': JSON.stringify('production'),
@@ -160,6 +167,12 @@ export default [
     },
     external: ['module', 'fs', 'path', 'url'],
     plugins: [
+      alias({
+        entries: [
+          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
+          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+        ],
+      }),
       resolve({ browser: true, preferBuiltins: false }),
       commonjs(),
       production &&
