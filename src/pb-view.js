@@ -430,7 +430,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       this.navigate(ev.detail.direction);
     });
-    this.subscribeTo('pb-refresh', this._refresh.bind(this));
+    
     this.subscribeTo('pb-toggle', ev => {
       this.toggleFeature(ev);
     });
@@ -518,6 +518,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         });
       });
     }
+    this.subscribeTo('pb-refresh', this._refresh.bind(this));
   }
 
   /**
