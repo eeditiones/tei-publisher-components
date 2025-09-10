@@ -62,7 +62,7 @@ export class PbGridAction extends pbMixin(LitElement) {
     if (this.action === 'add') {
       grid.addPanel(this.initial);
     } else {
-      grid.removePanel(this.parentNode);
+      grid.removePanel(this.closest('pb-panel,pb-grid'));
     }
   }
 }
