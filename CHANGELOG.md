@@ -1,3 +1,18 @@
+# [2.26.0-next-3.13](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.12...v2.26.0-next-3.13) (2025-09-10)
+
+
+### Bug Fixes
+
+* **docker:** allign image ([45fcfe6](https://github.com/eeditiones/tei-publisher-components/commit/45fcfe682d4413baaf6413e3801201f46d7b0f0a)), closes [#244](https://github.com/eeditiones/tei-publisher-components/issues/244)
+* **docker:** minor fixes ([34ad702](https://github.com/eeditiones/tei-publisher-components/commit/34ad702e6e72455096421cfa6f77a9a921cf2b31))
+* **i18n:** correct pl labels ([f861af7](https://github.com/eeditiones/tei-publisher-components/commit/f861af774050accc0a5479ae40a5be94c8f87f2f))
+* **pb-dialog:** any button with [rel="prev"] should close the dialog ([9c8c7f0](https://github.com/eeditiones/tei-publisher-components/commit/9c8c7f0ac24ffb139fd71dcc5e58922a1488e165))
+
+
+### Features
+
+* **pb-progress:** replace paper-progress with native progres ([5ce49f1](https://github.com/eeditiones/tei-publisher-components/commit/5ce49f19abda1f37f884d977a0cc5204d690f290))
+
 # [2.26.0-next-3.12](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.11...v2.26.0-next-3.12) (2025-08-31)
 
 
