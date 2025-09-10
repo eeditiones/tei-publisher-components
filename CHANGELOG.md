@@ -1,3 +1,16 @@
+# [2.26.0-next-3.14](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.13...v2.26.0-next-3.14) (2025-09-10)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** component did not initialize if openseadragon was already loaded; this prevented multiple instances on the same page ([16c881b](https://github.com/eeditiones/tei-publisher-components/commit/16c881bdd0e1c7d9d441414d020778050f714f5e))
+* **pb-view:** start listening to pb-refresh after component is ready; prevents race condition ([6196e03](https://github.com/eeditiones/tei-publisher-components/commit/6196e03e648fad9d37404f4d7d06a5bbcfe317a3))
+
+
+### Features
+
+* **pb-grid:** drop polymer components ([8014c9c](https://github.com/eeditiones/tei-publisher-components/commit/8014c9cdd1bd79834e4fcd7c2f0d6d5d16349f2c))
+
 # [2.26.0-next-3.13](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.12...v2.26.0-next-3.13) (2025-09-10)
 
 
