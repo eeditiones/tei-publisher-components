@@ -209,14 +209,21 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
   firstUpdated() {
     try {
-      window.ESGlobalBridge.requestAvailability();
+      const bridge = window.ESGlobalBridge.requestAvailability();
       const path = resolveURL('../lib/openseadragon.min.js');
-      window.ESGlobalBridge.instance.load('openseadragon', path);
+      // check if OpenSeadragon is already loaded
+      if (bridge.imports['openseadragon']) {
+        this._initOpenSeadragon();
+        return;
+      }
+      // Wait for OpenSeadragon to load
       window.addEventListener(
         'es-bridge-openseadragon-loaded',
         this._initOpenSeadragon.bind(this),
         { once: true },
       );
+      // load OpenSeadragon
+      bridge.load('openseadragon', path);
     } catch (error) {
       console.error(error.message);
     }
@@ -345,7 +352,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       });
     }
     this._facsimileObserver();
-
+    console.log('facsimile ready');
     this.signalReady();
   }
 
