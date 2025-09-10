@@ -79,14 +79,14 @@ export default [
             src: './node_modules/leaflet/dist/images/*',
             dest: './images/leaflet',
           },
-          // {
-          //     src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
-          //     dest: './lib'
-          // },
-          // {
-          //     src: './node_modules/openseadragon/build/openseadragon/images/*',
-          //     dest: './images/openseadragon'
-          // },
+          {
+            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
+            dest: './lib',
+          },
+          {
+            src: './node_modules/openseadragon/build/openseadragon/images/*',
+            dest: './images/openseadragon',
+          },
           {
             src: './node_modules/prismjs/themes/*',
             dest: './css/prismjs',
