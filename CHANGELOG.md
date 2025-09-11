@@ -1,3 +1,10 @@
+# [2.26.0-next-3.15](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.14...v2.26.0-next-3.15) (2025-09-11)
+
+
+### Bug Fixes
+
+* **pb-timeline:** remove paper-button; improve styling and tooltip positioning ([c95cb1e](https://github.com/eeditiones/tei-publisher-components/commit/c95cb1e3fe2a39793aebc512cb0487f1139e23be))
+
 # [2.26.0-next-3.14](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.13...v2.26.0-next-3.14) (2025-09-10)
 
 
