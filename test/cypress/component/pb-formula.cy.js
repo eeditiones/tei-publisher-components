@@ -34,4 +34,51 @@ describe('pb-formula', () => {
       expect(container.hasAttribute('display')).to.equal(false)
     })
   })
+
+  it('formats MathML math in display mode', () => {
+    cy.mount(`
+      <pb-page api-version="1.0.0">
+        <pb-formula>
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <msqrt>
+              <mn>3</mn>
+              <mi>x</mi>
+              <mo>&#x2212;</mo>
+              <mn>1</mn>
+            </msqrt>
+            <mo>+</mo>
+            <mo stretchy="false">(</mo>
+            <mn>1</mn>
+            <mo>+</mo>
+            <mi>x</mi>
+            <msup>
+              <mo stretchy="false">)</mo>
+              <mn>2</mn>
+            </msup>
+          </math>
+        </pb-formula>
+      </pb-page>
+    `)
+    cy.get('pb-formula[loaded]').should('exist')
+    cy.get('pb-formula').should($el => {
+      const el = $el[0]
+      const container = el.querySelector('mjx-container')
+      expect(container).to.exist
+    })
+  })
+
+  it('reports error in TeX notation', () => {
+    cy.mount(`
+      <pb-page api-version="1.0.0">
+        <pb-formula display>\\frac{1}{z</pb-formula>
+      </pb-page>
+    `)
+    cy.get('pb-formula[loaded]').should('exist')
+    cy.get('pb-formula').should($el => {
+      const el = $el[0]
+      const err = el.querySelector('mjx-merror')
+      expect(err).to.exist
+      expect(err.getAttribute('data-mjx-error')).to.equal('Missing close brace')
+    })
+  })
 })

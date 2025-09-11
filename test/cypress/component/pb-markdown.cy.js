@@ -19,7 +19,7 @@ describe('pb-markdown', () => {
     `)
     cy.get('pb-markdown h1').should('have.text', 'Embedding Markdown')
     cy.get('pb-markdown pb-code-highlight').should('exist')
-    cy.get('pb-markdown pb-code-highlight').shadow().find('code').should($code => {
+    cy.get('pb-markdown pb-code-highlight').find('code').should($code => {
       expect($code[0].classList.contains('language-xquery')).to.be.true
     })
   })
