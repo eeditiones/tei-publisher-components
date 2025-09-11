@@ -141,4 +141,33 @@ describe('pb-view', () => {
     cy.wait('@parts')
     cy.get('pb-view').find('#footnotes').invoke('html').should('contain', 'brata')
   })
+
+  it('renders formulas after loading via pb-view', () => {
+    // Intercept parts to return a pb-formula inside content
+    cy.intercept('GET', '**/api/parts/**/json*', (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          content: '<div><pb-formula display>\\frac{1}{x} + \\frac{1}{y}</pb-formula></div>',
+          root: 'root',
+          next: null,
+          previous: null,
+          switchView: null,
+        },
+      })
+    }).as('partsFormula')
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+        <pb-view src="document1"></pb-view>
+      </pb-page>
+    `)
+    cy.wait('@partsFormula')
+    // Assert formula component typeset inside the view (retry until MathJax output exists)
+    cy.get('pb-view').find('pb-formula[loaded]').should('exist')
+    cy.get('pb-view').find('pb-formula').should(($els) => {
+      const el = $els[0]
+      expect(el.querySelector('mjx-container'), 'MathJax container exists').to.exist
+    })
+  })
 })

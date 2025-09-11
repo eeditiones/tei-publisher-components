@@ -41,3 +41,35 @@ Cypress.on('uncaught:exception', (err) => {
   }
   // Let other errors fail the test
 })
+
+// Helper: robustly stub window.fetch for JSON endpoints (works pre- and post-mount)
+// Usage:
+//   cy.stubFetchJson(/demo\/grid\.json/, (url, win) => new win.Response(JSON.stringify({...}), {status:200, headers:{'Content-Type':'application/json'}}))
+Cypress.Commands.add('stubFetchJson', (pattern, responder) => {
+  // Pre-mount: catch earliest requests
+  cy.on('window:before:load', (win) => {
+    const orig = win.fetch && win.fetch.bind ? win.fetch.bind(win) : undefined
+    if (!orig) return
+    cy.stub(win, 'fetch').callsFake((input, init) => {
+      const href = typeof input === 'string' ? input : (input && (input.url || String(input)))
+      if (href && pattern.test(href)) {
+        return Promise.resolve(responder(href, win))
+      }
+      return orig(input, init)
+    }).as('fetch')
+  })
+  // Post-mount: ensure stub exists even if before:load did not fire
+  cy.window().then((win) => {
+    const alreadyStubbed = win.fetch && typeof win.fetch.getCalls === 'function'
+    if (alreadyStubbed) return
+    const orig = win.fetch && win.fetch.bind ? win.fetch.bind(win) : undefined
+    if (!orig) return
+    cy.stub(win, 'fetch').callsFake((input, init) => {
+      const href = typeof input === 'string' ? input : (input && (input.url || String(input)))
+      if (href && pattern.test(href)) {
+        return Promise.resolve(responder(href, win))
+      }
+      return orig(input, init)
+    }).as('fetch')
+  })
+})
