@@ -1,9 +1,8 @@
 import { html, css } from 'lit-element';
 import '@polymer/iron-form';
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
 import { PbLoad } from './pb-load.js';
+import './pb-dialog.js';
 
 /**
  * A custom form element which loads the actual form from a server-side script using AJAX.
@@ -59,13 +58,12 @@ export class PbCustomForm extends PbLoad {
         @response="${this._handleContent}"
         @error="${this._handleError}"
       ></iron-ajax>
-      <paper-dialog id="errorDialog">
-        <h2>Error</h2>
-        <paper-dialog-scrollable></paper-dialog-scrollable>
-        <div class="buttons">
-          <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus"> Close </paper-button>
+      <pb-dialog id="errorDialog" title="Error">
+        <p id="errorMessage"></p>
+        <div slot="footer">
+          <button rel="prev">Close</button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
     `;
   }
 
@@ -116,6 +114,26 @@ export class PbCustomForm extends PbLoad {
     super._onLoad(content);
 
     this.dispatchEvent(new CustomEvent('pb-custom-form-loaded', { detail: content }));
+  }
+
+  _handleError() {
+    this.emitTo('pb-end-update');
+    const loader = this.shadowRoot.getElementById('loadContent');
+    const { response } = loader.lastError;
+    if (this.silent) {
+      console.error('Request failed: %s', response ? response.description : '');
+      return;
+    }
+    let message;
+    if (response) {
+      message = response.description;
+    } else {
+      message = 'Server error occurred';
+    }
+    const dialog = this.shadowRoot.getElementById('errorDialog');
+    const messageElement = this.shadowRoot.getElementById('errorMessage');
+    messageElement.textContent = `Server error: ${message}`;
+    dialog.openDialog();
   }
 
   _submissionHandlers() {

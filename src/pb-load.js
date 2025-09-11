@@ -4,8 +4,8 @@ import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
 import '@polymer/iron-ajax';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
+import './pb-dialog.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Dynamically load data by calling a server-side script, optionally triggered by an event.
@@ -18,7 +18,7 @@ import '@polymer/paper-dialog-scrollable';
  * @fires pb-results-received - Fired when the component received content from the server
  * @fires pb-toggle - When received, changes the state of the feature
  */
-export class PbLoad extends pbMixin(LitElement) {
+export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
@@ -242,15 +242,12 @@ export class PbLoad extends pbMixin(LitElement) {
         @response="${this._handleContent}"
         @error="${this._handleError}"
       ></iron-ajax>
-      <paper-dialog id="errorDialog">
-        <h2>${translate('dialogs.error')}</h2>
-        <paper-dialog-scrollable></paper-dialog-scrollable>
-        <div class="buttons">
-          <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
-            ${translate('dialogs.close')}
-          </paper-button>
+      <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
+        <p id="errorMessage"></p>
+        <div slot="footer">
+          <button rel="prev">${translate('dialogs.close')}</button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
     `;
   }
 
@@ -410,9 +407,9 @@ export class PbLoad extends pbMixin(LitElement) {
       message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
     }
     const dialog = this.shadowRoot.getElementById('errorDialog');
-    const body = dialog.querySelector('paper-dialog-scrollable');
-    body.innerHTML = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
-    dialog.open();
+    const messageElement = this.shadowRoot.getElementById('errorMessage');
+    messageElement.innerHTML = `<pb-i18n key="dialogs.serverError"></pb-i18n>: ${message}`;
+    dialog.openDialog();
   }
 
   _parseHeaders(xhr, content) {
