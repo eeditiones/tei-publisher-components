@@ -3,5 +3,13 @@
   "document": {
     "contents": "Inhalt",
     "normalized": "Normalisierte Ansicht"
+  },
+  "menu": {
+    "download": {
+      "title": "Download"
+    }
+  },
+  "browse": {
+    "items": "Gefunden {{count}} Einträge"
   }
 }
