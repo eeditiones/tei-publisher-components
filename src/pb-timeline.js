@@ -4,9 +4,8 @@ import { SearchResultService } from './search-result-service.js';
 import { ParseDateService } from './parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
 import '@polymer/iron-ajax';
-import '@polymer/iron-icons';
-import '@polymer/paper-icon-button';
 import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
 
 /**
  * A timeline component to display time series data in a bar chart like view.
@@ -72,12 +71,14 @@ import { translate } from './pb-i18n.js';
  * @cssprop --pb-timeline-color-bin
  * @cssprop --pb-timeline-title-font-size
  * @cssprop --pb-timeline-tooltip-font-size
+ * @cssprop --pb-timeline-tooltip-min-width
+ * @cssprop --pb-timeline-tooltip-max-width
  *
  * @csspart label
  * @csspart tooltip
  * @csspart title
  */
-export class PbTimeline extends pbMixin(LitElement) {
+export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
   static get styles() {
     return css`
       :host {
@@ -195,10 +196,11 @@ export class PbTimeline extends pbMixin(LitElement) {
       }
 
       /* TOOLTIP */
-      #tooltip {
+      .tooltip {
         display: inline-block;
         position: absolute;
         min-width: var(--pb-timeline-tooltip-min-width, 200px);
+        max-width: var(--pb-timeline-tooltip-max-width, calc(100vw - 40px));
         font-size: var(--pb-timeline-tooltip-font-size, 11px);
         line-height: 1.25;
         background: var(--pb-timeline-background-color-title, #535353);
@@ -206,21 +208,26 @@ export class PbTimeline extends pbMixin(LitElement) {
         text-align: left;
         border-radius: 6px;
         padding: 5px 10px;
-        top: var(--pb-timeline-height, 80px);
+        top: calc(var(--pb-timeline-height, 80px) + 10px);
         left: 0;
         z-index: 1000;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
-      #tooltip ul {
+      .tooltip a:link, .tooltip a:visited {
+        color: var(--pb-timeline-color-title, #ffffff);
+      }
+      .tooltip ul {
         list-style: none;
         margin: 0;
         padding: 0;
       }
-      #tooltip-close {
+      .tooltip-close {
         position: absolute;
         top: -13px;
         right: -10px;
       }
-      #tooltip::after {
+      .tooltip::after {
         /* small triangle that points to top */
         content: '';
         position: absolute;
@@ -229,11 +236,13 @@ export class PbTimeline extends pbMixin(LitElement) {
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: transparent transparent black transparent;
+        border-color: transparent transparent var(--pb-timeline-background-color-title, #535353) transparent;
       }
-      #tooltip.right::after {
-        right: 10px;
-        left: auto;
+      .tooltip.chevron-precise::after {
+        left: var(--chevron-position, 50%);
+        right: auto;
+        margin-left: -5px;
+        margin-right: 0;
       }
       /* pure css close button for tooltip */
       .close {
@@ -277,6 +286,20 @@ export class PbTimeline extends pbMixin(LitElement) {
       .close.rounded::before,
       .close.rounded::after {
         border-radius: 5px;
+      }
+      #clear {
+        background-image: var(
+          --pb-dialog-background-image,
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(136, 145, 164)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E")
+        );
+        background-position: center;
+        background-size: auto 1rem;
+        background-repeat: no-repeat;
+        background-color: transparent;
+        border: none;
+        display: block;
+        height: 1rem;
+        width: 1rem;
       }
     `;
   }
@@ -377,7 +400,7 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   firstUpdated() {
     this.bins = this.shadowRoot.querySelectorAll('.bin-container');
-    this.tooltip = this.shadowRoot.getElementById('tooltip');
+    this.tooltip = this.shadowRoot.querySelector('.tooltip');
 
     // global mouseup event
     document.addEventListener('mouseup', () => {
@@ -600,23 +623,55 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   _showtooltip(event) {
     const interval = this._getElementInterval(event.currentTarget);
-    let offset;
-    if (interval[0] < interval[2]) {
-      offset = Math.round((interval[0] + interval[1]) / 2 - 10);
-      this.tooltip.classList.remove('right');
-    } else {
-      offset = Math.round((interval[0] + interval[1]) / 2 - this.tooltip.offsetWidth) + 10;
-      this.tooltip.classList.add('right');
-    }
-    this.tooltip.style.left = `${offset}px`;
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
     const info = event.currentTarget.querySelector('.info');
     this.tooltip.querySelector(
-      '#tooltip-text',
+      '.tooltip-text',
     ).innerHTML = `<div><strong>${datestr}</strong>: ${value}</div><ul>${
       info ? info.innerHTML : ''
     }</ul>`;
+    
+    // Force a reflow to get accurate tooltip dimensions
+    this.tooltip.style.visibility = 'hidden';
+    this.tooltip.style.display = 'block';
+    const tooltipWidth = this.tooltip.offsetWidth;
+    this.tooltip.style.visibility = '';
+    this.tooltip.style.display = '';
+    
+    const wrapper = this.shadowRoot.querySelector('.wrapper');
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const wrapperWidth = wrapperRect.width;
+    
+    let offset;
+    const centerPosition = Math.round((interval[0] + interval[1]) / 2);
+    
+    // Clear any existing chevron positioning classes
+    this.tooltip.classList.remove('chevron-precise');
+    
+    // Check if tooltip would overflow on the right
+    if (centerPosition + tooltipWidth / 2 > wrapperWidth) {
+      // Position tooltip to the right of the bin, aligned to the right edge
+      offset = Math.max(0, interval[1] - tooltipWidth + 10);
+      this.tooltip.classList.add('right');
+    } else if (centerPosition - tooltipWidth / 2 < 0) {
+      // Position tooltip to the left of the bin, aligned to the left edge
+      offset = Math.min(wrapperWidth - tooltipWidth, interval[0] - 10);
+      this.tooltip.classList.remove('right');
+    } else {
+      // Center the tooltip
+      offset = centerPosition - tooltipWidth / 2;
+      this.tooltip.classList.remove('right');
+    }
+    
+    this.tooltip.style.left = `${offset}px`;
+    
+    // Calculate precise chevron position to point to the bin
+    const binCenter = centerPosition;
+    const tooltipLeft = offset;
+    const chevronPosition = Math.max(10, Math.min(tooltipWidth - 10, binCenter - tooltipLeft));
+    this.tooltip.style.setProperty('--chevron-position', `${chevronPosition}px`);
+    this.tooltip.classList.add('chevron-precise');
   }
 
   _showtooltipSelection() {
@@ -630,25 +685,66 @@ export class PbTimeline extends pbMixin(LitElement) {
     const value = selectedBins.map(bin => Number(bin.dataset.value)).reduce((a, b) => a + b);
     const valueFormatted = this._numberWithCommas(value);
     this.tooltip.querySelector(
-      '#tooltip-text',
+      '.tooltip-text',
     ).innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
-    this.tooltip.querySelector('#tooltip-close').classList.remove('hidden');
+    this.tooltip.querySelector('.tooltip-close').classList.remove('hidden');
     this.tooltip.classList.add('draggable');
-    const offset = Math.round((interval[0] + interval[1]) / 2 - this.tooltip.offsetWidth / 2);
+    
+    // Force a reflow to get accurate tooltip dimensions
+    this.tooltip.style.visibility = 'hidden';
+    this.tooltip.style.display = 'block';
+    const tooltipWidth = this.tooltip.offsetWidth;
+    this.tooltip.style.visibility = '';
+    this.tooltip.style.display = '';
+    
+    const wrapper = this.shadowRoot.querySelector('.wrapper');
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const wrapperWidth = wrapperRect.width;
+    
+    const centerPosition = Math.round((interval[0] + interval[1]) / 2);
+    let offset;
+    
+    // Clear any existing chevron positioning classes
+    this.tooltip.classList.remove('chevron-precise');
+    
+    // Check if tooltip would overflow on the right
+    if (centerPosition + tooltipWidth / 2 > wrapperWidth) {
+      // Position tooltip to the right of the selection, aligned to the right edge
+      offset = Math.max(0, interval[1] - tooltipWidth + 10);
+      this.tooltip.classList.add('right');
+    } else if (centerPosition - tooltipWidth / 2 < 0) {
+      // Position tooltip to the left of the selection, aligned to the left edge
+      offset = Math.min(wrapperWidth - tooltipWidth, interval[0] - 10);
+      this.tooltip.classList.remove('right');
+    } else {
+      // Center the tooltip
+      offset = centerPosition - tooltipWidth / 2;
+      this.tooltip.classList.remove('right');
+    }
+    
     this.tooltip.style.left = `${offset}px`;
+    
+    // Calculate precise chevron position to point to the center of the selection
+    const selectionCenter = centerPosition;
+    const tooltipLeft = offset;
+    const chevronPosition = Math.max(10, Math.min(tooltipWidth - 10, selectionCenter - tooltipLeft));
+    this.tooltip.style.setProperty('--chevron-position', `${chevronPosition}px`);
+    this.tooltip.classList.add('chevron-precise');
   }
 
   _resetTooltip() {
     this._hideTooltip();
     this.tooltip.style.left = '-1000px';
-    this.tooltip.querySelector('#tooltip-text').innerHTML = '';
+    this.tooltip.querySelector('.tooltip-text').innerHTML = '';
   }
 
   _hideTooltip() {
     if (this.selection.start === undefined) {
       this.tooltip.classList.add('hidden');
       this.tooltip.classList.remove('draggable');
-      this.tooltip.querySelector('#tooltip-close').classList.add('hidden');
+      this.tooltip.querySelector('.tooltip-close').classList.add('hidden');
+      // Clear chevron positioning classes
+      this.tooltip.classList.remove('chevron-precise');
     }
   }
 
@@ -713,12 +809,8 @@ export class PbTimeline extends pbMixin(LitElement) {
         <span class="label"><slot name="label"></slot>${this.label}</span>
         ${this.resettable
           ? html`
-              <paper-icon-button
-                id="clear"
-                icon="icons:clear"
-                title="${translate('timeline.clear')}"
-                @click="${this._dispatchPbTimelineResetSelectionEvent}"
-              ></paper-icon-button>
+              <button id="clear" title="${translate('timeline.clear')}"
+                @click="${this._dispatchPbTimelineResetSelectionEvent}"></button>
             `
           : null}
       </div>
@@ -744,11 +836,10 @@ export class PbTimeline extends pbMixin(LitElement) {
 
   renderTooltip() {
     return html`
-      <div id="tooltip" class="hidden" part="tooltip">
-        <div id="tooltip-text"></div>
+      <div class="tooltip hidden" part="tooltip">
+        <div class="tooltip-text"></div>
         <div
-          id="tooltip-close"
-          class="hidden"
+          class="tooltip-close hidden"
           @click="${this._dispatchPbTimelineResetSelectionEvent}"
         >
           <span class="close rounded black"></span>

@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-button/paper-button';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from './pb-i18n.js';
 import './pb-dialog.js';
