@@ -21,4 +21,21 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
+  optimizeDeps: {
+    // Exclude legacy/complex deps that don't prebundle cleanly under CT
+    exclude: [
+      '@polymer/app-layout',
+      '@polymer/paper-icon-button',
+      '@polymer/iron-ajax',
+      '@polymer/paper-dialog',
+      '@polymer/paper-dialog-scrollable',
+      '@polymer/paper-input',
+      '@polymer/paper-item',
+      '@polymer/paper-listbox',
+      '@polymer/paper-dropdown-menu',
+      '@cwmr/paper-autocomplete',
+      'gridjs',
+      'construct-style-sheets-polyfill',
+    ],
+  },
 });
