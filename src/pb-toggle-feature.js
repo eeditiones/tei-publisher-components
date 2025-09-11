@@ -1,5 +1,4 @@
 import { LitElement, html } from 'lit-element';
-import '@polymer/paper-checkbox';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { themableMixin } from './theming.js';
