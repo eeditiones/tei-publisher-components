@@ -25,12 +25,16 @@ describe('pb-grid', () => {
       return cy.wrap(p)
     }).then((ev) => {
       expect(ev.detail.active).to.equal(1)
-      // Wait for panel re-render, then assert selected property on paper-listbox
+      // Wait for panel re-render, then assert selectedIndex/value on native select
       cy.get('pb-panel').then(($p) => $p[0].updateComplete).then(() => {
-        cy.get('pb-panel').shadow().find('#panels').should(($list) => {
-          const sel = $list[0].selected
-          expect(Number(sel)).to.equal(1)
-        })
+        cy.get('pb-panel')
+          .shadow()
+          .find('select[name="panels"]')
+          .should(($select) => {
+            const el = /** @type {HTMLSelectElement} */ ($select[0])
+            expect(el.selectedIndex).to.equal(1)
+            expect(el.value).to.equal('1')
+          })
       })
     })
   })
