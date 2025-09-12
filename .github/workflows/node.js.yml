@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Cypress CT
-        run: npm run cy:run:ct
+        run: npx cypress run --component
 
   build:
       runs-on: ubuntu-latest
