@@ -131,7 +131,10 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
     const gridjsTheme = await loadStylesheets([`${resolveURL(this.cssPath)}/mermaid.min.css`]);
     const theme = importStyles(this);
-    const sheets = [...this.shadowRoot.adoptedStyleSheets, gridjsTheme];
+    const sheets = [...this.shadowRoot.adoptedStyleSheets];
+    if (gridjsTheme) {
+      sheets.push(gridjsTheme);
+    }
     if (theme) {
       sheets.push(theme);
     }

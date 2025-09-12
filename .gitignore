@@ -18,4 +18,7 @@ lib/*
 !lib/openseadragon.min.js
 docs/
 *.iml
-.notes.md
+migration_plan/
+test/cypress/screenshots/
+test/cypress/videos/
+test/cypress/downloads/

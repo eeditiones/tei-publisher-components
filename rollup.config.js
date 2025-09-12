@@ -1,4 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
+import alias from '@rollup/plugin-alias';
+import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
@@ -37,8 +39,16 @@ export default [
       format: 'es',
       sourcemap: !production,
     },
+    external: ['module', 'fs', 'path', 'url'],
     plugins: [
+      alias({
+        entries: [
+          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
+          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+        ],
+      }),
       replace({
+        preventAssignment: true,
         'process.env.NODE_ENV': JSON.stringify('production'),
         'const PB_COMPONENTS_VERSION = null': `const PB_COMPONENTS_VERSION = '${pkg.version}'`,
       }),
@@ -51,7 +61,8 @@ export default [
           ['@babel/plugin-transform-optional-chaining', { useBuiltIns: true }],
         ],
       }),
-      resolve(),
+      resolve({ browser: true, preferBuiltins: false }),
+      commonjs(),
       production &&
         terser({
           compress: {
@@ -154,8 +165,16 @@ export default [
       format: 'es',
       sourcemap: !production,
     },
+    external: ['module', 'fs', 'path', 'url'],
     plugins: [
-      resolve(),
+      alias({
+        entries: [
+          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
+          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+        ],
+      }),
+      resolve({ browser: true, preferBuiltins: false }),
+      commonjs(),
       production &&
         terser({
           compress: {
