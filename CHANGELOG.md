@@ -1,3 +1,10 @@
+# [2.26.0-next-3.16](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.15...v2.26.0-next-3.16) (2025-09-12)
+
+
+### Features
+
+* **pb-managed-odds:** drop paper elements, use plain styling ([0f5c820](https://github.com/eeditiones/tei-publisher-components/commit/0f5c820923529b68bd264bfd1acb8ee95ef16830))
+
 # [2.26.0-next-3.15](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.14...v2.26.0-next-3.15) (2025-09-11)
 
 
