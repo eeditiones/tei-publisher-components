@@ -2,11 +2,11 @@ name: tei-publisher-components CI
 
 on:
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master, next* ]
 
   push:
     branches:
-      - develop
+      - next*
 
   workflow_dispatch:
 
