@@ -23,6 +23,22 @@ beforeEach(() => {
   // Match both absolute and Cypress-served paths (e.g., /__cypress/i18n/common/en.json)
   cy.intercept('GET', '**/i18n/common/en.json', { fixture: 'i18n/common/en.json' })
   cy.intercept('GET', '**/i18n/common/de.json', { fixture: 'i18n/common/de.json' })
+
+  // Reset global pbRegistry state between tests to avoid cross-test leakage
+  cy.window().then(win => {
+    if (win.pbRegistry) {
+      try {
+        win.pbRegistry.state = {}
+        win.pbRegistry.channelStates = {}
+        // also normalize URL to avoid state encoded in search params
+        const url = new URL(win.location.href)
+        url.search = ''
+        win.history.replaceState({}, '', url.toString())
+      } catch (e) {
+        // ignore
+      }
+    }
+  })
 })
 
 // Helper: wait for a single DOM event on document
@@ -71,5 +87,18 @@ Cypress.Commands.add('stubFetchJson', (pattern, responder) => {
       }
       return orig(input, init)
     }).as('fetch')
+  })
+})
+
+// Helper: clear panels for a given grid (defaults to #grid)
+// Usage: cy.resetPanels('#grid')
+Cypress.Commands.add('resetPanels', (gridSelector = '#grid') => {
+  cy.get(gridSelector).then($grid => {
+    const grid = $grid[0]
+    cy.window().then(win => {
+      if (win.pbRegistry) {
+        win.pbRegistry.replace(grid, { panels: '' }, true)
+      }
+    })
   })
 })

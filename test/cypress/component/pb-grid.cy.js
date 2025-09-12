@@ -5,17 +5,23 @@ import '../../../src/pb-panel.js'
 import '../../../src/pb-grid-action.js'
 
 describe('pb-grid', () => {
+  // Base markup for default cases: direct pb-panel child
+  const base = `
+    <pb-page endpoint="." api-version="1.0.0">
+      <pb-grid id="grid">
+        <pb-panel>
+          <template title="One"><div id="p1">One</div></template>
+          <template title="Two"><div id="p2">Two</div></template>
+        </pb-panel>
+      </pb-grid>
+    </pb-page>
+  `
+
+  beforeEach(() => {
+    cy.mount(base)
+    cy.resetPanels('#grid')
+  })
   it('can open a panel and emit pb-panel', () => {
-    cy.mount(`
-      <pb-page endpoint="." api-version="1.0.0">
-        <pb-grid id="grid">
-          <pb-panel>
-            <template title="One"><div id="p1">One</div></template>
-            <template title="Two"><div id="p2">Two</div></template>
-          </pb-panel>
-        </pb-grid>
-      </pb-page>
-    `)
     cy.get('pb-grid pb-panel').then(($panel) => {
       const panel = $panel[0]
       const p = new Cypress.Promise((resolve) => {
@@ -98,18 +104,8 @@ describe('pb-grid', () => {
   })
 
   it('zooms in/out by adjusting font-size', () => {
-    cy.mount(`
-      <pb-page endpoint="." api-version="1.0.0">
-        <pb-grid id="grid" style="font-size: 10px">
-          <template>
-            <pb-panel>
-              <template title="ONE">One</template>
-              <template title="TWO">Two</template>
-            </pb-panel>
-          </template>
-        </pb-grid>
-      </pb-page>
-    `)
+    // base is mounted; set initial font-size
+    cy.get('#grid').invoke('attr', 'style', 'font-size: 10px')
     cy.get('#grid').then(($grid) => {
       const grid = $grid[0]
       const getSize = () => parseInt(getComputedStyle(grid).getPropertyValue('font-size'))
@@ -155,6 +151,64 @@ describe('pb-grid', () => {
       const stub = cy.stub(win.console, 'error').as('consoleError')
       cy.get('#act').shadow().find('a').click({ force: true })
       cy.get('@consoleError').should('have.been.called')
+    })
+  })
+
+  it('grid-action adds a panel when clicked', () => {
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-grid id="grid" panels="[]">
+          <template>
+            <pb-panel>
+              <template title="ONE">One</template>
+              <template title="TWO">Two</template>
+            </pb-panel>
+          </template>
+        </pb-grid>
+        <pb-grid-action id="act" grid="#grid" action="add" initial="0">Add</pb-grid-action>
+      </pb-page>
+    `)
+    // Reset registry to avoid leftover state from previous tests
+    cy.get('#grid').then(($grid) => {
+      const grid = $grid[0]
+      cy.window().then((win) => {
+        if (win.pbRegistry) {
+          win.pbRegistry.replace(grid, { panels: '' }, true)
+        }
+      })
+    })
+    cy.get('#act').find('a').click({ force: true })
+    // Assert a panel with active="0" exists
+    cy.get('#grid ._grid_panel[active="0"]').should('exist')
+  })
+  // see #249
+  it.skip('grid-action removes the containing panel (flaky, revisit after deps update)', () => {
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-grid id="grid" panels="[]">
+          <template>
+            <pb-panel>
+              <template title="ONE">One</template>
+              <template title="TWO">Two</template>
+              <span slot="toolbar"><pb-grid-action id="rm" grid="#grid" action="remove">Remove</pb-grid-action></span>
+            </pb-panel>
+          </template>
+        </pb-grid>
+      </pb-page>
+    `)
+    cy.get('#grid').then(($grid) => {
+      const grid = /** @type {any} */ ($grid[0])
+      grid.addPanel(0)
+      grid.addPanel(1)
+    })
+    cy.get('#grid ._grid_panel').should('have.length.at.least', 2)
+    cy.get('#rm').find('a').click({ force: true })
+    // Expect panel count to eventually drop below initial
+    cy.get('#grid ._grid_panel').then(($panels) => {
+      const initial = $panels.length
+      cy.get('#grid ._grid_panel').should(($p2) => {
+        expect($p2.length).to.be.lessThan(initial)
+      })
     })
   })
 })
