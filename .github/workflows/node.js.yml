@@ -11,6 +11,22 @@ on:
   workflow_dispatch:
 
 jobs:
+  test-fast:
+      name: Cypress Component Tests
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Cypress CT
+        run: npx cypress run --component
+
   build:
       runs-on: ubuntu-latest
       steps:
@@ -19,14 +35,26 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "22"
-      - name: npm install and build
-        run:
-          npm ci
-          npm run build:production
-      - name: Build docker image
-        run: docker build -t exist-db -f Dockerfile .
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: npm install
+        run: npm ci
+      - name: build
+        run: npm run build:production
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build docker image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          tags: exist-db:ci
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Start docker image
-        run: docker run --publish 8080:8080 --detach exist-db
+        run: docker run --publish 8080:8080 --detach exist-db:ci
       - name: Wait for eXist
         uses: iFaxity/wait-on-action@v1
         with:

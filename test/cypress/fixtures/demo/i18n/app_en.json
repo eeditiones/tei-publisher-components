@@ -1,0 +1,8 @@
+{
+  "demo": {
+    "message": "User defined message"
+  },
+  "document": {
+    "contents": "Custom Table of Contents"
+  }
+}
