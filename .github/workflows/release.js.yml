@@ -1,45 +1,36 @@
 name: Release npm package
 
 on:
+  workflow_run:
+    workflows: ["Build and Test"]
   push:
     branches:
       - master
       - next-3
+    types:
+      - completed
 
 jobs:
   release:
+    # check Test success
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
     steps:
       - uses: actions/checkout@v5
+        with:
+            fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: package-lock.json
       - name: npm install
-        run: npm ci
-      - name: build
-        run: npm run build:production
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build docker image (cached)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          tags: exist-db:ci
-          push: false
-          load: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      - name: Start docker image
-        run: docker run --publish 8080:8080 --detach exist-db:ci
-      - name: Wait for eXist
-        uses: iFaxity/wait-on-action@v1
-        with:
-          resource: http-get://localhost:8080/exist/apps/tei-publisher/api/version
-      - run: npm test
+        run: npm ci --omit=optional
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
