@@ -15,7 +15,7 @@ describe('pb-popover', () => {
     cy.mount('<pb-popover id="pop" persistent remote="/remote.html"><span slot="default" id="tr">Trigger</span><template slot="alternate"><div>Loading...</div></template></pb-popover>')
     // Stub fetch to return HTML
     cy.window().then((win) => {
-      cy.stub(win, 'fetch').callsFake((url) => Promise.resolve(new win.Response('<div id="remote">Remote Content</div>', { status: 200, headers: { 'Content-Type': 'text/html' } })))
+      cy.stub(win, 'fetch').callsFake(() => Promise.resolve(new win.Response('<div id="remote">Remote Content</div>', { status: 200, headers: { 'Content-Type': 'text/html' } })))
     })
     cy.get('#pop').find('#link').click({ force: true })
     cy.get('body').find('.tippy-box #remote').should('exist')
