@@ -1,17 +1,17 @@
 import { LitElement, html, css } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import * as marked from 'marked/lib/marked.js';
+import marked from 'marked/lib/marked.esm.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import './pb-code-highlight.js';
 
-const renderer = new window.marked.Renderer();
+const renderer = new marked.Renderer();
 renderer.code = function code(code, infostring, escaped) {
   return `<pb-code-highlight language="${infostring}" line-numbers>
         <template>${code}</template>
     </pb-code-highlight>`;
 };
 
-window.marked.setOptions({
+marked.setOptions({
   renderer,
 });
 
@@ -113,7 +113,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
     if (!this.content) {
       return null;
     }
-    return html`<div>${unsafeHTML(window.marked(this.content))}</div>`;
+    return html`<div>${unsafeHTML(marked(this.content))}</div>`;
   }
 
   zoom(direction) {

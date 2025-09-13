@@ -13,6 +13,7 @@ module.exports = config => {
         { pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module' },
         { pattern: 'i18n/**/*', watched: false, included: false, served: true },
         { pattern: 'demo/*.json', watched: false, included: false, served: true },
+        { pattern: 'demo/i18n/**/*', watched: false, included: false, served: true },
       ],
       proxies: {
         '/demo': '/base/demo',
