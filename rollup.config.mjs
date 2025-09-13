@@ -5,8 +5,10 @@ import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
 import replace from '@rollup/plugin-replace';
-import babel from 'rollup-plugin-babel';
-import pkg from './package.json';
+import babel from '@rollup/plugin-babel';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 const production = process.env.BUILD === 'production';
 
@@ -53,6 +55,7 @@ export default [
         'const PB_COMPONENTS_VERSION = null': `const PB_COMPONENTS_VERSION = '${pkg.version}'`,
       }),
       babel({
+        babelHelpers: 'bundled',
         assumptions: {
           setSpreadProperties: true,
         },
