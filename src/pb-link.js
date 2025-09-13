@@ -1,5 +1,5 @@
-import { LitElement, html } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { LitElement, html } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 
