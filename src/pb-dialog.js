@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 
 /**
