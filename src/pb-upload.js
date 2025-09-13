@@ -83,7 +83,7 @@ export class PbUpload extends pbMixin(LitElement) {
     });
     uploader.addEventListener('upload-error', event => {
       this.emitTo('pb-end-update');
-      // eslint-disable-next-line no-param-reassign
+       
       event.detail.file.error = event.detail.xhr.responseText;
       this.requestUpdate();
     });

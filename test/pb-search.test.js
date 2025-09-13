@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 import { fixture, expect } from '@open-wc/testing';
 import { cleanup } from './util.js';
 
