@@ -7,6 +7,7 @@ node_modules
 !.gitignore
 !.vscode
 !.github
+!.eslintrc.json
 analysis.json
 pb-elements.json
 ./assets
