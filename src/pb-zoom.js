@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
-import { pbMixin } from './pb-mixin';
-import { translate } from './pb-i18n';
-import { themableMixin } from './theming';
+import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Zoom button to enlarge/shrink the font for the views. This component does not

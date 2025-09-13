@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin, waitOnce } from './pb-mixin';
-import { translate } from './pb-i18n';
+import { pbMixin, waitOnce } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-ajax';
 import '@polymer/iron-icon';
