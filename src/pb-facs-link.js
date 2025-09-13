@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { pbMixin } from './pb-mixin.js';
 
 /**
  * @slot - unnamed default slot for link text
