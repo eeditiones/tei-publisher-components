@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { resolveURL } from './utils.js';
 
 // will be set by rollup when bundling
