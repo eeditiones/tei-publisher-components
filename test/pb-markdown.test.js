@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 import { expect } from '@open-wc/testing';
 import { waitForPage, cleanup } from './util.js';
 import '../src/pb-page.js';

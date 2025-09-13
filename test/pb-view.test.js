@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 import { oneEvent, expect } from '@open-wc/testing';
 import { waitForPage, cleanup } from './util.js';
 import { defaultChannel } from '../src/pb-mixin.js';

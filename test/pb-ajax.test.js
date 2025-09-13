@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 import { oneEvent, expect } from '@open-wc/testing';
 import { cleanup, waitForPage } from './util.js';
 

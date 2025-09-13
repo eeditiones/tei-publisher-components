@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 import { oneEvent, fixture, expect, fixtureCleanup } from '@open-wc/testing';
 import { cleanup } from './util.js';
 
