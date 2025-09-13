@@ -28,8 +28,8 @@
     "docker": "npm run build:production && docker build --no-cache --pull --rm -f 'Dockerfile' -t pbcomponents:master '.'",
     "docker:run": "docker run --rm -it -p 8080:8080/tcp -p 8443:8443/tcp pbcomponents:master",
     "docs": "wca src -f json --outFile pb-elements.json",
-    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
-    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
+    "lint:eslint": "eslint --ext .js,.html .",
+    "format:eslint": "eslint --ext .js,.html . --fix",
     "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
     "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
     "lint": "npm run lint:eslint && npm run lint:prettier",
@@ -107,12 +107,13 @@
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/plugin-transform-optional-chaining": "^7.22.6",
-    "@open-wc/eslint-config": "^4.2.0",
+    "@open-wc/eslint-config": "^13.0.0",
     "@open-wc/prettier-config": "^1.1.0",
     "@open-wc/testing": "^2.5.29",
     "@open-wc/testing-karma": "^4.0.8",
     "@rollup/plugin-alias": "^3.1.9",
     "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/plugin-replace": "^2.3.3",
     "@semantic-release/changelog": "^5.0.1",
@@ -120,7 +121,16 @@
     "cypress": "^15.2.0",
     "deepmerge": "^4.2.2",
     "es-dev-server": "^2.1.0",
-    "eslint": "^7.10.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.35.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-html": "^8.1.3",
+    "eslint-plugin-cypress": "^5.1.1",
+    "eslint-plugin-chai-friendly": "^1.1.0",
+    "eslint-plugin-lit": "^2.1.1",
+    "eslint-plugin-wc": "^3.0.1",
+    "globals": "^16.4.0",
     "karma": "^6.4.1",
     "lint-staged": "^10.4.0",
     "recursive-copy": "^2.0.14",
@@ -130,17 +140,11 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-modify": "^3.0.0",
-    "rollup-plugin-terser": "^5.3.0",
     "semantic-release": "^17.1.1",
     "vite": "^5.4.0",
     "web-component-analyzer": "^2.0.0"
   },
-  "eslintConfig": {
-    "extends": [
-      "@open-wc/eslint-config",
-      "eslint-config-prettier"
-    ]
-  },
+  
   "prettier": "@open-wc/prettier-config",
   "lint-staged": {
     "*.js": [
