@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 import '@polymer/iron-icons';
