@@ -1,7 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 import analyze from 'rollup-plugin-analyzer';
 import replace from '@rollup/plugin-replace';
@@ -65,9 +65,13 @@ export default [
       commonjs(),
       production &&
         terser({
+          ecma: 2022,
+          module: true,
           compress: {
+            // keep conservative to avoid breaking modern syntax
             reduce_vars: false,
           },
+          format: { comments: false },
         }),
       analyze({
         summaryOnly: true,
@@ -177,9 +181,12 @@ export default [
       commonjs(),
       production &&
         terser({
+          ecma: 2022,
+          module: true,
           compress: {
             reduce_vars: false,
           },
+          format: { comments: false },
         }),
       copy({
         targets: [
