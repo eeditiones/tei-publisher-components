@@ -1,8 +1,4 @@
-import { LitElement, html } from 'lit-element';
-import { directive, NodePart, AttributePart } from 'lit-html';
-
-// Cache created lit-html parts, so we can update translations
-const partCache = new Map();
+import { LitElement, html } from 'lit';
 
 // The currently used i18next translation function
 let _translate;
@@ -15,50 +11,7 @@ export function initTranslation(translate) {
   _translate = translate;
 }
 
-function isConnected(part) {
-  if (part instanceof NodePart) {
-    return part.startNode.isConnected;
-  }
-  if (part instanceof AttributePart) {
-    return part.committer.element.isConnected;
-  }
-  return part.element.isConnected;
-}
-
-function removeDisconnectedParts() {
-  Object.keys(partCache).forEach(part => {
-    if (!isConnected(part)) {
-      partCache.delete(part);
-    }
-  });
-}
-
-function whenIdle(cb) {
-  'requestIdleCallback' in window ? window.requestIdleCallback(cb) : setTimeout(cb);
-}
-
-function updatePart(part, cb) {
-  // Grab the new value
-  const newValue = cb();
-
-  // Only set the value if it has changed
-  if (part.value === newValue) {
-    return;
-  }
-
-  // Set the new value
-  part.setValue(newValue);
-  part.commit();
-}
-
-function updateParts(options) {
-  _translate = options.t;
-  partCache.forEach((cb, part) => {
-    if (isConnected(part)) {
-      updatePart(part, cb);
-    }
-  });
-}
+// No-op helpers kept for backward compatibility of API surface
 
 /**
  * Translate the given string using i18n.
@@ -74,11 +27,6 @@ export function get(key, value) {
   return key;
 }
 
-export const langChanged = directive(cb => part => {
-  partCache.set(part, cb);
-  updatePart(part, cb);
-});
-
 /**
  * lit-html directive to translate a given key into the target language
  * using i18next.
@@ -86,14 +34,12 @@ export const langChanged = directive(cb => part => {
  * @param {String} key The key to translate
  * @param {Object} [value] Optional object containing interpolation values
  */
-export const translate = (key, value) => langChanged(() => get(key, value));
+export const translate = (key, value) => get(key, value);
 
+// Keep _translate in sync on updates
 document.addEventListener('pb-i18n-update', ev => {
-  updateParts(ev.detail);
+  _translate = ev.detail.t || _translate;
 });
-
-// start a background task to garbage collect parts
-setInterval(() => whenIdle(() => removeDisconnectedParts()), 1000 * 60);
 
 /**
  * Insert translated text somewhere on an HTML page. If no translation is found,
@@ -132,7 +78,9 @@ export class PbI18n extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    // Capture initial fallback then clear host content so Lit fully controls light DOM
     this._fallback = this.innerHTML;
+    this.innerHTML = '';
 
     document.addEventListener('pb-i18n-update', this._translate.bind(this));
 
