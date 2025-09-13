@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 
