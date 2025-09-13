@@ -4,7 +4,7 @@ const isCypress = !!process.env.CYPRESS;
 
 // Vite dev server for pb-components demos and local development
 // - Serves from repo root so existing demo and api pages work
-// - Opens api.html by default to mirror es-dev-server behavior
+// - Opens api.html by default
 // - Replaces process.env.NODE_ENV usages for legacy code paths
 export default defineConfig({
   root: '.',
