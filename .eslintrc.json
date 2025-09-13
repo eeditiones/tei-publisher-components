@@ -1,0 +1,1 @@
+{"extends":["@open-wc/eslint-config","eslint-config-prettier"],"rules":{"no-restricted-imports":["error",{"paths":[{"name":"lit-element","message":"Use 'lit' instead (see migration_plan/LIT-CONSOLIDATION.md)."},{"name":"lit-html","message":"Use 'lit' instead (see migration_plan/LIT-CONSOLIDATION.md)."}],"patterns":["lit-html/*"]}]}}
