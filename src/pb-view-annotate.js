@@ -1,5 +1,5 @@
 import '@polymer/paper-icon-button';
-import { css, html } from 'lit-element';
+import { css, html } from 'lit';
 import tippy from 'tippy.js';
 import uniqolor from 'uniqolor/src/index';
 import { PbView } from './pb-view.js';
