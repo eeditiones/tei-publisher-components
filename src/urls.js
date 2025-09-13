@@ -227,7 +227,7 @@ class Registry {
     // make sure all intermediate steps are available
     const lastIntermediate = components.reduce((result, nextComponent) => {
       if (!result[nextComponent]) {
-        // eslint-disable-next-line no-param-reassign
+         
         result[nextComponent] = {};
       }
       return result[nextComponent];

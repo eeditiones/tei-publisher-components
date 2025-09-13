@@ -52,7 +52,7 @@ function absoluteOffset(container, node, offset) {
   while (walker.previousNode()) {
     const sibling = walker.currentNode;
     if (!(sibling.nodeType === Node.ELEMENT_NODE || isSkippedNode(sibling))) {
-      // eslint-disable-next-line no-param-reassign
+       
       offset += sibling.textContent.length;
     }
   }
