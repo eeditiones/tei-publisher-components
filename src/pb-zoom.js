@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit-element';
+import { LitElement, css, html } from 'lit';
 import { pbMixin } from './pb-mixin';
 import { translate } from './pb-i18n';
 import { themableMixin } from './theming';
