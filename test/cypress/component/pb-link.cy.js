@@ -40,7 +40,7 @@ describe('pb-link', () => {
   it('does not push history when history=false', () => {
     cy.get('#lnk').invoke('attr', 'xml-id', 'intro')
     cy.window().then((win) => {
-      const pushStub = cy.stub(win.history, 'pushState').as('push')
+      cy.stub(win.history, 'pushState').as('push')
       const wait = new Cypress.Promise((resolve) => {
         document.addEventListener('pb-refresh', resolve, { once: true })
       })
@@ -57,7 +57,7 @@ describe('pb-link', () => {
   it('pushes history by default when clicked', () => {
     cy.get('#lnk').invoke('attr', 'xml-id', 'go')
     cy.window().then((win) => {
-      const pushStub = cy.stub(win.history, 'pushState').as('push')
+      cy.stub(win.history, 'pushState').as('push')
       const wait = new Cypress.Promise((resolve) => {
         document.addEventListener('pb-refresh', resolve, { once: true })
       })

@@ -148,7 +148,7 @@ describe('pb-grid', () => {
       </pb-page>
     `)
     cy.window().then((win) => {
-      const stub = cy.stub(win.console, 'error').as('consoleError')
+      cy.stub(win.console, 'error').as('consoleError')
       cy.get('#act').shadow().find('a').click({ force: true })
       cy.get('@consoleError').should('have.been.called')
     })
