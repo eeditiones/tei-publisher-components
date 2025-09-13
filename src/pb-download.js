@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import 'js-cookie/src/js.cookie.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
