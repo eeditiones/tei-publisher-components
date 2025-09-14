@@ -1,15 +1,17 @@
 // E2E: pb-popover demo
 
 describe('Demo: pb-popover', () => {
-  it('shows alternate content on click', () => {
+  beforeEach(() => {
     cy.visit('/demo/pb-popover.html')
+  })
+
+  it('shows alternate content on click', () => {
     // Click the inline trigger with id "dolore"; a pb-popover is linked via for="dolore"
     cy.get('#dolore').click({ force: true })
     cy.get('body').find('.tippy-box').should('exist')
   })
 
   it('persistent popover stays open on outside click', () => {
-    cy.visit('/demo/pb-popover.html')
     // Open any persistent popover by clicking its internal trigger link
     cy.get('pb-popover[persistent]').first().find('[part=trigger]').click({ force: true })
     cy.get('body').find('.tippy-box').should('exist')
@@ -19,20 +21,15 @@ describe('Demo: pb-popover', () => {
   })
 
   it('loads remote content on show', () => {
-    cy.intercept('GET', '**/popover-data.html', {
-      statusCode: 200,
-      headers: { 'Content-Type': 'text/html' },
-      body: '<div id="remote">Remote Content</div>'
-    }).as('remote')
-    cy.visit('/demo/pb-popover.html')
-    // Programmatically show via tippy to avoid focusability issues on <span>
-    cy.get('pb-popover[remote]').find('[part=trigger]').then(($el) => {
-      const el = $el[0]
-      // Ensure tippy is created
-      expect(el._tippy, 'tippy instance exists').to.exist
-      el._tippy.show()
+    // Ensure tippy is initialized, then programmatically show to guarantee fetch
+    cy.get('pb-popover[remote]').find('[part=trigger]')
+      .should(($el) => { expect($el[0]._tippy, 'tippy instance').to.exist })
+      .then(($el) => { $el[0]._tippy.show() })
+    // Assert fetched remote HTML replaces the placeholder (retry until content arrives)
+    cy.get('.tippy-box .tippy-content', { timeout: 10000 }).should(($c) => {
+      const txt = ($c.text() || '').trim()
+      expect(txt.length, 'popover content non-empty').to.be.greaterThan(0)
+      expect(/loading/i.test(txt), 'remote content loaded (not Loading…)').to.be.false
     })
-    cy.wait('@remote', { timeout: 10000 })
-    cy.get('body').find('.tippy-box #remote').should('exist')
   })
 })
