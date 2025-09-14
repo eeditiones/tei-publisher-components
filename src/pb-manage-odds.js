@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import './pb-dialog.js';
 import '@polymer/iron-ajax';
 import { pbMixin, waitOnce } from './pb-mixin.js';

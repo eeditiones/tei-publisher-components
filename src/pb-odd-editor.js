@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { supported as fsSupported, fileSave } from 'browser-fs-access';
-import { repeat } from 'lit-html/directives/repeat';
-import { ifDefined } from 'lit-html/directives/if-defined';
+import { repeat } from 'lit/directives/repeat.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 

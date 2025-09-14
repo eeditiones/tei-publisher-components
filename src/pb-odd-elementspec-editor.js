@@ -1,8 +1,8 @@
 // @ts-nocheck
 /* eslint-disable import/extensions */
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 
-import { repeat } from 'lit-html/directives/repeat';
+import { repeat } from 'lit/directives/repeat.js';
 
 import '@polymer/polymer/lib/elements/dom-repeat';
 import '@polymer/iron-icons/iron-icons';

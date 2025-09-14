@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { LitElement, html, css } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import '@lrnwebcomponents/es-global-bridge';
 // Use package export maps supported by verovio 3.x
 import createVerovioModule from 'verovio/wasm';
