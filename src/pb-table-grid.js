@@ -81,6 +81,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
       _params: {
         type: Object,
       },
+      _initialized: {
+        type: Boolean,
+      },
       ...super.properties,
     };
   }
@@ -94,6 +97,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     this.perPage = 10;
     this.height = null;
     this.fixedHeader = false;
+    this._initialized = false;
   }
 
   async connectedCallback() {
@@ -142,81 +146,93 @@ export class PbTableGrid extends pbMixin(LitElement) {
   }
 
   firstUpdated() {
-    const table = this.shadowRoot.getElementById('table');
-
-    const pbColumns = this.querySelectorAll('pb-table-column');
-    const columns = [];
-    pbColumns.forEach(column => columns.push(column.data()));
+    // Initialize after pb-page-ready if available; otherwise fall back to immediate init
     waitOnce('pb-page-ready', data => {
       if (data && data.language) {
         this.language = data.language;
       }
       this._params = registry.state;
-      const url = this.toAbsoluteURL(this.source);
-      const config = {
-        height: this.height,
-        fixedHeader: true,
-        columns,
-        resizable: this.resizable,
-        server: {
-          url,
-          then: data => data.results,
-          total: data => data.count,
-        },
-        sort: {
-          multiColumn: false,
-          enabled: true,
-          server: {
-            url: (prev, cols) => {
-              if (!cols.length) return prev;
-              const col = cols[0];
-              return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}order=${
-                columns[col.index].id
-              }&dir=${col.direction === 1 ? 'asc' : 'desc'}`;
-            },
-          },
-        },
-        pagination: {
-          enabled: true,
-          limit: this.perPage,
-          server: {
-            url: (prev, page, limit) => {
-              const form = this.shadowRoot.getElementById('form');
-              if (form) {
-                Object.assign(this._params, form.serializeForm());
-              }
-              this._params = this._paramsFromSubforms(this._params);
-              this._params.limit = limit;
-              this._params.start = page * limit + 1;
-              if (this.language) {
-                this._params.language = this.language;
-              }
-              registry.commit(this, this._params);
-
-              // copy params and remove null values
-              const urlParams = { ...this._params };
-              Object.keys(urlParams).forEach(key => {
-                if (urlParams[key] === null) {
-                  delete urlParams[key];
-                }
-              });
-              return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(
-                urlParams,
-              ).toString()}`;
-            },
-          },
-        },
-      };
-
-      this.grid = new Grid(config);
-      this.grid.on('load', () => {
-        this.emitTo('pb-results-received', {
-          params: this._params,
-        });
-      });
-
-      this.grid.render(table);
+      this._initGrid();
     });
+    // Fallback: ensure grid is initialized even if pb-page-ready never fires
+    requestAnimationFrame(() => this._initGrid());
+  }
+
+  _initGrid() {
+    if (this._initialized || this.grid) return;
+    const table = this.shadowRoot.getElementById('table');
+    if (!table) return;
+
+    const pbColumns = this.querySelectorAll('pb-table-column');
+    const columns = [];
+    pbColumns.forEach(column => columns.push(column.data()));
+
+    const server = (this.getEndpoint && this.getEndpoint()) || '.';
+    const url = this.toAbsoluteURL(this.source, server);
+    const config = {
+      height: this.height,
+      fixedHeader: true,
+      columns,
+      resizable: this.resizable,
+      server: {
+        url,
+        then: data => data.results,
+        total: data => data.count,
+      },
+      sort: {
+        multiColumn: false,
+        enabled: true,
+        server: {
+          url: (prev, cols) => {
+            if (!cols.length) return prev;
+            const col = cols[0];
+            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}order=${
+              columns[col.index].id
+            }&dir=${col.direction === 1 ? 'asc' : 'desc'}`;
+          },
+        },
+      },
+      pagination: {
+        enabled: true,
+        limit: this.perPage,
+        server: {
+          url: (prev, page, limit) => {
+            const form = this.shadowRoot.getElementById('form');
+            if (form) {
+              Object.assign(this._params, form.serializeForm());
+            }
+            this._params = this._paramsFromSubforms(this._params);
+            this._params.limit = limit;
+            this._params.start = page * limit + 1;
+            if (this.language) {
+              this._params.language = this.language;
+            }
+            registry.commit(this, this._params);
+
+            // copy params and remove null values
+            const urlParams = { ...this._params };
+            Object.keys(urlParams).forEach(key => {
+              if (urlParams[key] === null) {
+                delete urlParams[key];
+              }
+            });
+            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(
+              urlParams,
+            ).toString()}`;
+          },
+        },
+      },
+    };
+
+    this.grid = new Grid(config);
+    this.grid.on('load', () => {
+      this.emitTo('pb-results-received', {
+        params: this._params,
+      });
+    });
+
+    this.grid.render(table);
+    this._initialized = true;
   }
 
   _submit() {
