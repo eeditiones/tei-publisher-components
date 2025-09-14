@@ -17,6 +17,14 @@ export default defineConfig({
       // Keep CORS relaxed for local eXist/dev interactions
       'Access-Control-Allow-Origin': '*',
     },
+    proxy: {
+      '/exist': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/demo/, ''),
+      },
+    },
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
