@@ -109,26 +109,25 @@
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/plugin-transform-optional-chaining": "^7.22.6",
+    "@eslint/js": "^9.35.0",
     "@open-wc/eslint-config": "^13.0.0",
     "@open-wc/prettier-config": "^1.1.0",
     "@open-wc/testing": "^2.5.29",
     "@open-wc/testing-karma": "^4.0.8",
     "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
-    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "cypress": "^15.2.0",
     "deepmerge": "^4.2.2",
-    "@eslint/js": "^9.35.0",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-cypress": "^5.1.1",
     "eslint-plugin-chai-friendly": "^1.1.0",
-    
+    "eslint-plugin-cypress": "^5.1.1",
     "globals": "^16.4.0",
     "karma": "^6.4.1",
     "lint-staged": "^10.4.0",
@@ -141,7 +140,6 @@
     "vite": "^7.1.5",
     "web-component-analyzer": "^2.0.0"
   },
-  
   "prettier": "@open-wc/prettier-config",
   "lint-staged": {
     "*.js": [
