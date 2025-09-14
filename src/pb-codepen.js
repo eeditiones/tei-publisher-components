@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 
 /**
  * Embed a codepen project to show live code. Used for some documentation examples.

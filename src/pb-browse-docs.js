@@ -1,4 +1,4 @@
-import { html, css } from 'lit-element';
+import { html, css } from 'lit';
 import { PbLoad } from './pb-load.js';
 import { waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
