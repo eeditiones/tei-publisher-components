@@ -1,20 +1,39 @@
 <html>
-    <head>
-        <title>Using pb-table-grid</title>
-        <!--scripts-->
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-table-grid.js"></script>
-        <!--/scripts-->
-    </head>
-    <body>
-        <h1>Using pb-table-grid</h1>
-
-        <pb-page theme="components.css" url-path="query" api-version="1.0.0">
-            <pb-table-grid class="table-grid" source="./people.json" css-path="../css/gridjs" resizable>
-                <pb-table-column label="Name" property="name"></pb-table-column>
-                <pb-table-column label="Born" property="birth"></pb-table-column>
-                <pb-table-column label="Died" property="death"></pb-table-column>
-            </pb-table-grid>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <title>Using pb-table-grid</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script>
+      // Workaround for Polymer modules under Vite: some @polymer/* packages
+      // reference this Closure helper; define a no-op if absent.
+      window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function(prop, obj) { return prop; };
+    </script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <!-- Components (use source modules to avoid double-definitions with demo snippet) -->
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-table-grid.js"></script>
+    <!--/scripts-->
+  </head>
+  <body>
+    <pb-demo-snippet>
+      <template>
+        <pb-page
+          theme="components.css"
+          url-path="query"
+          api-version="1.0.0"
+          require-language="require-language"
+          locales="../i18n/{{ns}}/{{lng}}.json"
+          endpoint="."
+        >
+          <pb-table-grid class="table-grid" source="./people.json" css-path="../css/gridjs" resizable>
+            <pb-table-column label="Name" property="name"></pb-table-column>
+            <pb-table-column label="Born" property="birth"></pb-table-column>
+            <pb-table-column label="Died" property="death"></pb-table-column>
+          </pb-table-grid>
         </pb-page>
-    </body>
+      </template>
+    </pb-demo-snippet>
+  </body>
 </html>
