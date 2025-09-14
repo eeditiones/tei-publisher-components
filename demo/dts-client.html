@@ -24,7 +24,7 @@
                         margin-bottom: 10px;
                     }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="/exist/apps/tei-publisher">
                     <!-- Display two document views side by side -->
                     <main>
                         <dts-client>
@@ -38,7 +38,7 @@
                     // configuration for the DTS endpoints
                     const dtsConfig = [
                         {
-                            "url": "http://localhost:8080/exist/apps/tei-publisher/api/dts",
+                            "url": "/exist/apps/tei-publisher/api/dts",
                             "title": "Local TEI Publisher"
                         },
                         {
