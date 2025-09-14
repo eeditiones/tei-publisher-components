@@ -67,10 +67,17 @@ export class PbTabs extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <paper-tabs id="tabs" selected="${this.selected || 0}" @selected-changed="${this._switchTab}">
+      <paper-tabs
+        id="tabs"
+        .selected=${this.selected || 0}
+        @selected-changed=${this._switchTab}
+      >
         <slot name="tab"></slot>
       </paper-tabs>
-      <iron-pages part="pages" selected="${this.selected}">
+      <iron-pages
+        part="pages"
+        .selected=${this.selected}
+      >
         <slot name="page"></slot>
       </iron-pages>
     `;
