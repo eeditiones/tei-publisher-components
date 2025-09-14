@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 
 import '@cwmr/paper-autocomplete/paper-autocomplete.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';

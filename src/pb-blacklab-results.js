@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import './pb-paginate.js';
