@@ -23,6 +23,8 @@
     "preview": "vite preview",
     "cy:open:ct": "cypress open --component",
     "cy:run:ct": "cypress run --component",
+    "cy:open:e2e": "cypress open --e2e",
+    "cy:run:e2e": "cypress run --e2e",
     "test": "karma start",
     "test:watch": "karma start --auto-watch=true --single-run=false",
     "docker": "npm run build:production && docker build --no-cache --pull --rm -f 'Dockerfile' -t pbcomponents:master '.'",

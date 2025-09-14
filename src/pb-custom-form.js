@@ -1,4 +1,4 @@
-import { html, css } from 'lit-element';
+import { html, css } from 'lit';
 import '@polymer/iron-form';
 import '@polymer/iron-ajax';
 import { PbLoad } from './pb-load.js';
@@ -19,10 +19,13 @@ import './pb-dialog.js';
  */
 export class PbCustomForm extends PbLoad {
   firstUpdated() {
-    this.shadowRoot.getElementById('ironform').addEventListener('iron-form-presubmit', ev => {
-      ev.preventDefault();
-      this._submit();
-    });
+    const form = this.shadowRoot && this.shadowRoot.getElementById('ironform');
+    if (form) {
+      form.addEventListener('iron-form-presubmit', ev => {
+        ev.preventDefault();
+        this._submit();
+      });
+    }
     this.addEventListener('click', e => {
       if (e.target.slot === 'searchButtonTop') {
         this.submit();
@@ -76,7 +79,10 @@ export class PbCustomForm extends PbLoad {
   }
 
   submit() {
-    this.shadowRoot.getElementById('ironform').submit();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('ironform');
+    if (form && typeof form.submit === 'function') {
+      form.submit();
+    }
   }
 
   _submit() {
@@ -86,7 +92,10 @@ export class PbCustomForm extends PbLoad {
   }
 
   _reset() {
-    this.shadowRoot.getElementById('ironform').reset();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('ironform');
+    if (form && typeof form.reset === 'function') {
+      form.reset();
+    }
   }
 
   /**
@@ -98,12 +107,15 @@ export class PbCustomForm extends PbLoad {
    * @returns {Object} name value pairs
    */
   serializeForm() {
-    const elements = this.shadowRoot.getElementById('ironform')._getSubmittableElements();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('ironform');
+    if (!form) return {};
+    const elements = form._getSubmittableElements ? form._getSubmittableElements() : [];
     const initial = {};
     for (const element of elements) {
       initial[element.name] = null;
     }
-    return Object.assign(initial, this.shadowRoot.getElementById('ironform').serializeForm());
+    const data = form.serializeForm ? form.serializeForm() : {};
+    return Object.assign(initial, data);
   }
 
   _parseHeaders(xhr) {
