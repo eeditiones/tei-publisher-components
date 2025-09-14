@@ -20,7 +20,7 @@
 
         <pb-demo-snippet>
             <template>
-                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="/exist/apps/tei-publisher">
                     <form action="" id="form">
                         <h2>Suggestion list passed in a property</h2>
                         <pb-autocomplete name="autocomplete1" placeholder="Greek letter name" suggestions='["alpha", "beta", "gamma"]' value="alpha"></pb-autocomplete>

@@ -22,7 +22,7 @@
                     <style>
                     pb-code-editor { margin-bottom: 32px; }
                     </style>
-                    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
+                    <pb-page endpoint="/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
                         <pb-lang label="language" selected="en">
                             <paper-item value="de">Deutsch</paper-item>
                             <paper-item value="en">English</paper-item>
@@ -30,9 +30,9 @@
                         <!-- using old API endpoint for linter; old API is due for deprecation with Publisher 8
                             <pb-code-editor label="XQuery code, ambiance theme" code="for $i in (1, 2) return $i * 6" mode="xquery"
                             theme="ambiance"
-                            linter="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor> -->
+                            linter="/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor> -->
                         <pb-code-editor label="XQuery code" code="for $i in (1, 2) return $i * 6" mode="xquery"
-                            linter="http://localhost:8080/exist/apps/tei-publisher/api/lint"></pb-code-editor>
+                            linter="/exist/apps/tei-publisher/api/lint"></pb-code-editor>
                         <pb-code-editor label="CSS" code="color: blue;
 font-decoration: underline;" mode="css"></pb-code-editor>
                         <pb-code-editor label="XML" code='&lt;elementSpec ident="correspDesc" mode="add"&gt;
