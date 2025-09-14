@@ -1,31 +1,41 @@
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>Toggling drawer from custom event</title>
-        <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-document.js"></script>
-        <script type="module" src="../src/pb-view.js"></script>
-        <script type="module" src="../src/pb-load.js"></script>
-        <script type="module" src="../src/pb-navigation.js"></script>
-        <script type="module" src="../src/pb-progress.js"></script>
-        <script type="module" src="../src/pb-popover.js"></script>
-        <script type="module" src="../src/pb-drawer.js"></script>
-        <script type="module" src="../src/pb-events.js"></script>
-        <!--/scripts-->
-    </head>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
-    <body>
-        <pb-demo-snippet>
-            <template>
-                <style type="text/css">
+    <title>Toggling drawer from custom event</title>
+    <!--scripts-->
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    <script>
+        // Workaround for Polymer modules under Vite: some @polymer/* packages
+        // reference this Closure helper; define a no-op if absent.
+        // See: https://github.com/Polymer/polymer/issues/4845
+        window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
+    </script>
+    <script type="module">
+        // Load iconset first so any <iron-icon> upgrades have a registry to query.
+        import '@polymer/iron-icons/iron-icons.js';
+        import '@polymer/paper-fab/paper-fab.js';
+        import '@polymer/paper-icon-button/paper-icon-button.js';
+    </script>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-document.js"></script>
+    <script type="module" src="../src/pb-view.js"></script>
+    <script type="module" src="../src/pb-load.js"></script>
+    <script type="module" src="../src/pb-navigation.js"></script>
+    <script type="module" src="../src/pb-progress.js"></script>
+    <script type="module" src="../src/pb-popover.js"></script>
+    <script type="module" src="../src/pb-drawer.js"></script>
+    <script type="module" src="../src/pb-events.js"></script>
+    <!--/scripts-->
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
                 demo-snippet {
                     position: relative;
                 }
@@ -52,60 +62,65 @@
                     padding: 0 20px;
                 }
 
-                .tei-persName3, .tei-placeName3 {
+                .tei-persName3,
+                .tei-placeName3 {
                     font-weight: bold;
                 }
 
-                .tei-persName3::after, .tei-placeName3::after {
+                .tei-persName3::after,
+                .tei-placeName3::after {
                     content: ': ';
                 }
-                </style>
-                <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
-                    <pb-document id="document1" path="test//orlik_to_serafin.xml" odd="serafin"></pb-document>
-                    <pb-progress></pb-progress>
-                    <p>Disable popovers for names and places. Show the information in the drawer instead if a name is clicked.
-                        The content to be displayed is taken from the alternate and copied into the drawer.
-                    </p>
-                    <hr>
-                    <pb-drawer id="info-drawer" emit="info" subscribe="info" position="right">
-                        <div class="drawer-content">
-                            <h3>Additional Information</h3>
-                            <div id="info-content"></div>
-                        </div>
-                    </pb-drawer>
-                    <main>
-                        <pb-view id="view1" src="document1" append-footnotes 
-                            xpath="! (.//text[@xml:lang = 'la']/body | .//text/body)[1]" emit="transcription" subscribe="transcription"></pb-view>
-                    </main>
-                </pb-page>
-                <script>
-                    window.addEventListener('DOMContentLoaded', () => {
-                        // wait for the transcription to be loaded, then search the loaded HTML for
-                        // names
-                        pbEvents.subscribe('pb-update', 'transcription', (ev) => {
-                            // the HTML content to be displayed is passed in ev.detail.root
-                            const {root} = ev.detail;
-                            root.querySelectorAll('.tei-persName5, .tei-placeName5').forEach((name) => {
-                                // disable the popover behaviour
-                                name.command('disable', true);
-                                // register click listener on each name
-                                name.addEventListener('click', (ev) => {
-                                    ev.preventDefault();
-                                    ev.stopPropagation();
-                                    // get the alternate content of each name ...
-                                    const tmpl = name.querySelector('template');
-                                    // ... and copy it into the drawer
-                                    const div = document.getElementById('info-content');
-                                    div.innerHTML = '';
-                                    div.appendChild(tmpl.content.cloneNode(true));
-                                    // finally display the drawer
-                                    document.getElementById('info-drawer').opened = true;
-                                });
+            </style>
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
+                <pb-document id="document1" path="test//orlik_to_serafin.xml" odd="serafin"></pb-document>
+                <pb-progress></pb-progress>
+                <p>Disable popovers for names and places. Show the information in the drawer instead if a name is
+                    clicked.
+                    The content to be displayed is taken from the alternate and copied into the drawer.
+                </p>
+                <hr>
+                <pb-drawer id="info-drawer" emit="info" subscribe="info" position="right">
+                    <div class="drawer-content">
+                        <h3>Additional Information</h3>
+                        <div id="info-content"></div>
+                    </div>
+                </pb-drawer>
+                <main>
+                    <pb-view id="view1" src="document1" append-footnotes
+                        xpath="! (.//text[@xml:lang = 'la']/body | .//text/body)[1]" emit="transcription"
+                        subscribe="transcription"></pb-view>
+                </main>
+            </pb-page>
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    // wait for the transcription to be loaded, then search the loaded HTML for
+                    // names
+                    pbEvents.subscribe('pb-update', 'transcription', (ev) => {
+                        // the HTML content to be displayed is passed in ev.detail.root
+                        const { root } = ev.detail;
+                        root.querySelectorAll('.tei-persName5, .tei-placeName5').forEach((name) => {
+                            // disable the popover behaviour
+                            name.command('disable', true);
+                            // register click listener on each name
+                            name.addEventListener('click', (ev) => {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                // get the alternate content of each name ...
+                                const tmpl = name.querySelector('template');
+                                // ... and copy it into the drawer
+                                const div = document.getElementById('info-content');
+                                div.innerHTML = '';
+                                div.appendChild(tmpl.content.cloneNode(true));
+                                // finally display the drawer
+                                document.getElementById('info-drawer').opened = true;
                             });
                         });
                     });
-                </script>
-            </template>
-        </pb-demo-snippet>
-    </body>
+                });
+            </script>
+        </template>
+    </pb-demo-snippet>
+</body>
+
 </html>
