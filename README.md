@@ -64,6 +64,25 @@ Run `npm run build:production` to generate the set of bundle files in `dist`, co
 
 For development, run `npm start` as described above. It starts a Vite development server (port 5173 by default), opens a browser window, and watches for file changes. Every component should have a demo to show its functionality.
 
+When running locally with Vite, the demos can work in three ways:
+
+1. **Standalone (no backend):** the demos run fully in the browser using mocked responses.
+2. **Via Vite proxy:** the demos use relative or root-relative URLs (e.g. `/exist/...`) and Vite forwards those to your local eXist-db on `http://localhost:8080`.
+3. **Direct to eXist-db:** the demos point to `http://localhost:8080/exist/...` without Vite.
+
+### Demo best practices
+
+When adding or editing demo files, please:
+
+- Use **root-relative endpoints** (e.g. `/exist/...`) instead of hard-coding `http://localhost:8080/...`.
+- With the Vite proxy configured, `/exist/...` will be transparently forwarded to your local eXist-db.
+- Demo pages should be tested via `e2e` tests in cypress.
+- Standalone demos are preferable.
+
+By following these guidelines, all demo pages remain portable: they can run standalone in Vite (offline) or against a live TEI Publisher backend without code changes.
+
+### App configuration
+
 You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment. 
 
 In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value *dev*. Below, set `$config:webcomponents-cdn` to `http://localhost:5173`:
