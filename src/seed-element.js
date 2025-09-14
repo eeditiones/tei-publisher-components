@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 
 /**
  * bare bones sample to copy/paste for a new LitElement

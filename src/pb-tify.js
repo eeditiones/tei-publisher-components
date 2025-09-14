@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import 'tify';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
