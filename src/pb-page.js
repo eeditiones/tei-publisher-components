@@ -434,7 +434,12 @@ export class PbPage extends pbMixin(LitElement) {
     this.unresolved = false;
 
     console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
-    this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());
+    // Guard: some app-header implementations may not expose _notifyLayoutChanged
+    this.querySelectorAll('app-header').forEach(h => {
+      if (typeof h._notifyLayoutChanged === 'function') {
+        h._notifyLayoutChanged();
+      }
+    });
 
     typesetMath(this);
   }
