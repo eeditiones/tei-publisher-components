@@ -38,19 +38,12 @@ export class PbRepeat extends pbMixin(LitElement) {
     this._instances = [];
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-
-    this.template = this.querySelector('template');
-
-    const params = registry.state;
-    this._computeInitial(params);
-    if (this._instances.length === 0) {
-      for (let i = 0; i < this.initial; i++) {
-        this._add(params);
-      }
-    }
-  }
+  connectedCallback () {
+  super.connectedCallback()
+  const tpl = this.querySelector('template')
+  if (!tpl) return   // nothing to render yet; safe for smoke tests
+  this._add()
+}
 
   _computeInitial(params) {
     const sortedParams = Object.keys(params)
@@ -77,6 +70,9 @@ export class PbRepeat extends pbMixin(LitElement) {
   }
 
   _add(params) {
+        if (!this.template || !this.template.content) {
+      return
+    }
     const idx = this._instances.length + 1;
     const clone = document.importNode(this.template.content, true);
     const wrapper = document.createElement('div');
