@@ -1,3 +1,36 @@
+Cypress.on('window:before:load', (win) => {
+  if (!win.PB) win.PB = {}
+
+  // Create a minimal no-op registry if none exists yet
+  if (!win.pbRegistry) {
+    const stub = {
+      state: {},
+      channelStates: {},
+      pathParams: new Set(),
+      hash: '',
+      // no-op API expected by components during smoke tests
+      replace: () => {},
+      subscribe: () => {},
+      getState: () => ({}),
+      commit: () => {},
+      configure: () => {},
+      toJSON: () => '{}'
+    }
+    win.pbRegistry = stub
+  }
+
+  // Define PB.pbRegistry as a live alias of window.pbRegistry
+  try {
+    Object.defineProperty(win.PB, 'pbRegistry', {
+      configurable: true,
+      enumerable: true,
+      get () { return win.pbRegistry },
+      set (val) { win.pbRegistry = val }
+    })
+  } catch (_) {
+    if (!win.PB.pbRegistry) win.PB.pbRegistry = win.pbRegistry
+  }
+})
 // Basic mount helper for vanilla web components
 // Usage: cy.mount('<pb-version></pb-version>')
 Cypress.Commands.add('mount', (html) => {
@@ -26,17 +59,39 @@ beforeEach(() => {
 
   // Reset global pbRegistry state between tests to avoid cross-test leakage
   cy.window().then(win => {
-    if (win.pbRegistry) {
-      try {
+    try {
+      if (!win.PB) win.PB = {}
+      // Recreate alias if another script overwrote PB
+      if (!Object.getOwnPropertyDescriptor(win.PB, 'pbRegistry')?.get) {
+        try {
+          Object.defineProperty(win.PB, 'pbRegistry', {
+            configurable: true,
+            enumerable: true,
+            get () { return win.pbRegistry },
+            set (val) { win.pbRegistry = val }
+          })
+        } catch (_) {
+          if (!win.PB.pbRegistry) win.PB.pbRegistry = win.pbRegistry
+        }
+      }
+
+      if (win.pbRegistry) {
         win.pbRegistry.state = {}
         win.pbRegistry.channelStates = {}
-        // also normalize URL to avoid state encoded in search params
-        const url = new URL(win.location.href)
-        url.search = ''
-        win.history.replaceState({}, '', url.toString())
-      } catch (e) {
-        // ignore
+        if (win.pbRegistry.pathParams && typeof win.pbRegistry.pathParams.clear === 'function') {
+          win.pbRegistry.pathParams.clear()
+        } else {
+          win.pbRegistry.pathParams = new Set()
+        }
+        win.pbRegistry.hash = ''
       }
+
+      // also normalize URL to avoid state encoded in search params
+      const url = new URL(win.location.href)
+      url.search = ''
+      win.history.replaceState({}, '', url.toString())
+    } catch (e) {
+      // ignore
     }
   })
 })

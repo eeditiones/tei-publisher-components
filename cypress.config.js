@@ -15,6 +15,29 @@ function listDemoPagesSync () {
   }
 }
 
+function listPbComponentsSync () {
+  const srcDir = path.resolve(__dirname, 'src')
+  try {
+    return fs.readdirSync(srcDir, { withFileTypes: true })
+      .filter(e => e.isFile() && /^pb-.*\.js$/i.test(e.name))
+      .map(e => {
+        const abs = path.join(srcDir, e.name)
+        const src = fs.readFileSync(abs, 'utf8')
+        // look for customElements.define('pb-xyz', …)
+        const m = src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`]/)
+        // fallback if there's extra stuff before the closing parenthesis
+        const m2 = m || src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`][^)]*\)/)
+        return m2 ? { file: e.name, tag: m2[1] } : null
+      })
+      .filter(Boolean)
+  } catch (e) {
+    console.error('listPbComponentsSync failed:', e)
+    return []
+  }
+}
+
+
+
 module.exports = defineConfig({
   includeShadowDom: true,
   screenshotsFolder: 'test/cypress/screenshots',
@@ -31,7 +54,16 @@ module.exports = defineConfig({
     },
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/component.js',
-    indexHtmlFile: 'test/cypress/support/component-index.html'
+    indexHtmlFile: 'test/cypress/support/component-index.html',
+    setupNodeEvents (on, config) {
+      on('task', {
+        listPbComponents () { return listPbComponentsSync() }
+      })
+      return config
+    },
+    env: {
+      components: listPbComponentsSync()
+    }
   },
   e2e: {
     setupNodeEvents (on, config) {
