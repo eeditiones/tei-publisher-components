@@ -15,6 +15,7 @@
     </script>
     <script type="module">
         // Load iconset first so any <iron-icon> upgrades have a registry to query.
+        import '@polymer/iron-icons/iron-icons.js'
         import '@polymer/paper-button/paper-button.js';
         import '@polymer/paper-dialog/paper-dialog.js';
     </script>
@@ -31,8 +32,13 @@
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-            pb-download { margin-right: 10px; }
-            pb-progress { margin-bottom: 20px; }
+                pb-download {
+                    margin-right: 10px;
+                }
+
+                pb-progress {
+                    margin-bottom: 20px;
+                }
             </style>
             <pb-page endpoint="/exist/apps/tei-publisher">
                 <pb-progress></pb-progress>

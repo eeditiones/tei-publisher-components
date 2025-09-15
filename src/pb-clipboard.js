@@ -2,8 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
-import '@polymer/paper-icon-button';
 import '@polymer/iron-icons';
+import '@polymer/paper-icon-button';
 
 /**
  * A component with a button which copies the contained content to the clipboard.
