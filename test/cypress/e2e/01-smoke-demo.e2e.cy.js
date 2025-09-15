@@ -1,5 +1,5 @@
-// test/cypress/e2e/smoke-demo.e2e.cy.js
-// Smoke: visit every pb-*.html demo and ensure the page loads
+// test/cypress/e2e/01-smoke-demo.e2e.cy.js
+// Smoke: visit every pb-*.html demo and ensure the page loads without network or upgrade errors
 
 const pages = Cypress.env('demoPages') || []
 
@@ -10,13 +10,26 @@ describe('Smoke: all pb-*.html demos load', () => {
 
   for (const url of pages) {
     it(`loads ${url}`, () => {
+      const failed = []
+
+      cy.intercept('**', { hostname: 'localhost' }, (req) => {
+        req.on('response', (res) => {
+          if (res.statusCode >= 400) {
+            failed.push({ url: req.url, status: res.statusCode })
+          }
+        })
+      })
+
       cy.visit(url, {
         retryOnStatusCodeFailure: true,
         retryOnNetworkFailure: true
       })
+
       cy.document().its('readyState').should('eq', 'complete')
-      // Cypress will fail this test on any uncaught exception from the page,
-      // so the test title shows exactly which URL broke (e.g. dom-module duplicate).
+
+      cy.wrap(null).then(() => {
+        expect(failed, `${url} had failing network requests`).to.deep.equal([])
+      })
     })
   }
 })
