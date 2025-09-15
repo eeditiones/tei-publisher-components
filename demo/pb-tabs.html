@@ -6,6 +6,17 @@
         <title>pb-document Demo</title>
         <!--scripts-->
         <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        <script>
+        // Workaround for Polymer modules under Vite: some @polymer/* packages
+        // reference this Closure helper; define a no-op if absent.
+        // See: https://github.com/Polymer/polymer/issues/4845
+        window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
+    </script>
+    <script type="module">
+        import '@polymer/iron-icons/iron-icons.js';
+        import '@polymer/paper-tabs/paper-tabs.js';
+        import '@polymer/iron-pages/iron-pages';
+    </script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
