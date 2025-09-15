@@ -45,7 +45,18 @@ export class PbTify extends pbMixin(LitElement) {
     this._initialPages = null;
     this._currentPage = null;
   }
-
+  /**
+   * Ensure a mount container exists and is attached.
+   * Idempotent: safe to call multiple times.
+   */
+  _ensureContainer () {
+    if (!this._container) {
+      this._container = document.createElement('div')
+      this._container.style.height = '100%'
+      this._container.style.width = '100%'
+      this.appendChild(this._container)
+    }
+  }
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
 
@@ -54,16 +65,14 @@ export class PbTify extends pbMixin(LitElement) {
       this._initViewer();
     }
   }
-
+  
   async connectedCallback() {
     super.connectedCallback();
 
     _injectStylesheet(this.cssPath);
 
-    this._container = document.createElement('div');
-    this._container.style.height = '100%';
-    this._container.style.width = '100%';
-    this.appendChild(this._container);
+    // Ensure container exists even if _initViewer ran early
+    this._ensureContainer();
 
     this.subscribeTo('pb-show-annotation', ev => {
       if (ev.detail) {
@@ -98,6 +107,9 @@ export class PbTify extends pbMixin(LitElement) {
   }
 
   _initViewer() {
+    // Make sure a mount point exists even if called before connectedCallback
+    this._ensureContainer()
+    
     if (!this.manifest) {
       return;
     }
