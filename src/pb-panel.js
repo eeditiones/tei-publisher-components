@@ -69,7 +69,7 @@ export class PbPanel extends themableMixin(pbMixin(LitElement)) {
       this.querySelectorAll('template').forEach(template => titles.push(template.title));
       this.panels = titles;
     }
-    this._show();
+    if (this.querySelector('template')) this._show()
   }
 
   firstUpdated() {
@@ -196,30 +196,35 @@ export class PbPanel extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
-  _show() {
-    const templates = this.querySelectorAll('template');
-    if (this.active >= templates.length) {
-      this.active = templates.length - 1;
-    }
-    console.log('<pb-panel> showing panel %s', this.active);
-    // Close other panels
-    for (const panel of this.querySelectorAll('._pb_panel')) {
-      panel.remove();
-    }
+  _show () {
+  const templates = Array.from(this.querySelectorAll('template'))
 
-    // Open the correct one
-    const template = templates[this.active];
-    const clone = document.importNode(template.content, true);
-    const div = document.createElement('div');
-    div.className = `_pb_panel _pb_panel${this.active}`;
-    div.appendChild(clone);
-    this.appendChild(div);
-
-    this.emitTo('pb-panel', {
-      panel: this,
-      active: this.active
-    });
+  // Allow mounting without templates (e.g., CT smoke): just clear and bail
+  if (templates.length === 0) {
+    this.querySelectorAll('._pb_panel').forEach(panel => panel.remove())
+    return
   }
+
+  // Normalize and clamp the active index
+  let idx = Number(this.active)
+  if (!Number.isInteger(idx)) idx = 0
+  if (idx < 0) idx = 0
+  if (idx >= templates.length) idx = templates.length - 1
+  this.active = idx
+
+  // Close other panels
+  this.querySelectorAll('._pb_panel').forEach(panel => panel.remove())
+
+  // Open the selected one
+  const template = templates[this.active]
+  const clone = document.importNode(template.content, true)
+  const div = document.createElement('div')
+  div.className = `_pb_panel _pb_panel${this.active}`
+  div.appendChild(clone)
+  this.appendChild(div)
+
+  this.emitTo('pb-panel', { panel: this, active: this.active })
+}
 
   refresh() {
     this.emitTo('pb-refresh', null);

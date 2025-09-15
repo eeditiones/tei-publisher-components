@@ -331,7 +331,26 @@ class Registry {
   }
 }
 
-export const registry = new Registry();
-if (!window.pbRegistry) {
-  window.pbRegistry = registry;
+export const registry = new Registry()
+
+// Expose the registry under both historical names and keep them in sync
+if (typeof window !== 'undefined') {
+  if (!window.pbRegistry) window.pbRegistry = registry
+  if (!window.PB) window.PB = {}
+
+  // Define PB.pbRegistry as a live alias of window.pbRegistry so reads/writes stay in sync
+  try {
+    const desc = Object.getOwnPropertyDescriptor(window.PB, 'pbRegistry')
+    if (!desc || typeof desc.get !== 'function') {
+      Object.defineProperty(window.PB, 'pbRegistry', {
+        configurable: true,
+        enumerable: true,
+        get () { return window.pbRegistry },
+        set (val) { window.pbRegistry = val }
+      })
+    }
+  } catch (e) {
+    // Fallback if defineProperty is blocked or pbRegistry already exists as a data property
+    if (!window.PB.pbRegistry) window.PB.pbRegistry = window.pbRegistry
+  }
 }
