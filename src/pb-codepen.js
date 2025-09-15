@@ -66,7 +66,8 @@ export class PbCodepen extends LitElement {
       <iframe
         height="${this.height}"
         scrolling="no"
-        title="${this.labe}l"
+        title="CodePen ${this.hash || ''}"
+        loading="lazy"
         src="${url}"
         frameborder="no"
         allowtransparency="true"
