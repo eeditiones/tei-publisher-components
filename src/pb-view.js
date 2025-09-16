@@ -400,13 +400,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.nodeId = registry.state.root;
       }
 
-      const _doc = this.getDocument ? this.getDocument() : null
+      const _doc = this.getDocument ? this.getDocument() : null;
       const newState = {
         id: this.xmlId,
         view: this.getView(),
         odd: this.getOdd(),
-        path: _doc ? _doc.path : undefined
-      }
+        path: _doc ? _doc.path : undefined,
+      };
       if (this.view !== 'single') {
         newState.root = this.nodeId;
       }
@@ -528,13 +528,19 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    * @returns the ODD being used
    */
   getOdd() {
-    const doc = this.getDocument ? this.getDocument() : null
-    return this.odd || (doc && doc.odd) || 'teipublisher'
+    try {
+      return this.odd || this.getDocument().odd || 'teipublisher';
+    } catch {
+      return this.odd || 'teipublisher';
+    }
   }
 
   getView() {
-    const doc = this.getDocument ? this.getDocument() : null
-    return this.view || (doc && doc.view) || 'single'
+    try {
+      return this.view || this.getDocument().view || 'single';
+    } catch {
+      return this.view || 'single';
+    }
   }
 
   /**
@@ -635,25 +641,25 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _load(pos, direction) {
-    const doc = this.getDocument ? this.getDocument() : null
+    const doc = this.getDocument ? this.getDocument() : null;
 
     // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
     if (!doc || !doc.path) {
-      console.warn('<pb-view> No path')
-      return
+      console.warn('<pb-view> No path');
+      return;
     }
 
     if (this._loading) {
-      return
+      return;
     }
-    this._loading = true
+    this._loading = true;
 
-    const params = this.getParameters(pos)
+    const params = this.getParameters(pos);
     if (direction) {
-      params._dir = direction
+      params._dir = direction;
     }
 
-    this._doLoad(params)
+    this._doLoad(params);
   }
 
   _doLoad(params) {
@@ -982,8 +988,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _fixLinks(content) {
     if (this.fixLinks) {
-      const doc = this.getDocument ? this.getDocument() : null
-      const base = this.toAbsoluteURL(doc && doc.path ? doc.path : '')
+      const doc = this.getDocument ? this.getDocument() : null;
+      const base = this.toAbsoluteURL(doc && doc.path ? doc.path : '');
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
         const src = new URL(oldSrc, base);
@@ -1044,32 +1050,32 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    * Return the parameter object which would be passed to the server by this component
    */
   getParameters(pos) {
-    pos = pos || this.nodeId
-    const doc = this.getDocument ? this.getDocument() : null
-    const params = this._getParameters()
+    pos = pos || this.nodeId;
+    const doc = this.getDocument ? this.getDocument() : null;
+    const params = this._getParameters();
     if (!this.minApiVersion('1.0.0') && doc && doc.path) {
-      params.doc = doc.path
+      params.doc = doc.path;
     }
-    params.odd = `${this.getOdd()}.odd`
-    params.view = this.getView()
-    params.fill = this.fill
+    params.odd = `${this.getOdd()}.odd`;
+    params.view = this.getView();
+    params.fill = this.fill;
     if (pos) {
-      params.root = pos
+      params.root = pos;
     }
     if (this.xpath) {
-      params.xpath = this.xpath
+      params.xpath = this.xpath;
     }
     if (this.xmlId) {
-      params.id = this.xmlId
+      params.id = this.xmlId;
     }
     if (!this.suppressHighlight && this.highlight) {
-      params.highlight = 'yes'
+      params.highlight = 'yes';
     }
     if (this.map) {
-      params.map = this.map
+      params.map = this.map;
     }
 
-    return params
+    return params;
   }
 
   _applyToggles(elem) {
@@ -1253,8 +1259,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
 
     if (properties.path) {
-      const doc = this.getDocument ? this.getDocument() : null
-      if (doc) doc.path = properties.path
+      const doc = this.getDocument ? this.getDocument() : null;
+      if (doc) doc.path = properties.path;
     }
 
     if (properties.selectors) {
