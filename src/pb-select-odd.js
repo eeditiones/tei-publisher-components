@@ -5,7 +5,6 @@ import '@polymer/paper-listbox';
 import '@polymer/paper-item';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/iron-ajax';
-import 'web-animations-js';
 import '@polymer/neon-animation';
 import { registry } from './urls.js';
 
