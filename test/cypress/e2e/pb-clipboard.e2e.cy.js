@@ -3,7 +3,7 @@ describe('Demo: pb-clipboard', () => {
     cy.visit('/demo/pb-clipboard.html')
   })
 
-  it.skip('writes to clipboard on click', () => {
+  it('writes to clipboard on click', () => {
     cy.window().then((win) => {
       if (!win.navigator.clipboard) {
         win.navigator.clipboard = {}

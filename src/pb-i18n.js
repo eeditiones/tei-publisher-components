@@ -2,6 +2,10 @@ import { LitElement, html } from 'lit'
 
 // The currently used i18next translation function
 let _translateFn
+// Bump whenever the translation function or resources change
+let _i18nVersion = 0
+// Shared, tiny in-memory cache per-version (key+options)
+const _i18nCache = new Map()
 
 /**
  * Called by pb-page before the first pb-i18n-update
@@ -9,6 +13,8 @@ let _translateFn
  */
 export function initTranslation (translate) {
   _translateFn = translate
+  _i18nVersion++
+  _i18nCache.clear()
 }
 
 // No-op helpers kept for backward compatibility of API surface
@@ -37,7 +43,13 @@ export const translate = (key, value) => get(key, value)
 // Keep _translateFn in sync on updates (guard for non-browser envs)
 if (typeof document !== 'undefined') {
   document.addEventListener('pb-i18n-update', (ev) => {
-    _translateFn = ev.detail?.t || _translateFn
+    const next = ev.detail?.t
+    if (next && next !== _translateFn) {
+      _translateFn = next
+    }
+    // Invalidate cache regardless (resources may have changed)
+    _i18nVersion++
+    _i18nCache.clear()
   })
 }
 
@@ -70,6 +82,7 @@ export class PbI18n extends LitElement {
     this._fallback = ''
     // stable handler so we can remove it on disconnect
     this._onI18nUpdate = () => this._recompute()
+    this._recomputeTimer = null
   }
 
   connectedCallback () {
@@ -86,25 +99,47 @@ export class PbI18n extends LitElement {
       document.addEventListener('pb-i18n-update', this._onI18nUpdate)
     }
 
-    this._recompute()
+    this._scheduleRecompute()
   }
 
   disconnectedCallback () {
     if (typeof document !== 'undefined') {
       document.removeEventListener('pb-i18n-update', this._onI18nUpdate)
     }
+    if (this._recomputeTimer) {
+      clearTimeout(this._recomputeTimer)
+      this._recomputeTimer = null
+    }
     super.disconnectedCallback()
   }
 
   updated (changed) {
     if (changed.has('key') || changed.has('options')) {
-      this._recompute()
+      this._scheduleRecompute()
     }
   }
 
+  _scheduleRecompute () {
+    if (this._recomputeTimer) return
+    // Small debounce to coalesce multiple updates and event bursts
+    this._recomputeTimer = setTimeout(() => {
+      this._recomputeTimer = null
+      this._recompute()
+    }, 20)
+  }
+
   _recompute () {
-    const result = get(this.key, this.options)
-    this._translated = result && result !== this.key ? result : null
+    const opts = this.options || {}
+    const cacheKey = `${_i18nVersion}::${this.key}::${JSON.stringify(opts)}`
+    if (_i18nCache.has(cacheKey)) {
+      this._translated = _i18nCache.get(cacheKey)
+      return
+    }
+
+    const result = get(this.key, opts)
+    const value = result && result !== this.key ? result : null
+    _i18nCache.set(cacheKey, value)
+    this._translated = value
   }
 
   render () {
