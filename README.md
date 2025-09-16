@@ -26,7 +26,6 @@ All components talk to an endpoint, which will either be a TEI Publisher instanc
 To include components into your own application, you can load them from a CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
 ```
 
