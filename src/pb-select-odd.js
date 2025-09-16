@@ -5,7 +5,6 @@ import '@polymer/paper-listbox';
 import '@polymer/paper-item';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/iron-ajax';
-import '@polymer/neon-animation';
 import { registry } from './urls.js';
 
 /**
@@ -54,6 +53,30 @@ export class PbSelectOdd extends pbMixin(LitElement) {
     super.connectedCallback();
 
     this.subscribeTo('pb-update', this._onTargetUpdate.bind(this));
+
+    // Animate dropdown content without neon-animation
+    this._onDropdownOpened = () => {
+      const list = this.shadowRoot?.getElementById('odds');
+      if (!list) return;
+      list.classList.remove('pb-closing');
+      list.classList.add('pb-opening');
+    };
+    this._onDropdownClosed = () => {
+      const list = this.shadowRoot?.getElementById('odds');
+      if (!list) return;
+      list.classList.remove('pb-opening');
+      list.classList.add('pb-closing');
+      // remove the closing class after the animation to keep DOM clean
+      setTimeout(() => list.classList.remove('pb-closing'), 160);
+    };
+    this.addEventListener('iron-dropdown-opened', this._onDropdownOpened);
+    this.addEventListener('iron-dropdown-closed', this._onDropdownClosed);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('iron-dropdown-opened', this._onDropdownOpened);
+    this.removeEventListener('iron-dropdown-closed', this._onDropdownClosed);
+    super.disconnectedCallback();
   }
 
   firstUpdated() {
@@ -65,7 +88,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}">
+      <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}" no-animations>
         <paper-listbox
           id="odds"
           slot="dropdown-content"
@@ -100,6 +123,24 @@ export class PbSelectOdd extends pbMixin(LitElement) {
       paper-dropdown-menu {
         --paper-listbox-background-color: white;
         width: 100%;
+      }
+
+      /* --- CSS-only dropdown animation (replaces neon-animation) --- */
+      @keyframes pbFadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes pbFadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to   { opacity: 0; transform: translateY(-4px); }
+      }
+
+      /* We toggle this class from JS when iron-dropdown opens/closes */
+      paper-listbox.pb-opening {
+        animation: pbFadeIn 180ms ease-out both;
+      }
+      paper-listbox.pb-closing {
+        animation: pbFadeOut 140ms ease-in both;
       }
     `;
   }
