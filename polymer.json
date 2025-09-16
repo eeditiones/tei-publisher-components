@@ -6,9 +6,6 @@
     "src/*.js",
     "package.json"
   ],
-  "extraDependencies": [
-    "node_modules/@webcomponents/webcomponentsjs/**"
-  ],
   "builds": [
     {
       "bundle": true,
