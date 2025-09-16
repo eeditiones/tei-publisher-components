@@ -356,6 +356,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._chunks = [];
     this._scrollTarget = null;
     this.static = null;
+    this._lastRequestKey = null;
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -663,6 +664,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _doLoad(params) {
+    // De-duplicate identical requests to avoid hammering the backend
+    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : ''
+    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params })
+    if (this._lastRequestKey === reqKey) {
+      // nothing changed; unlock and skip
+      this._loading = false
+      return
+    }
+    this._lastRequestKey = reqKey
+
     this.emitTo('pb-start-update', params);
 
     console.log('<pb-view> Loading view with params %o', params);
@@ -753,6 +764,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _handleError() {
     this._clear();
+    this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
     let message;
     const { response } = loader.lastError;
@@ -779,6 +791,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const resp = loader.lastResponse;
 
     if (!resp) {
+      this._loading = false;
       console.error('<pb-view> No response received');
       return;
     }
@@ -787,6 +800,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this._content = this.notFound;
       }
       this.emitTo('pb-end-update', null);
+      this._loading = false;
       return;
     }
 
@@ -835,6 +849,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     });
 
     this.emitTo('pb-end-update', null);
+    // allow subsequent loads with new params
+    this._loading = false;
   }
 
   _replaceContent(resp, direction) {

@@ -68,6 +68,9 @@ class PbDocument extends pbMixin(LitElement) {
     this.path = null;
     this.rootPath = '';
     this.disableHistory = false;
+    // Internal: coalesce & de-duplicate emitted update events
+    this._emitScheduled = false;
+    this._lastEventKey = null;
   }
 
   connectedCallback() {
@@ -85,10 +88,32 @@ class PbDocument extends pbMixin(LitElement) {
 
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
-    if (oldVal) {
-      console.log('<pb-document> Emit update event');
-      this.emitTo('pb-document', this);
-    }
+    // No-op if value did not change (prevents churn)
+    if (oldVal === newVal) return;
+    // Coalesce multiple rapid attribute updates into a single emit
+    if (this._emitScheduled) return;
+    this._emitScheduled = true;
+    setTimeout(() => {
+      this._emitScheduled = false;
+      const key = this._computeEventKey();
+      if (key !== this._lastEventKey) {
+        // unchanged behavior: log when we actually emit
+        console.log('<pb-document> Emit update event');
+        this.emitTo('pb-document', this);
+        this._lastEventKey = key;
+      }
+    }, 0);
+  }
+
+  _computeEventKey() {
+    // Build a stable signature of relevant state used by pb-view
+    return JSON.stringify({
+      path: this.path || '',
+      rootPath: this.rootPath || '',
+      odd: this.odd || '',
+      view: this.view || '',
+      sourceView: this.sourceView || ''
+    });
   }
 
   /**
