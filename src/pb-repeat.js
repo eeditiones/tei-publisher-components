@@ -69,13 +69,12 @@ export class PbRepeat extends pbMixin(LitElement) {
     this.requestUpdate();
   }
 
-  _add(params) {
-        if (!this.template || !this.template.content) {
-      return
-    }
-    const idx = this._instances.length + 1;
-    const clone = document.importNode(this.template.content, true);
-    const wrapper = document.createElement('div');
+  _add (params) {
+    const tpl = this.querySelector('template')
+    if (!tpl || !tpl.content) return
+    const idx = this._instances.length + 1
+    const clone = document.importNode(tpl.content, true)
+    const wrapper = document.createElement('div')
     wrapper.appendChild(clone);
     wrapper.querySelectorAll('[name]').forEach(input => {
       // during inicialization of the default first instance

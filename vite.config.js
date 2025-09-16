@@ -26,24 +26,50 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    // Ensure a single instance of Polymer & friends across the graph
+    dedupe: [
+      '@polymer/polymer',
+      '@polymer/iron-ajax',
+      '@polymer/iron-icon',
+      '@polymer/iron-icons',
+      '@polymer/paper-input',
+      '@polymer/paper-button',
+      '@polymer/paper-item',
+      '@polymer/paper-listbox',
+      '@polymer/paper-dropdown-menu',
+      '@polymer/paper-dialog',
+      '@polymer/paper-dialog-scrollable',
+      '@cwmr/paper-autocomplete'
+    ],
+    alias: [
+      // Normalize any accidental /node_modules path imports to bare package names
+      { find: /^\/?node_modules\/(@polymer\/.+)/, replacement: '$1' }
+    ]
+  },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   optimizeDeps: {
-    // Exclude legacy/complex deps that don't prebundle cleanly under CT
-    exclude: [
-      '@polymer/app-layout',
-      '@polymer/paper-icon-button',
-      '@polymer/iron-ajax',
-      '@polymer/paper-dialog',
-      '@polymer/paper-dialog-scrollable',
-      '@polymer/paper-input',
-      '@polymer/paper-item',
-      '@polymer/paper-listbox',
-      '@polymer/paper-dropdown-menu',
-      '@cwmr/paper-autocomplete',
-      'gridjs',
-      'construct-style-sheets-polyfill',
+    // Prebundle Polymer deps once so they aren't evaluated from multiple URLs
+    include: [
+      '@polymer/polymer',
+      '@polymer/iron-ajax/iron-ajax.js',
+      '@polymer/iron-icon/iron-icon.js',
+      '@polymer/iron-icons/iron-icons.js',
+      '@polymer/paper-input/paper-input.js',
+      '@polymer/paper-button/paper-button.js',
+      '@polymer/paper-item/paper-item.js',
+      '@polymer/paper-listbox/paper-listbox.js',
+      '@polymer/paper-dropdown-menu/paper-dropdown-menu.js',
+      '@polymer/paper-dialog/paper-dialog.js',
+      '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js',
+      '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js'
     ],
+    exclude: [
+      // keep heavy/legacy libs out of prebundle
+      'gridjs',
+      'construct-style-sheets-polyfill'
+    ]
   },
 });

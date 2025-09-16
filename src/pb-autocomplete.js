@@ -1,35 +1,43 @@
-import { LitElement, html, css } from 'lit';
-import { pbMixin, waitOnce } from './pb-mixin.js';
-import { translate } from './pb-i18n.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/iron-ajax';
-import '@polymer/iron-icon';
-import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
+import { LitElement, html, css } from 'lit'
+import { pbMixin, waitOnce } from './pb-mixin.js'
+import { translate } from './pb-i18n.js'
 
-function _query(datasource, query) {
-  const queryResult = [];
+// Ensure required custom elements are defined exactly once, even if this module is loaded twice via different URLs
+if (!customElements.get('paper-input')) {
+  await import('@polymer/paper-input/paper-input.js')
+}
+if (!customElements.get('iron-ajax')) {
+  await import('@polymer/iron-ajax/iron-ajax.js')
+}
+if (!customElements.get('iron-icon')) {
+  await import('@polymer/iron-icon/iron-icon.js')
+}
+// iconset is not a custom element; safe to import once for icons metadata
+await import('@polymer/iron-icons/iron-icons.js')
+if (!customElements.get('paper-autocomplete-suggestions')) {
+  await import('@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js')
+}
+
+function _query (datasource, query) {
+  const q = String(query || '').toLowerCase()
+  const queryResult = []
   datasource.forEach(item => {
-    let objText;
-    let objValue;
+    let objText
+    let objValue
 
     if (typeof item === 'object') {
-      objText = item.text;
-      objValue = item.value;
+      objText = item.text
+      objValue = item.value
     } else {
-      objText = item.toString();
-      objValue = objText;
+      objText = String(item)
+      objValue = objText
     }
 
-    if (objText.toLowerCase().indexOf(query) > -1) {
-      // NOTE: the structure of the result object matches with the current template. For custom templates, you
-      // might need to return more data
-      const resultItem = {};
-      resultItem.text = objText;
-      resultItem.value = objValue;
-      queryResult.push(resultItem);
+    if (objText.toLowerCase().indexOf(q) > -1) {
+      queryResult.push({ text: objText, value: objValue })
     }
-  });
-  return queryResult;
+  })
+  return queryResult
 }
 
 /**
@@ -44,144 +52,96 @@ function _query(datasource, query) {
  * @slot - default unnamed slot
  */
 export class PbAutocomplete extends pbMixin(LitElement) {
-  static get properties() {
+  static get properties () {
     return {
       ...super.properties,
-      /**
-       * Name of the form field which will be submitted
-       */
-      name: {
-        type: String,
-      },
-      /**
-       * Value of the form field which will be submitted
-       */
-      value: {
-        type: String,
-      },
-      /**
-       * Placeholder to display if field is empty
-       */
-      placeholder: {
-        type: String,
-        attribute: 'placeholder',
-      },
-      /**
-       * Optional URL to query for suggestions. If relative, it is interpreted
-       * relative to the endpoint defined on a surrounding `pb-page`.
-       *
-       * Upon autocomplete, the current input by the user will be sent with a query parameter
-       * `query`. The name/values of form controls nested within `pb-autocomplete` will also be
-       * appended to the request as parameters. This allows the server side code to distinguish
-       * different states.
-       */
-      source: {
-        type: String,
-      },
-      /**
-       * If set, the entire list of possible suggestions will be preloaded upon initialization of the
-       * component.
-       */
-      preload: {
-        type: Boolean,
-      },
-      /**
-       * A static list of suggestions. Use instead of `source`. May either be a flat array of strings,
-       * or an array containing objects of the form `{"text": "", "value": ""}, in which case "value" denotes
-       * the value to be used when the enclosing form is submitted, and "text" is the label to be displayed.
-       */
-      suggestions: {
-        type: Array,
-      },
-      /**
-       * By default suggestions are filtered by prefix, i.e. only suggestions starting with the prefix
-       * typed by the user are shown. Set this property to true to search for the user-provided string
-       * anywhere within the suggestion text.
-       */
-      substring: {
-        type: Boolean,
-      },
-      /**
-       * An icon to display next to the input.
-       */
-      icon: {
-        type: String,
-      },
-    };
+      /** Name of the form field which will be submitted */
+      name: { type: String },
+      /** Value of the form field which will be submitted */
+      value: { type: String },
+      /** Placeholder to display if field is empty */
+      placeholder: { type: String, attribute: 'placeholder' },
+      /** Optional URL to query for suggestions. If relative, it is interpreted
+       * relative to the endpoint defined on a surrounding `pb-page`. */
+      source: { type: String },
+      /** If set, preload entire list from `source` on init */
+      preload: { type: Boolean },
+      /** Static suggestions list (strings or {text,value} objects) */
+      suggestions: { type: Array },
+      /** If true, substring match; else prefix */
+      substring: { type: Boolean },
+      /** Optional icon name displayed in prefix */
+      icon: { type: String }
+    }
   }
 
-  constructor() {
-    super();
-    this.placeholder = 'search.placeholder';
-    this.suggestions = [];
-    this.lastSelected = null;
-    this.preload = false;
-    this.substring = false;
-    this._hiddenInput = null;
-    this._initialized = false;
+  constructor () {
+    super()
+    this.placeholder = 'search.placeholder'
+    this.suggestions = []
+    this.lastSelected = null
+    this.preload = false
+    this.substring = false
+    this._hiddenInput = null
+    this._initialized = false
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  connectedCallback () {
+    super.connectedCallback()
   }
 
-  firstUpdated() {
-    const inIronForm = this.closest('iron-form,pb-search,pb-custom-form');
+  firstUpdated () {
+    const inIronForm = this.closest('iron-form,pb-search,pb-custom-form')
     if (!inIronForm) {
-      this._hiddenInput = document.createElement('input');
-      this._hiddenInput.type = 'hidden';
-      this._hiddenInput.name = this.name;
-      this.appendChild(this._hiddenInput);
+      this._hiddenInput = document.createElement('input')
+      this._hiddenInput.type = 'hidden'
+      this._hiddenInput.name = this.name
+      this.appendChild(this._hiddenInput)
     }
 
-    const autocomplete = this.shadowRoot.getElementById('autocomplete');
-    autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this));
+    const autocomplete = this.shadowRoot.getElementById('autocomplete')
+    autocomplete.addEventListener('autocomplete-change', this._autocomplete.bind(this))
 
     if (this.preload && this.source) {
       if (this.substring) {
-        autocomplete.queryFn = _query;
+        autocomplete.queryFn = _query
       }
       waitOnce('pb-page-ready', () => {
-        this._sendRequest();
-      });
+        this._sendRequest()
+      })
     } else if (this.value) {
       if (this.source) {
         waitOnce('pb-page-ready', () => {
-          // console.log('send autocomplete request for remote source %s on value %s', this.source, this.value);
-          this._sendRequest(this.value);
-        });
+          this._sendRequest(this.value)
+        })
       } else {
-        const input = this.shadowRoot.getElementById('search');
+        const input = this.shadowRoot.getElementById('search')
         const value = this.suggestions.find(suggestion => {
-          if (suggestion.text) {
-            return suggestion.value === this.value;
+          if (suggestion && typeof suggestion === 'object' && 'text' in suggestion) {
+            return suggestion.value === this.value
           }
-          return suggestion === this.value;
-        });
+          return suggestion === this.value
+        })
         if (value) {
-          input.value = value.text || value;
-          if (this._hiddenInput) {
-            this._hiddenInput.value = value.value || value;
-          }
+          input.value = value.text || value
+          if (this._hiddenInput) this._hiddenInput.value = value.value || value
         }
-        if (this._hiddenInput) {
-          this._hiddenInput.value = this.value;
-        }
+        if (this._hiddenInput) this._hiddenInput.value = this.value
       }
     }
   }
 
-  render() {
+  render () {
     return html`
       <custom-style>
         <style>
           :host {
             --suggestions-item: {
               color: var(--pb-search-suggestions-color, black);
-            }
+            };
             --suggestions-wrapper: {
               background: var(--pb-search-suggestions-background, white);
-            }
+            };
           }
         </style>
       </custom-style>
@@ -190,7 +150,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         id="search"
         type="search"
         name="query"
-        @keyup="${this._setInput}"
+        @keyup=${this._setInput}
         label="${translate(this.placeholder)}"
         always-float-label
       >
@@ -199,9 +159,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
       <paper-autocomplete-suggestions
         id="autocomplete"
         for="search"
-        .source="${this.suggestions}"
-        ?remote-source="${!this.preload && this.source}"
-        @autocomplete-selected="${this._autocompleteSelected}"
+        .source=${this.suggestions}
+        ?remote-source=${!this.preload && this.source}
+        @autocomplete-selected=${this._autocompleteSelected}
       ></paper-autocomplete-suggestions>
 
       <iron-ajax
@@ -210,12 +170,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         handle-as="json"
         method="get"
         with-credentials
-        @response="${this._updateSuggestions}"
+        @response=${this._updateSuggestions}
       ></iron-ajax>
-    `;
+    `
   }
 
-  static get styles() {
+  static get styles () {
     return css`
       :host {
         --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
@@ -232,116 +192,102 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         align-items: center;
       }
 
-      ::slotted {
+      ::slotted(*) {
         display: block;
         margin-left: 10px;
       }
-    `;
+    `
   }
 
-  _autocomplete(ev) {
-    const search = this.shadowRoot.getElementById('search');
-    this._sendRequest(search.value);
+  _autocomplete () {
+    const search = this.shadowRoot.getElementById('search')
+    this._sendRequest(search.value)
   }
 
-  _sendRequest(query) {
-    const loader = this.shadowRoot.getElementById('autocompleteLoader');
-    loader.url = this.toAbsoluteURL(this.source);
+  _sendRequest (query) {
+    const loader = this.shadowRoot.getElementById('autocompleteLoader')
+    loader.url = this.toAbsoluteURL(this.source)
 
-    const params = this._getParameters();
-    params.query = query;
-    loader.params = params;
-    // console.log('send request for %s with %o', loaderId, params);
-
-    loader.generateRequest();
+    const params = this._getParameters()
+    params.query = query
+    loader.params = params
+    loader.generateRequest()
   }
 
-  _updateSuggestions() {
-    const loader = this.shadowRoot.getElementById('autocompleteLoader');
+  _updateSuggestions () {
+    const loader = this.shadowRoot.getElementById('autocompleteLoader')
     if (this._initialized) {
-      const autocomplete = this.shadowRoot.getElementById('autocomplete');
+      const autocomplete = this.shadowRoot.getElementById('autocomplete')
       if (loader.lastResponse) {
-        this.suggestions = loader.lastResponse;
-        autocomplete.suggestions(this.suggestions);
+        this.suggestions = loader.lastResponse
+        autocomplete.suggestions(this.suggestions)
       }
     } else if (loader.lastResponse) {
-      const suggestions = loader.lastResponse;
+      const suggestions = loader.lastResponse
 
-      const input = this.shadowRoot.getElementById('search');
+      const input = this.shadowRoot.getElementById('search')
       const value = suggestions.find(suggestion => {
-        if (suggestion.text) {
-          return suggestion.value === this.value;
+        if (suggestion && typeof suggestion === 'object' && 'text' in suggestion) {
+          return suggestion.value === this.value
         }
-        return suggestion === this.value;
-      });
+        return suggestion === this.value
+      })
       if (value) {
-        input.value = value.text || value;
-        if (this._hiddenInput) {
-          this._hiddenInput.value = value.value || value;
-        }
+        input.value = value.text || value
+        if (this._hiddenInput) this._hiddenInput.value = value.value || value
       } else if (this._hiddenInput) {
-        this._hiddenInput.value = this.value;
+        this._hiddenInput.value = this.value
       }
 
       if (this.preload) {
-        this.suggestions = suggestions;
+        this.suggestions = suggestions
       }
     }
-    this._initialized = true;
+    this._initialized = true
   }
 
-  _getParameters() {
-    const params = {};
-    const inputs = this.querySelectorAll('[name]');
+  _getParameters () {
+    const params = {}
+    const inputs = this.querySelectorAll('[name]')
     inputs.forEach(input => {
-      params[input.name] = input.value;
-    });
-    return params;
+      params[input.name] = input.value
+    })
+    return params
   }
 
-  _autocompleteSelected(ev) {
-    const { text, value } = ev.detail;
-    this.lastSelected = text;
-    const input = this.shadowRoot.getElementById('search');
-    input.value = text;
-    this.value = value;
-    if (this._hiddenInput) {
-      this._hiddenInput.value = this.value;
-    }
-
-    this.emitTo('pb-autocomplete-selected', { text, value });
+  _autocompleteSelected (ev) {
+    const { text, value } = ev.detail
+    this.lastSelected = text
+    const input = this.shadowRoot.getElementById('search')
+    input.value = text
+    this.value = value
+    if (this._hiddenInput) this._hiddenInput.value = this.value
+    this.emitTo('pb-autocomplete-selected', { text, value })
   }
 
-  _setInput(ev) {
-    const input = this.shadowRoot.getElementById('search');
-    this.value = input.value;
+  _setInput (ev) {
+    const input = this.shadowRoot.getElementById('search')
+    this.value = input.value
 
-    if (this._hiddenInput) {
-      this._hiddenInput.value = this.value;
-    }
+    if (this._hiddenInput) this._hiddenInput.value = this.value
 
     if (ev.keyCode === 13) {
       const entry = this.suggestions.find(suggestion => {
-        if (suggestion.text) {
-          return suggestion.value === this.value;
+        if (suggestion && typeof suggestion === 'object' && 'text' in suggestion) {
+          return suggestion.value === this.value
         }
-        return suggestion === this.value;
-      });
-      if (!entry) {
-        return;
-      }
+        return suggestion === this.value
+      })
+      if (!entry) return
       if (entry.value) {
-        this.emitTo('pb-autocomplete-selected', {
-          text: entry.text,
-          value: entry.value,
-        });
+        this.emitTo('pb-autocomplete-selected', { text: entry.text, value: entry.value })
       } else {
-        this.emitTo('pb-autocomplete-selected', {
-          text: entry,
-          value: entry,
-        });
+        this.emitTo('pb-autocomplete-selected', { text: entry, value: entry })
       }
     }
   }
 }
-customElements.define('pb-autocomplete', PbAutocomplete);
+
+if (!customElements.get('pb-autocomplete')) {
+  customElements.define('pb-autocomplete', PbAutocomplete)
+}
