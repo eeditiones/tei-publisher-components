@@ -12,8 +12,9 @@ const pkg = require('./package.json');
 
 const production = process.env.BUILD === 'production';
 
-const wcloader =
-  '<script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>';
+// Legacy WebComponents polyfills are no longer needed in our Vite/ESM setup
+// Keep this empty so transform steps below don’t inject the loader script
+const wcloader = '';
 const pbbundle = '<script type="module" src="../pb-components-bundle.js"></script>';
 
 function replaceDemo(input, scripts) {
