@@ -227,8 +227,22 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  get localeFallbackNs() {
+    // Expose a space-separated view of the current fallback namespaces
+    return (this._localeFallbacks && this._localeFallbacks.length)
+      ? this._localeFallbacks.join(' ')
+      : '';
+  }
+
   set localeFallbackNs(value) {
-    value.split(/\s+/).forEach(v => this._localeFallbacks.push(v));
+    // Replace (not append) to avoid uncontrolled growth when attribute re-applies
+    const next = (value || '')
+      .split(/\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    // Deduplicate while preserving order
+    const seen = new Set();
+    this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
   }
 
   disconnectedCallback() {
@@ -327,7 +341,7 @@ export class PbPage extends pbMixin(LitElement) {
       });
     }
 
-    
+
   }
 
   firstUpdated() {
@@ -431,7 +445,8 @@ export class PbPage extends pbMixin(LitElement) {
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
     this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
-    this.unresolved = false;
+    // Avoid a Lit reactive update here; just remove the attribute instead.
+    this.removeAttribute('unresolved');
 
     console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
     // Guard: some app-header implementations may not expose _notifyLayoutChanged
