@@ -1,3 +1,8 @@
+const MOCK_VERSION = {
+  api: '1.0.0',
+  app: { name: 'mock-app', version: '0.0.0' },
+  engine: { name: 'mock-engine', version: '0.0.0' }
+}
 import { defineConfig } from 'vite';
 
 const isCypress = !!process.env.CYPRESS;
@@ -17,7 +22,7 @@ export default defineConfig({
       // Keep CORS relaxed for local eXist/dev interactions
       'Access-Control-Allow-Origin': '*',
     },
-    proxy: {
+    proxy: isCypress ? undefined : {
       '/exist': {
         target: 'http://localhost:8080',
         changeOrigin: true,
@@ -26,6 +31,33 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    {
+      name: 'mock-teipublisher-handshake',
+      configureServer (server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url || ''
+          // Normalize both rooted and app-rooted paths
+          const isLogin = url.startsWith('/login') || url.startsWith('/exist/apps/tei-publisher/login')
+          const isVersion = url.startsWith('/api/version') || url.startsWith('/exist/apps/tei-publisher/api/version')
+
+          if (isLogin) {
+            res.statusCode = 404
+            res.setHeader('content-type', 'text/plain')
+            res.end('Not Found')
+            return
+          }
+          if (isVersion) {
+            res.statusCode = 200
+            res.setHeader('content-type', 'application/json')
+            res.end(JSON.stringify(MOCK_VERSION))
+            return
+          }
+          next()
+        })
+      }
+    }
+  ],
   resolve: {
     // Ensure a single instance of Polymer & friends across the graph
     dedupe: [
