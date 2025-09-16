@@ -59,5 +59,7 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
-      - name: npm test
+      - name: Cypress e2e test
+        run: npm run cy:run:e2e 
+      - name: Karma test (deprecated)
         run: npm test
