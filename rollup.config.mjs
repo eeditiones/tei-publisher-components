@@ -8,7 +8,17 @@ import replace from '@rollup/plugin-replace';
 import babel from '@rollup/plugin-babel';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
+
 const pkg = require('./package.json');
+
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Resolve Verovio ESM files to absolute paths without using package exports
+const VERO_WASM_MJS = path.resolve(__dirname, 'node_modules/verovio/dist/verovio-module.mjs');
+const VERO_ESM_MJS  = path.resolve(__dirname, 'node_modules/verovio/dist/verovio.mjs');
 
 const production = process.env.BUILD === 'production';
 
@@ -46,8 +56,8 @@ export default [
     plugins: [
       alias({
         entries: [
-          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
-          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+          { find: 'verovio/wasm', replacement: VERO_WASM_MJS },
+          { find: 'verovio/esm', replacement: VERO_ESM_MJS },
         ],
       }),
       replace({
@@ -98,14 +108,16 @@ export default [
             src: './node_modules/leaflet/dist/images/*',
             dest: './images/leaflet',
           },
-          {
-            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
-            dest: './lib',
-          },
-          {
-            src: './node_modules/openseadragon/build/openseadragon/images/*',
-            dest: './images/openseadragon',
-          },
+          // {
+          //     src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
+          //     dest: './lib'
+          // },
+          // {
+          //     src: './node_modules/openseadragon/build/openseadragon/images/*',
+          //     dest: './images/openseadragon'
+          // },
+          // { src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map', 
+          //   dest: './lib' },
           {
             src: './node_modules/prismjs/themes/*',
             dest: './css/prismjs',
@@ -114,6 +126,7 @@ export default [
             src: './node_modules/leaflet/dist/leaflet-src.js',
             dest: './lib',
           },
+          { src: './node_modules/leaflet/dist/leaflet-src.js.map', dest: './lib' },
           {
             src: './node_modules/leaflet/dist/leaflet.css',
             dest: './css/leaflet',
@@ -126,6 +139,7 @@ export default [
             src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js',
             dest: './lib',
           },
+          { src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js.map', dest: './lib' },
           {
             src: './node_modules/leaflet.markercluster/dist/*.css',
             dest: './css/leaflet',
@@ -140,6 +154,10 @@ export default [
           },
           {
             src: './node_modules/tom-select/dist/css/*.min.css',
+            dest: './css/tom-select',
+          },
+          {
+            src: './node_modules/tom-select/dist/css/tom-select.default.min.css.map',
             dest: './css/tom-select',
           },
           {
@@ -166,6 +184,14 @@ export default [
             src: './src/assets/design-system.css',
             dest: 'dist/css',
           },
+          {
+            src: './lib/openseadragon.min.js',
+            dest: './dist/lib',
+          },
+          {
+            src: './lib/openseadragon.min.js.map',
+            dest: './dist/lib',
+          },
         ],
       }),
     ],
@@ -181,8 +207,8 @@ export default [
     plugins: [
       alias({
         entries: [
-          { find: 'verovio/wasm', replacement: 'node_modules/verovio/dist/verovio-module.mjs' },
-          { find: 'verovio/esm', replacement: 'node_modules/verovio/dist/verovio.mjs' },
+          { find: 'verovio/wasm', replacement: VERO_WASM_MJS },
+          { find: 'verovio/esm', replacement: VERO_ESM_MJS },
         ],
       }),
       resolve({ browser: true, preferBuiltins: false }),
