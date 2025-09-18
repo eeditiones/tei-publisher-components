@@ -162,6 +162,10 @@ export default [
             src: './src/assets/components.css',
             dest: 'css',
           },
+          {
+            src: './src/assets/design-system.css',
+            dest: 'dist/css',
+          },
         ],
       }),
     ],
@@ -274,6 +278,10 @@ export default [
           {
             src: ['images/*.png', 'images/*.ico', 'images/*.svg'],
             dest: 'dist/images',
+          },
+          {
+            src: './src/assets/design-system.css',
+            dest: 'dist/css',
           },
         ],
       }),
