@@ -424,7 +424,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
     const overlayId = 'runtime-overlay';
 
     // remove old overlay
-    this.viewer.removeOverlay(this.overlay);
+    if (this.overlay) {
+      try {
+        this.viewer.removeOverlay(this.overlay);
+      } catch (e) {
+        // ignore if overlay was already removed or viewer not ready
+      }
+    }
 
     // check event data for completeness
     if (!event.detail.file || event.detail.file === 0) {
@@ -455,6 +461,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
       // deconstruct given coordinates into variables
       const [x1, y1, w, h] = event.detail.coordinates;
       const tiledImage = this.viewer.world.getItemAt(0);
+      if (!tiledImage) {
+        console.error('No tiled image available yet for annotation.');
+        return;
+      }
       const currentRect = tiledImage.viewportToImageRectangle(tiledImage.getBounds(true));
 
       // scroll into view?
