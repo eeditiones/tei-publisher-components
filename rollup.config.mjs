@@ -46,6 +46,7 @@ export default [
       'src/pb-code-editor.js',
       'src/pb-tify.js',
       'src/pb-mei.js',
+      'src/pb-facsimile.js',
     ],
     output: {
       dir: 'dist',
