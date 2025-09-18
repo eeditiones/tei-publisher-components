@@ -34,7 +34,7 @@ export default defineConfig({
   plugins: [
     {
       name: 'mock-teipublisher-handshake',
-      configureServer (server) {
+      configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const url = req.url || ''
           // Normalize both rooted and app-rooted paths
@@ -56,7 +56,7 @@ export default defineConfig({
           next()
         })
       }
-    }
+    },
   ],
   resolve: {
     // Ensure a single instance of Polymer & friends across the graph
