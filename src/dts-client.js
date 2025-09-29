@@ -6,7 +6,6 @@ import { registry } from './urls.js';
 import '@polymer/iron-ajax';
 import '@polymer/iron-icon';
 import '@polymer/iron-icons';
-import '@polymer/paper-button';
 
 /**
  * A client for the Distributed Text Services (DTS) protocol. This defines an API
@@ -265,10 +264,15 @@ export class DtsClient extends pbMixin(LitElement) {
       <h3 part="collection-title">${this.data ? this.data.title : 'Loading ...'}</h3>
       <slot name="pagination"></slot>
       ${this._parentCollections.length > 0 || this.collection
-        ? html` <paper-button part="parent-link" @click="${this._navigateUp}">
+        ? html` <button
+            part="parent-link"
+            class="pb-button pb-button--text"
+            type="button"
+            @click="${this._navigateUp}"
+          >
             <iron-icon icon="icons:arrow-upward"></iron-icon>
             ${translate('browse.up')}
-          </paper-button>`
+          </button>`
         : null}
       ${this.data ? this._renderMembers() : ''}
     `;

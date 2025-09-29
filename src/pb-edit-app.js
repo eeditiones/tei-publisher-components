@@ -2,7 +2,6 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-checkbox';
@@ -255,9 +254,15 @@ export class PbEditApp extends pbMixin(LitElement) {
               auto-validate
             ></paper-input>
           </fieldset>
-          <paper-button id="submit" @click="${this._doSubmit}"
-            ><iron-icon icon="save"></iron-icon> ${translate('appgen.submit')}</paper-button
+          <button
+            id="submit"
+            class="pb-button pb-button--contained"
+            type="button"
+            @click="${this._doSubmit}"
           >
+            <iron-icon icon="save"></iron-icon>
+            ${translate('appgen.submit')}
+          </button>
         </form>
       </iron-form>
       <paper-dialog id="dialog">
@@ -265,17 +270,25 @@ export class PbEditApp extends pbMixin(LitElement) {
         <div id="dialogContent">
           ${this.error
             ? html`<div id="error">${this.error}</div>`
-            : html`<a href="${this.url}" target="_blank">
-                  <paper-button
-                    ><iron-icon icon="icons:open-in-new"></iron-icon> ${translate(
-                      'appgen.open',
-                    )}</paper-button
-                  >
+            : html`<a
+                  href="${this.url}"
+                  target="_blank"
+                  class="pb-button pb-button--text"
+                >
+                  <iron-icon icon="icons:open-in-new"></iron-icon>
+                  ${translate('appgen.open')}
                 </a>
                 <p>${translate('appgen.success')}</p>`}
         </div>
         <div class="buttons">
-          <paper-button dialog-dismiss autofocus>${translate('dialogs.close')}</paper-button>
+          <button
+            class="pb-button pb-button--text"
+            type="button"
+            dialog-dismiss
+            autofocus
+          >
+            ${translate('dialogs.close')}
+          </button>
         </div>
       </paper-dialog>
     `;
