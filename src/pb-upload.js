@@ -3,8 +3,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { getCSSProperty } from './utils.js';
 import '@vaadin/vaadin-upload';
-import '@polymer/paper-button';
-import '@polymer/paper-icon-button';
 
 /**
  * Component for uploading resources to TEI Publisher or a generated app.
@@ -131,18 +129,28 @@ export class PbUpload extends pbMixin(LitElement) {
           ? html`<iron-icon slot="drop-label-icon" icon="${dropLabelIcon}"></iron-icon>`
           : html`<span slot="drop-label-icon"></span>`}
         <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
-        <paper-button id="uploadBtn" slot="add-button">
+        <button
+          id="uploadBtn"
+          slot="add-button"
+          class="pb-button pb-button--contained"
+          type="button"
+        >
           ${uploadIcon ? html`<iron-icon icon="${uploadIcon}"></iron-icon>` : null}
           ${translate('upload.upload')}
-        </paper-button>
+        </button>
         <div slot="file-list">
           <ul>
             ${this._files.size > 0
               ? html` <li class="close">
-                  <paper-icon-button
-                    icon="icons:clear"
+                  <button
+                    class="pb-button pb-button--icon"
+                    type="button"
+                    aria-label="${translate('dialogs.close')}"
+                    title="${translate('dialogs.close')}"
                     @click="${this.clearList}"
-                  ></paper-icon-button>
+                  >
+                    <iron-icon icon="icons:clear"></iron-icon>
+                  </button>
                 </li>`
               : ''}
             ${this.renderFiles()}

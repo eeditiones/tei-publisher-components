@@ -10,10 +10,19 @@ describe('Demo: pb-table-grid', () => {
       const comp = $el[0]
       const uc = comp && comp.updateComplete
       const wait = uc && typeof uc.then === 'function' ? uc : Promise.resolve()
-      return wait.then(() => {
-        if (typeof comp._initGrid === 'function') comp._initGrid()
-        if (comp.grid && typeof comp._submit === 'function') comp._submit()
-      })
+      return wait
+        .then(() => {
+          if (!comp.search) {
+            comp.search = true
+            comp.requestUpdate()
+            return comp.updateComplete
+          }
+          return null
+        })
+        .then(() => {
+          if (typeof comp._initGrid === 'function') comp._initGrid()
+          if (comp.grid && typeof comp._submit === 'function') comp._submit()
+        })
     })
   })
 
@@ -22,6 +31,12 @@ describe('Demo: pb-table-grid', () => {
     // Ensure the Grid container exists then the inner table is rendered by gridjs
     cy.get('pb-table-grid').find('#table').should('exist')
     cy.get('pb-table-grid').find('table').should('exist')
+    // The legacy Polymer buttons should be gone; native icon button present
+    cy.get('pb-table-grid').find('paper-icon-button').should('not.exist')
+    cy.get('pb-table-grid')
+      .find('button.pb-button--icon[slot="suffix"]')
+      .should('have.attr', 'type', 'button')
+      .and('have.attr', 'aria-label')
 
     // Headers from <pb-table-column>
     cy.get('pb-table-grid').find('thead').should('contain.text', 'Name')

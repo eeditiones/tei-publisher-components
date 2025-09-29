@@ -3,10 +3,9 @@ import { Grid } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from './theming.js';
-import '@polymer/paper-input/paper-input';
-import '@polymer/iron-icons';
-import '@polymer/iron-form';
-import '@polymer/paper-icon-button';
+import { translate } from './pb-i18n.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/iron-form/iron-form.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
 
@@ -263,11 +262,26 @@ export class PbTableGrid extends pbMixin(LitElement) {
                   value="${this._params.search || ''}"
                   @keyup="${e => (e.keyCode == 13 ? this._submit() : null)}"
                 >
-                  <paper-icon-button
-                    icon="search"
-                    @click="${this._submit}"
+                  <button
+                    class="pb-button pb-button--icon"
+                    type="button"
                     slot="suffix"
-                  ></paper-icon-button>
+                    aria-label="${translate('search.search')}"
+                    title="${translate('search.search')}"
+                    @click="${this._submit}"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                      ></path>
+                    </svg>
+                  </button>
                 </paper-input>
               </form>
             </iron-form>

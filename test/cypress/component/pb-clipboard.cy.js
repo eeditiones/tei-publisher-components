@@ -20,7 +20,12 @@ describe('pb-clipboard', () => {
       }
       cy.spy(win.navigator.clipboard, 'writeText').as('writeText')
     })
-    cy.get('#clip').shadow().find('paper-icon-button').click({ force: true })
+    cy.get('#clip')
+      .find('button.pb-button--icon')
+      .as('copyButton')
+
+    cy.get('@copyButton').should('have.attr', 'aria-label')
+    cy.get('@copyButton').click({ force: true })
     cy.get('@writeText').should('have.been.called').then((spy) => {
       const textArg = spy.args[0][0]
       expect(String(textArg).trim()).to.equal('Copy me')

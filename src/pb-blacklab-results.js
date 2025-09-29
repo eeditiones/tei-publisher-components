@@ -2,8 +2,6 @@ import { LitElement, html, css } from 'lit';
 import anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import './pb-paginate.js';
-import '@polymer/iron-icons';
-import '@polymer/paper-icon-button';
 
 /**
  * This component talks to the blacklab API of TEI-Publisher to
@@ -142,16 +140,6 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
         position: relative;
         padding: 0 1rem;
       }
-      [icon='create'] {
-        display: none;
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        color: blue;
-      }
-      td.hit:hover [icon='create'] {
-        display: inline-block;
-      }
     `;
   }
 
@@ -213,7 +201,6 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
                       target="_blank"
                       >${match.match.display}</a
                     >
-                    <!--<paper-icon-button icon="create"></paper-icon-button>-->
                   </td>
                   <td class="right" colspan="2">${match.right}</td>
                 </tr>
