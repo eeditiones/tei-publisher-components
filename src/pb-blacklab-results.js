@@ -133,7 +133,7 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
         cell-spacing: 0;
         cell-padding: 0;
       }
-      .t-head th {
+      thead tr th {
         border-bottom: thin solid #999;
       }
       td.hit {
@@ -168,46 +168,50 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
     return html`
       <pb-paginate part="paginator" per-page="${this.perPage}" range="5"></pb-paginate>
       <table>
-        <tr class="t-head">
-          <th class="docName">Doc Id</th>
-          <th class="left">before</th>
-          <th>hit</th>
-          <th class="right">after</th>
-          <th class="hit-count">hits</th>
-        </tr>
-        ${this.documents.map(
-          document => html`
-            <tr>
-              <td colspan="4" class="docName">
-                <a
-                  href="${this.target}/${document.id}.xml?pattern=${this.pattern}&page=${document
-                    .matches[0].page[0]}"
-                  target="_blank"
-                  >${document.id}</a
-                >
-              </td>
-              <td class="hit-count">
-                <span class="hit-count">${document.hits}</span>
-              </td>
-            </tr>
-            ${document.matches.map(
-              match => html`
-                <tr>
-                  <td class="left" colspan="2">${match.left}</td>
-                  <td class="hit">
-                    <a
-                      href="${this.target}/${document.id}.xml?pattern=${this.pattern}&match=${match
-                        .match.words[0]}&page=${match.page[0]}"
-                      target="_blank"
-                      >${match.match.display}</a
-                    >
-                  </td>
-                  <td class="right" colspan="2">${match.right}</td>
-                </tr>
-              `,
-            )}
-          `,
-        )}
+        <thead>
+          <tr>
+            <th scope="col" class="docName">Doc Id</th>
+            <th scope="col" class="left">before</th>
+            <th scope="col">hit</th>
+            <th scope="col" class="right">after</th>
+            <th scope="col" class="hit-count">hits</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${this.documents.map(
+            document => html`
+              <tr>
+                <td colspan="4" class="docName">
+                  <a
+                    href="${this.target}/${document.id}.xml?pattern=${this.pattern}&page=${document
+                      .matches[0].page[0]}"
+                    target="_blank"
+                    >${document.id}</a
+                  >
+                </td>
+                <td class="hit-count">
+                  <span class="hit-count">${document.hits}</span>
+                </td>
+              </tr>
+              ${document.matches.map(
+                match => html`
+                  <tr>
+                    <td class="left" colspan="2">${match.left}</td>
+                    <td class="hit">
+                      <a
+                        href="${this.target}/${document.id}.xml?pattern=${this.pattern}&match=${match
+                          .match.words[0]}&page=${match.page[0]}"
+                        target="_blank"
+                        >${match.match.display}</a
+                      >
+                    </td>
+                    <td class="right" colspan="2">${match.right}</td>
+                  </tr>
+                `,
+              )}
+            `,
+          )}
+        </tbody>
       </table>
     `;
   }
