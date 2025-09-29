@@ -40,6 +40,10 @@ describe('pb-table-grid', () => {
     cy.waitForEvent('pb-page-ready')
     // Ensure grid instance is created, then force a render to trigger first request
     cy.get('pb-table-grid').should(($el) => { expect($el[0].grid, 'grid instance').to.exist })
+    cy.get('pb-table-grid').find('paper-icon-button').should('not.exist')
+    cy.get('pb-table-grid')
+      .find('button.pb-button--icon[slot="suffix"]')
+      .should('have.attr', 'type', 'button')
     cy.get('pb-table-grid').then(($el) => { $el[0]._submit() })
     cy.get('@fetch').should('be.called')
     // Assert first page shows first two names

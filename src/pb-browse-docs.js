@@ -7,7 +7,6 @@ import { cmpVersion } from './utils.js';
 import { registry } from './urls.js';
 
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
 import '@polymer/paper-dialog';
@@ -315,15 +314,16 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
       </div>
       <div class="toolbar">
         <slot name="toolbar"></slot>
-        <paper-button
+        <button
           id="delete"
           part="delete-button"
+          type="button"
+          class="pb-button pb-button--text ${this._canModify(this._allowModification)}"
           title="${translate('browse.delete')}"
-          class="${this._canModify(this._allowModification)}"
         >
           <iron-icon icon="delete"></iron-icon>
           <span class="label">${translate('browse.delete')}</span>
-        </paper-button>
+        </button>
       </div>
       <slot></slot>
       <slot name="footer"></slot>
@@ -356,19 +356,36 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
           </p>
         </paper-dialog-scrollable>
         <div class="buttons">
-          <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}"
-            >${translate('dialogs.yes')}</paper-button
+          <button
+            class="pb-button pb-button--text"
+            type="button"
+            dialog-confirm="dialog-confirm"
+            autofocus
+            @click="${this._confirmDelete}"
           >
-          <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
+            ${translate('dialogs.yes')}
+          </button>
+          <button
+            class="pb-button pb-button--text"
+            type="button"
+            dialog-cancel="dialog-cancel"
+          >
+            ${translate('dialogs.no')}
+          </button>
         </div>
       </paper-dialog>
       <paper-dialog id="errorDialog">
         <h2>${translate('dialogs.error')}</h2>
         <paper-dialog-scrollable></paper-dialog-scrollable>
         <div class="buttons">
-          <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
+          <button
+            class="pb-button pb-button--text"
+            type="button"
+            dialog-confirm="dialog-confirm"
+            autofocus
+          >
             ${translate('dialogs.close')}
-          </paper-button>
+          </button>
         </div>
       </paper-dialog>
     `;

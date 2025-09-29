@@ -93,7 +93,8 @@ export function testMigratedComponent(componentName, testConfig = {}) {
 
       it('should support keyboard navigation', () => {
         // Test Tab navigation
-        cy.get('body').tab()
+        cy.get('body')
+        cy.press('Tab')
         cy.focused().should('exist')
         // Test Enter/Space on buttons
         cy.get(componentName)
