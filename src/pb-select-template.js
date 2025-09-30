@@ -3,9 +3,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
 
-import '@polymer/paper-listbox';
-import '@polymer/paper-item';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/iron-ajax';
 
 /**
@@ -20,6 +17,9 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
       ...super.properties,
       /** The label to show on top of the dropdown menu */
       label: {
+        type: String,
+      },
+      name: {
         type: String,
       },
       /** Currently selected ODD. If this property is set, the component
@@ -38,6 +38,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
   constructor() {
     super();
     this.label = 'document.selectTemplate';
+    this.name = '';
     this._templates = [];
   }
 
@@ -57,20 +58,20 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}">
-        <paper-listbox
-          id="templates"
-          slot="dropdown-content"
-          class="dropdown-content"
-          selected="${this.template}"
-          attr-for-selected="value"
-          @selected-item-changed="${this._selected}"
-        >
-          ${this._templates.map(
-            item => html`<paper-item value="${item.name}">${item.title}</paper-item>`,
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu>
+      <label class="pb-select-template__label" for="template-select">
+        ${translate(this.label)}
+      </label>
+      <select
+        id="template-select"
+        class="pb-select-template__select"
+        name="${this.name || ''}"
+        @change="${this._selected}"
+        .value="${this.template || ''}"
+      >
+        ${this._templates.map(
+          item => html`<option value="${item.name}">${item.title}</option>`,
+        )}
+      </select>
 
       <iron-ajax
         id="getTemplates"
@@ -87,15 +88,36 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      paper-dropdown-menu {
-        --paper-listbox-background-color: white;
+      .pb-select-template__label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--pb-label-color, #303030);
+      }
+
+      .pb-select-template__select {
         width: 100%;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--pb-border-color, #c0c0c0);
+        font-size: 1rem;
+        background-color: #fff;
+        color: inherit;
+      }
+
+      .pb-select-template__select:focus {
+        outline: none;
+        border-color: var(--pb-primary-color, #1976d2);
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
       }
     `;
   }
 
   _selected() {
-    const newTemplate = this.shadowRoot.getElementById('templates').selected;
+    const select = this.shadowRoot.getElementById('template-select');
+    if (!select) return;
+    const newTemplate = select.value;
     if (newTemplate === this.template) {
       return;
     }
@@ -105,7 +127,11 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
 
   _handleTemplatesResponse() {
     const loader = this.shadowRoot.getElementById('getTemplates');
-    this._templates = loader.lastResponse;
+    this._templates = loader.lastResponse || [];
+    const select = this.shadowRoot.getElementById('template-select');
+    if (select && this.template) {
+      select.value = this.template;
+    }
   }
 }
 customElements.define('pb-select-template', PbSelectTemplate);
