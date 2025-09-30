@@ -7,10 +7,6 @@ import { VerovioToolkit } from 'verovio/esm';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';
-import '@polymer/paper-icon-button';
-import '@polymer/paper-checkbox';
-import '@polymer/iron-icons';
-import '@polymer/iron-icons/av-icons';
 
 let _verovio = null;
 
@@ -108,6 +104,9 @@ export class PbMei extends pbMixin(LitElement) {
         type: String,
         attribute: 'subst-xpath',
       },
+      _isPlaying: {
+        type: Boolean,
+      },
       _svg: {
         type: String,
       },
@@ -130,6 +129,8 @@ export class PbMei extends pbMixin(LitElement) {
     this.mdivXPath = null;
     this.substXPath = null;
     this._options = [];
+    this._isPlaying = false;
+    this._midiPaused = false;
   }
 
   connectedCallback() {
@@ -219,57 +220,74 @@ export class PbMei extends pbMixin(LitElement) {
   }
 
   async play() {
-    const button = this.shadowRoot.getElementById('play');
-    if (!button.active) {
-      this._midiPlayer.stop();
-      button.icon = 'av:play-arrow';
-    } else {
-      button.icon = 'av:stop';
-      if (this._midiPaused) {
-        this._midiPaused = false;
-        this._midiPlayer.resume();
-      } else {
-        _verovio.loadData(this._data);
-        const mdata = _verovio.renderToMIDI();
-        const raw = window.atob(mdata);
-        const rawLength = raw.length;
-        const array = new Uint8Array(new ArrayBuffer(rawLength));
-
-        for (let i = 0; i < rawLength; i += 1) {
-          array[i] = raw.charCodeAt(i);
-        }
-        this._midiPlayer.play({ arrayBuffer: array });
-      }
+    if (!this.player || !this._midiPlayer) {
+      return;
     }
+
+    this._isPlaying = !this._isPlaying;
+    if (!this._isPlaying) {
+      this._midiPlayer.stop();
+      this._midiPaused = false;
+      this.requestUpdate('_isPlaying');
+      return;
+    }
+
+    if (this._midiPaused) {
+      this._midiPaused = false;
+      this._midiPlayer.resume();
+      this.requestUpdate('_isPlaying');
+      return;
+    }
+
+    _verovio.loadData(this._data);
+    const mdata = _verovio.renderToMIDI();
+    const raw = window.atob(mdata);
+    const rawLength = raw.length;
+    const array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for (let i = 0; i < rawLength; i += 1) {
+      array[i] = raw.charCodeAt(i);
+    }
+    this._midiPlayer.play({ arrayBuffer: array });
+    this.requestUpdate('_isPlaying');
   }
 
   pause() {
-    const button = this.shadowRoot.getElementById('play');
-    if (button.active) {
-      this._midiPaused = this._midiPlayer.pause();
-      if (this._midiPaused) {
-        button.icon = 'av:play-arrow';
-        button.active = false;
-      }
+    if (!this.player || !this._midiPlayer || !this._isPlaying) {
+      return;
     }
+
+    this._midiPaused = this._midiPlayer.pause();
+    this._isPlaying = false;
+    this.requestUpdate('_isPlaying');
   }
 
   render() {
     return html`
       <div id="toolbar" part="toolbar">
         <div class="${this._pages === 1 ? 'hidden' : ''}">
-          <paper-icon-button
+          <button
             id="pageLeft"
-            icon="icons:chevron-left"
+            class="pb-button pb-button--icon"
+            type="button"
+            aria-label="Previous page"
+            title="Previous page"
             @click="${this._previousPage}"
             ?disabled="${this._page === 1}"
-          ></paper-icon-button>
-          <paper-icon-button
+          >
+            ${this._renderChevron('left')}
+          </button>
+          <button
             id="pageRight"
-            icon="icons:chevron-right"
+            class="pb-button pb-button--icon"
+            type="button"
+            aria-label="Next page"
+            title="Next page"
             @click="${this._nextPage}"
             ?disabled="${this._page === this._pages}"
-          ></paper-icon-button>
+          >
+            ${this._renderChevron('right')}
+          </button>
         </div>
         ${this._renderPlayer()}
         <div>${this._renderOptions()}</div>
@@ -284,13 +302,26 @@ export class PbMei extends pbMixin(LitElement) {
     if (this.player) {
       return html`
         <div id="player">
-          <paper-icon-button
+          <button
             id="play"
-            icon="av:play-arrow"
-            toggles
+            class="pb-button pb-button--icon ${this._isPlaying ? 'is-active' : ''}"
+            type="button"
+            aria-label="${this._isPlaying ? 'Stop playback' : 'Start playback'}"
+            aria-pressed="${this._isPlaying ? 'true' : 'false'}"
+            title="${this._isPlaying ? 'Stop playback' : 'Start playback'}"
             @click="${this.play}"
-          ></paper-icon-button>
-          <paper-icon-button icon="av:pause" @click="${this.pause}"></paper-icon-button>
+          >
+            ${this._isPlaying ? this._renderStopIcon() : this._renderPlayIcon()}
+          </button>
+          <button
+            class="pb-button pb-button--icon"
+            type="button"
+            aria-label="Pause playback"
+            title="Pause playback"
+            @click="${this.pause}"
+          >
+            ${this._renderPauseIcon()}
+          </button>
         </div>
       `;
     }
@@ -300,10 +331,44 @@ export class PbMei extends pbMixin(LitElement) {
   _renderOptions() {
     return this._options.map(
       option =>
-        html`<paper-checkbox @change="${ev => this._setOption(option, ev.target.checked)}"
-          >${option.label}</paper-checkbox
-        >`,
+        html`<label class="option-toggle">
+          <input
+            type="checkbox"
+            class="option-toggle__control"
+            @change="${ev => this._setOption(option, ev.target.checked)}"
+            .checked=${Boolean(this[option.name])}
+          />
+          <span class="option-toggle__label">${option.label}</span>
+        </label>`,
     );
+  }
+
+  _renderChevron(direction) {
+    const path =
+      direction === 'left'
+        ? 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'
+        : 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z';
+    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="${path}"></path>
+    </svg>`;
+  }
+
+  _renderPlayIcon() {
+    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M8 5v14l11-7z"></path>
+    </svg>`;
+  }
+
+  _renderStopIcon() {
+    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M6 6h12v12H6z"></path>
+    </svg>`;
+  }
+
+  _renderPauseIcon() {
+    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M6 19h4V5H6zm8-14v14h4V5h-4z"></path>
+    </svg>`;
   }
 
   _setOption(option, checked) {
@@ -371,6 +436,14 @@ export class PbMei extends pbMixin(LitElement) {
         margin-right: 0;
       }
 
+      #toolbar button.pb-button--icon {
+        margin-right: 0.5rem;
+      }
+
+      #toolbar button.pb-button--icon:last-child {
+        margin-right: 0;
+      }
+
       #output {
         width: 100%;
         overflow: auto;
@@ -378,6 +451,33 @@ export class PbMei extends pbMixin(LitElement) {
 
       .hidden {
         display: none;
+      }
+
+      #player {
+        display: inline-flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      #player .pb-button.is-active {
+        background-color: var(--pb-primary-color);
+        color: var(--pb-on-primary-color);
+      }
+
+      .option-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-right: 0.75rem;
+        font-size: 0.95em;
+      }
+
+      .option-toggle:last-child {
+        margin-right: 0;
+      }
+
+      .option-toggle__control {
+        accent-color: var(--pb-primary-color, #1976d2);
       }
     `;
   }

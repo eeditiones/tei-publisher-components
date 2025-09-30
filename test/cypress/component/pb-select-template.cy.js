@@ -9,7 +9,17 @@ describe('pb-select-template', () => {
       doc.dispatchEvent(new CustomEvent('pb-page-ready', { detail: { endpoint: '.', apiVersion: '1.0.0', template: 'default' } }))
     })
     cy.get('#sel').should('exist')
-    cy.get('#sel').find('paper-dropdown-menu').should('exist')
+    cy.get('#sel').then($el => $el[0].updateComplete)
+    cy.get('#sel').then(($el) => {
+      const comp = $el[0]
+      comp._templates = [
+        { name: 'default', title: 'Default Template' },
+        { name: 'custom', title: 'Custom Template' }
+      ]
+      comp.requestUpdate()
+    })
+    cy.get('#sel').then($el => $el[0].updateComplete)
+    cy.get('#sel').find('select').should('exist').and('have.value', 'default')
+    cy.get('#sel').find('option').should('have.length', 2)
   })
 })
-
