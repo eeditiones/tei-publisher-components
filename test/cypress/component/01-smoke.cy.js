@@ -24,6 +24,14 @@ const MIGRATED_COMPONENTS = [
   {
     tag: 'pb-blacklab-results',
     polymerSelectors: ['paper-icon-button', 'iron-icon']
+  },
+  {
+    tag: 'pb-mei',
+    polymerSelectors: ['paper-icon-button', 'paper-checkbox', 'iron-icon']
+  },
+  {
+    tag: 'pb-select-template',
+    polymerSelectors: ['paper-dropdown-menu', 'paper-listbox', 'paper-item']
   }
 ]
 
