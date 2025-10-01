@@ -5,21 +5,13 @@ describe('Demo: pb-select3', () => {
     cy.get('#select3-form').should('exist')
   })
 
-  // TODO(DP): not sure why these calls to shadow are necessary here to avoid multi selection
   it('submits selected result together with subform values', () => {
-    cy.get('pb-select[name="result"]')
-      .shadow()
-      .find('select option')
-      .should('have.length.greaterThan', 10)
+    cy.inShadow('pb-select[name="result"]', 'select option').should('have.length.greaterThan', 10)
 
     cy.get('#select3-field').select('author')
 
-    cy.get('pb-select[name="result"]')
-      .shadow()
-      .find('select')
-      .select('de')
-
-    cy.get('pb-select[name="result"]').then($el => cy.wrap($el[0].updateComplete))
+    cy.inShadow('pb-select[name="result"]', 'select').first().select('de')
+    cy.waitUpdate('pb-select[name="result"]')
 
     cy.get('#select3-form').submit()
     cy.get('#select3-output')
