@@ -32,6 +32,10 @@ const MIGRATED_COMPONENTS = [
   {
     tag: 'pb-select-template',
     polymerSelectors: ['paper-dropdown-menu', 'paper-listbox', 'paper-item']
+  },
+  {
+    tag: 'pb-select',
+    polymerSelectors: ['paper-dropdown-menu', 'paper-listbox', 'paper-item']
   }
 ]
 

@@ -1,64 +1,134 @@
-<html>
-
-<head>
-    <title>Using pb-select</title>
-    <style>
-        pb-autocomplete {
-            margin-bottom: 20px;
-        }
-    </style>
-    <!--scripts-->
-    
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Using pb-select with subform</title>
+    <link rel="stylesheet" href="demo.css">
     <script>
-        // Workaround for Polymer modules under Vite: some @polymer/* packages
-        // reference this Closure helper; define a no-op if absent.
-        // See: https://github.com/Polymer/polymer/issues/4845
-        window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
+      window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) {
+        return prop
+      }
     </script>
-    <script type="module">
-        // Load iconset first so any <iron-icon> upgrades have a registry to query.
-        import '@polymer/iron-icons/iron-icons.js';
-        import '@polymer/paper-button/paper-button.js';
-        import '@polymer/iron-form/iron-form.js';
-    </script>
+    <script type="module"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-select.js"></script>
     <script type="module" src="../src/pb-lang.js"></script>
-    <!--/scripts-->
-</head>
-
-<body>
-    <h1>Using pb-select with a remote data source</h1>
-
+  </head>
+  <body>
+    <h1>Using pb-select with additional form controls</h1>
     <pb-demo-snippet>
-        <template>
-            <p>Reads the items to be shown from a JSON file:</p>
-            <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="/exist/apps/tei-publisher">
-                <iron-form id="form">
-                    <form action="">
-                        <pb-select label="Title" name="title" source="api/search/autocomplete?query=s">
-                            <pb-select label="Field" name="field" slot="subform" value="title">
-                                <paper-item value="title">Title</paper-item>
-                                <paper-item value="author">Author</paper-item>
-                            </pb-select>
-                        </pb-select>
-                        <button type="submit"><paper-button>Submit</paper-button></button>
-                    </form>
-                </iron-form>
-                <p>Parameters which would be sent: <code id="output"></code></p>
-            </pb-page>
-            <script>
-                const form = document.getElementById('form');
-                form.addEventListener('iron-form-submit', (ev) => {
-                    ev.preventDefault();
-                    const data = JSON.stringify(form.serializeForm());
-                    document.getElementById('output').innerHTML = data;
-                });
-            </script>
-        </template>
+      <template>
+        <style>
+          :host {
+            font-family: var(--pb-font-family, 'Roboto', sans-serif);
+            color: #303030;
+          }
+
+          .demo {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          }
+
+          .demo__subform {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+          }
+
+          .demo__output {
+            font-family: 'Roboto Mono', monospace;
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 1.5rem;
+          }
+        </style>
+
+        <pb-page id="pb-select3-page" endpoint="." api-version="1.0.0">
+          <section class="demo">
+            <form id="select3-form" action="">
+              <pb-select
+                label="Result"
+                name="result"
+                value="en"
+                source="./select.json"
+              >
+                <span value="" hidden>Loading…</span>
+                <div slot="subform" class="demo__subform">
+                  <label for="select3-field">Field</label>
+                  <select id="select3-field" name="field">
+                    <option value="title" selected>Title</option>
+                    <option value="author">Author</option>
+                  </select>
+                </div>
+              </pb-select>
+              <button type="submit" class="pb-button pb-button--contained">Submit</button>
+            </form>
+            <pre id="select3-output" class="demo__output"></pre>
+          </section>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
 
-</body>
+    <script type="module">
+      const initialState = Object.freeze({ result: 'en', field: 'title' })
 
+      async function hydrate () {
+        await Promise.all([
+          customElements.whenDefined('pb-demo-snippet'),
+          customElements.whenDefined('pb-select')
+        ])
+
+        const form = document.querySelector('#select3-form')
+        const output = document.querySelector('#select3-output')
+        const select = form?.querySelector('pb-select[name="result"]')
+        const field = form?.querySelector('select[name="field"]')
+
+        if (!form || !output || !select || !field) {
+          requestAnimationFrame(hydrate)
+          return
+        }
+
+        select.value = initialState.result
+        field.value = initialState.field
+        await select.updateComplete
+        const innerSelect = select.shadowRoot?.querySelector('select')
+        if (innerSelect) {
+          innerSelect.value = select.value ?? ''
+          innerSelect.dispatchEvent(new Event('change', { bubbles: true, composed: true }))
+        }
+        output.textContent = new URLSearchParams(new FormData(form)).toString()
+
+        const updateOutput = () => {
+          output.textContent = new URLSearchParams(new FormData(form)).toString()
+        }
+
+        form.addEventListener('submit', event => {
+          event.preventDefault()
+          updateOutput()
+        })
+
+        field.addEventListener('change', updateOutput)
+        select.addEventListener('change', updateOutput)
+
+        document.dispatchEvent(new CustomEvent('pb-page-ready', {
+          detail: { endpoint: '.', apiVersion: '1.0.0', template: null }
+        }))
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hydrate)
+      } else {
+        hydrate()
+      }
+    </script>
+  </body>
 </html>
