@@ -152,100 +152,50 @@
     </pb-demo-snippet>
 
     <script type="module">
+      import { ready, stampIfNeeded, firePageReady, syncPbSelect, wireFormOutput } from '../src/docs/demo-utils.js'
+
       const initialState = Object.freeze({
         lang1: 'es',
         lang2: ['fr', 'de'],
         lang3: 'en'
       })
 
-      function serializeForm (form) {
-        return new URLSearchParams(new FormData(form)).toString()
-      }
-
       async function hydrateDemo () {
-        await Promise.all([
-          customElements.whenDefined('pb-demo-snippet'),
-          customElements.whenDefined('pb-select')
-        ])
-
+        await ready(['pb-demo-snippet', 'pb-select'])
         const snippet = document.querySelector('pb-demo-snippet')
-        if (!snippet) return
+        stampIfNeeded(snippet)
 
-        let form = snippet.querySelector('#select-demo-form')
-        if (!form) {
-          const template = snippet.querySelector('template')
-          if (template && !template.dataset.stamped) {
-            const clone = template.content.cloneNode(true)
-            snippet.appendChild(clone)
-            template.dataset.stamped = 'true'
-          }
-          form = snippet.querySelector('#select-demo-form')
-        }
-
+        const form = snippet.querySelector('#select-demo-form')
         const output = snippet.querySelector('#select-demo-output')
         const reset = snippet.querySelector('#reset-demo')
-
-        if (!form || !output) {
-          requestAnimationFrame(hydrateDemo)
-          return
-        }
+        if (!form || !output) return
 
         const single = form.querySelector('pb-select[name="lang1"]')
         const multi = form.querySelector('pb-select[name="lang2"]')
         const remote = form.querySelector('pb-select[name="lang3"]')
 
-        const waitForUpdates = async (...elements) => {
-          const promises = elements
-            .filter(el => el && typeof el.updateComplete?.then === 'function')
-            .map(el => el.updateComplete)
-          if (promises.length) {
-            await Promise.all(promises)
-          }
-        }
+        if (single) single.value = initialState.lang1
+        if (multi) multi.values = [...initialState.lang2]
+        if (remote) remote.value = initialState.lang3
 
-        const applyInitialState = async () => {
+        await Promise.all([single, multi, remote].filter(Boolean).map(syncPbSelect))
+
+        const render = wireFormOutput(form, output)
+        render()
+
+        reset?.addEventListener('click', async () => {
           if (single) single.value = initialState.lang1
           if (multi) multi.values = [...initialState.lang2]
           if (remote) remote.value = initialState.lang3
-          await waitForUpdates(single, multi, remote)
-        }
-
-        const updateOutput = () => {
-          requestAnimationFrame(() => {
-            output.textContent = serializeForm(form)
-          })
-        }
-
-        await waitForUpdates(single, multi, remote)
-        await applyInitialState()
-        updateOutput()
-
-        requestAnimationFrame(() => {
-          document.dispatchEvent(new CustomEvent('pb-page-ready', {
-            detail: {
-              endpoint: '.',
-              apiVersion: '1.0.0',
-              template: null
-            }
-          }))
+          await Promise.all([single, multi, remote].filter(Boolean).map(syncPbSelect))
+          render()
         })
 
-        form.addEventListener('submit', event => {
-          event.preventDefault()
-          updateOutput()
-        })
-
-        reset?.addEventListener('click', () => {
-          applyInitialState().then(updateOutput)
-        })
-
-        single?.addEventListener('change', updateOutput)
-        multi?.addEventListener('change', updateOutput)
-        remote?.addEventListener('change', updateOutput)
+        firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => hydrateDemo())
+        document.addEventListener('DOMContentLoaded', hydrateDemo)
       } else {
         hydrateDemo()
       }

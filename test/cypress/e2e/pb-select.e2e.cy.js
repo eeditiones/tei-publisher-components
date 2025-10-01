@@ -9,9 +9,9 @@ describe('Demo: pb-select', () => {
   // includeShadowDom: true only affects Cypress commands but not the find() hence the explicit calls here.
   it('renders the pb-select demo content', () => {
     cy.get('pb-demo-snippet').should('exist')
-    cy.get('pb-select[name="lang1"]').shadow().find('select option').should('have.length.greaterThan', 10)
-    cy.get('pb-select[name="lang2"]').shadow().find('input[type="checkbox"][value="fr"]').should('exist')
-    cy.get('pb-select[name="lang3"]').shadow().find('select option').should('have.length.greaterThan', 10)
+    cy.inShadow('pb-select[name="lang1"]', 'select option').should('have.length.greaterThan', 10)
+    cy.inShadow('pb-select[name="lang2"]', 'input[type="checkbox"][value="fr"]').should('exist')
+    cy.inShadow('pb-select[name="lang3"]', 'select option').should('have.length.greaterThan', 10)
   })
 
   it.skip('submits selected values from native controls', () => {
@@ -20,11 +20,11 @@ describe('Demo: pb-select', () => {
   })
 
   it('updates submitted values when toggling checkboxes', () => {
-    cy.get('pb-select[name="lang2"]').shadow().find('input[type="checkbox"][value="fr"]').uncheck()
+    cy.inShadow('pb-select[name="lang2"]', 'input[type="checkbox"][value="fr"]').uncheck()
       .should('not.be.checked')
-    cy.get('pb-select[name="lang2"]').shadow().find('input[type="checkbox"][value="it"]').check()
+    cy.inShadow('pb-select[name="lang2"]', 'input[type="checkbox"][value="it"]').check()
       .should('be.checked')
-    cy.get('pb-select[name="lang2"]').then($el => cy.wrap($el[0].updateComplete))
+    cy.waitUpdate('pb-select[name="lang2"]')
 
     cy.get('#select-demo-form').submit()
     cy.get('#select-demo-output')

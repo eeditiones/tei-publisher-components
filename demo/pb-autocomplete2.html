@@ -64,16 +64,27 @@
                 </iron-form>
                 <p>Parameters which would be sent: <code id="output"></code></p>
             </pb-page>
-            <script>
-                const form = document.getElementById('form');
-                form.addEventListener('iron-form-submit', (ev) => {
-                    ev.preventDefault();
-                    const data = JSON.stringify(form.serializeForm());
-                    document.getElementById('output').innerHTML = data;
-                });
-            </script>
         </template>
     </pb-demo-snippet>
+    <script type="module">
+      import { ready, stampIfNeeded, wireFormOutput, firePageReady } from '../src/docs/demo-utils.js'
+      async function hydrate () {
+        await ready(['pb-demo-snippet','pb-autocomplete'])
+        const snippet = document.querySelector('pb-demo-snippet')
+        stampIfNeeded(snippet)
+        const iron = document.getElementById('form')
+        const form = iron?.querySelector('form')
+        const output = document.getElementById('output')
+        if (form && output) {
+          const render = () => { output.textContent = JSON.stringify({ ...Object.fromEntries(new FormData(form)) }) }
+          iron.addEventListener('iron-form-submit', ev => { ev.preventDefault(); render() })
+          render()
+        }
+        firePageReady({ endpoint: '/exist/apps/tei-publisher', apiVersion: '1.0.0' })
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate)
+      else hydrate()
+    </script>
 </body>
 
 </html>

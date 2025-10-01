@@ -66,40 +66,27 @@
     </pb-demo-snippet>
 
     <script type="module">
+      import { ready, stampIfNeeded, firePageReady, syncPbSelect, wireFormOutput } from '../src/docs/demo-utils.js'
+
       const initialState = Object.freeze({ lang: 'pl' })
 
       async function hydrate () {
-        await Promise.all([
-          customElements.whenDefined('pb-demo-snippet'),
-          customElements.whenDefined('pb-select')
-        ])
+        await ready(['pb-demo-snippet', 'pb-select'])
+        const snippet = document.querySelector('pb-demo-snippet')
+        stampIfNeeded(snippet)
 
         const form = document.querySelector('#select2-form')
         const output = document.querySelector('#select2-output')
         const control = form?.querySelector('pb-select[name="lang"]')
-
-        if (!form || !output || !control) {
-          requestAnimationFrame(hydrate)
-          return
-        }
+        if (!form || !output || !control) return
 
         control.value = initialState.lang
-        await control.updateComplete
-        const select = control.shadowRoot?.querySelector('select')
-        if (select) {
-          select.value = control.value ?? ''
-          select.dispatchEvent(new Event('change', { bubbles: true, composed: true }))
-        }
-        output.textContent = new URLSearchParams(new FormData(form)).toString()
+        await syncPbSelect(control)
 
-        form.addEventListener('submit', event => {
-          event.preventDefault()
-          output.textContent = new URLSearchParams(new FormData(form)).toString()
-        })
+        const render = wireFormOutput(form, output)
+        render()
 
-        document.dispatchEvent(new CustomEvent('pb-page-ready', {
-          detail: { endpoint: '.', apiVersion: '1.0.0', template: null }
-        }))
+        firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
       }
 
       if (document.readyState === 'loading') {

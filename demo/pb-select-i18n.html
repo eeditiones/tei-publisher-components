@@ -63,16 +63,6 @@
 
                 <p>Parameters which would be sent: <code id="output"></code></p>
             </pb-page>
-
-
-            <script>
-                const form = document.getElementById('form');
-                form.addEventListener('iron-form-submit', (ev) => {
-                    ev.preventDefault();
-                    const data = JSON.stringify(form.serializeForm());
-                    document.getElementById('output').innerHTML = data;
-                });
-            </script>
         </template>
     </pb-demo-snippet>
 
