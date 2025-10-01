@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from '../lit-compat.js'
 import { translate } from '../pb-i18n.js'
+import { ready, firePageReady, syncPbSelect, autoWireForms } from './demo-utils.js'
 import '../pb-code-highlight.js'
 
 const codePenEndpoint = 'https://teipublisher.com/exist/apps/tei-publisher'
@@ -40,6 +41,22 @@ export class PbDemoSnippet extends LitElement {
 
     const clone = template.content.cloneNode(true)
     this.append(clone)
+
+    // After stamping, normalize demos:
+    // - If pb-select is present and defined, reflect initial values into the inner controls
+    // - Always fire a lightweight pb-page-ready so components can initialize
+    queueMicrotask(async () => {
+      try {
+        if (customElements.get('pb-select')) {
+          const selects = this.querySelectorAll('pb-select')
+          for (const el of selects) {
+            try { await syncPbSelect(el) } catch (_) { /* non-fatal for demos */ }
+          }
+        }
+      } catch (_) { /* ignore */ }
+      autoWireForms(this)
+      firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
+    })
   }
 
   render () {

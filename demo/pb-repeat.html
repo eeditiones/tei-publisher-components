@@ -59,17 +59,6 @@
                     </iron-form>
                     <pre id="output"></pre>
                 </pb-page>
-                <script>
-                    window.addEventListener('WebComponentsReady', () => {
-                        const form = document.getElementById('form');
-                        form.addEventListener('iron-form-presubmit', (ev) => {
-                            ev.preventDefault();
-                            const data = form.serializeForm();
-                            const queryString = Object.keys(data).map((key) => `${key  }=${  data[key]}`).join('&');
-                            document.getElementById('output').innerText = queryString;
-                        });
-                    });
-                </script>
             </template>
         </pb-demo-snippet>
     </body>

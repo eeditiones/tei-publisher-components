@@ -65,3 +65,15 @@ Cypress.on('uncaught:exception', (err) => {
     return false
   }
 })
+
+// Convenience: find inside a component's shadow DOM using simple chains
+// Usage: cy.inShadow('pb-select[name="lang1"]', 'select option')
+Cypress.Commands.add('inShadow', (hostSelector, innerSelector) => {
+  return cy.get(hostSelector).shadow().find(innerSelector)
+})
+
+// Convenience: wait for a Lit element to finish an update
+// Usage: cy.waitUpdate('pb-select[name="lang1"]')
+Cypress.Commands.add('waitUpdate', (hostSelector) => {
+  return cy.get(hostSelector).then($el => cy.wrap($el[0].updateComplete))
+})
