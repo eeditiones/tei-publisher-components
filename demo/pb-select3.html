@@ -79,49 +79,32 @@
     </pb-demo-snippet>
 
     <script type="module">
+      import { ready, stampIfNeeded, firePageReady, syncPbSelect, wireFormOutput } from '../src/docs/demo-utils.js'
+
       const initialState = Object.freeze({ result: 'en', field: 'title' })
 
       async function hydrate () {
-        await Promise.all([
-          customElements.whenDefined('pb-demo-snippet'),
-          customElements.whenDefined('pb-select')
-        ])
+        await ready(['pb-demo-snippet', 'pb-select'])
+        const snippet = document.querySelector('pb-demo-snippet')
+        stampIfNeeded(snippet)
 
         const form = document.querySelector('#select3-form')
         const output = document.querySelector('#select3-output')
         const select = form?.querySelector('pb-select[name="result"]')
         const field = form?.querySelector('select[name="field"]')
-
-        if (!form || !output || !select || !field) {
-          requestAnimationFrame(hydrate)
-          return
-        }
+        if (!form || !output || !select || !field) return
 
         select.value = initialState.result
         field.value = initialState.field
-        await select.updateComplete
-        const innerSelect = select.shadowRoot?.querySelector('select')
-        if (innerSelect) {
-          innerSelect.value = select.value ?? ''
-          innerSelect.dispatchEvent(new Event('change', { bubbles: true, composed: true }))
-        }
-        output.textContent = new URLSearchParams(new FormData(form)).toString()
+        await syncPbSelect(select)
 
-        const updateOutput = () => {
-          output.textContent = new URLSearchParams(new FormData(form)).toString()
-        }
+        const render = wireFormOutput(form, output)
+        render()
 
-        form.addEventListener('submit', event => {
-          event.preventDefault()
-          updateOutput()
-        })
+        field.addEventListener('change', render)
+        select.addEventListener('change', render)
 
-        field.addEventListener('change', updateOutput)
-        select.addEventListener('change', updateOutput)
-
-        document.dispatchEvent(new CustomEvent('pb-page-ready', {
-          detail: { endpoint: '.', apiVersion: '1.0.0', template: null }
-        }))
+        firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
       }
 
       if (document.readyState === 'loading') {
