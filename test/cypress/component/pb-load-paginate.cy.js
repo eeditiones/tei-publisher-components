@@ -28,7 +28,7 @@ describe('pb-load + pb-paginate', () => {
         cy.wait('@frag')
         cy.get('#ld').find('#content').should('contain.text', 'Page1')
 
-        cy.get('#pg').find('span').contains('2').click({ force: true })
+        cy.get('#pg').find('.pb-paginate__page').contains('2').click()
 
         cy.wait('@frag')
         cy.get('#ld').find('#content').should('contain.text', 'Page2')
