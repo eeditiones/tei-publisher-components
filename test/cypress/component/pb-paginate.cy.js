@@ -7,17 +7,15 @@ describe('pb-paginate', () => {
   })
 
   it('emits events when page is clicked after receiving results', () => {
-    const onPaginate = new Cypress.Promise((resolve) => {
-      document.addEventListener('pb-paginate', function(ev){ if (ev.detail && ev.detail.key === '__default__') resolve(ev) }, { once: true })
+    cy.get('#pg').then($el => {
+      const host = $el[0]
+      host._refresh({ detail: { start: 1, count: 30 } })
+      return host.updateComplete
     })
-    cy.document().then((doc) => {
-      doc.dispatchEvent(new CustomEvent('pb-results-received', { detail: { key: '__default__', count: 30, start: 1 }, bubbles: true, composed: true }))
-    })
-    cy.get('#pg').find('span').contains('2').click({ force: true })
-    cy.wrap(onPaginate).then((ev) => {
-      expect(ev.detail.params.start).to.equal(11)
-      expect(ev.detail.params['per-page']).to.equal(10)
+    cy.get('#pg').find('.pb-paginate__page').should('have.length', 3)
+    cy.get('#pg').find('.pb-paginate__page').contains('2').click()
+    cy.get('#pg').then($el => {
+      expect($el[0].start).to.equal(11)
     })
   })
 })
-

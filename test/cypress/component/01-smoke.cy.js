@@ -23,7 +23,8 @@ const MIGRATED_COMPONENTS = [
   },
   {
     tag: 'pb-blacklab-results',
-    polymerSelectors: ['paper-icon-button']
+    // pb-blacklab-results depends on pb-paginate, which now uses pb-icon in place of iron-icon
+    polymerSelectors: ['paper-icon-button', 'iron-icon']
   },
   {
     tag: 'pb-mei',

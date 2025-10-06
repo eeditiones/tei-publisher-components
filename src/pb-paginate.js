@@ -1,6 +1,7 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import './pb-icon.js';
 
 /**
  * Display a pagination control from which the user can select a page to view
@@ -15,7 +16,7 @@ import { translate } from './pb-i18n.js';
  * @csspart count - the span displaying the number of items
  */
 export class PbPaginate extends pbMixin(LitElement) {
-  static get properties() {
+  static get properties () {
     return {
       ...super.properties,
       /**
@@ -84,42 +85,59 @@ export class PbPaginate extends pbMixin(LitElement) {
     };
   }
 
-  constructor() {
-    super();
-    this.total = 0;
-    this.start = 1;
-    this.perPage = 10;
-    this.page = 1;
-    this.pageCount = 10;
-    this.range = 5;
-    this.pages = [];
-    this.foundLabel = 'browse.items';
+  constructor () {
+    super()
+    this.total = 0
+    this.start = 1
+    this.perPage = 10
+    this.page = 1
+    this.pageCount = 10
+    this.range = 5
+    this.pages = []
+    this.foundLabel = 'browse.items'
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-
-    this.subscribeTo('pb-results-received', this._refresh.bind(this));
+  connectedCallback () {
+    super.connectedCallback()
+    this.subscribeTo('pb-results-received', this._refresh.bind(this))
   }
 
-  render() {
+  render () {
     return html`
-      <span @click="${this._handleFirst}"><iron-icon icon="first-page"></iron-icon></span>
-      ${this.showPreviousNext ? html`<span @click="${() => this._handleClick(this.prevNextPages[0].label, this.prevNextPages[0].index)}}"><iron-icon icon="chevron-left"></iron-icon></span>` : ``}
-      ${this.pages.map(
-        (item, index) =>
-          html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}"
-            >${item.label}</span
-          >`,
-      )}
-      ${this.showPreviousNext ? html`<span @click="${() => this._handleClick(this.prevNextPages[1].label, this.prevNextPages[1].index)}"><iron-icon icon="chevron-right"></iron-icon></span>` : ``}
-      <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
+      <button
+        type="button"
+        class="pb-paginate__nav"
+        data-page="first"
+        @click=${this._handleFirst}
+        aria-label=${translate('paginate.first')}
+      >
+        <pb-icon icon="chevron-left"></pb-icon>
+      </button>
+      ${this.pages.map((item, index) => html`
+        <button
+          type="button"
+          class="pb-paginate__page ${item.class}"
+          @click=${() => this._handleClick(item, index)}
+          aria-current=${item.class === 'active' ? 'page' : nothing}
+        >
+          ${item.label}
+        </button>
+      `)}
+      <button
+        type="button"
+        class="pb-paginate__nav"
+        data-page="last"
+        @click=${this._handleLast}
+        aria-label=${translate('paginate.last')}
+      >
+        <pb-icon icon="chevron-right"></pb-icon>
+      </button>
 
       <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
-    `;
+    `
   }
 
-  static get styles() {
+  static get styles () {
     return css`
       :host([total='0']) {
         display: none;
@@ -127,16 +145,24 @@ export class PbPaginate extends pbMixin(LitElement) {
 
       :host {
         display: flex;
-        flex-direction: row;
         align-items: center;
+        gap: 8px;
       }
 
-      span {
+      .pb-paginate__nav,
+      .pb-paginate__page {
         padding: 4px 8px;
         cursor: pointer;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .active {
+      .pb-paginate__page.active {
         background-color: var(--pb-color-primary);
         color: var(--pb-color-inverse);
         border-radius: 50%;
@@ -145,20 +171,26 @@ export class PbPaginate extends pbMixin(LitElement) {
         line-height: 1em;
         padding: 0.4em;
         text-align: center;
-
-        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12),
+        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+          0 1px 8px 0 rgba(0, 0, 0, 0.12),
           0 3px 3px -2px rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-paginate__page:focus-visible,
+      .pb-paginate__nav:focus-visible {
+      outline: 2px solid var(--pb-color-primary);
+      outline-offset: 2px;
       }
 
       .found {
         padding-left: 20px;
       }
-    `;
+    `
   }
 
-  _update(start, total) {
+  _update (start, total) {
     if (!total || !start) {
-      return;
+      return
     }
     this.pageCount = Math.ceil(total / this.perPage);
     this.page = Math.ceil(start / this.perPage);
@@ -211,49 +243,49 @@ export class PbPaginate extends pbMixin(LitElement) {
     this.prevNextPages = prevNextPages;
   }
 
-  _refresh(ev) {
-    this.start = Number(ev.detail.start);
-    this.total = ev.detail.count;
-    this._update(this.start, this.total);
+  _refresh (ev) {
+    this.start = Number(ev.detail.start)
+    this.total = ev.detail.count
+    this._update(this.start, this.total)
   }
 
-  _handleClick(item, index) {
-    this.start = (this.pages[index].label - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(ev => {
+  _handleClick (_item, index) {
+    this.start = (this.pages[index].label - 1) * this.perPage + 1
+    for (const ev of ['pb-load', 'pb-paginate']) {
       this.emitTo(ev, {
         params: {
           start: this.start,
           'per-page': this.perPage,
-          page: index,
-        },
-      });
-    });
+          page: index
+        }
+      })
+    }
   }
 
-  _handleFirst(ev) {
-    this.start = 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+  _handleFirst () {
+    this.start = 1
+    for (const ev of ['pb-load', 'pb-paginate']) {
+      this.emitTo(ev, {
         params: {
           start: 1,
           'per-page': this.perPage,
-          page: 0,
-        },
-      });
-    });
+          page: 0
+        }
+      })
+    }
   }
 
-  _handleLast(ev) {
-    this.start = (this.pageCount - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+  _handleLast () {
+    this.start = (this.pageCount - 1) * this.perPage + 1
+    for (const ev of ['pb-load', 'pb-paginate']) {
+      this.emitTo(ev, {
         params: {
           start: this.start,
           'per-page': this.perPage,
-          page: this.pageCount - 1,
-        },
-      });
-    });
+          page: this.pageCount - 1
+        }
+      })
+    }
   }
 }
-customElements.define('pb-paginate', PbPaginate);
+customElements.define('pb-paginate', PbPaginate)
