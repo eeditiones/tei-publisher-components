@@ -18,6 +18,9 @@ build
 lib/*
 !lib/openseadragon.min.js
 docs/
+!src/docs/
+!src/docs/**
+!docs/demo-utils.js
 *.iml
 migration_plan/
 test/cypress/screenshots/
