@@ -1,3 +1,10 @@
+# [2.26.0-next-3.17](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.16...v2.26.0-next-3.17) (2025-10-06)
+
+
+### Bug Fixes
+
+* **pb-zoom:** instead of manipulating font-size directly, pb-zoom now sets a scaling factor on :root using --pb-zoom-factor ([23ce0b5](https://github.com/eeditiones/tei-publisher-components/commit/23ce0b59e57dfb65928b956df03a8b635620d88c))
+
 # [2.26.0-next-3.16](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.15...v2.26.0-next-3.16) (2025-09-12)
 
 
