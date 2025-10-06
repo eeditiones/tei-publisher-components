@@ -28,13 +28,18 @@ export const base = `
         background-color: #333;
         color: #fff;
         border-radius: 4px;
-        font-size: var(--pb-popover-font-size, var(--pb-base-font-size, 14px));
-        line-height: var(--pb-popover-line-height, var(--pb-base-line-height, 1.4));
+        font-size: clamp(
+          calc(var(--pb-popover-font-size, 1rem) * var(--pb-min-zoom, 0.5)), 
+          calc(var(--pb-popover-font-size, 1rem) * var(--pb-zoom-factor)), 
+          calc(var(--pb-popover-font-size, 1rem) * var(--pb-max-zoom, 3.0))
+        );
+        line-height: calc(var(--pb-popover-line-height, 1.5) * var(--pb-zoom-factor));
+
         text-align: left;
         font-style: normal;
         font-weight: normal;
         outline: 0;
-        transition-property: transform, visibility, opacity
+        transition-property: transform, visibility, opacity;
     }
 
     .tippy-box[data-placement^=top]>.tippy-arrow {

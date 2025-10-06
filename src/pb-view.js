@@ -2,7 +2,6 @@ import { LitElement, html, css } from 'lit-element';
 import anime from 'animejs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
-import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
 import '@polymer/iron-ajax';
@@ -53,7 +52,6 @@ import '@polymer/iron-ajax';
  * @fires pb-update - Fired when the component received content from the server
  * @fires pb-end-update - Fired after the element has finished updating its content
  * @fires pb-navigate - When received, navigate forward or backward in the document
- * @fires pb-zoom - When received, zoom in or out by changing font size of the content
  * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
  * @fires pb-toggle - When received, toggle content properties
  */
@@ -433,9 +431,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     
     this.subscribeTo('pb-toggle', ev => {
       this.toggleFeature(ev);
-    });
-    this.subscribeTo('pb-zoom', ev => {
-      this.zoom(ev.detail.direction);
     });
     this.subscribeTo(
       'pb-i18n-update',
@@ -1168,23 +1163,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     });
   }
 
-  /**
-   * Zoom the displayed content by increasing or decreasing font size.
-   *
-   * @param {string} direction either `in` or `out`
-   */
-  zoom(direction) {
-    const view = this.shadowRoot.getElementById('view');
-    const fontSize = window.getComputedStyle(view).getPropertyValue('font-size');
-    const size = parseInt(fontSize.replace(/^(\d+)px/, '$1'));
-
-    if (direction === 'in') {
-      view.style.fontSize = `${size + 1}px`;
-    } else {
-      view.style.fontSize = `${size - 1}px`;
-    }
-  }
-
   toggleFeature(ev) {
     const properties = registry.getState(this);
     if (properties) {
@@ -1310,6 +1288,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
       #view {
         position: relative;
+        font-size: clamp(
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)), 
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)), 
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3.0))
+        );
+        line-height: calc(var(--pb-content-line-height, 1.5) * var(--pb-zoom-factor));
       }
 
       .columns {
@@ -1347,12 +1331,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
 
       a[rel='footnote'] {
-        font-size: var(--pb-footnote-font-size, var(--pb-content-font-size, 75%));
+        font-size: calc(var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1));
         font-family: var(--pb-footnote-font-family, --pb-content-font-family);
         vertical-align: super;
         color: var(--pb-footnote-color, var(--pb-color-primary, #333333));
         text-decoration: none;
         padding: var(--pb-footnote-padding, 0 0 0 0.25em);
+        line-height: 1;
       }
 
       .list dt {

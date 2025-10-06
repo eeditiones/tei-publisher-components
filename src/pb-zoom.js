@@ -4,42 +4,88 @@ import { translate } from './pb-i18n';
 import { themableMixin } from './theming';
 
 /**
- * Zoom button to enlarge/shrink the font for the views. This component does not
- * implement any functionality itself, but just emits a `pb-zoom` event.
+ * Zoom button to enlarge/shrink the font for the views. This component manages
+ * the global zoom level by setting CSS custom properties on the document root.
  *
  * @fires pb-zoom - sends an event for e.g. pb-views to react to
+ * @cssprop --pb-zoom-factor - the zoom factor, e.g. 1.0 for normal size, 1.5 for 150%, 0.5 for 50%
+ * @cssprop --pb-min-zoom - the minimum zoom factor, e.g. 0.5 for 50%
+ * @cssprop --pb-max-zoom - the maximum zoom factor, e.g. 3.0 for 300%
  */
 export class PbZoom extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
       /**
-       * The icon to use
-       */
-      icon: {
-        type: String,
-      },
-      /**
        * Either 'in' or 'out'
        */
       direction: {
         type: String,
+      },
+      /**
+       * The current zoom factor
+       */
+      zoomFactor: {
+        type: Number,
+        reflect: true,
+        attribute: 'zoom-factor'
       },
     };
   }
 
   constructor() {
     super();
-    this.icon = 'icons:zoom-in';
     this.direction = 'in';
+    this.zoomFactor = 1.0;
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this._loadZoomPreference();
   }
 
   _handleClick() {
     this.emitTo('pb-zoom', { direction: this.direction });
+    this.zoom(this.direction);
+  }
+
+  /**
+   * Zoom the displayed content by increasing or decreasing font size.
+   * Sets the zoom factor on the document root so it applies globally.
+   *
+   * @param {string} direction either `in` or `out`
+   */
+  zoom(direction) {
+    const currentZoom = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--pb-zoom-factor') || '1'
+    );
+    const step = 0.1;
+    const minZoom = 0.5;
+    const maxZoom = 2.0;
+    
+    let newZoom = direction === 'in' 
+    ? Math.min(currentZoom + step, maxZoom)
+    : Math.max(currentZoom - step, minZoom);
+    
+    document.documentElement.style.setProperty('--pb-zoom-factor', newZoom.toString());
+    this.zoomFactor = newZoom;
+    
+    // Store user preference
+    localStorage.setItem('pb-zoom-preference', newZoom.toString());
+  }
+
+  /**
+   * Load the user's saved zoom preference from localStorage and apply it globally.
+   */
+  _loadZoomPreference() {
+    const savedZoom = localStorage.getItem('pb-zoom-preference');
+    if (savedZoom) {
+      const zoomValue = parseFloat(savedZoom);
+      if (!isNaN(zoomValue)) {
+        document.documentElement.style.setProperty('--pb-zoom-factor', zoomValue.toString());
+        this.zoomFactor = zoomValue;
+      }
+    }
   }
 
   render() {
@@ -49,7 +95,7 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
         @click="${this._handleClick}"
         title="${this.direction === 'in'
           ? translate('toolbar.zoom.in')
-          : translate('toolbar.zoom.out')}"
+          : translate('toolbar.zoom.out')} (current zoom: ${this.zoomFactor.toFixed(1)})"
       >
         <slot name="icon">
           ${this.direction === 'in'
