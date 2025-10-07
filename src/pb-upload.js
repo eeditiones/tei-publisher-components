@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { getCSSProperty } from './utils.js';
+import './pb-icon.js';
 import '@vaadin/vaadin-upload';
 
 /**
@@ -126,7 +127,7 @@ export class PbUpload extends pbMixin(LitElement) {
         with-credentials
       >
         ${dropLabelIcon
-          ? html`<iron-icon slot="drop-label-icon" icon="${dropLabelIcon}"></iron-icon>`
+          ? html`<pb-icon slot="drop-label-icon" icon="${dropLabelIcon}" decorative></pb-icon>`
           : html`<span slot="drop-label-icon"></span>`}
         <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
         <button
@@ -135,7 +136,7 @@ export class PbUpload extends pbMixin(LitElement) {
           class="pb-button pb-button--contained"
           type="button"
         >
-          ${uploadIcon ? html`<iron-icon icon="${uploadIcon}"></iron-icon>` : null}
+          ${uploadIcon ? html`<pb-icon icon="${uploadIcon}" decorative></pb-icon>` : null}
           ${translate('upload.upload')}
         </button>
         <div slot="file-list">
@@ -149,7 +150,7 @@ export class PbUpload extends pbMixin(LitElement) {
                     title="${translate('dialogs.close')}"
                     @click="${this.clearList}"
                   >
-                    <iron-icon icon="icons:clear"></iron-icon>
+                    <pb-icon icon="icons:clear" decorative></pb-icon>
                   </button>
                 </li>`
               : ''}
@@ -178,7 +179,7 @@ export class PbUpload extends pbMixin(LitElement) {
       }
       rows.push(html`
         <li>
-          <iron-icon icon="${icon}"></iron-icon>
+          <pb-icon icon="${icon}" decorative></pb-icon>
           ${file.error ? file.name : html`<a href="${link}">${file.name}</a>`}
         </li>
       `);
@@ -212,8 +213,8 @@ export class PbUpload extends pbMixin(LitElement) {
       .error {
         color: red;
       }
-      #uploadBtn iron-icon {
-        padding-right: 8px;
+      #uploadBtn pb-icon {
+        margin-right: 8px;
       }
     `;
   }

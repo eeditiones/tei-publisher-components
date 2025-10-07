@@ -4,6 +4,23 @@ const MOCK_VERSION = {
   engine: { name: 'mock-engine', version: '0.0.0' }
 }
 import { defineConfig } from 'vite';
+import { fileURLToPath } from 'node:url';
+
+const resolveCompat = rel => fileURLToPath(new URL(rel, import.meta.url));
+
+const ironIconShimPlugin = {
+  name: 'iron-icon-shim',
+  setup(build) {
+    const ironIconFilter = /^@polymer\/iron-icon(?:\/iron-icon)?(?:\.js)?$/;
+    const ironIconsFilter = /^@polymer\/iron-icons(?:\/iron-icons)?(?:\.js)?$/;
+    build.onResolve({ filter: ironIconFilter }, () => ({
+      path: resolveCompat('./src/compat/iron-icon.js'),
+    }));
+    build.onResolve({ filter: ironIconsFilter }, () => ({
+      path: resolveCompat('./src/compat/iron-icons.js'),
+    }));
+  },
+};
 
 const isCypress = !!process.env.CYPRESS;
 
@@ -63,8 +80,6 @@ export default defineConfig({
     dedupe: [
       '@polymer/polymer',
       '@polymer/iron-ajax',
-      '@polymer/iron-icon',
-      '@polymer/iron-icons',
       '@polymer/paper-input',
       '@polymer/paper-button',
       '@polymer/paper-item',
@@ -76,7 +91,11 @@ export default defineConfig({
     ],
     alias: [
       // Normalize any accidental /node_modules path imports to bare package names
-      { find: /^\/?node_modules\/(@polymer\/.+)/, replacement: '$1' }
+      { find: /^\/?node_modules\/(@polymer\/.+)/, replacement: '$1' },
+      { find: /@polymer\/iron-icon\/iron-icon(?:\.js)?(?:\?.*)?$/, replacement: resolveCompat('./src/compat/iron-icon.js') },
+      { find: /@polymer\/iron-icon(?:\.js)?(?:\?.*)?$/, replacement: resolveCompat('./src/compat/iron-icon.js') },
+      { find: /@polymer\/iron-icons\/iron-icons(?:\.js)?(?:\?.*)?$/, replacement: resolveCompat('./src/compat/iron-icons.js') },
+      { find: /@polymer\/iron-icons(?:\.js)?(?:\?.*)?$/, replacement: resolveCompat('./src/compat/iron-icons.js') }
     ]
   },
   define: {
@@ -87,8 +106,6 @@ export default defineConfig({
     include: [
       '@polymer/polymer',
       '@polymer/iron-ajax/iron-ajax.js',
-      '@polymer/iron-icon/iron-icon.js',
-      '@polymer/iron-icons/iron-icons.js',
       '@polymer/paper-input/paper-input.js',
       '@polymer/paper-button/paper-button.js',
       '@polymer/paper-item/paper-item.js',
@@ -102,6 +119,9 @@ export default defineConfig({
       // keep heavy/legacy libs out of prebundle
       'gridjs',
       'construct-style-sheets-polyfill'
-    ]
+    ],
+    esbuildOptions: {
+      plugins: [ironIconShimPlugin],
+    }
   },
 });

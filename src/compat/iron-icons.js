@@ -1,0 +1,1 @@
+import '../pb-icon.js';

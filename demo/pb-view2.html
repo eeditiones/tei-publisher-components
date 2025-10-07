@@ -16,9 +16,8 @@
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
     <script type="module">
-        // Load iconset first so any <iron-icon> upgrades have a registry to query.
-        import '@polymer/iron-icons/iron-icons.js';
         import '@polymer/paper-button/paper-button.js';
+        import '../src/pb-icon.js';
     </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -145,14 +144,14 @@
                         <pb-navigation direction="forward" keyboard="right" emit="transcription"
                             subscribe="transcription">
                             <paper-button>
-                                <iron-icon icon="icons:chevron-right"></iron-icon>
+                                <pb-icon icon="icons:chevron-right"></pb-icon>
                             </paper-button>
                         </pb-navigation>
                         <!-- Navigate to previous page -->
                         <pb-navigation direction="backward" keyboard="left" emit="transcription"
                             subscribe="transcription">
                             <paper-button>
-                                <iron-icon icon="icons:chevron-left"></iron-icon>
+                                <pb-icon icon="icons:chevron-left"></pb-icon>
                             </paper-button>
                         </pb-navigation>
                     </footer>

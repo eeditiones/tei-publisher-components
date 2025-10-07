@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import './pb-icon.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox';
@@ -260,7 +261,7 @@ export class PbEditApp extends pbMixin(LitElement) {
             type="button"
             @click="${this._doSubmit}"
           >
-            <iron-icon icon="save"></iron-icon>
+            <pb-icon icon="save"></pb-icon>
             ${translate('appgen.submit')}
           </button>
         </form>
@@ -275,7 +276,7 @@ export class PbEditApp extends pbMixin(LitElement) {
                   target="_blank"
                   class="pb-button pb-button--text"
                 >
-                  <iron-icon icon="icons:open-in-new"></iron-icon>
+                  <pb-icon icon="icons:open-in-new"></pb-icon>
                   ${translate('appgen.open')}
                 </a>
                 <p>${translate('appgen.success')}</p>`}
