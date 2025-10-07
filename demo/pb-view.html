@@ -75,11 +75,11 @@
                 <pb-progress subscribe="transcription"></pb-progress>
                 <!-- Output the document title -->
                 <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title" subscribe="transcription"
-                    view="single">
+                    view="single" static="./pb-view-static">
                     <pb-param name="header" value="short" />
                 </pb-view>
                 <pb-view id="view1" src="document1" view="page" append-footnotes animation subscribe="transcription"
-                    emit="transcription"></pb-view>
+                    emit="transcription" static="./pb-view-static"></pb-view>
                 <footer>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">
