@@ -19,6 +19,6 @@ describe('Demo: pb-view', () => {
 
   it('displays initial content', () => {
     // wait until something is rendered into pb-view
-    cy.get('pb-view').contains('Kant')
+    cy.get('pb-view#view1').contains('Critique of Pure Reason')
   })
 })

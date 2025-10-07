@@ -1,0 +1,43 @@
+{
+  "canWrite": false,
+  "source": "<schemaSpec xmlns=\"http://www.tei-c.org/ns/1.0\" ident=\"demo\"/>",
+  "title": "Demo ODD",
+  "titleShort": "Demo",
+  "description": "Static sample ODD used for Cypress tests.",
+  "cssFile": null,
+  "namespace": "http://www.tei-c.org/ns/1.0",
+  "elementSpecs": [
+    {
+      "ident": "p",
+      "mode": "change",
+      "desc": "Paragraph",
+      "models": [
+        {
+          "type": "model",
+          "desc": "Inline content",
+          "parameters": [],
+          "models": [
+            {
+              "type": "modelSequence",
+              "parameters": [],
+              "models": [],
+              "desc": "Content sequence"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ident": "div",
+      "mode": "change",
+      "desc": "Division",
+      "models": []
+    },
+    {
+      "ident": "note",
+      "mode": "change",
+      "models": []
+    }
+  ],
+  "odd": "graves.odd"
+}
