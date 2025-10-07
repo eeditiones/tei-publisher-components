@@ -1,5 +1,49 @@
 import { LitElement, html, css } from 'lit';
 
+if (!customElements.__pbDefineGuard) {
+  const originalDefine = customElements.define.bind(customElements);
+  customElements.define = (name, constructor, options) => {
+    if (customElements.get(name)) {
+      return;
+    }
+    originalDefine(name, constructor, options);
+  };
+  customElements.__pbDefineGuard = true;
+}
+
+const polymerIconMap = {
+  'icons:file-upload': 'upload',
+  'icons:file-download': 'download',
+  'icons:cloud-download': 'download',
+  'icons:clear': 'close',
+  'icons:check': 'check',
+  'icons:error-outline': 'warning',
+  'icons:folder-open': 'folder-open',
+  'icons:arrow-upward': 'arrow-upward',
+  'icons:arrow-forward': 'chevron-right',
+  'icons:arrow-back': 'chevron-left',
+  'icons:chevron-right': 'chevron-right',
+  'icons:chevron-left': 'chevron-left',
+  'icons:open-in-new': 'open-in-new',
+  'icons:flag': 'flag',
+  'icons:code': 'code',
+  'icons:hourglass-empty': 'clock',
+  'icons:delete': 'delete',
+  'icons:create': 'edit',
+  'icons:expand-more': 'expand-more',
+  'icons:expand-less': 'expand-less',
+  'icons:view-list': 'view-list',
+  'icons:zoom-in': 'zoom-in',
+  'icons:zoom-out': 'zoom-out',
+  'icons:content-copy': 'copy',
+  'content-copy': 'copy',
+  'icons:content-paste': 'content-paste',
+  'content-paste': 'content-paste',
+  'icons:arrow-downward': 'arrow-downward',
+  'icons:refresh': 'refresh',
+  'icons:save': 'save'
+};
+
 /**
  * A versatile icon component that replaces iron-icon and iron-icons.
  * Supports both SVG sprite references and inline SVG content.
@@ -87,9 +131,13 @@ export class PbIcon extends LitElement {
   }
 
   _renderSpriteIcon() {
+    const iconName = this._normalizeIconName(this.icon);
+    if (!iconName) {
+      return html``;
+    }
     const href = this.sprite && !this.sprite.startsWith('#')
-      ? `${this.sprite}#icon-${this.icon}`
-      : `#icon-${this.icon}`;
+      ? `${this.sprite}#icon-${iconName}`
+      : `#icon-${iconName}`;
     return html`
             <svg width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="${this.decorative ? 'true' : 'false'}">
         <use href="${href}"></use>
@@ -99,6 +147,18 @@ export class PbIcon extends LitElement {
 
   _renderSlotIcon() {
     return html`<slot></slot>`;
+  }
+
+  _normalizeIconName(name) {
+    if (!name) return '';
+    const lower = name.toLowerCase();
+    if (polymerIconMap[lower]) {
+      return polymerIconMap[lower];
+    }
+    if (lower.includes(':')) {
+      return lower.split(':').pop();
+    }
+    return lower;
   }
 
   _getSizeClass() {
@@ -118,8 +178,8 @@ export class PbIcon extends LitElement {
     if (this.decorative) return '';
     if (this.label) return this.label;
     if (this.icon) {
-      // Generate readable label from icon name
-      return this.icon.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      const normalized = this._normalizeIconName(this.icon);
+      return normalized.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
     return 'Icon';
   }
@@ -194,4 +254,8 @@ export class PbIcon extends LitElement {
 
 if (!customElements.get('pb-icon')) {
   customElements.define('pb-icon', PbIcon);
+}
+if (!customElements.get('iron-icon')) {
+  class PbIronIcon extends PbIcon {}
+  customElements.define('iron-icon', PbIronIcon);
 }

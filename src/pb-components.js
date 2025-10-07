@@ -63,8 +63,4 @@ import './pb-combo-box.js';
 import './pb-print-preview.js';
 import './pb-dialog.js';
 
-import '@polymer/iron-icons/editor-icons';
-import '@polymer/iron-icons/social-icons';
-import '@polymer/iron-icons/maps-icons';
-import '@polymer/iron-icons/image-icons';
 import '@polymer/paper-input/paper-textarea';

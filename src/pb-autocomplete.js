@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit'
 import { pbMixin, waitOnce } from './pb-mixin.js'
 import { translate } from './pb-i18n.js'
+import './pb-icon.js'
 
 // Ensure required custom elements are defined exactly once, even if this module is loaded twice via different URLs
 if (!customElements.get('paper-input')) {
@@ -9,11 +10,6 @@ if (!customElements.get('paper-input')) {
 if (!customElements.get('iron-ajax')) {
   await import('@polymer/iron-ajax/iron-ajax.js')
 }
-if (!customElements.get('iron-icon')) {
-  await import('@polymer/iron-icon/iron-icon.js')
-}
-// iconset is not a custom element; safe to import once for icons metadata
-await import('@polymer/iron-icons/iron-icons.js')
 if (!customElements.get('paper-autocomplete-suggestions')) {
   await import('@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js')
 }
@@ -154,7 +150,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         label="${translate(this.placeholder)}"
         always-float-label
       >
-        ${this.icon ? html`<iron-icon icon="${this.icon}" slot="prefix"></iron-icon>` : null}
+        ${this.icon ? html`<pb-icon icon="${this.icon}" slot="prefix"></pb-icon>` : null}
       </paper-input>
       <paper-autocomplete-suggestions
         id="autocomplete"
