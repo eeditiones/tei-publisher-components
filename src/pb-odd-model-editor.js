@@ -4,7 +4,7 @@ import { LitElement, html, css } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import './pb-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-menu-button/paper-menu-button.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -197,7 +197,7 @@ export class PbOddModelEditor extends LitElement {
         border-left: 3px solid var(--paper-blue-500);
       }
 
-      paper-menu-button paper-icon-button {
+      paper-menu-button pb-icon-button {
         margin-left: -10px;
       }
 
@@ -432,9 +432,9 @@ export class PbOddModelEditor extends LitElement {
         <form>
             <header>
                 <h4>
-                    <paper-icon-button id="toggle"
+                    <pb-icon-button id="toggle"
                                        icon="${this.icon}" @click="${this.toggle}"
-                                       class="model-collapse"></paper-icon-button>
+                                       class="model-collapse"></pb-icon-button>
 
                     <span class="modelType">${
                       this.type
@@ -443,28 +443,28 @@ export class PbOddModelEditor extends LitElement {
     }</span></span>
 
                     <span class="btn-group">
-                        <paper-icon-button @click="${this._moveDown}" icon="arrow-downward"
-                                           title="move down"></paper-icon-button>
-                        <paper-icon-button @click="${this._moveUp}" icon="arrow-upward"
-                                           title="move up"></paper-icon-button>
-                        <paper-icon-button @click="${
+                        <pb-icon-button @click="${this._moveDown}" icon="arrow-downward"
+                                           title="move down"></pb-icon-button>
+                        <pb-icon-button @click="${this._moveUp}" icon="arrow-upward"
+                                           title="move up"></pb-icon-button>
+                        <pb-icon-button @click="${
                           this._requestRemoval
-                        }" icon="delete" title="remove"></paper-icon-button>
-                        <paper-icon-button @click="${
+                        }" icon="delete" title="remove"></pb-icon-button>
+                        <pb-icon-button @click="${
                           this._copy
-                        }" icon="content-copy" title="copy"></paper-icon-button>
-                        <paper-icon-button @click="${
+                        }" icon="content-copy" title="copy"></pb-icon-button>
+                        <pb-icon-button @click="${
                           this._paste
-                        }" icon="content-paste"></paper-icon-button>
+                        }" icon="content-paste"></pb-icon-button>
 
                         ${
                           this._isGroupOrSequence()
                             ? html`
                                 <paper-menu-button horizontal-align="right">
-                                  <paper-icon-button
+                                  <pb-icon-button
                                     icon="add"
                                     slot="dropdown-trigger"
-                                  ></paper-icon-button>
+                                  ></pb-icon-button>
                                   <paper-listbox
                                     id="modelType"
                                     slot="dropdown-content"
@@ -643,10 +643,10 @@ export class PbOddModelEditor extends LitElement {
                         <div class="parameters">
                           <div class="group">
                             <span class="title">Parameters</span>
-                            <paper-icon-button
+                            <pb-icon-button
                               icon="add"
                               @click="${this._addParameter}"
-                            ></paper-icon-button>
+                            ></pb-icon-button>
                           </div>
                           ${repeat(
                             this.parameters,
@@ -671,10 +671,10 @@ export class PbOddModelEditor extends LitElement {
                           <div class="group">
                             <div>
                               <span class="title">Renditions</span>
-                              <paper-icon-button
+                              <pb-icon-button
                                 icon="add"
                                 @click="${this._addRendition}"
-                              ></paper-icon-button>
+                              ></pb-icon-button>
                             </div>
                             <div class="source">
                               <paper-checkbox ?checked="${this.sourcerend}" id="sourcerend"

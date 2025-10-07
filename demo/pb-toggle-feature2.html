@@ -15,7 +15,7 @@
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
     <script type="module">
-        import '@polymer/paper-icon-button/paper-icon-button.js';
+        import '../src/pb-icon-button.js';
     </script>
 <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -80,11 +80,11 @@
                         Normalized View</pb-toggle-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
-                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
                     </pb-navigation>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right" emit="ex2" subscribe="ex2">
-                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
                     </pb-navigation>
                 </div>
                 <main>

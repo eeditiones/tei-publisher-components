@@ -157,7 +157,7 @@ export class PbCustomForm extends PbLoad {
       let event = 'change';
       if (
         control instanceof HTMLButtonElement ||
-        name === 'paper-icon-button' ||
+        name === 'pb-icon-button' ||
         name === 'paper-button' ||
         (name === 'input' &&
           (control.type === 'button' || control.type === 'submit' || control.type === 'reset'))
