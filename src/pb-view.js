@@ -728,7 +728,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return urlComponents.join('&');
     }
 
-    const index = await fetch(`index.json`).then(response => response.json());
+    const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
+    const baseUrl = new URL(`${baseDir}/`, window.location.href);
+    const indexUrl = new URL('index.json', baseUrl).href;
+    const index = await fetch(indexUrl).then(response => response.json());
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),
@@ -741,7 +744,15 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     console.log('<pb-view> Static lookup %s: %s', url, file);
-    return `${file}`;
+    if (!file) {
+      console.warn('<pb-view> No static mapping found for %s', url);
+      const fallback = Object.values(index)[0];
+      if (!fallback) {
+        return baseUrl.href;
+      }
+      file = fallback;
+    }
+    return new URL(file, baseUrl).href;
   }
 
   _clear() {
