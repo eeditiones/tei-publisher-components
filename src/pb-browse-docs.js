@@ -6,6 +6,7 @@ import { themableMixin } from './theming.js';
 import { cmpVersion } from './utils.js';
 import { registry } from './urls.js';
 import './pb-icon.js';
+import './pb-dialog.js';
 
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -375,20 +376,14 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
           </button>
         </div>
       </paper-dialog>
-      <paper-dialog id="errorDialog">
-        <h2>${translate('dialogs.error')}</h2>
-        <paper-dialog-scrollable></paper-dialog-scrollable>
-        <div class="buttons">
-          <button
-            class="pb-button pb-button--text"
-            type="button"
-            dialog-confirm="dialog-confirm"
-            autofocus
-          >
+      <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
+        <p id="errorMessage"></p>
+        <div slot="footer">
+          <button class="pb-button pb-button--text" type="button" rel="prev">
             ${translate('dialogs.close')}
           </button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
     `;
   }
 

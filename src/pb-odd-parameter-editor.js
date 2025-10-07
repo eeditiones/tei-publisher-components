@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 
 import '@cwmr/paper-autocomplete/paper-autocomplete.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import './pb-icon-button.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
@@ -34,7 +34,7 @@ export class PbOddParameterEditor extends LitElement {
       paper-dropdown-menu {
         align-self: start;
       }
-      paper-icon-button,
+      pb-icon-button,
       paper-checkbox {
         align-self: center;
         margin-top: 16px;
@@ -74,11 +74,12 @@ export class PbOddParameterEditor extends LitElement {
         <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}"
           >${translate('odd.editor.model.set-param')}</paper-checkbox
         >
-        <paper-icon-button
-          @click="${this._delete}"
+        <pb-icon-button
+          class="icon-button"
           icon="delete"
           title="delete this parameter"
-        ></paper-icon-button>
+          @click="${this._delete}"
+        ></pb-icon-button>
       </div>
     `;
   }

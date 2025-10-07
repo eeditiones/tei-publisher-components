@@ -16,7 +16,7 @@
     </script>
     <script type="module">
         import '@polymer/paper-input/paper-input.js';
-        import '@polymer/paper-icon-button/paper-icon-button.js';
+        import '../src/pb-icon-button.js';
         import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
         import '@polymer/paper-listbox/paper-listbox.js';
         import '@polymer/paper-item/paper-item';
@@ -43,9 +43,9 @@
                 }
             </style>
             <pb-page endpoint="./exist/apps/escher">
-                <pb-custom-form auto-submit="paper-input,paper-icon-button,input,select,paper-dropdown-menu">
+                <pb-custom-form auto-submit="paper-input,pb-icon-button,input,select,paper-dropdown-menu">
                     <paper-input name="search" label="Search">
-                        <paper-icon-button icon="search" slot="suffix"></paper-icon-button>
+                        <pb-icon-button icon="search" slot="suffix"></pb-icon-button>
                     </paper-input>
                     <fieldset>
                         <label>

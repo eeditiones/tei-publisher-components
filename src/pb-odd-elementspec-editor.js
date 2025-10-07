@@ -5,7 +5,7 @@ import { LitElement, html, css } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 
 import '@polymer/polymer/lib/elements/dom-repeat';
-import '@polymer/paper-icon-button/paper-icon-button';
+import './pb-icon-button.js';
 import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-styles/color';
@@ -89,7 +89,7 @@ export class PbOddElementspecEditor extends LitElement {
         align-self: center;
       }
 
-      paper-menu-button paper-icon-button {
+      paper-menu-button .icon-button {
         margin-left: -10px;
       }
 
@@ -146,10 +146,25 @@ export class PbOddElementspecEditor extends LitElement {
         <span class="spacer"></span>
 
         <span class="controls">
-          <paper-icon-button @click="${this._remove}" icon="delete"></paper-icon-button>
-          <paper-icon-button @click="${this._paste}" icon="content-paste"></paper-icon-button>
+          <pb-icon-button
+            class="icon-button"
+            icon="delete"
+            title="${this._label('odd.editor.remove', 'Remove element')}"
+            @click="${this._remove}"
+          ></pb-icon-button>
+          <pb-icon-button
+            class="icon-button"
+            icon="content-paste"
+            title="${this._label('odd.editor.paste', 'Paste')}"
+            @click="${this._paste}"
+          ></pb-icon-button>
           <paper-menu-button horizontal-align="right">
-            <paper-icon-button icon="add" slot="dropdown-trigger"></paper-icon-button>
+            <pb-icon-button
+              class="icon-button"
+              slot="dropdown-trigger"
+              icon="add"
+              title="${this._label('odd.editor.add', 'Add model')}"
+            ></pb-icon-button>
             <paper-listbox
               id="addModel"
               slot="dropdown-content"
@@ -357,6 +372,11 @@ export class PbOddElementspecEditor extends LitElement {
       }),
     );
     // this.requestUpdate();
+  }
+
+  _label(key, fallback) {
+    const value = translate(key);
+    return value && value !== key ? value : fallback;
   }
 
   handleModelChanged(ev) {

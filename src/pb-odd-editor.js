@@ -13,7 +13,7 @@ import '@polymer/iron-ajax/iron-ajax';
 import '@polymer/paper-styles/color';
 import '@polymer/paper-card/paper-card';
 import './pb-edit-xml.js';
-import '@polymer/paper-icon-button/paper-icon-button';
+import './pb-icon-button.js';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-item/paper-item';
 import '@cwmr/paper-autocomplete/paper-autocomplete';
@@ -308,29 +308,29 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
             <span class="icons">
               <pb-edit-xml id="editSource"
-                ><paper-icon-button
+                ><pb-icon-button
                   icon="code"
                   title="${translate('odd.editor.odd-source')}"
-                ></paper-icon-button
+                ></pb-icon-button
               ></pb-edit-xml>
-              <paper-icon-button
+              <pb-icon-button
                 @click="${() => this.save(true)}"
                 icon="icons:cloud-download"
                 title="${fsSupported
                   ? translate('odd.editor.save-as')
                   : translate('odd.editor.download')}"
-              ></paper-icon-button>
-              <paper-icon-button
+              ></pb-icon-button>
+              <pb-icon-button
                 @click="${this._reload}"
                 icon="refresh"
                 title="${translate('odd.editor.reload')}"
-              ></paper-icon-button>
-              <paper-icon-button
+              ></pb-icon-button>
+              <pb-icon-button
                 @click="${() => this.save(false)}"
                 icon="save"
                 title="${translate('odd.editor.save')} ${this.display('save')}"
                 ?disabled="${!this.loggedIn}"
-              ></paper-icon-button>
+              ></pb-icon-button>
             </span>
           </h3>
           <div id="new-element" class="input-group">
@@ -339,12 +339,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
               label="${translate('odd.editor.add-element')}"
               always-float-label="always-float-label"
             >
-              <paper-icon-button
+              <pb-icon-button
                 slot="suffix"
                 @click="${this.addElementSpec}"
                 icon="add"
                 tabindex="-1"
-              ></paper-icon-button>
+              ></pb-icon-button>
             </paper-input>
           </div>
 
@@ -431,10 +431,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                     @change="${this._cssFileChanged}"
                   ></paper-input>
                   <pb-edit-xml id="editCSS"
-                    ><paper-icon-button
+                    ><pb-icon-button
                       icon="create"
                       title="${translate('odd.editor.css-source')}"
-                    ></paper-icon-button
+                    ></pb-icon-button
                   ></pb-edit-xml>
                 </div>
               </div>
@@ -452,10 +452,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                   html`
                     <vaadin-tab name="${i}" @click="${e => this._selectTab(e, i)}"
                       ><span style="padding-right:20px;">${i}</span
-                      ><paper-icon-button
+                      ><pb-icon-button
                         icon="close"
                         @click="${ev => this._closeTabHandler(ev, index)}"
-                      ></paper-icon-button
+                      ></pb-icon-button
                     ></vaadin-tab>
                   `,
               )}
