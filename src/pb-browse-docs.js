@@ -5,6 +5,7 @@ import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
 import { cmpVersion } from './utils.js';
 import { registry } from './urls.js';
+import './pb-icon.js';
 
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
@@ -302,7 +303,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
             @keyup="${this._handleEnter}"
             part="filter-input"
           >
-            <iron-icon icon="search" @click="${this._filter}" slot="prefix"></iron-icon>
+            <pb-icon icon="search" @click="${this._filter}" slot="prefix"></pb-icon>
           </paper-input>
           <paper-autocomplete-suggestions
             id="autocomplete"
@@ -321,7 +322,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
           class="pb-button pb-button--text ${this._canModify(this._allowModification)}"
           title="${translate('browse.delete')}"
         >
-          <iron-icon icon="delete"></iron-icon>
+          <pb-icon icon="delete" decorative></pb-icon>
           <span class="label">${translate('browse.delete')}</span>
         </button>
       </div>

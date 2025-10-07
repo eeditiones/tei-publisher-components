@@ -1,8 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
-import '@polymer/iron-icon';
-import '@polymer/iron-icons';
 
 /**
  * A collapsible block: in collapsed state it only shows a header and expands if clicked.

@@ -5,8 +5,6 @@ import { LitElement, html, css } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 
 import '@polymer/polymer/lib/elements/dom-repeat';
-import '@polymer/iron-icons/iron-icons';
-import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-listbox/paper-listbox';

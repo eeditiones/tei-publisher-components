@@ -1,5 +1,4 @@
 import '../../../src/pb-upload.js'
-import '@polymer/iron-icons/iron-icons.js'
 import '../../../src/pb-page.js'
 
 describe('pb-upload', () => {

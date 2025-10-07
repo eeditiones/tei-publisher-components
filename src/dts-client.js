@@ -2,10 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
-
+import './pb-icon.js';
 import '@polymer/iron-ajax';
-import '@polymer/iron-icon';
-import '@polymer/iron-icons';
 
 /**
  * A client for the Distributed Text Services (DTS) protocol. This defines an API
@@ -270,7 +268,7 @@ export class DtsClient extends pbMixin(LitElement) {
             type="button"
             @click="${this._navigateUp}"
           >
-            <iron-icon icon="icons:arrow-upward"></iron-icon>
+            <pb-icon icon="icons:arrow-upward" decorative></pb-icon>
             ${translate('browse.up')}
           </button>`
         : null}
@@ -289,7 +287,7 @@ export class DtsClient extends pbMixin(LitElement) {
   _renderMember(member) {
     if (member['@type'] === 'Collection') {
       return html`
-        <iron-icon icon="icons:folder-open"></iron-icon>
+        <pb-icon icon="icons:folder-open" decorative></pb-icon>
         <div class="details">
           <a href="#" @click="${ev => this._navigate(ev, member)}" part="link">
             <h4 class="collection" part="collection-title">${member.title}</h4>
@@ -299,7 +297,7 @@ export class DtsClient extends pbMixin(LitElement) {
     }
     const license = DtsClient._getLicense(member);
     return html`
-      <iron-icon icon="icons:code"></iron-icon>
+      <pb-icon icon="icons:code" decorative></pb-icon>
       <div class="details">
         <div>
           <a href="#" @click="${ev => this._preview(ev, member)}" part="link">
@@ -312,12 +310,11 @@ export class DtsClient extends pbMixin(LitElement) {
               </p>`
             : ''}
         </div>
-        <iron-icon
+        <pb-icon
           title="${translate('dts.import')}"
           icon="icons:file-download"
           @click="${ev => this._download(ev, member)}"
-        >
-        </iron-icon>
+        ></pb-icon>
       </div>
     `;
   }
@@ -345,7 +342,7 @@ export class DtsClient extends pbMixin(LitElement) {
         display: flex;
         justify-content: space-between;
       }
-      .member iron-icon {
+      .member pb-icon {
         width: 24px;
       }
       .member h4 {
