@@ -16,7 +16,7 @@
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
     <script type="module">
-        import '@polymer/paper-icon-button/paper-icon-button.js';
+        import '../src/pb-icon-button.js';
     </script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -62,10 +62,10 @@
                     {"name": "Normalized View", "properties": {"mode": "norm", "view": "single", "root": null}}
                     ]'></pb-select-feature>
                     <pb-navigation direction="backward" keyboard="left">
-                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
                     </pb-navigation>
                     <pb-navigation direction="forward" keyboard="right">
-                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
                     </pb-navigation>
                 </div>
                 <main>

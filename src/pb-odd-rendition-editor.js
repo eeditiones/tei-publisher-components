@@ -4,7 +4,7 @@ import { LitElement, html, css } from 'lit';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import './pb-icon-button.js';
 
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
@@ -39,7 +39,7 @@ export class PbOddRenditionEditor extends LitElement {
       paper-dropdown-menu {
       }
 
-      paper-icon-button {
+      pb-icon-button {
         align-self: center;
       }
     `;
@@ -69,11 +69,12 @@ export class PbOddRenditionEditor extends LitElement {
             @update="${this._handleCodeChange}"
           ></jinn-codemirror>
         </div>
-        <paper-icon-button
-          @click="${this._remove}"
+        <pb-icon-button
+          class="icon-button"
           icon="delete"
           title="delete this rendition"
-        ></paper-icon-button>
+          @click="${this._remove}"
+        ></pb-icon-button>
       </div>
 
       <slot></slot>

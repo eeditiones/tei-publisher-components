@@ -15,7 +15,7 @@
     </script>
     <script type="module">
         import '@polymer/paper-fab/paper-fab.js';
-        import '@polymer/paper-icon-button/paper-icon-button.js';
+        import '../src/pb-icon-button.js';
     </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -111,7 +111,7 @@
             <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
                 <div class="toolbar">
-                    <paper-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list"></paper-icon-button>
+                    <pb-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list"></pb-icon-button>
                 </div>
                 <pb-progress></pb-progress>
                 <pb-drawer id="toc" toggle="tocToggle" class="tocDrawer" emit="toc" subscribe="transcription">
