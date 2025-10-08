@@ -2,7 +2,6 @@
 import { LitElement, html, css } from 'lit';
 import { supported as fsSupported, fileSave } from 'browser-fs-access';
 import { repeat } from 'lit/directives/repeat.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 
@@ -10,15 +9,10 @@ import '@vaadin/vaadin-tabs/vaadin-tabs';
 import '@vaadin/vaadin-tabs/vaadin-tab';
 
 import '@polymer/iron-ajax/iron-ajax';
-import '@polymer/paper-styles/color';
-import '@polymer/paper-card/paper-card';
 import './pb-edit-xml.js';
 import './pb-icon-button.js';
-import '@polymer/paper-input/paper-input';
-import '@polymer/paper-item/paper-item';
 import '@cwmr/paper-autocomplete/paper-autocomplete';
 import './pb-collapse';
-import '@polymer/paper-checkbox/paper-checkbox';
 import { PbOddElementspecEditor } from './pb-odd-elementspec-editor.js';
 import './pb-message.js';
 
@@ -63,6 +57,30 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         height: 100%;
       }
 
+      .nav-item {
+        display: block;
+        width: 100%;
+        padding: 8px 16px;
+        border: none;
+        background: transparent;
+        text-align: left;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        transition: background-color 120ms ease;
+      }
+
+      .nav-item:hover,
+      .nav-item:focus-visible {
+        background: rgba(33, 150, 243, 0.12);
+        outline: none;
+      }
+
+      .nav-item--active {
+        background: rgba(33, 150, 243, 0.2);
+        font-weight: 600;
+      }
+
       .specs {
         grid-column: 2 / 2;
         grid-row: 1 / span 2;
@@ -86,27 +104,88 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         padding: 6px;
       }
 
-      .metadata {
+      .metadata-card {
         display: block;
+        margin-bottom: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 12px;
+        background: #fff;
+        overflow: hidden;
       }
 
-      .metadata div {
+      .metadata-card div {
         padding: 0 16px 16px;
       }
 
-      .metadata paper-input {
+      .pb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
         margin-bottom: 10px;
       }
 
-      .metadata .extCssEdit {
+      .pb-field__label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .pb-input {
+        width: 100%;
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pb-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-input:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
+
+      .pb-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 10px 0;
+        font-size: 0.95rem;
+      }
+
+      .pb-checkbox input {
+        width: 16px;
+        height: 16px;
+      }
+
+      .pb-input-with-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .pb-input-with-button pb-icon-button {
+        margin: 0;
+      }
+
+      .metadata-card .extCssEdit {
         display: flex;
         align-items: center;
         padding: 0;
       }
-      .metadata .extCssEdit paper-input {
+      .metadata-card .extCssEdit .pb-input {
         flex: 2;
       }
-      .metadata .extCssEdit pb-edit-xml {
+      .metadata-card .extCssEdit pb-edit-xml {
         width: 40px;
       }
 
@@ -146,7 +225,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         overflow: auto;
       }
 
-      paper-tab {
+      .pb-tab {
         width: 100px;
       }
 
@@ -334,18 +413,22 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             </span>
           </h3>
           <div id="new-element" class="input-group">
-            <paper-input
-              id="identNew"
-              label="${translate('odd.editor.add-element')}"
-              always-float-label="always-float-label"
-            >
-              <pb-icon-button
-                slot="suffix"
-                @click="${this.addElementSpec}"
-                icon="add"
-                tabindex="-1"
-              ></pb-icon-button>
-            </paper-input>
+            <label class="pb-field">
+              <span class="pb-field__label">${translate('odd.editor.add-element')}</span>
+              <div class="pb-input-with-button">
+                <input
+                  id="identNew"
+                  class="pb-input"
+                  name="ident-new"
+                  placeholder="${translate('odd.editor.add-element')}"
+                />
+                <pb-icon-button
+                  @click="${this.addElementSpec}"
+                  icon="add"
+                  tabindex="-1"
+                ></pb-icon-button>
+              </div>
+            </label>
           </div>
 
           <div id="jump-to">
@@ -364,72 +447,95 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
             i => i.ident,
             (i, index) =>
               html`
-                <paper-item
+                <button
                   id="es_${i.ident}"
-                  index="${index}"
+                  type="button"
+                  class="nav-item ${this.selectedNavIndex === index ? 'nav-item--active' : ''}"
                   @click="${ev => this._openElementSpec(ev, index)}"
-                  >${i.ident}</paper-item
                 >
+                  ${i.ident}
+                </button>
               `,
           )}
         </div>
         <section class="specs" id="specs">
-          <paper-card class="metadata">
+          <div class="metadata-card">
             <pb-collapse id="meta">
               <h4 slot="collapse-trigger" class="panel-title">${this._computedTitle()}</h4>
               <div slot="collapse-content">
-                <paper-input
-                  id="title"
-                  name="title"
-                  value="${this.title}"
-                  label="${translate('odd.editor.title')}"
-                  placeholder="[${translate('odd.editor.title-placeholder')}]"
-                  @change="${this._inputTitle}"
-                ></paper-input>
-                <paper-input
-                  id="titleShort"
-                  name="short-title"
-                  .value="${this.titleShort}"
-                  label="${translate('odd.editor.title-short')}"
-                  placeholder="[${translate('odd.editor.title-short-placeholder')}]"
-                  @change="${e => (this.titleShort = e.composedPath()[0].value)}"
-                ></paper-input>
-                <paper-input
-                  id="description"
-                  name="description"
-                  .value="${ifDefined(this.description)}"
-                  label="${translate('odd.editor.description-label')}"
-                  placeholder="[${translate('odd.editor.description-placeholder')}]"
-                  @change="${e => (this.description = e.composedPath()[0].value)}"
-                ></paper-input>
-                <paper-input
-                  id="source"
-                  name="source"
-                  ?value="${this.source}"
-                  label="${translate('odd.editor.source-label')}"
-                  placeholder="[${translate('odd.editor.source-placeholder')}]"
-                  @change="${e => (this.source = e.composedPath()[0].value)}"
-                ></paper-input>
-                <paper-checkbox id="useNamespace" @change="${this.setUseNamespace}"
-                  >${translate('odd.editor.use-namespace')}</paper-checkbox
-                >
-                <paper-input
-                  id="namespace"
-                  name="namespace"
-                  value="${this.namespace}"
-                  label="Namespace"
-                  ?disabled="${!this.useNamespace}"
-                  placeholder="[${translate('odd.editor.namespace-placeholder')}]"
-                  @change="${e => (this.namespace = e.composedPath()[0].value)}"
-                ></paper-input>
+                <label class="pb-field">
+                  <span class="pb-field__label">${translate('odd.editor.title')}</span>
+                  <input
+                    id="title"
+                    class="pb-input"
+                    name="title"
+                    .value=${this.title || ''}
+                    placeholder="[${translate('odd.editor.title-placeholder')}]"
+                    @change=${this._inputTitle}
+                  />
+                </label>
+                <label class="pb-field">
+                  <span class="pb-field__label">${translate('odd.editor.title-short')}</span>
+                  <input
+                    id="titleShort"
+                    class="pb-input"
+                    name="short-title"
+                    .value=${this.titleShort || ''}
+                    placeholder="[${translate('odd.editor.title-short-placeholder')}]"
+                    @change=${e => (this.titleShort = e.target.value)}
+                  />
+                </label>
+                <label class="pb-field">
+                  <span class="pb-field__label">${translate('odd.editor.description-label')}</span>
+                  <input
+                    id="description"
+                    class="pb-input"
+                    name="description"
+                    .value=${this.description || ''}
+                    placeholder="[${translate('odd.editor.description-placeholder')}]"
+                    @change=${e => (this.description = e.target.value)}
+                  />
+                </label>
+                <label class="pb-field">
+                  <span class="pb-field__label">${translate('odd.editor.source-label')}</span>
+                  <input
+                    id="source"
+                    class="pb-input"
+                    name="source"
+                    .value=${this.source || ''}
+                    placeholder="[${translate('odd.editor.source-placeholder')}]"
+                    @change=${e => (this.source = e.target.value)}
+                  />
+                </label>
+                <label class="pb-checkbox">
+                  <input
+                    id="useNamespace"
+                    type="checkbox"
+                    ?checked=${this.useNamespace}
+                    @change=${this.setUseNamespace}
+                  />
+                  <span>${translate('odd.editor.use-namespace')}</span>
+                </label>
+                <label class="pb-field">
+                  <span class="pb-field__label">Namespace</span>
+                  <input
+                    id="namespace"
+                    class="pb-input"
+                    name="namespace"
+                    .value=${this.namespace || ''}
+                    ?disabled=${!this.useNamespace}
+                    placeholder="[${translate('odd.editor.namespace-placeholder')}]"
+                    @change=${e => (this.namespace = e.target.value)}
+                  />
+                </label>
                 <div class="extCssEdit">
-                  <paper-input
+                  <input
                     name="cssFile"
-                    value="${this.cssFile}"
-                    label="External CSS File"
+                    class="pb-input"
+                    .value=${this.cssFile || ''}
                     placeholder="[External CSS file with additional class definitions]"
-                    @change="${this._cssFileChanged}"
-                  ></paper-input>
+                    @change=${this._cssFileChanged}
+                  />
                   <pb-edit-xml id="editCSS"
                     ><pb-icon-button
                       icon="create"
@@ -439,7 +545,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
                 </div>
               </div>
             </pb-collapse>
-          </paper-card>
+          </div>
 
           <!-- todo: import elementspec to make it function  -->
 
@@ -595,7 +701,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _cssFileChanged(e) {
-    this.cssFile = e.composedPath()[0].value;
+    this.cssFile = e.target.value;
     if (this.cssFile) {
       const editCss = this.shadowRoot.getElementById('editCSS');
       editCss.setPath(`${this.rootPath}/${this.cssFile}`);
@@ -629,6 +735,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     const spec = this.elementSpecs[index]; // get target elementspec
     this._updateElementspec(spec);
+    this.selectedNavIndex = index;
+    this.requestUpdate();
 
     const { ident } = spec;
 
@@ -854,7 +962,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
     this.requestUpdate().then(() => {
-      const elem = this.shadowRoot.querySelectorAll('paper-item');
+    const elem = this.shadowRoot.querySelectorAll('.nav-item');
       const idx = this.elementSpecs.indexOf(newSpec);
 
       this._updateAutoComplete();
@@ -1167,7 +1275,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _inputTitle(ev) {
-    this.title = ev.composedPath()[0].value;
+    this.title = ev.target.value;
   }
 }
 

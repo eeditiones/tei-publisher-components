@@ -1,11 +1,7 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import './pb-icon.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox';
-import '@polymer/paper-checkbox';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
 import '@polymer/iron-form';
@@ -32,6 +28,15 @@ export class PbEditApp extends pbMixin(LitElement) {
       odds: {
         type: Array,
       },
+      _templateValue: {
+        type: String,
+      },
+      _defaultViewValue: {
+        type: String,
+      },
+      _indexValue: {
+        type: String,
+      },
     };
   }
 
@@ -39,6 +44,9 @@ export class PbEditApp extends pbMixin(LitElement) {
     super();
     this.templates = [];
     this.odds = [];
+    this._templateValue = 'view.html';
+    this._defaultViewValue = 'div';
+    this._indexValue = 'tei:div';
   }
 
   connectedCallback() {
@@ -47,25 +55,6 @@ export class PbEditApp extends pbMixin(LitElement) {
 
   firstUpdated() {
     const form = this.shadowRoot.getElementById('form');
-    const defaultView = this.shadowRoot.getElementById('defaultView');
-    const index = this.shadowRoot.getElementById('index');
-    const template = this.shadowRoot.getElementById('template');
-    this.subscribeTo(
-      'pb-i18n-update',
-      options => {
-        // clear paper-listbox selection after language updates
-        const defaultViewListbox = this.shadowRoot.querySelector('#defaultView paper-listbox');
-        let old = defaultViewListbox.selected;
-        defaultViewListbox.selected = undefined;
-        defaultViewListbox.selected = old;
-
-        const indexListbox = this.shadowRoot.querySelector('#index paper-listbox');
-        old = indexListbox.selected;
-        indexListbox.selected = undefined;
-        indexListbox.selected = old;
-      },
-      [],
-    );
     waitOnce('pb-page-ready', detail => {
       let url;
       if (this.minApiVersion('1.0.0')) {
@@ -80,7 +69,12 @@ export class PbEditApp extends pbMixin(LitElement) {
       })
         .then(response => response.json())
         .then(json => {
-          this.templates = json;
+          const list = Array.isArray(json) ? json : [];
+          this.templates = list;
+          if (!list.find(item => item.name === this._templateValue)) {
+            this._templateValue = list.length ? list[0].name : '';
+          }
+          this.requestUpdate();
         });
 
       if (this.minApiVersion('1.0.0')) {
@@ -95,7 +89,8 @@ export class PbEditApp extends pbMixin(LitElement) {
       })
         .then(response => response.json())
         .then(json => {
-          this.odds = json;
+          this.odds = Array.isArray(json) ? json : [];
+          this.requestUpdate();
         });
 
       const htmlForm = this.shadowRoot.querySelector('form');
@@ -105,12 +100,6 @@ export class PbEditApp extends pbMixin(LitElement) {
         htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
       }
     });
-    form.addEventListener('iron-form-presubmit', function () {
-      const view = defaultView.selectedItem.getAttribute('value');
-      this.request.body['default-view'] = view;
-      this.request.body.index = index.selectedItem.getAttribute('value');
-      this.request.body.template = template.selectedItem.getAttribute('value');
-    });
     form.addEventListener('iron-form-response', event => {
       console.log(event);
       event.detail.completes.then(r => {
@@ -119,9 +108,8 @@ export class PbEditApp extends pbMixin(LitElement) {
         console.log('<pb-edit-app> Received response: %o', result);
         if (result.target) {
           const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, '$1');
-          this.url = `${baseURL}/${
-            this.shadowRoot.querySelector('paper-input[name=abbrev]').value
-          }`;
+          const abbrev = this.shadowRoot.querySelector('input[name=abbrev]');
+          this.url = `${baseURL}/${abbrev ? abbrev.value : ''}`;
           this.error = null;
         } else {
           this.error = result.description;
@@ -145,115 +133,159 @@ export class PbEditApp extends pbMixin(LitElement) {
     form.submit();
   }
 
+  _renderTextField({ id, name, type = 'text', required = false, pattern, placeholder = '', label }) {
+    return html`
+      <label class="pb-field" for="${id}">
+        <span class="pb-field__label">${label}</span>
+        <input
+          id="${id}"
+          class="pb-input"
+          type="${type}"
+          name="${name}"
+          ?required=${required}
+          pattern=${pattern ? pattern : nothing}
+          placeholder="${placeholder}"
+        />
+      </label>
+    `;
+  }
+
+  _onTemplateChange(event) {
+    this._templateValue = event.target.value;
+  }
+
+  _onDefaultViewChange(event) {
+    this._defaultViewValue = event.target.value;
+  }
+
+  _onIndexChange(event) {
+    this._indexValue = event.target.value;
+  }
+
   render() {
     return html`
       <iron-form id="form">
         <form method="POST" accept="application/json" enctype="application/json">
-          <fieldset>
+          <fieldset class="pb-fieldset">
             <legend>${translate('document.selectODD')}</legend>
             ${this.odds.map(
-              odd =>
-                html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`,
+              odd => html`
+                <label class="pb-checkbox">
+                  <input
+                    type="checkbox"
+                    name="odd"
+                    value="${odd.name}"
+                    ?checked=${Boolean(odd.checked)}
+                  />
+                  <span>${odd.label}</span>
+                </label>
+              `,
             )}
           </fieldset>
-          <paper-input
-            name="uri"
-            type="url"
-            required
-            placeholder="https://e-editiones.org/apps/my-simple-app"
-            label="${translate('appgen.uri')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            id="abbrev"
-            name="abbrev"
-            pattern="[a-zA-Z0-9-_]+"
-            required
-            placeholder="${translate('appgen.abbrev.placeholder')}"
-            label="${translate('appgen.abbrev.label')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            name="data-collection"
-            pattern="[a-zA-Z0-9-_/]+"
-            placeholder="data"
-            label="${translate('appgen.collection')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            name="title"
-            required
-            placeholder="${translate('appgen.title.label')}"
-            label="${translate('appgen.title.help')}"
-          ></paper-input>
-          <fieldset>
+
+          ${this._renderTextField({
+            id: 'uri',
+            name: 'uri',
+            type: 'url',
+            required: true,
+            placeholder: 'https://e-editiones.org/apps/my-simple-app',
+            label: translate('appgen.uri'),
+          })}
+
+          ${this._renderTextField({
+            id: 'abbrev',
+            name: 'abbrev',
+            pattern: '[a-zA-Z0-9-_]+',
+            required: true,
+            placeholder: translate('appgen.abbrev.placeholder'),
+            label: translate('appgen.abbrev.label'),
+          })}
+
+          ${this._renderTextField({
+            id: 'data-collection',
+            name: 'data-collection',
+            pattern: '[a-zA-Z0-9-_/]+',
+            placeholder: 'data',
+            label: translate('appgen.collection'),
+          })}
+
+          ${this._renderTextField({
+            id: 'title',
+            name: 'title',
+            required: true,
+            placeholder: translate('appgen.title.label'),
+            label: translate('appgen.title.help'),
+          })}
+
+          <fieldset class="pb-fieldset">
             <legend>${translate('appgen.template.help')}</legend>
-            <paper-dropdown-menu
-              id="template"
-              label="${translate('appgen.template.label')}"
-              name="template"
-            >
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                attr-for-selected="value"
-                selected="view.html"
+            <label class="pb-field" for="template">
+              <span class="pb-field__label">${translate('appgen.template.label')}</span>
+              <select
+                id="template"
+                class="pb-select"
+                name="template"
+                .value=${this._templateValue || ''}
+                @change=${this._onTemplateChange}
               >
                 ${this.templates.map(
-                  t => html`<paper-item value="${t.name}">${t.title}</paper-item>`,
+                  t => html`<option value="${t.name}">${t.title}</option>`,
                 )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+              </select>
+            </label>
           </fieldset>
-          <fieldset>
+
+          <fieldset class="pb-fieldset">
             <legend>${translate('appgen.view.help')}</legend>
-            <paper-dropdown-menu
-              id="defaultView"
-              label="${translate('appgen.label')}"
-              name="default-view"
-            >
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                selected="div"
-                attr-for-selected="value"
+            <label class="pb-field" for="defaultView">
+              <span class="pb-field__label">${translate('appgen.label')}</span>
+              <select
+                id="defaultView"
+                class="pb-select"
+                name="default-view"
+                .value=${this._defaultViewValue || ''}
+                @change=${this._onDefaultViewChange}
               >
-                <paper-item value="div">${translate('appgen.view.div')}</paper-item>
-                <paper-item value="page">${translate('appgen.view.page')}</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
+                <option value="div">${translate('appgen.view.div')}</option>
+                <option value="page">${translate('appgen.view.page')}</option>
+              </select>
+            </label>
           </fieldset>
-          <fieldset>
+
+          <fieldset class="pb-fieldset">
             <legend>${translate('appgen.index.help')}</legend>
-            <paper-dropdown-menu id="index" label="${translate('appgen.index.label')}" name="index">
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                selected="tei:div"
-                attr-for-selected="value"
+            <label class="pb-field" for="index">
+              <span class="pb-field__label">${translate('appgen.index.label')}</span>
+              <select
+                id="index"
+                class="pb-select"
+                name="index"
+                .value=${this._indexValue || ''}
+                @change=${this._onIndexChange}
               >
-                <paper-item value="tei:div">${translate('appgen.index.index-div')}</paper-item>
-                <paper-item value="tei:text">${translate('appgen.index.index-text')}</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
+                <option value="tei:div">${translate('appgen.index.index-div')}</option>
+                <option value="tei:text">${translate('appgen.index.index-text')}</option>
+              </select>
+            </label>
           </fieldset>
-          <fieldset>
+
+          <fieldset class="pb-fieldset">
             <legend>${translate('appgen.account.user')}</legend>
-            <paper-input
-              name="owner"
-              required
-              placeholder="${translate('login.user')}"
-              label="${translate('appgen.account.owner')}"
-              auto-validate
-            ></paper-input>
-            <paper-input
-              name="password"
-              type="password"
-              required
-              placeholder="${translate('login.password')}"
-              label="${translate('appgen.account.password')}"
-              auto-validate
-            ></paper-input>
+            ${this._renderTextField({
+              id: 'owner',
+              name: 'owner',
+              required: true,
+              placeholder: translate('login.user'),
+              label: translate('appgen.account.owner'),
+            })}
+            ${this._renderTextField({
+              id: 'password',
+              name: 'password',
+              type: 'password',
+              required: true,
+              placeholder: translate('login.password'),
+              label: translate('appgen.account.password'),
+            })}
           </fieldset>
           <button
             id="submit"
@@ -300,23 +332,73 @@ export class PbEditApp extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      paper-dropdown-menu {
-        width: 100%;
-        max-width: 864px;
-      }
-      fieldset {
-        margin-top: 16px;
-        margin-bottom: 16px;
+      .pb-fieldset {
+        margin: 16px 0;
         padding: 0;
         border: 0;
       }
-      legend {
+      .pb-fieldset legend {
         color: #909090;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
       }
-      paper-checkbox {
+      .pb-checkbox {
         display: block;
         margin-left: 20px;
         margin-top: 10px;
+        font-size: 0.95rem;
+        color: rgba(0, 0, 0, 0.87);
+        cursor: pointer;
+      }
+      .pb-checkbox input {
+        margin-right: 8px;
+      }
+      .pb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        margin-bottom: 1rem;
+        max-width: 864px;
+      }
+      .pb-field__label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.6);
+      }
+      .pb-input,
+      .pb-select {
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+        line-height: 1.4;
+      }
+      .pb-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .pb-input:focus,
+      .pb-select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
+      .pb-select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(0.6em + 2px),
+          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
       }
       paper-dialog {
         min-width: 420px;

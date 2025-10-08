@@ -6,16 +6,6 @@
         <title>pb-document Demo</title>
         <!--scripts-->
         
-        <script>
-        // Workaround for Polymer modules under Vite: some @polymer/* packages
-        // reference this Closure helper; define a no-op if absent.
-        // See: https://github.com/Polymer/polymer/issues/4845
-        window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
-    </script>
-    <script type="module">
-        import '@polymer/paper-tabs/paper-tabs.js';
-        import '@polymer/iron-pages/iron-pages';
-    </script>
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-tabs.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
@@ -29,17 +19,17 @@
                 <main>
                     <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                     <pb-tabs>
-                        <paper-tab slot="tab">Tab 1</paper-tab>
-                        <paper-tab slot="tab">Tab 2</paper-tab>
-                        <paper-tab slot="tab">Tab 3</paper-tab>
+                        <button slot="tab" type="button">Tab 1</button>
+                        <button slot="tab" type="button">Tab 2</button>
+                        <button slot="tab" type="button">Tab 3</button>
 
                         <div slot="page">
                             <p>This is the first tab.</p>
                         </div>
-                        <div slot="page">
+                        <div slot="page" hidden>
                             <p>And a second tab.</p>
                         </div>
-                        <div slot="page">
+                        <div slot="page" hidden>
                             <p>The third tab.</p>
                         </div>
                     </pb-tabs>

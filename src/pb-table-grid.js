@@ -4,7 +4,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from './theming.js';
 import { translate } from './pb-i18n.js';
-import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-form/iron-form.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
@@ -235,7 +234,16 @@ export class PbTableGrid extends pbMixin(LitElement) {
   }
 
   _submit() {
-    this.grid.forceRender();
+    if (this.grid) {
+      this.grid.forceRender();
+    }
+  }
+
+  _handleSearchKey(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this._submit();
+    }
   }
 
   _paramsFromSubforms(params) {
@@ -255,34 +263,39 @@ export class PbTableGrid extends pbMixin(LitElement) {
         ? html`
             <iron-form id="form">
               <form action="">
-                <paper-input
-                  id="search"
-                  name="search"
-                  label="Search"
-                  value="${this._params.search || ''}"
-                  @keyup="${e => (e.keyCode == 13 ? this._submit() : null)}"
-                >
-                  <button
-                    class="pb-button pb-button--icon"
-                    type="button"
-                    slot="suffix"
-                    aria-label="${translate('search.search')}"
-                    title="${translate('search.search')}"
-                    @click="${this._submit}"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      focusable="false"
+                <label class="pb-table-grid__field" for="search">
+                  <span class="pb-table-grid__label">${translate('search.search')}</span>
+                  <div class="pb-table-grid__search">
+                    <input
+                      id="search"
+                      class="pb-table-grid__input"
+                      type="search"
+                      name="search"
+                      .value=${this._params.search || ''}
+                      placeholder="${translate('search.search')}"
+                      @keydown=${this._handleSearchKey}
+                    />
+                    <button
+                      class="pb-button pb-button--icon"
+                      type="button"
+                      aria-label="${translate('search.search')}"
+                      title="${translate('search.search')}"
+                      @click=${this._submit}
                     >
-                      <path
-                        d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-                      ></path>
-                    </svg>
-                  </button>
-                </paper-input>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
               </form>
             </iron-form>
           `
@@ -296,8 +309,48 @@ export class PbTableGrid extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      button {
-        border: 0;
+      .pb-table-grid__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+      }
+
+      .pb-table-grid__label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .pb-table-grid__search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .pb-table-grid__input {
+        flex: 1 1 auto;
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        line-height: 1.4;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pb-table-grid__input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-table-grid__input:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
       }
     `;
   }

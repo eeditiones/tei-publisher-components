@@ -1,5 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-item';
+import { LitElement, html, css, nothing } from 'lit';
 
 /**
  * Displays a list of components to view.
@@ -41,7 +40,19 @@ export class PbComponentsList extends LitElement {
                 elements = tags.filter((tag) => tag.demo);
             }
             return html`
-                ${elements.map((tag) => html`<paper-item @click="${() => PbComponentsList._viewComponent(tag)}">${tag.name}</paper-item>`)}
+                <ul class="component-list">
+                    ${elements.map((tag) => html`
+                        <li>
+                            <button
+                                type="button"
+                                class="component-item"
+                                @click="${() => PbComponentsList._viewComponent(tag)}"
+                            >
+                                <span class="component-name">${tag.name}</span>
+                                ${tag.demo ? html`<span class="badge">demo</span>` : nothing}
+                            </button>
+                        </li>`)}
+                </ul>
             `;
         }
         return html`<div>Loading ...</div>`;
@@ -51,6 +62,56 @@ export class PbComponentsList extends LitElement {
         return css`
             :host {
                 display: block;
+            }
+
+            .component-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            li + li {
+                margin-top: 4px;
+            }
+
+            .component-item {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                padding: 0.5rem 0.75rem;
+                border: none;
+                border-radius: 6px;
+                background: transparent;
+                font: inherit;
+                text-align: left;
+                cursor: pointer;
+                transition: background-color 120ms ease, color 120ms ease;
+            }
+
+            .component-item:hover,
+            .component-item:focus-visible {
+                background-color: rgba(33, 150, 243, 0.12);
+                outline: none;
+            }
+
+            .component-name {
+                flex: 1 1 auto;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .badge {
+                flex: none;
+                font-size: 0.75rem;
+                line-height: 1;
+                text-transform: uppercase;
+                padding: 0.125rem 0.375rem;
+                border-radius: 999px;
+                background-color: rgba(33, 150, 243, 0.16);
+                color: #1565c0;
             }
         `;
     }

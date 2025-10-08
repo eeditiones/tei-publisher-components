@@ -34,7 +34,7 @@ describe('Demo: pb-table-grid', () => {
     // The legacy Polymer buttons should be gone; native icon button present
     cy.get('pb-table-grid').find('paper-icon-button').should('not.exist')
     cy.get('pb-table-grid')
-      .find('button.pb-button--icon[slot="suffix"]')
+      .find('button.pb-button--icon')
       .should('have.attr', 'type', 'button')
       .and('have.attr', 'aria-label')
 
