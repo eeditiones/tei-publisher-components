@@ -1,16 +1,10 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 
 import { repeat } from 'lit/directives/repeat.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
 import './pb-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-menu-button/paper-menu-button.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-styles/color.js';
 
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
@@ -49,8 +43,9 @@ export class PbOddModelEditor extends LitElement {
         margin-bottom: 8px;
       }
 
-      paper-input,
-      paper-autocomplete {
+      .pb-input,
+      .pb-select,
+      pb-autocomplete {
         margin-bottom: 16px;
       }
 
@@ -197,8 +192,56 @@ export class PbOddModelEditor extends LitElement {
         border-left: 3px solid var(--paper-blue-500);
       }
 
-      paper-menu-button pb-icon-button {
-        margin-left: -10px;
+      .modelTypeMenu {
+        margin-left: 8px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      .pb-input,
+      .pb-select {
+        width: 100%;
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pb-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(0.6em + 2px),
+          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
+      }
+
+      .pb-input:focus,
+      .pb-select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
       }
 
       /* need to play it save for FF */
@@ -457,36 +500,25 @@ export class PbOddModelEditor extends LitElement {
                           this._paste
                         }" icon="content-paste"></pb-icon-button>
 
-                        ${
-                          this._isGroupOrSequence()
-                            ? html`
-                                <paper-menu-button horizontal-align="right">
-                                  <pb-icon-button
-                                    icon="add"
-                                    slot="dropdown-trigger"
-                                  ></pb-icon-button>
-                                  <paper-listbox
-                                    id="modelType"
-                                    slot="dropdown-content"
-                                    @iron-select="${this._addNested}"
-                                    attr-for-selected="value"
-                                  >
-                                    ${this.type === 'modelSequence'
-                                      ? html` <paper-item value="model">model</paper-item> `
-                                      : ''}
-                                    ${this.type === 'modelGrp'
-                                      ? html`
-                                          <paper-item value="modelSequence"
-                                            >modelSequence</paper-item
-                                          >
-                                          <paper-item value="model">model</paper-item>
-                                        `
-                                      : ''}
-                                  </paper-listbox>
-                                </paper-menu-button>
-                              `
-                            : ''
-                        }
+                        ${this._isGroupOrSequence()
+                          ? html`
+                              <label class="modelTypeMenu">
+                                <span class="sr-only">Add nested model</span>
+                                <select class="pb-select" @change=${this._handleAddNested}>
+                                  <option value="">Add…</option>
+                                  ${this.type === 'modelSequence'
+                                    ? html`<option value="model">model</option>`
+                                    : nothing}
+                                  ${this.type === 'modelGrp'
+                                    ? html`
+                                        <option value="modelSequence">modelSequence</option>
+                                        <option value="model">model</option>
+                                      `
+                                    : nothing}
+                                </select>
+                              </label>
+                            `
+                          : nothing}
                     </span>
                 </h4>
                 <div class="info">
@@ -498,25 +530,42 @@ export class PbOddModelEditor extends LitElement {
             <details ?open="${this.show}" class="details">
                 <summary style="display: none;"></summary>
                 <div class="horizontal">
-                    <paper-dropdown-menu class="selectOutput" label="Output">
-                        <paper-listbox id="output" slot="dropdown-content" attr-for-selected="value"
-                                    selected="${this.output}" @iron-select="${this._selectOutput}">
-
-                            ${this.outputs.map(
-                              item => html` <paper-item value="${item}">${item}</paper-item> `,
-                            )}
-
-                        </paper-listbox>
-                    </paper-dropdown-menu>
-                    <paper-input id="mode" .value="${this.mode}"
+                    <label class="pb-field selectOutput">
+                      <span class="pb-field__label">${translate('odd.editor.model.output')}</span>
+                      <select
+                        id="output"
+                        class="pb-select"
+                        .value=${this.output || ''}
+                        @change=${this._selectOutput}
+                      >
+                        ${this.outputs.map(
+                          item => html`<option value="${item}">${item}</option>`,
+                        )}
+                      </select>
+                    </label>
+                    <label class="pb-field">
+                      <span class="pb-field__label">${translate('odd.editor.model.mode-placeholder')}</span>
+                      <input
+                        id="mode"
+                        class="pb-input"
+                        .value=${this.mode || ''}
                         placeholder="${translate('odd.editor.model.mode-placeholder')}"
-                        label="Mode"
-                        @change="${this._inputMode}"></paper-input>
+                        @change=${this._inputMode}
+                      />
+                    </label>
                 </div>
-                <paper-input id="desc" .value="${this.desc}" placeholder="${translate(
+                <label class="pb-field">
+                  <span class="pb-field__label">${translate('odd.editor.model.description-placeholder')}</span>
+                  <input
+                    id="desc"
+                    class="pb-input"
+                    .value=${this.desc || ''}
+                    placeholder="${translate(
       'odd.editor.model.description-placeholder',
     )}"
-                    label="Description" @change="${this._inputDesc}"></paper-input>
+                    @change=${this._inputDesc}
+                  />
+                </label>
 
                 <div class="editor">
                     <label>Predicate</label>
@@ -535,44 +584,47 @@ export class PbOddModelEditor extends LitElement {
                     ? html`
                         <div>
                           <div class="behaviourWrapper">
-                            <paper-dropdown-menu
-                              label="behaviour"
-                              id="behaviourMenu"
-                              ?disabled="${this.hasCustomBehaviour}"
-                            >
-                              <paper-listbox
+                            <label class="pb-field">
+                              <span class="pb-field__label">${translate('odd.editor.model.behaviour')}</span>
+                              <select
                                 id="behaviour"
-                                slot="dropdown-content"
-                                attr-for-selected="value"
-                                selected="${this.behaviour}"
-                                @iron-select="${this._selectBehaviour}"
+                                class="pb-select"
+                                .value=${this.behaviour || ''}
+                                ?disabled=${this.hasCustomBehaviour}
+                                @change=${this._selectBehaviour}
                               >
                                 ${this.behaviours.map(
-                                  item => html` <paper-item value="${item}">${item}</paper-item> `,
+                                  item => html`<option value="${item}">${item}</option>`,
                                 )}
-                              </paper-listbox>
-                            </paper-dropdown-menu>
+                              </select>
+                            </label>
                             <span style="align-self:center;justify-self: center;">
                               ${translate('odd.editor.model.link-with-or')}
                             </span>
-                            <paper-input
-                              id="custombehaviour"
-                              label=""
-                              @input="${this._handleCustomBehaviour}"
-                              placeHolder="${translate(
+                            <label class="pb-field">
+                              <span class="pb-field__label">${translate('odd.editor.model.custom-behaviour-placeholder')}</span>
+                              <input
+                                id="custombehaviour"
+                                class="pb-input"
+                                @input=${this._handleCustomBehaviour}
+                                placeholder="${translate(
                                 'odd.editor.model.custom-behaviour-placeholder',
                               )}"
-                            ></paper-input>
+                              />
+                            </label>
                             <span></span>
                           </div>
 
-                          <paper-input
-                            id="css"
-                            .value="${this.css}"
-                            placeholder="${translate('odd.editor.model.css-class-placeholder')}"
-                            label="CSS Class"
-                            @change="${this._inputCss}"
-                          ></paper-input>
+                          <label class="pb-field">
+                            <span class="pb-field__label">CSS Class</span>
+                            <input
+                              id="css"
+                              class="pb-input"
+                              .value=${this.css || ''}
+                              placeholder="${translate('odd.editor.model.css-class-placeholder')}"
+                              @change=${this._inputCss}
+                            />
+                          </label>
 
                           <div class="editor">
                             <label>Template</label>
@@ -584,57 +636,62 @@ export class PbOddModelEditor extends LitElement {
                               @update="${this._updateTemplate}"
                             >
                               <div slot="toolbar">
-                                <paper-button
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text"
                                   data-mode="xml"
                                   data-command="selectElement"
                                   data-key="mod-e mod-s"
                                   title="Select element around current cursor position"
-                                  >&lt;|></paper-button
-                                >
-                                <paper-button
+                                >&lt;|></button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text"
                                   data-mode="xml"
                                   data-command="encloseWith"
                                   data-key="mod-e mod-e"
                                   title="Enclose selection in new element"
-                                  >&lt;...&gt;</paper-button
-                                >
-                                <paper-button
+                                >&lt;...&gt;</button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text sep"
                                   data-mode="xml"
                                   data-command="removeEnclosing"
                                   title="Remove enclosing tags"
                                   data-key="mod-e mod-r"
-                                  class="sep"
-                                  >&lt;X></paper-button
-                                >
-                                <paper-button
+                                >&lt;X></button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text"
                                   data-mode="html"
                                   data-command="selectElement"
                                   data-key="mod-e mod-s"
                                   title="Select element around current cursor position"
-                                  >&lt;|></paper-button
-                                >
-                                <paper-button
+                                >&lt;|></button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text"
                                   data-mode="html"
                                   data-command="encloseWith"
                                   data-key="mod-e mod-e"
                                   title="Enclose selection in new element"
-                                  >&lt;...&gt;</paper-button
-                                >
-                                <paper-button
+                                >&lt;...&gt;</button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text sep"
                                   data-mode="html"
                                   data-command="removeEnclosing"
                                   title="Remove enclosing tags"
                                   data-key="mod-e mod-r"
-                                  class="sep"
-                                  >&lt;X></paper-button
-                                >
-                                <paper-button
+                                >&lt;X></button>
+                                <button
+                                  type="button"
+                                  class="pb-button pb-button--text"
                                   data-key="mod-e mod-p"
                                   data-command="snippet"
                                   data-params="[[\${_}]]"
                                   title="Insert template variable"
-                                  >[[...]]</paper-button
-                                >
+                                >[[...]]</button>
                               </div>
                             </jinn-codemirror>
                           </div>
@@ -907,6 +964,15 @@ export class PbOddModelEditor extends LitElement {
     );
   }
 
+  _handleAddNested(event) {
+    const value = event.target.value;
+    if (!value) {
+      return;
+    }
+    this._addNested(value);
+    event.target.value = '';
+  }
+
   addModel(newModel) {
     if (newModel.type !== 'model') {
       console.error('only models can be added to modelSequence or modelGrp');
@@ -1045,12 +1111,12 @@ export class PbOddModelEditor extends LitElement {
   }
 
   _inputDesc(e) {
-    this.desc = e.composedPath()[0].value;
+    this.desc = e.target.value;
     this._fireModelChanged('desc', this.desc);
   }
 
   _selectOutput(e) {
-    this.output = e.composedPath()[0].selected;
+    this.output = e.target.value;
     this._fireModelChanged('output', this.output);
   }
 
@@ -1061,17 +1127,17 @@ export class PbOddModelEditor extends LitElement {
   }
 
   _selectBehaviour(ev) {
-    this.behaviour = ev.composedPath()[0].selected;
+    this.behaviour = ev.target.value;
     this._fireModelChanged('behaviour', this.behaviour);
   }
 
   _inputCss(ev) {
-    this.css = ev.composedPath()[0].value;
+    this.css = ev.target.value;
     this._fireModelChanged('css', this.css);
   }
 
   _inputMode(ev) {
-    this.mode = ev.composedPath()[0].value;
+    this.mode = ev.target.value;
     this._fireModelChanged('mode', this.mode);
   }
 

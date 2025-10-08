@@ -77,6 +77,24 @@ beforeEach(() => {
     body: '<ul class="pb-mock-list"><li><a href="#">Mock item</a></li></ul>'
   })
 
+  cy.intercept({
+    method: 'GET',
+    pathname: /\/exist\/apps\/tei-publisher\/collection\/?$/
+  }, {
+    statusCode: 200,
+    headers: { 'content-type': 'text/html' },
+    body: '<ul class="pb-mock-list"><li><a href="#">Collection Entry</a></li></ul>'
+  }).as('stubCollectionPage')
+
+  cy.intercept({
+    method: 'GET',
+    pathname: /\/exist\/apps\/tei-publisher\/api\/templates$/
+  }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: [{ name: 'view.html', title: 'Default Template' }]
+  }).as('stubTemplates')
+
   cy.intercept({ method: 'POST', pathname: /\/exist\/apps\/tei-publisher\/api\/login\/?$/ }, req => {
     Cypress.log({ name: 'login:stub', message: `${req.method} ${req.url}` })
     req.reply({
@@ -90,6 +108,39 @@ beforeEach(() => {
     const stub = Cypress.env('stubOddResponse') || fallbackOddResponse
     req.reply({ statusCode: 200, headers: { 'content-type': 'application/json' }, body: stub })
   }).as('stubOddApi')
+
+  cy.intercept({ method: 'GET', pathname: /\/exist\/apps\/tei-publisher\/api\/odd$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: [
+      { name: 'default', label: 'Default' },
+      { name: 'alt', label: 'Alternative' }
+    ]
+  }).as('stubOddList')
+
+  cy.intercept({ method: 'GET', pathname: /\/api\/odd$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: [
+      { name: 'default', label: 'Default' },
+      { name: 'alt', label: 'Alternative' }
+    ]
+  })
+
+  cy.intercept({ method: 'GET', pathname: /\/modules\/lib\/components-list-templates\.xql$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: [{ name: 'view.html', title: 'Default Template' }]
+  })
+
+  cy.intercept({ method: 'GET', pathname: /\/modules\/lib\/components-list-odds\.xql$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: [
+      { name: 'default', label: 'Default' },
+      { name: 'alt', label: 'Alternative' }
+    ]
+  })
 
   cy.intercept({ method: 'GET', pathname: '/exist/apps/tei-publisher/modules/editor.xql' }, (req) => {
     const stub = Cypress.env('stubOddResponse') || fallbackOddResponse
@@ -138,6 +189,28 @@ beforeEach(() => {
       }
     })
   }).as('stubCollection')
+
+  cy.intercept({ method: 'GET', pathname: /\/exist\/apps\/tei-publisher\/api\/search\/autocomplete$/ }, (req) => {
+    req.reply({
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: [
+        { text: 'Kant', value: 'kant' },
+        { text: 'Descartes', value: 'descartes' }
+      ]
+    })
+  }).as('stubAutocomplete')
+
+  cy.intercept({ method: 'GET', pathname: /\/api\/search\/autocomplete$/ }, (req) => {
+    req.reply({
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: [
+        { text: 'Kant', value: 'kant' },
+        { text: 'Descartes', value: 'descartes' }
+      ]
+    })
+  })
 
   cy.intercept({ method: 'GET', pathname: /\/demo\/api\/login\/?$/ }, {
     statusCode: 200,

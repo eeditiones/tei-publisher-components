@@ -3,10 +3,6 @@ import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
 
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox';
-import '@polymer/paper-item';
-
 /**
  * A dropdown to select a DTS endpoint from a configured list.
  * The list may either be given as a JSON-formatted string within the
@@ -56,13 +52,18 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
   connectedCallback() {
     super.connectedCallback();
     this.endpoint = registry.state.endpoint;
+    if (!this.endpoint && this.auto && this.endpoints.length > 0) {
+      this.endpoint = this.endpoints[0].url;
+    }
   }
 
-  updated(changedProperties) {
-    super.updated();
-    if (changedProperties.has('endpoints')) {
-      const item = this.shadowRoot.getElementById('endpoints').selectedItem;
-      if (!item && this.auto && this.endpoints.length > 0) {
+  updated(changed) {
+    super.updated(changed);
+    if (changed.has('endpoints')) {
+      if (!Array.isArray(this.endpoints)) {
+        this.endpoints = [];
+      }
+      if (!this.endpoint && this.auto && this.endpoints.length > 0) {
         this.endpoint = this.endpoints[0].url;
       }
     }
@@ -70,20 +71,20 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <paper-dropdown-menu id="menu" label="${translate(this.label)}">
-        <paper-listbox
-          id="endpoints"
-          slot="dropdown-content"
-          class="dropdown-content"
-          selected="${this.endpoint}"
-          attr-for-selected="value"
-          @selected-item-changed="${this._selected}"
-        >
-          ${this.endpoints.map(
-            ep => html`<paper-item value="${ep.url ? ep.url : ''}">${ep.title}</paper-item>`,
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu>
+      <label class="dts-select__label" for="dts-select">
+        ${translate(this.label)}
+      </label>
+      <select
+        id="dts-select"
+        class="dts-select__select"
+        name="endpoint"
+        .value=${this.endpoint || ''}
+        @change=${this._selected}
+      >
+        ${this.endpoints.map(
+          ep => html`<option value="${ep.url ?? ''}">${ep.title}</option>`,
+        )}
+      </select>
     `;
   }
 
@@ -92,27 +93,62 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
       :host {
         display: block;
       }
+
+      .dts-select__label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .dts-select__select {
+        width: 100%;
+        min-width: inherit;
+        max-width: inherit;
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        background: #fff;
+        font: inherit;
+        color: inherit;
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(0.6em + 2px),
+          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .dts-select__select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
     `;
   }
 
-  _selected() {
-    const item = this.shadowRoot.getElementById('endpoints').selectedItem;
-    if (!item) {
-      return;
-    }
-    const newEndpoint = item.getAttribute('value');
+  _selected(event) {
+    const newEndpoint = event.target.value;
     if (!newEndpoint) {
       return;
     }
     const endpoint = this.endpoints.find(endp => endp.url === newEndpoint);
-    registry.commit(this, { endpoint: endpoint.url });
+    const committedEndpoint = endpoint ? endpoint.url : newEndpoint;
+    registry.commit(this, { endpoint: committedEndpoint });
     console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
     this.emitTo('dts-endpoint', {
-      endpoint: endpoint.url,
-      collection: endpoint.collection,
+      endpoint: committedEndpoint,
+      collection: endpoint ? endpoint.collection : undefined,
       reload: !this.endpoint,
     });
-    this.endpoint = endpoint.url;
+    this.endpoint = committedEndpoint;
   }
 }
 customElements.define('dts-select-endpoint', DtsSelectEndpoint);

@@ -110,7 +110,7 @@ export function testMigratedComponent(componentName, testConfig = {}) {
         cy.get(componentName).should('be.visible')
         // Check for design system classes
         cy.get(componentName)
-          .find('.pb-button, .pb-input, .pb-dropdown')
+          .find('.pb-button, .pb-input, .pb-select')
           .should('exist')
       })
     }
