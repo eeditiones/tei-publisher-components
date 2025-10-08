@@ -3,11 +3,21 @@ import '../../../src/pb-browse-docs.js'
 
 describe('pb-browse-docs', () => {
   it('mounts', () => {
+    cy.intercept('GET', '**/api/search/autocomplete*', {
+      statusCode: 200,
+      body: [{ text: 'Kant', value: 'kant' }]
+    }).as('autocomplete')
+
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').should('exist')
   })
 
   it('uses native buttons for toolbar and dialogs', () => {
+    cy.intercept('GET', '**/api/search/autocomplete*', {
+      statusCode: 200,
+      body: [{ text: 'Kant', value: 'kant' }]
+    }).as('autocomplete')
+
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('paper-button').should('not.exist')
     cy.get('pb-browse-docs')

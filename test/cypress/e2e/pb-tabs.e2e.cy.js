@@ -17,19 +17,20 @@ describe('Demo: pb-tabs', () => {
       Cypress.log({ name: 'pb-tabs', message: snippet })
     })
 
-    // Ensure tabs are rendered
-    cy.get('pb-tabs').find('paper-tab').should('have.length.at.least', 2)
+    cy.get('pb-tabs').then(($el) => $el[0].updateComplete)
 
-    // Click Tab 1; iron-pages (part=pages) selected property should be 0
-    cy.get('pb-tabs').find('paper-tab').contains('Tab 1').click({ force: true })
-    cy.get('pb-tabs').find('[part=pages]').then(($el) => {
-      expect($el[0].selected, 'pages.selected after Tab 1').to.satisfy((v) => v === 0 || v === '0')
-    })
+    // Ensure tabs are rendered and Polymer elements are absent
+    cy.get('pb-tabs').find('button').should('have.length.at.least', 2)
+    cy.get('pb-tabs').find('paper-tab, paper-tabs, iron-pages').should('not.exist')
+    cy.get('pb-tabs').find('[slot="page"]').eq(0).should('not.be.hidden')
+
+    // Click Tab 1 and assert content visibility
+    cy.get('pb-tabs').find('button').contains('Tab 1').click({ force: true })
+    cy.get('pb-tabs').find('[slot="page"]').eq(0).should('not.be.hidden')
 
     // Click Tab 2 and assert selected index reflects change
-    cy.get('pb-tabs').find('paper-tab').contains('Tab 2').click({ force: true })
-    cy.get('pb-tabs').find('[part=pages]').then(($el) => {
-      expect($el[0].selected, 'pages.selected after Tab 2').to.satisfy((v) => v === 1 || v === '1')
-    })
+    cy.get('pb-tabs').find('button').contains('Tab 2').click({ force: true })
+    cy.get('pb-tabs').find('[slot="page"]').eq(1).should('not.be.hidden')
+    cy.get('pb-tabs').find('[slot="page"]').eq(0).should('be.hidden')
   })
 })
