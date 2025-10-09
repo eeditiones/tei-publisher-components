@@ -10,6 +10,26 @@ describe('Smoke: all pb-*.html demos load', () => {
 
   for (const url of pages) {
     it(`loads ${url}`, () => {
+      if (url.includes('pb-browse-docs')) {
+        cy.fixture('demo/browse-docs/default.html', 'utf8').as('browseDefault')
+        cy.fixture('demo/browse-docs/filtered.html', 'utf8').as('browseFiltered')
+        cy.then(function () {
+          cy.intercept('GET', '**/api/collection/test**', req => {
+            const hasFilter = new URL(req.url).searchParams.has('filter')
+            req.reply({
+              statusCode: 200,
+              headers: { 'content-type': 'text/html' },
+              body: hasFilter ? this.browseFiltered : this.browseDefault
+            })
+          })
+        })
+        cy.intercept('GET', '**/modules/testForm.xql**', {
+          statusCode: 200,
+          headers: { 'content-type': 'text/html' },
+          body: '<div data-form="ok"></div>'
+        })
+      }
+
       const failed = []
 
       cy.intercept('**', { hostname: 'localhost' }, (req) => {

@@ -25,7 +25,7 @@ describe('pb-autocomplete', () => {
       comp.addEventListener('pb-autocomplete-input', handler)
     })
 
-    cy.get('pb-autocomplete').shadow().find('#search').type('ka')
+    cy.get('pb-autocomplete').shadow().find('input.pb-input').type('ka')
     cy.get('pb-autocomplete').shadow().find('.suggestion').first().click()
 
     cy.get('pb-autocomplete').should(($el) => {

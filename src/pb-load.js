@@ -445,13 +445,25 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     if (this.fixLinks) {
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
-        const src = new URL(oldSrc, `${this.getEndpoint()}/`);
-        image.src = src;
+        if (!oldSrc) {
+          return;
+        }
+        try {
+          image.src = this.toAbsoluteURL(oldSrc);
+        } catch (err) {
+          console.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
+        }
       });
       content.querySelectorAll('a').forEach(link => {
         const oldHref = link.getAttribute('href');
-        const href = new URL(oldHref, `${this.getEndpoint()}/`);
-        link.href = href;
+        if (!oldHref) {
+          return;
+        }
+        try {
+          link.href = this.toAbsoluteURL(oldHref);
+        } catch (err) {
+          console.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
+        }
       });
     }
   }
