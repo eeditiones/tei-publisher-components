@@ -12,10 +12,6 @@
             align-items: center;
         }
 
-        button {
-            border: 0;
-            background-color: inherit;
-        }
     </style>
     <!--scripts-->
     <script>
@@ -23,10 +19,6 @@
         // reference this Closure helper; define a no-op if absent.
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
-    </script>
-    <script type="module">
-        import '@polymer/paper-button/paper-button.js';
-        import '@polymer/iron-form/iron-form.js';
     </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -42,8 +34,7 @@
     <pb-demo-snippet>
         <template>
             <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="/exist/apps/tei-publisher">
-                <iron-form id="form">
-                    <form action="">
+                <form action="" id="form">
                         <p>pb-autocomplete used with a pb-repeat:</p>
                         <pb-repeat>
                             <template>
@@ -59,9 +50,8 @@
                         <pb-autocomplete name="lang" placeholder="Language" value="pl" icon="icons:flag"
                             suggestions='[{"text": "English", "value": "en"}, {"text": "Polish", "value": "pl"}, {"text": "German", "value": "de"}]'>
                         </pb-autocomplete>
-                        <button type="submit"><paper-button>Submit</paper-button></button>
+                        <button type="submit" class="pb-button pb-button--contained">Submit</button>
                     </form>
-                </iron-form>
                 <p>Parameters which would be sent: <code id="output"></code></p>
             </pb-page>
         </template>
@@ -72,12 +62,11 @@
         await ready(['pb-demo-snippet','pb-autocomplete'])
         const snippet = document.querySelector('pb-demo-snippet')
         stampIfNeeded(snippet)
-        const iron = document.getElementById('form')
-        const form = iron?.querySelector('form')
+        const form = document.getElementById('form')
         const output = document.getElementById('output')
         if (form && output) {
           const render = () => { output.textContent = JSON.stringify({ ...Object.fromEntries(new FormData(form)) }) }
-          iron.addEventListener('iron-form-submit', ev => { ev.preventDefault(); render() })
+          form.addEventListener('submit', ev => { ev.preventDefault(); render() })
           render()
         }
         firePageReady({ endpoint: '/exist/apps/tei-publisher', apiVersion: '1.0.0' })
