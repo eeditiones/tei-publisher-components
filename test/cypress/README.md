@@ -16,7 +16,7 @@ If Vite’s optimizer cache misbehaves (rare after our config changes), clear it
 
 Cypress CT spins up a Vite dev server. Some dependencies don’t prebundle cleanly under the optimizer. We exclude those in `vite.config.js`:
 
-- `@polymer/*` (iron-ajax, paper-*), `@cwmr/paper-autocomplete`
+- `@polymer/*` (iron-ajax, paper-*) components slated for removal
 - `gridjs`
 - `construct-style-sheets-polyfill`
 

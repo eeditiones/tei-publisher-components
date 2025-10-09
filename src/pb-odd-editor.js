@@ -11,7 +11,7 @@ import '@vaadin/vaadin-tabs/vaadin-tab';
 import '@polymer/iron-ajax/iron-ajax';
 import './pb-edit-xml.js';
 import './pb-icon-button.js';
-import '@cwmr/paper-autocomplete/paper-autocomplete';
+import './pb-autocomplete.js';
 import './pb-collapse';
 import { PbOddElementspecEditor } from './pb-odd-elementspec-editor.js';
 import './pb-message.js';
@@ -432,11 +432,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
           </div>
 
           <div id="jump-to">
-            <paper-autocomplete
+            <pb-autocomplete
               id="jumpTo"
-              label="${translate('odd.editor.jump-to')}"
-              always-float-label="always-float-label"
-            ></paper-autocomplete>
+              placeholder="${translate('odd.editor.jump-to')}"
+            ></pb-autocomplete>
           </div>
 
           <h3>${translate('odd.editor.specs')}</h3>
@@ -584,7 +583,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     // console.log('firstUpdated endpoint', this.getEndpoint());
     // console.log('firstUpdated rootpath', this.rootPath);
     this.jumpCtrl = this.shadowRoot.getElementById('jumpTo');
-    this.jumpCtrl.addEventListener('autocomplete-selected', this.jumpTo.bind(this));
+    this.jumpCtrl.addEventListener('pb-autocomplete-selected', this.jumpTo.bind(this));
 
     const oddSelector = this.querySelector('odd-selector');
 
@@ -697,7 +696,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
   _updateAutoComplete() {
     const jumpTo = this.shadowRoot.getElementById('jumpTo');
-    jumpTo.source = this.elementSpecs.map(this._specMapper);
+    jumpTo.suggestions = this.elementSpecs.map(this._specMapper);
   }
 
   _cssFileChanged(e) {
@@ -709,14 +708,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   /**
-   * handler for paper-item in navigation list in the drawer
+   * Handler for navigation buttons in the drawer
    *
    * @param e
    * @param index
    * @private
    */
   _navlistActiveChanged(e, index) {
-    // set the paper-item active that got the click
+    // mark the navigation button that received the click as active
     this.selectedNavIndex = index;
     this.requestUpdate();
   }
@@ -833,14 +832,18 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   jumpTo(e) {
-    const jumpCtrl = this.shadowRoot.getElementById('jumpTo');
-    const id = `#es_${jumpCtrl.text}`;
-    const target = this.shadowRoot.querySelector(id);
+    const ident = (e?.detail?.value || e?.detail?.text || this.jumpCtrl?.value || '').trim();
+    if (!ident) {
+      return;
+    }
+    const target = this.shadowRoot.querySelector(`#es_${ident}`);
     if (!target) {
       return;
     }
 
-    this.jumpCtrl.clear();
+    if (this.jumpCtrl) {
+      this.jumpCtrl.value = '';
+    }
     target.click();
   }
 
@@ -879,7 +882,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
   _specObserver(changeRecord) {
     const source = this.elementSpecs.map(this._specMapper);
-    this.jumpCtrl.source = source;
+    this.jumpCtrl.suggestions = source;
   }
 
   mapElementSpec(elementSpec) {

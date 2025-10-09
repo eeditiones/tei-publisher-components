@@ -86,8 +86,7 @@ export default defineConfig({
       '@polymer/paper-listbox',
       '@polymer/paper-dropdown-menu',
       '@polymer/paper-dialog',
-      '@polymer/paper-dialog-scrollable',
-      '@cwmr/paper-autocomplete'
+      '@polymer/paper-dialog-scrollable'
     ],
     alias: [
       // Normalize any accidental /node_modules path imports to bare package names
@@ -112,8 +111,7 @@ export default defineConfig({
       '@polymer/paper-listbox/paper-listbox.js',
       '@polymer/paper-dropdown-menu/paper-dropdown-menu.js',
       '@polymer/paper-dialog/paper-dialog.js',
-      '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js',
-      '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js'
+      '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js'
     ],
     exclude: [
       // keep heavy/legacy libs out of prebundle
