@@ -5,6 +5,8 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import './pb-icon.js';
 
+let autocompleteId = 0;
+
 const KEY_CODES = {
   ENTER: 'Enter',
   ESC: 'Escape',
@@ -35,11 +37,15 @@ export class PbAutocomplete extends pbMixin(LitElement) {
       name: { type: String },
       value: { type: String },
       placeholder: { type: String, attribute: 'placeholder' },
+      label: { type: String },
       source: { type: String },
       preload: { type: Boolean },
       suggestions: { type: Array },
       substring: { type: Boolean },
       icon: { type: String },
+      helperText: { type: String, attribute: 'helper-text' },
+      alwaysFloatLabel: { type: Boolean, attribute: 'always-float-label' },
+      disabled: { type: Boolean, reflect: true },
       requestParams: { type: Object, attribute: false },
     };
   }
@@ -47,10 +53,14 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   constructor() {
     super();
     this.placeholder = 'search.placeholder';
+    this.label = '';
     this.suggestions = [];
     this.substring = false;
     this.preload = false;
     this.icon = '';
+    this.helperText = '';
+    this.alwaysFloatLabel = false;
+    this.disabled = false;
     this.lastSelected = null;
     this.value = '';
     this.name = '';
@@ -66,10 +76,25 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     this._fetchTimeout = null;
     this._abortController = null;
     this.requestParams = {};
+    this._inputId = `pb-autocomplete-input-${++autocompleteId}`;
+  }
+
+  _resolveLabelText() {
+    if (this.label) {
+      return translate(this.label);
+    }
+    if (this.placeholder) {
+      return translate(this.placeholder);
+    }
+    return '';
+  }
+
+  _resolveHelperText() {
+    return this.helperText ? translate(this.helperText) : '';
   }
 
   get _input() {
-    return this.shadowRoot?.getElementById('search') ?? null;
+    return this.shadowRoot?.getElementById(this._inputId) ?? null;
   }
 
   connectedCallback() {
@@ -129,20 +154,32 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         this._hiddenInput.type = 'hidden';
         this._hiddenInput.name = this.name;
         this._hiddenInput.value = this.value || '';
+        this._hiddenInput.disabled = this.disabled;
         this.appendChild(this._hiddenInput);
       } else if (this._hiddenInput) {
         this._hiddenInput.name = this.name;
       }
     }
+    if (changed.has('disabled')) {
+      if (this.disabled) {
+        this._closeMenu();
+      }
+      if (this._hiddenInput) {
+        this._hiddenInput.disabled = this.disabled;
+      }
+    }
   }
 
   render() {
-    const label = translate(this.placeholder);
+    const labelText = this._resolveLabelText();
+    const helperText = this._resolveHelperText();
     const containerClasses = {
       'pb-input-container': true,
       'pb-input-container--focused': this._isFocused,
       'pb-input-container--filled': !!this._inputValue,
       'pb-input-container--has-prefix': !!this.icon,
+      'pb-input-container--always-float': this.alwaysFloatLabel,
+      'pb-input-container--disabled': this.disabled,
     };
     const activeId =
       this._menuOpen && this._highlightedIndex >= 0
@@ -150,6 +187,11 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         : undefined;
     const suggestions = this._filteredSuggestions;
     const showDropdown = this._menuOpen && (suggestions.length > 0 || this._loading);
+    const labelId = labelText ? `${this._inputId}-label` : undefined;
+    const helperId = helperText ? `${this._inputId}-helper` : undefined;
+    const ariaLabel = !labelId && labelText ? labelText : undefined;
+    const placeholderText =
+      labelId || !this.placeholder ? '' : translate(this.placeholder);
 
     return html`
       <div class="autocomplete">
@@ -159,29 +201,43 @@ export class PbAutocomplete extends pbMixin(LitElement) {
             ? html`<pb-icon class="pb-input-prefix" icon="${this.icon}" decorative></pb-icon>`
             : nothing}
           <input
-            id="search"
+            id="${this._inputId}"
             class="pb-input"
             type="search"
+            part="input"
             name="query"
             autocomplete="off"
             .value=${this._inputValue}
+            placeholder="${placeholderText}"
             role="combobox"
             aria-autocomplete="list"
             aria-expanded="${this._menuOpen ? 'true' : 'false'}"
             aria-controls="pb-autocomplete-list"
             aria-activedescendant=${ifDefined(activeId)}
+            aria-labelledby=${ifDefined(labelId)}
+            aria-describedby=${ifDefined(helperId)}
+            aria-label=${ifDefined(ariaLabel)}
+            ?disabled=${this.disabled}
             @input=${this._handleInput}
             @keydown=${this._handleKeydown}
             @focus=${this._handleFocus}
             @blur=${this._handleBlur}
           />
-          <label class="pb-input-label" for="search">${label}</label>
+          ${labelText
+            ? html`<label class="pb-input-label" id="${labelId}" for="${this._inputId}">
+                ${labelText}
+              </label>`
+            : nothing}
         </div>
+        ${helperText
+          ? html`<div class="pb-input-helper" id="${helperId}">${helperText}</div>`
+          : nothing}
         ${showDropdown
           ? html`
               <ul
                 id="pb-autocomplete-list"
                 class="suggestions"
+                part="suggestions"
                 role="listbox"
                 @mousedown=${this._handleSuggestionsPointerDown}
                 @mouseup=${this._handleSuggestionsPointerUp}
@@ -219,6 +275,10 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _handleInput(event) {
+    if (this.disabled) {
+      event.preventDefault();
+      return;
+    }
     const input = event.currentTarget;
     this._inputValue = input.value;
     this.value = input.value;
@@ -241,6 +301,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _handleFocus() {
+    if (this.disabled) {
+      return;
+    }
     this._isFocused = true;
     if (this._filteredSuggestions.length) {
       this._menuOpen = true;
@@ -260,16 +323,25 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _handleSuggestionsPointerDown(event) {
+    if (this.disabled) {
+      return;
+    }
     event.preventDefault();
     this._pointerSelecting = true;
   }
 
   _handleSuggestionsPointerUp() {
+    if (this.disabled) {
+      return;
+    }
     this._pointerSelecting = false;
     this._input?.focus();
   }
 
   _handleKeydown(event) {
+    if (this.disabled) {
+      return;
+    }
     const { key } = event;
     switch (key) {
       case KEY_CODES.ARROW_DOWN:
@@ -297,6 +369,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _handleEnter() {
+    if (this.disabled) {
+      return;
+    }
     if (this._menuOpen && this._highlightedIndex >= 0) {
       const selected = this._filteredSuggestions[this._highlightedIndex];
       if (selected) {
@@ -315,6 +390,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _openMenu() {
+    if (this.disabled) {
+      return;
+    }
     if (!this._menuOpen) {
       this._menuOpen = true;
       this.requestUpdate();
@@ -330,6 +408,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _moveHighlight(delta) {
+    if (this.disabled) {
+      return;
+    }
     const suggestions = this._filteredSuggestions;
     if (!suggestions.length) {
       this._highlightedIndex = -1;
@@ -355,6 +436,9 @@ export class PbAutocomplete extends pbMixin(LitElement) {
   }
 
   _selectSuggestion(suggestion) {
+    if (this.disabled) {
+      return;
+    }
     const { text, value } = normalizeSuggestion(suggestion);
     this.lastSelected = text;
     this.value = value;
@@ -535,18 +619,32 @@ export class PbAutocomplete extends pbMixin(LitElement) {
         position: relative;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        height: var(--pb-input-height, 56px);
-        padding: 0 0.75rem;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.24);
+        gap: var(--pb-input-gap, 0.5rem);
+        min-height: var(--pb-input-height, 56px);
+        padding: 0 var(--pb-input-padding, 0.75rem);
+        border-radius: var(--pb-input-radius, 8px);
+        border: 1px solid var(--pb-input-border-color, rgba(0, 0, 0, 0.24));
         background: var(--pb-input-background, #fff);
-        transition: border-color 120ms ease, box-shadow 120ms ease;
+        transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
       }
 
       .pb-input-container--focused {
-        border-color: #1976d2;
+        border-color: var(--pb-primary-color, #1976d2);
         box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
+
+      .pb-input-container--disabled {
+        background: var(--pb-input-disabled-background, rgba(0, 0, 0, 0.04));
+        border-color: var(--pb-input-disabled-border-color, rgba(0, 0, 0, 0.12));
+        color: rgba(0, 0, 0, 0.38);
+      }
+
+      .pb-input-container--disabled .pb-input {
+        cursor: not-allowed;
+      }
+
+      .pb-input-container--disabled .pb-input-label {
+        color: rgba(0, 0, 0, 0.38);
       }
 
       .pb-input-prefix {
@@ -566,32 +664,40 @@ export class PbAutocomplete extends pbMixin(LitElement) {
       }
 
       .pb-input::placeholder {
-        color: transparent;
+        color: var(--pb-input-placeholder-color, rgba(0, 0, 0, 0.4));
       }
 
       .pb-input-label {
         position: absolute;
         top: 50%;
-        left: 0.75rem;
+        left: var(--pb-input-label-left, 0.75rem);
         transform: translateY(-50%);
         font-size: 0.95rem;
-        color: rgba(0, 0, 0, 0.54);
+        color: var(--pb-input-label-color, rgba(0, 0, 0, 0.54));
         pointer-events: none;
         transition: transform 120ms ease, font-size 120ms ease, color 120ms ease, top 120ms ease;
         padding: 0 4px;
         background: var(--pb-input-background, #fff);
+        line-height: 1;
       }
 
       .pb-input-container--has-prefix .pb-input-label {
-        left: 2.5rem;
+        left: var(--pb-input-label-left-with-prefix, 2.5rem);
       }
 
       .pb-input-container--filled .pb-input-label,
-      .pb-input-container--focused .pb-input-label {
+      .pb-input-container--focused .pb-input-label,
+      .pb-input-container--always-float .pb-input-label {
         top: 0;
         transform: translateY(-50%) scale(0.88);
         font-size: 0.75rem;
-        color: #1976d2;
+        color: var(--pb-primary-color, #1976d2);
+      }
+
+      .pb-input-helper {
+        margin-top: 0.35rem;
+        font-size: 0.8rem;
+        color: rgba(0, 0, 0, 0.6);
       }
 
       .suggestions {
