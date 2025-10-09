@@ -44,7 +44,7 @@ export class PbDownload extends themableMixin(pbMixin(LitElement)) {
         type: String,
       },
       /**
-       * id of dialog component to show when downloading. A paper-dialog component with this id must
+       * id of dialog component to show when downloading. A `pb-dialog` component with this id must
        * exist.
        */
       dialog: {

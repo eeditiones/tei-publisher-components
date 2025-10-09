@@ -4,7 +4,6 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from './theming.js';
 import { translate } from './pb-i18n.js';
-import '@polymer/iron-form/iron-form.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
 
@@ -197,7 +196,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
           url: (prev, page, limit) => {
             const form = this.shadowRoot.getElementById('form');
             if (form) {
-              Object.assign(this._params, form.serializeForm());
+              Object.assign(this._params, this._serializeSearchForm(form));
             }
             this._params = this._paramsFromSubforms(this._params);
             this._params.limit = limit;
@@ -239,11 +238,39 @@ export class PbTableGrid extends pbMixin(LitElement) {
     }
   }
 
+  _handleFormSubmit(event) {
+    event.preventDefault();
+    this._submit();
+  }
+
   _handleSearchKey(event) {
     if (event.key === 'Enter') {
       event.preventDefault();
       this._submit();
     }
+  }
+
+  _serializeSearchForm(form) {
+    const result = {};
+    const elements = Array.from(form.elements || []).filter(
+      el => el.name && !el.disabled && !el.closest('[disabled]'),
+    );
+    elements.forEach(element => {
+      if (!(element.name in result)) {
+        result[element.name] = null;
+      }
+    });
+    const data = new FormData(form);
+    data.forEach((value, key) => {
+      if (result[key] == null) {
+        result[key] = value;
+      } else if (Array.isArray(result[key])) {
+        result[key].push(value);
+      } else {
+        result[key] = [result[key], value];
+      }
+    });
+    return result;
   }
 
   _paramsFromSubforms(params) {
@@ -261,43 +288,41 @@ export class PbTableGrid extends pbMixin(LitElement) {
     return html`
       ${this.search
         ? html`
-            <iron-form id="form">
-              <form action="">
-                <label class="pb-table-grid__field" for="search">
-                  <span class="pb-table-grid__label">${translate('search.search')}</span>
-                  <div class="pb-table-grid__search">
-                    <input
-                      id="search"
-                      class="pb-table-grid__input"
-                      type="search"
-                      name="search"
-                      .value=${this._params.search || ''}
-                      placeholder="${translate('search.search')}"
-                      @keydown=${this._handleSearchKey}
-                    />
-                    <button
-                      class="pb-button pb-button--icon"
-                      type="button"
-                      aria-label="${translate('search.search')}"
-                      title="${translate('search.search')}"
-                      @click=${this._submit}
+            <form id="form" action="" @submit=${this._handleFormSubmit}>
+              <label class="pb-table-grid__field" for="search">
+                <span class="pb-table-grid__label">${translate('search.search')}</span>
+                <div class="pb-table-grid__search">
+                  <input
+                    id="search"
+                    class="pb-table-grid__input"
+                    type="search"
+                    name="search"
+                    .value=${this._params.search || ''}
+                    placeholder="${translate('search.search')}"
+                    @keydown=${this._handleSearchKey}
+                  />
+                  <button
+                    class="pb-button pb-button--icon"
+                    type="button"
+                    aria-label="${translate('search.search')}"
+                    title="${translate('search.search')}"
+                    @click=${this._submit}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
                     >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                        focusable="false"
-                      >
-                        <path
-                          d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                </label>
-              </form>
-            </iron-form>
+                      <path
+                        d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </label>
+            </form>
           `
         : null}
       <div id="table"></div>

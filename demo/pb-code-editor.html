@@ -14,9 +14,6 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-item/paper-item.js';
-    </script>
         <script type="module" src="../src/pb-code-editor.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>
@@ -31,8 +28,8 @@
                     </style>
                     <pb-page endpoint="/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
                         <pb-lang label="language" selected="en">
-                            <paper-item value="de">Deutsch</paper-item>
-                            <paper-item value="en">English</paper-item>
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
                         </pb-lang>
                         <!-- using old API endpoint for linter; old API is due for deprecation with Publisher 8
                             <pb-code-editor label="XQuery code, ambiance theme" code="for $i in (1, 2) return $i * 6" mode="xquery"

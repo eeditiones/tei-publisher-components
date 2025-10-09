@@ -14,10 +14,7 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-button/paper-button.js';
-        import '../src/pb-icon.js';
-    </script>
+    <script type="module" src="../src/pb-icon.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -69,6 +66,23 @@
                 footer pb-navigation[direction=forward] {
                     float: right;
                 }
+
+                .nav-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    border: none;
+                    background: #35424b;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+                .nav-button pb-icon {
+                    --pb-icon-size: 20px;
+                }
             </style>
             <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
@@ -94,15 +108,15 @@
                     <footer>
                         <!-- Navigate to next page -->
                         <pb-navigation direction="forward" keyboard="right">
-                            <paper-button>
+                            <span class="nav-button">
                                 <pb-icon icon="icons:chevron-right"></pb-icon>
-                            </paper-button>
+                            </span>
                         </pb-navigation>
                         <!-- Navigate to previous page -->
                         <pb-navigation direction="backward" keyboard="left">
-                            <paper-button>
+                            <span class="nav-button">
                                 <pb-icon icon="icons:chevron-left"></pb-icon>
-                            </paper-button>
+                            </span>
                         </pb-navigation>
                     </footer>
                 </main>

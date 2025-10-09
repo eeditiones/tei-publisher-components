@@ -1,15 +1,14 @@
 // Cypress CT: pb-search
 import '../../../src/pb-page.js'
 import '../../../src/pb-search.js'
-import '@polymer/paper-button'
 
 describe('pb-search', () => {
   it('emits pb-load with query params on submit', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-search action="api/search">
-          <paper-button slot="searchButton">Search</paper-button>
-          <paper-button slot="resetButton">Reset</paper-button>
+          <button class="pb-button pb-button--contained" slot="searchButton" type="button">Search</button>
+          <button class="pb-button pb-button--text" slot="resetButton" type="button">Reset</button>
         </pb-search>
       </pb-page>
     `)
@@ -37,8 +36,8 @@ describe('pb-search', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-search action="api/search">
-          <paper-button slot="searchButton">Search</paper-button>
-          <paper-button slot="resetButton">Reset</paper-button>
+          <button class="pb-button pb-button--contained" slot="searchButton" type="button">Search</button>
+          <button class="pb-button pb-button--text" slot="resetButton" type="button">Reset</button>
         </pb-search>
       </pb-page>
     `)

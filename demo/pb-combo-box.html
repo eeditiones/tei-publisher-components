@@ -12,11 +12,6 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-button/paper-button.js';
-        import '@polymer/paper-item/paper-item.js';
-        import '@polymer/iron-form/iron-form.js';
-    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-lang.js"></script>
@@ -30,27 +25,27 @@
             <pb-page locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" endpoint="."
                 require-language="">
                 <pb-lang label="language" selected="en">
-                    <paper-item value="bg">Български</paper-item>
-                    <paper-item value="cs">český</paper-item>
-                    <paper-item value="zh_CN">简体中文</paper-item>
-                    <paper-item value="zh_TW">繁體中文</paper-item>
-                    <paper-item value="de">Deutsch</paper-item>
-                    <paper-item value="en">English</paper-item>
-                    <paper-item value="es">Español</paper-item>
-                    <paper-item value="el">ελληνικά</paper-item>
-                    <paper-item value="fr">Français</paper-item>
-                    <paper-item value="it">Italiano</paper-item>
-                    <paper-item value="ka">ქართული</paper-item>
-                    <paper-item value="nl">Nederlands</paper-item>
-                    <paper-item value="no">Norsk</paper-item>
-                    <paper-item value="pl">Polski</paper-item>
-                    <paper-item value="pt">Português</paper-item>
-                    <paper-item value="ro">Română</paper-item>
-                    <paper-item value="ru">русский</paper-item>
-                    <paper-item value="sl">Slovenščina</paper-item>
-                    <paper-item value="sv">Svenska</paper-item>
-                    <paper-item value="tr">Türkçe</paper-item>
-                    <paper-item value="uk">Українська</paper-item>
+                    <option value="bg">Български</option>
+                    <option value="cs">český</option>
+                    <option value="zh_CN">简体中文</option>
+                    <option value="zh_TW">繁體中文</option>
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="el">ελληνικά</option>
+                    <option value="fr">Français</option>
+                    <option value="it">Italiano</option>
+                    <option value="ka">ქართული</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="no">Norsk</option>
+                    <option value="pl">Polski</option>
+                    <option value="pt">Português</option>
+                    <option value="ro">Română</option>
+                    <option value="ru">русский</option>
+                    <option value="sl">Slovenščina</option>
+                    <option value="sv">Svenska</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="uk">Українська</option>
                 </pb-lang>
 
                 <h2>Using pb-combo-box with a standard HTML form</h2>
@@ -136,9 +131,20 @@
                             </select>
                         </pb-combo-box>
                     </fieldset>
-                    <button type="submit"><paper-button>Submit</paper-button></button>
+                    <button type="submit" class="pb-button pb-button--contained">Submit</button>
                 </form>
                 <p>Parameters which would be sent: <code id="output"></code></p>
+                <script type="module">
+                  const form = document.getElementById('form')
+                  const output = document.getElementById('output')
+                  if (form && output) {
+                    form.addEventListener('submit', (ev) => {
+                      ev.preventDefault()
+                      const params = new URLSearchParams(new FormData(form)).toString()
+                      output.textContent = params
+                    })
+                  }
+                </script>
             </pb-page>
         </template>
     </pb-demo-snippet>

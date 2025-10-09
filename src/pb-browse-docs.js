@@ -9,9 +9,7 @@ import './pb-icon.js';
 import './pb-dialog.js';
 import './pb-autocomplete.js';
 
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -314,7 +312,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
       <slot></slot>
       <slot name="footer"></slot>
 
-      <iron-ajax
+      <pb-fetch
         id="loadContent"
         verbose
         handle-as="text"
@@ -322,21 +320,17 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         with-credentials
         @response="${this._handleContent}"
         @error="${this._handleError}"
-      ></iron-ajax>
-      <paper-dialog id="deleteDialog">
-        <h2>${translate('browse.delete')}</h2>
-        <paper-dialog-scrollable>
-          <p>
-            ${translate('browse.confirmDeletion', {
-              count: this._selected ? this._selected.length : 0,
-            })}
-          </p>
-        </paper-dialog-scrollable>
-        <div class="buttons">
+      ></pb-fetch>
+      <pb-dialog id="deleteDialog" title="${translate('browse.delete')}">
+        <p>
+          ${translate('browse.confirmDeletion', {
+            count: this._selected ? this._selected.length : 0,
+          })}
+        </p>
+        <div slot="footer" class="buttons">
           <button
             class="pb-button pb-button--text"
             type="button"
-            dialog-confirm="dialog-confirm"
             autofocus
             @click="${this._confirmDelete}"
           >
@@ -345,12 +339,12 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
           <button
             class="pb-button pb-button--text"
             type="button"
-            dialog-cancel="dialog-cancel"
+            rel="prev"
           >
             ${translate('dialogs.no')}
           </button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
       <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
         <p id="errorMessage"></p>
         <div slot="footer">
@@ -505,12 +499,12 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const selected = [];
     if (this.container) {
       document.querySelectorAll(this.container).forEach(container =>
-        container.querySelectorAll('.document-select paper-checkbox[checked]').forEach(checkbox => {
+        container.querySelectorAll('.document-select input[type="checkbox"]:checked').forEach(checkbox => {
           selected.push(checkbox.value);
         }),
       );
     } else {
-      this.querySelectorAll('.document-select paper-checkbox[checked]').forEach(checkbox => {
+      this.querySelectorAll('.document-select input[type="checkbox"]:checked').forEach(checkbox => {
         selected.push(checkbox.value);
       });
     }
@@ -594,7 +588,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const selected = this.getSelected();
     if (selected.length > 0) {
       this._selected = selected;
-      deleteDialog.open();
+      deleteDialog.openDialog();
     }
   }
 

@@ -13,10 +13,8 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-fab/paper-fab.js';
-        import '../src/pb-icon-button.js';
-    </script>
+    <script type="module" src="../src/pb-icon.js"></script>
+    <script type="module" src="../src/pb-icon-button.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -35,10 +33,6 @@
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-                body {
-                    --paper-fab-background: #35424b;
-                }
-
                 demo-snippet {
                     position: relative;
                 }
@@ -86,8 +80,6 @@
                 pb-navigation {
                     position: fixed;
                     bottom: 45%;
-                    --paper-fab-background: #35424b;
-                    color: white;
                 }
 
                 pb-navigation[direction=backward] {
@@ -106,6 +98,23 @@
                 pb-link a {
                     text-decoration: none;
                     color: #222222;
+                }
+
+                .nav-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    border: none;
+                    background: #35424b;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+                .nav-button pb-icon {
+                    --pb-icon-size: 24px;
                 }
             </style>
             <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
@@ -126,13 +135,17 @@
                 <main>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left" emit="transcription" subscribe="transcription">
-                        <paper-fab icon="icons:chevron-left"></paper-fab>
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-left"></pb-icon>
+                        </span>
                     </pb-navigation>
                     <pb-view id="view1" src="document1" view="page" append-footnotes emit="transcription"
                         subscribe="transcription"></pb-view>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">
-                        <paper-fab icon="icons:chevron-right"></paper-fab>
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-right"></pb-icon>
+                        </span>
                     </pb-navigation>
                 </main>
             </pb-page>

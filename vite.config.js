@@ -80,11 +80,8 @@ export default defineConfig({
     dedupe: [
       '@polymer/polymer',
       '@polymer/iron-ajax',
-      '@polymer/paper-input',
       '@polymer/paper-button',
       '@polymer/paper-item',
-      '@polymer/paper-listbox',
-      '@polymer/paper-dropdown-menu',
       '@polymer/paper-dialog',
       '@polymer/paper-dialog-scrollable'
     ],
@@ -105,11 +102,8 @@ export default defineConfig({
     include: [
       '@polymer/polymer',
       '@polymer/iron-ajax/iron-ajax.js',
-      '@polymer/paper-input/paper-input.js',
       '@polymer/paper-button/paper-button.js',
       '@polymer/paper-item/paper-item.js',
-      '@polymer/paper-listbox/paper-listbox.js',
-      '@polymer/paper-dropdown-menu/paper-dropdown-menu.js',
       '@polymer/paper-dialog/paper-dialog.js',
       '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js'
     ],
