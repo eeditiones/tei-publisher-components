@@ -45,7 +45,6 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@babel/runtime": "7.28.4",
-    "@cwmr/paper-autocomplete": "^4.0.0",
     "@jinntec/jinn-codemirror": "^1.13.5",
     "@lrnwebcomponents/es-global-bridge": "^7.0.4",
     "@polymer/app-layout": "^3.1.0",
@@ -63,9 +62,7 @@
     "@polymer/paper-input": "^3.2.1",
     "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-listbox": "^3.0.1",
-    "@polymer/paper-menu-button": "^3.0.1",
     "@polymer/paper-progress": "^3.0.1",
-    "@polymer/paper-tabs": "^3.1.0",
     "@polymer/paper-tooltip": "^3.0.1",
     "@vaadin/vaadin-tabs": "^3.2.0",
     "@vaadin/vaadin-upload": "^4.4.0",
