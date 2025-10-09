@@ -13,9 +13,6 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-fab/paper-fab.js';
-    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -30,10 +27,6 @@
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-            body {
-                --paper-fab-background: #35424b;
-            }
-
             main {
                 display: flex;
             }

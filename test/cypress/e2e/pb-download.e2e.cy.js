@@ -13,7 +13,7 @@ describe('Demo: pb-download', () => {
   })
 
   it('sets target _blank when source flag is present', () => {
-    cy.contains('paper-button', 'FO source').parents('pb-download').find('#button')
+    cy.contains('span', 'FO source').parents('pb-download').find('#button')
       .should('have.attr', 'target', '_blank')
   })
 })

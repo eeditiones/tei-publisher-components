@@ -14,10 +14,6 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-card/paper-card.js';
-        import '@polymer/paper-item/paper-item.js';
-    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-i18n.js"></script>
@@ -30,6 +26,15 @@
         <template>
             <style>
                 pb-lang { --pb-lang-input-color: #303030; }
+
+                .demo-card {
+                    margin-top: 1rem;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    border: 1px solid rgba(0, 0, 0, 0.12);
+                    background: #fff;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                }
             </style>
             <pb-page locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
                 <pb-lang label="language" selected="en">
@@ -64,9 +69,10 @@
                     <li><pb-i18n key="demo.message"></pb-i18n></li>
                     <li><pb-i18n key="mycomponent.info"></pb-i18n></li>
                 </ul>
-                <paper-card data-i18n="[heading]menu.download.title" heading="">
-                    <div class="card-content">Attributes can be translated as well (card heading above)</div>
-                </paper-card>
+                <div class="demo-card">
+                    <h3 data-i18n="menu.download.title"></h3>
+                    <div>Attributes can be translated as well (card heading above)</div>
+                </div>
                 
                 <h2>without a label</h2>
                 <pb-lang label="language" selected="en" nolabel="nolabel">

@@ -2,9 +2,7 @@ import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import './pb-icon.js';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import '@polymer/iron-form';
+import './pb-dialog.js';
 
 /**
  * Editor component for the App Generator. Allows to edit all settings for an application.
@@ -56,13 +54,22 @@ export class PbEditApp extends pbMixin(LitElement) {
   firstUpdated() {
     const form = this.shadowRoot.getElementById('form');
     waitOnce('pb-page-ready', detail => {
-      let url;
-      if (this.minApiVersion('1.0.0')) {
-        url = `${detail.endpoint}/api/templates`;
-      } else {
-        url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
+      const endpoint = detail.endpoint;
+      const templatesUrl = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/templates`
+        : `${endpoint}/modules/lib/components-list-templates.xql`;
+      const oddsUrl = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/odd`
+        : `${endpoint}/modules/lib/components-list-odds.xql`;
+      const action = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/apps/generate`
+        : `${endpoint}/modules/components-generate.xql`;
+
+      if (form) {
+        form.action = action;
       }
-      fetch(url, {
+
+      fetch(templatesUrl, {
         method: 'GET',
         mode: 'cors',
         credentials: 'same-origin',
@@ -75,14 +82,10 @@ export class PbEditApp extends pbMixin(LitElement) {
             this._templateValue = list.length ? list[0].name : '';
           }
           this.requestUpdate();
-        });
+        })
+        .catch(error => console.error('<pb-edit-app> Failed to load templates', error));
 
-      if (this.minApiVersion('1.0.0')) {
-        url = `${detail.endpoint}/api/odd`;
-      } else {
-        url = `${detail.endpoint}/modules/lib/components-list-odds.xql`;
-      }
-      fetch(url, {
+      fetch(oddsUrl, {
         method: 'GET',
         mode: 'cors',
         credentials: 'same-origin',
@@ -91,46 +94,25 @@ export class PbEditApp extends pbMixin(LitElement) {
         .then(json => {
           this.odds = Array.isArray(json) ? json : [];
           this.requestUpdate();
-        });
+        })
+        .catch(error => console.error('<pb-edit-app> Failed to load odds list', error));
+    });
 
-      const htmlForm = this.shadowRoot.querySelector('form');
-      if (this.minApiVersion('1.0.0')) {
-        htmlForm.action = `${detail.endpoint}/api/apps/generate`;
-      } else {
-        htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
-      }
-    });
-    form.addEventListener('iron-form-response', event => {
-      console.log(event);
-      event.detail.completes.then(r => {
-        this.emitTo('pb-end-update');
-        const result = r.parseResponse();
-        console.log('<pb-edit-app> Received response: %o', result);
-        if (result.target) {
-          const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, '$1');
-          const abbrev = this.shadowRoot.querySelector('input[name=abbrev]');
-          this.url = `${baseURL}/${abbrev ? abbrev.value : ''}`;
-          this.error = null;
-        } else {
-          this.error = result.description;
-        }
-        this.shadowRoot.getElementById('dialog').open();
-      });
-    });
-    form.addEventListener('iron-form-error', event => {
-      this.emitTo('pb-end-update');
-
-      console.log('<pb-edit-app> Received response: %o', event.detail.request.response);
-      this.error = event.detail.request.response.description;
-      this.shadowRoot.getElementById('dialog').open();
-    });
-    form.addEventListener('iron-form-invalid', () => this.emitTo('pb-end-update'));
+    if (form) {
+      form.addEventListener('submit', this._handleSubmit.bind(this));
+    }
   }
 
   _doSubmit() {
-    this.emitTo('pb-start-update');
     const form = this.shadowRoot.getElementById('form');
-    form.submit();
+    if (!form) {
+      return;
+    }
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
   }
 
   _renderTextField({ id, name, type = 'text', required = false, pattern, placeholder = '', label }) {
@@ -162,10 +144,99 @@ export class PbEditApp extends pbMixin(LitElement) {
     this._indexValue = event.target.value;
   }
 
+  async _handleSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.reportValidity && !form.reportValidity()) {
+      return;
+    }
+
+    this.emitTo('pb-start-update');
+
+    const payload = this._collectFormData(form);
+    const action = form.action || '';
+
+    try {
+      const response = await fetch(action, {
+        method: form.method || 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+      const data = isJson ? await response.json() : await response.text();
+
+      if (!response.ok) {
+        const error = data && typeof data === 'object' ? data : { description: data };
+        throw Object.assign(new Error(error.description || response.statusText), { result: error });
+      }
+
+      this._handleSubmitSuccess(data, form);
+    } catch (error) {
+      this._handleSubmitError(error);
+    }
+  }
+
+  _collectFormData(form) {
+    const formData = new FormData(form);
+    const payload = {};
+    Array.from(form.elements || [])
+      .filter(el => el.name && !el.disabled && !el.closest('[disabled]'))
+      .forEach(element => {
+        if (!(element.name in payload)) {
+          payload[element.name] = null;
+        }
+      });
+    formData.forEach((value, key) => {
+      if (Object.prototype.hasOwnProperty.call(payload, key) && payload[key] != null) {
+        if (Array.isArray(payload[key])) {
+          payload[key].push(value);
+        } else {
+          payload[key] = [payload[key], value];
+        }
+      } else {
+        payload[key] = value;
+      }
+    });
+    return payload;
+  }
+
+  _handleSubmitSuccess(result, form) {
+    this.emitTo('pb-end-update');
+
+    if (result && result.target) {
+      const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, '$1');
+      const abbrev = form.querySelector('input[name=abbrev]');
+      this.url = `${baseURL}/${abbrev ? abbrev.value : ''}`;
+      this.error = null;
+    } else {
+      this.error = result && result.description ? result.description : 'Request failed';
+      this.url = null;
+    }
+
+    this._openDialog();
+  }
+
+  _handleSubmitError(error) {
+    this.emitTo('pb-end-update');
+    const description = error?.result?.description || error?.message || 'Request failed';
+    this.error = description;
+    this.url = null;
+    this._openDialog();
+  }
+
+  _openDialog() {
+    const dialog = this.shadowRoot.getElementById('dialog');
+    dialog?.openDialog();
+  }
+
   render() {
     return html`
-      <iron-form id="form">
-        <form method="POST" accept="application/json" enctype="application/json">
+      <form id="form" method="POST" accept="application/json" enctype="application/json">
           <fieldset class="pb-fieldset">
             <legend>${translate('document.selectODD')}</legend>
             ${this.odds.map(
@@ -297,9 +368,7 @@ export class PbEditApp extends pbMixin(LitElement) {
             ${translate('appgen.submit')}
           </button>
         </form>
-      </iron-form>
-      <paper-dialog id="dialog">
-        <h2>${translate('appgen.dialog.title')}</h2>
+      <pb-dialog id="dialog" title="${translate('appgen.dialog.title')}">
         <div id="dialogContent">
           ${this.error
             ? html`<div id="error">${this.error}</div>`
@@ -313,17 +382,17 @@ export class PbEditApp extends pbMixin(LitElement) {
                 </a>
                 <p>${translate('appgen.success')}</p>`}
         </div>
-        <div class="buttons">
+        <div slot="footer" class="buttons">
           <button
             class="pb-button pb-button--text"
             type="button"
-            dialog-dismiss
+            rel="prev"
             autofocus
           >
             ${translate('dialogs.close')}
           </button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
     `;
   }
 
