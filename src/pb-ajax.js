@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 import { pbMixin } from './pb-mixin.js';
 import { get as i18n } from './pb-i18n.js';
 import './pb-message.js';
@@ -84,7 +84,7 @@ export class PbAjax extends pbMixin(LitElement) {
   render() {
     return html`
       <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
-      <iron-ajax
+      <pb-fetch
         id="loadContent"
         verbose
         handle-as="text"
@@ -92,7 +92,7 @@ export class PbAjax extends pbMixin(LitElement) {
         with-credentials
         @error="${this._handleError}"
         @response="${this._handleResponse}"
-      ></iron-ajax>
+      ></pb-fetch>
       <pb-message id="confirmDialog"></pb-message>
       <slot name="title" style="display: none"></slot>
     `;

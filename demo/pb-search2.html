@@ -13,9 +13,6 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-fab/paper-fab.js';
-    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
@@ -63,8 +60,8 @@
                 <main>
                     <pb-search id="search-form">
                         <pb-select label="search in" name="tei-target" value="tei-text">
-                            <paper-item value="tei-text">In text</paper-item>
-                            <paper-item value="tei-head">In headings</paper-item>
+                            <option value="tei-text">In text</option>
+                            <option value="tei-head">In headings</option>
                         </pb-select>
                     </pb-search>
                     <pb-paginate per-page="10" range="5"></pb-paginate>

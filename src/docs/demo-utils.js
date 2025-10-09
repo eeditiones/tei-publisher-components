@@ -71,38 +71,13 @@ export function autoWireForms (root) {
   const forms = root.querySelectorAll('form')
   forms.forEach(form => {
     if (form.dataset.demoWired) return
-    const iron = form.closest('iron-form')
     const output = findOutput(root, form)
-    if (!output && !iron) {
+    if (!output) {
       form.dataset.demoWired = 'skip'
       return
     }
     const render = () => {
-      if (iron && typeof iron.serializeForm === 'function') {
-        const data = iron.serializeForm()
-        if (!output) return
-        if (data && typeof data === 'object') {
-          const params = new URLSearchParams()
-          Object.entries(data).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              value.forEach(v => params.append(key, v))
-            } else if (value != null) {
-              params.append(key, value)
-            }
-          })
-          output.textContent = params.toString()
-        } else {
-          output.textContent = JSON.stringify(data)
-        }
-      } else if (output) {
-        output.textContent = new URLSearchParams(new FormData(form)).toString()
-      }
-    }
-    if (iron) {
-      iron.addEventListener('iron-form-submit', ev => {
-        ev.preventDefault()
-        render()
-      })
+      output.textContent = new URLSearchParams(new FormData(form)).toString()
     }
     form.addEventListener('submit', ev => {
       ev.preventDefault()

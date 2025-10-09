@@ -63,5 +63,3 @@ import './pb-combo-box.js';
 import './pb-print-preview.js';
 import './pb-dialog.js';
 import './pb-icon-button.js';
-
-import '@polymer/paper-input/paper-textarea';

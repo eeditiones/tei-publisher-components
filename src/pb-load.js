@@ -3,7 +3,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
 
@@ -233,7 +233,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   render() {
     return html`
       <slot></slot>
-      <iron-ajax
+      <pb-fetch
         id="loadContent"
         verbose
         handle-as="text"
@@ -241,7 +241,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         ?with-credentials="${!this.noCredentials}"
         @response="${this._handleContent}"
         @error="${this._handleError}"
-      ></iron-ajax>
+      ></pb-fetch>
       <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
         <p id="errorMessage"></p>
         <div slot="footer">

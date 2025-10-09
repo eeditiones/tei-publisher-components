@@ -14,13 +14,7 @@
         // See: https://github.com/Polymer/polymer/issues/4845
         window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
     </script>
-    <script type="module">
-        import '@polymer/paper-input/paper-input.js';
-        import '../src/pb-icon-button.js';
-        import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-        import '@polymer/paper-listbox/paper-listbox.js';
-        import '@polymer/paper-item/paper-item';
-    </script>
+    <script type="module" src="../src/pb-icon-button.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-custom-form.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -43,10 +37,14 @@
                 }
             </style>
             <pb-page endpoint="./exist/apps/escher">
-                <pb-custom-form auto-submit="paper-input,pb-icon-button,input,select,paper-dropdown-menu">
-                    <paper-input name="search" label="Search">
-                        <pb-icon-button icon="search" slot="suffix"></pb-icon-button>
-                    </paper-input>
+                <pb-custom-form auto-submit="input, select, button, pb-icon-button">
+                    <label>
+                        Search
+                        <span style="display:inline-flex; align-items:center; gap:0.5rem;">
+                            <input type="search" name="search" placeholder="Search" />
+                            <pb-icon-button icon="search"></pb-icon-button>
+                        </span>
+                    </label>
                     <fieldset>
                         <label>
                             <input type="radio" name="view" value="correspondents"> Korrespondenten
@@ -60,12 +58,13 @@
                             <option value="one">One</option>
                             <option value="two">Two</option>
                         </select>
-                        <paper-dropdown-menu id="sort" label="Sort" name="sort">
-                            <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="value">
-                                <paper-item value="author">Author</paper-item>
-                                <paper-item value="title">Title</paper-item>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
+                        <label>
+                            Sort
+                            <select id="sort" name="sort">
+                                <option value="author">Author</option>
+                                <option value="title">Title</option>
+                            </select>
+                        </label>
                     </fieldset>
                 </pb-custom-form>
                 <pre id="output"></pre>
