@@ -54,4 +54,40 @@ describe('pb-table-grid', () => {
     cy.get('@fetch')
     cy.get('pb-table-grid').find('#table').should('contain.text', 'Hegel')
   })
+
+  it('works with GridJS v6.2.0', () => {
+    const rows = [
+      { name: 'Test', birth: 2000, death: 2020 },
+    ]
+
+    cy.stubFetchJson(/demo\/grid\.json/, (href, win) => {
+      const body = JSON.stringify({ count: rows.length, results: rows })
+      return new win.Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } })
+    })
+
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-table-grid id="grid" source="demo/grid.json" css-path="/css/gridjs">
+          <pb-table-column label="Name" property="name"></pb-table-column>
+          <pb-table-column label="Born" property="birth"></pb-table-column>
+        </pb-table-grid>
+      </pb-page>
+    `)
+
+    cy.waitForEvent('pb-page-ready')
+    
+    cy.get('pb-table-grid').then($el => {
+      const component = $el[0]
+      
+      // Test that GridJS v6.2.0 API works
+      expect(component.grid).to.exist
+      expect(component.grid.config).to.exist
+      
+      // Test that the grid renders correctly
+      expect(component._initialized).to.be.true
+    })
+    
+    // Verify the table renders
+    cy.get('pb-table-grid').find('#table').should('exist')
+  })
 })
