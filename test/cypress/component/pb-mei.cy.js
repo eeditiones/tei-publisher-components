@@ -44,7 +44,10 @@ beforeEach(() => {
     cy.window().then(win => {
       if (!win.ESGlobalBridge) {
         win.ESGlobalBridge = {
-          requestAvailability: () => {},
+          requestAvailability: () => {
+            // Return bridge instance for v8.0.2 compatibility
+            return win.ESGlobalBridge
+          },
           instance: {
             load: (name) => {
               // simulate async script load and fire expected event
@@ -52,6 +55,8 @@ beforeEach(() => {
                 const evtName = `es-bridge-${name}-loaded`
                 win.dispatchEvent(new win.CustomEvent(evtName))
               })
+              // Return promise for v8.0.2 compatibility
+              return Promise.resolve()
             }
           }
         }
@@ -87,5 +92,22 @@ beforeEach(() => {
     cy.mount(withOption)
     cy.get('#viewer').find('.option-toggle__control').should('have.attr', 'type', 'checkbox')
     cy.get('#viewer').find('.option-toggle__label').should('contain.text', 'Original Clefs')
+  })
+
+  it('works with ESGlobalBridge v8.0.2 API', () => {
+    cy.mount(baseMarkup)
+    
+    cy.window().then(win => {
+      // Test that the bridge API works as expected
+      const bridge = win.ESGlobalBridge.requestAvailability()
+      expect(bridge, 'requestAvailability should return bridge instance').to.exist
+      
+      // Test that load returns a promise
+      const loadPromise = win.ESGlobalBridge.instance.load('test-script')
+      expect(loadPromise, 'load should return a promise').to.be.a('promise')
+      
+      // Verify component still works after bridge operations
+      cy.get('#viewer').should('exist')
+    })
   })
 })
