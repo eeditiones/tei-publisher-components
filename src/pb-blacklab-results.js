@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import * as anime from 'animejs';
+import { animate } from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import './pb-paginate.js';
 
@@ -254,7 +254,7 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
   }
 
   _animate() {
-    anime.default(this.shadowRoot.querySelector('table'), {
+    animate(this.shadowRoot.querySelector('table'), {
       opacity: [0, 1],
       duration: 200,
       delay: 200,

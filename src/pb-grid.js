@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import * as anime from 'animejs';
+import { animate } from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 import './pb-panel.js';
@@ -136,7 +136,7 @@ export class PbGrid extends pbMixin(LitElement) {
       
       // Animate each element with a staggered delay
       animated.forEach((element, index) => {
-        anime.default(element, {
+        animate(element, {
           opacity: [0, 0.6],
           translateX: [2000, 0],
           duration: 400,
@@ -144,7 +144,7 @@ export class PbGrid extends pbMixin(LitElement) {
           ease: 'linear',
         }).finished.then(() => {
           // Second phase: fade to full opacity
-          anime.default(element, {
+          animate(element, {
             opacity: [0.6, 1],
             duration: 200,
             delay: index * 50,
