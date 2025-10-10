@@ -3,6 +3,11 @@
 const fallbackOddResponse = require('../fixtures/odd-editor/sample.json')
 
 beforeEach(() => {
+  // Skip mocking if running against real backend
+  if (Cypress.env('realBackend')) {
+    return
+  }
+
   Cypress.env('stubOddResponse', fallbackOddResponse)
 
   cy.intercept({
