@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import anime from 'animejs';
+import * as anime from 'animejs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
@@ -550,20 +550,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // animate new element if 'animation' property is 'true'
     if (this.animation) {
       if (this.lastDirection === 'forward') {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        anime.default(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       } else {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        anime.default(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [-1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       }
     }

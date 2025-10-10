@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import * as anime from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 import './pb-panel.js';
@@ -130,33 +131,27 @@ export class PbGrid extends pbMixin(LitElement) {
    */
   _animate() {
     if (this.animation) {
-      if (typeof anime && 'anime' in window) {
-        // console.log('animated elements', document.querySelectorAll('pb-panel'));
-        const animated = document.querySelectorAll(this.animated);
-        const anim = anime.timeline({
-          easing: 'linear',
-          duration: 400,
-        });
-        anim.add({
-          targets: animated,
-          opacity: {
-            value: [0, 0.6],
-            duration: 200,
-            delay: 100,
-            easing: 'linear',
-          },
+      // console.log('animated elements', document.querySelectorAll('pb-panel'));
+      const animated = document.querySelectorAll(this.animated);
+      
+      // Animate each element with a staggered delay
+      animated.forEach((element, index) => {
+        anime.default(element, {
+          opacity: [0, 0.6],
           translateX: [2000, 0],
           duration: 400,
-          delay: anime.stagger(100, { start: 100 }),
+          delay: 100 + (index * 100),
+          ease: 'linear',
+        }).finished.then(() => {
+          // Second phase: fade to full opacity
+          anime.default(element, {
+            opacity: [0.6, 1],
+            duration: 200,
+            delay: index * 50,
+            ease: 'linear',
+          });
         });
-        anim.add({
-          targets: animated,
-          opacity: [0.6, 1],
-          duration: 200,
-          delay: anime.stagger(50),
-        });
-        anim.play();
-      }
+      });
     }
   }
 
