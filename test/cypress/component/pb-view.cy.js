@@ -170,4 +170,35 @@ describe('pb-view', () => {
       expect(el.querySelector('mjx-container'), 'MathJax container exists').to.exist
     })
   })
+
+  it('handles animations with animejs v4.2.2', () => {
+    interceptParts()
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+        <pb-view src="document1" animation></pb-view>
+      </pb-page>
+    `)
+    cy.wait('@parts')
+    
+    // Verify component loads without errors (animejs v4.2.2 compatibility)
+    cy.get('pb-view').should('exist')
+    cy.get('pb-view').find('#content').should('exist')
+    
+    // Test animation by triggering a refresh (which should animate)
+    cy.window().then(win => {
+      win.document.dispatchEvent(
+        new CustomEvent('pb-refresh', {
+          detail: { id: 'installation', key: '__default__' },
+        }),
+      )
+    })
+    cy.wait('@parts')
+    
+    // Verify content updated (animation worked)
+    cy.get('pb-view').find('#content h2').should('have.text', 'Installation')
+    
+    // Verify the view element exists (target of animation)
+    cy.get('pb-view').find('#view').should('exist')
+  })
 })
