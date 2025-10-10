@@ -3,8 +3,18 @@ import '../../../src/pb-svg.js'
 
 describe('pb-svg', () => {
   beforeEach(() => {
-    // Stub the external svg-pan-zoom library
     cy.window().then(win => {
+      // Mock ESGlobalBridge for v8.0.2 compatibility
+      if (!win.ESGlobalBridge) {
+        win.ESGlobalBridge = {
+          requestAvailability: () => win.ESGlobalBridge,
+          instance: {
+            load: () => Promise.resolve()
+          }
+        }
+      }
+      
+      // Stub the external svg-pan-zoom library
       if (!win.svgPanZoom) {
         win.svgPanZoom = cy.stub().returns({
           destroy: cy.stub(),
@@ -28,6 +38,21 @@ describe('pb-svg', () => {
     cy.get('pb-svg').then($el => {
       expect($el[0].url).to.equal('test.svg')
     })
+  })
+
+  it('works with ESGlobalBridge v8.0.2', () => {
+    cy.mount('<pb-svg url="test.svg"></pb-svg>')
+    
+    cy.window().then(win => {
+      // Verify bridge API works
+      const bridge = win.ESGlobalBridge.requestAvailability()
+      expect(bridge).to.exist
+      
+      const loadPromise = win.ESGlobalBridge.instance.load('svg-pan-zoom', 'test.js')
+      expect(loadPromise).to.be.a('promise')
+    })
+    
+    cy.get('pb-svg').should('exist')
   })
 
   it('has load method', () => {
