@@ -70,11 +70,13 @@ module.exports = defineConfig({
       // keep your other tasks if needed
       return config
     },
-    baseUrl: 'http://localhost:5173',
+    baseUrl: process.env.CYPRESS_baseUrl || 'http://localhost:5173',
     specPattern: 'test/cypress/e2e/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/e2e.js',
     env: {
-      demoPages: listDemoPagesSync()
+      demoPages: listDemoPagesSync(),
+      // Allow tests to detect if running against real backend
+      realBackend: process.env.CYPRESS_realBackend === 'true'
     }
   }
 })

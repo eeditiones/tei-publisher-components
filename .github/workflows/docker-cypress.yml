@@ -1,4 +1,4 @@
-name: Docker and Legacy Tests
+name: Docker and Cypress E2E Tests
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker-karma:
+  docker-cypress-e2e:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -42,8 +42,12 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
-      - name: Run Karma tests
-        run: npm test
+      - name: Run Cypress E2E tests against real backend
+        run: |
+          npx cypress run --config baseUrl=http://localhost:8080/exist/apps/tei-publisher
+        env:
+          CYPRESS_baseUrl: http://localhost:8080/exist/apps/tei-publisher
+          CYPRESS_realBackend: true
       - name: Stop docker container
         if: always()
         run: docker rm --force exist-ci || true
