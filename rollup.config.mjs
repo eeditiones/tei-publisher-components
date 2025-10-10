@@ -38,7 +38,6 @@ function replaceDemo(input, scripts) {
 export default [
   {
     input: [
-      'src/polymer-hack.js',
       'src/pb-components-bundle.js',
       'src/pb-leaflet-map.js',
       'src/pb-odd-editor.js',
