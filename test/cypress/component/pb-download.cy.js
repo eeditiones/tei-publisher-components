@@ -17,4 +17,22 @@ describe('pb-download', () => {
             })
         })
     })
+
+    it('handles cookie operations with js-cookie v3.0.0', () => {
+        // Test that pb-download component loads and can handle cookie operations
+        const html = '<pb-download id="dl" url="http://example.com/api/download" type="pdf">PDF</pb-download>'
+        cy.mount(html)
+        
+        // Signal page ready so component initializes
+        cy.document().then(doc => {
+            doc.dispatchEvent(new CustomEvent('pb-page-ready', { detail: { endpoint: '.', apiVersion: '1.0.0' } }))
+        })
+        
+        // Verify component loaded without errors
+        cy.get('#dl').should('exist')
+        cy.get('#dl').find('#button').should('exist')
+        
+        // Test that the component can be clicked (cookie operations happen internally)
+        cy.get('#dl').find('#button').click()
+    })
 })
