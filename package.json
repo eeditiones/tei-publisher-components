@@ -50,7 +50,7 @@
     "animejs": "^4.2.2",
     "browser-fs-access": "^0.38.0",
     "construct-style-sheets-polyfill": "^3.1.0",
-    "gridjs": "^5.0.2",
+    "gridjs": "^6.2.0",
     "hotkeys-js": "^3.8.1",
     "i18next": "19.8.1",
     "i18next-browser-languagedetector": "^6.0.1",
