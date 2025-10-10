@@ -66,7 +66,7 @@ export class PbCustomForm extends PbLoad {
       <pb-dialog id="errorDialog" title="Error">
         <p id="errorMessage"></p>
         <div slot="footer">
-          <button rel="prev">Close</button>
+          <button rel="prev" type="button">Close</button>
         </div>
       </pb-dialog>
     `;

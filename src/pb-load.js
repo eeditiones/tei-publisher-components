@@ -245,7 +245,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
       <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
         <p id="errorMessage"></p>
         <div slot="footer">
-          <button rel="prev">${translate('dialogs.close')}</button>
+          <button rel="prev" type="button">${translate('dialogs.close')}</button>
         </div>
       </pb-dialog>
     `;

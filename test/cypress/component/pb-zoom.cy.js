@@ -23,7 +23,7 @@ describe('pb-zoom', () => {
       const size = () => parseInt(getComputedStyle(grid).getPropertyValue('font-size'))
       expect(size()).to.equal(10)
     })
-    cy.get('#zin').find('a').click()
+    cy.get('#zin').find('button').click()
     cy.get('#grid').should(($grid) => {
       const grid = $grid[0]
       const size = parseInt(getComputedStyle(grid).getPropertyValue('font-size'))

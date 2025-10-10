@@ -83,7 +83,7 @@ export class PbAjax extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
+      <button id="button" @click="${this._handleClick}" title="${this.title}" type="button"><slot></slot></button>
       <pb-fetch
         id="loadContent"
         verbose
@@ -112,6 +112,19 @@ export class PbAjax extends pbMixin(LitElement) {
     return css`
       :host {
         display: block;
+      }
+      #button {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        color: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      #button:hover {
+        text-decoration: none;
       }
       slot[name='title'] {
         margin: 0;

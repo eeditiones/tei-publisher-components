@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 import { minVersion } from './utils.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -143,9 +143,9 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
 
   render() {
     return html`
-            <a href="#" @click="${this._show}" title="${
+            <button @click="${this._show}" title="${
       this.user ? this.user : this.loginLabel
-    }" part="trigger">
+    }" part="trigger" type="button">
                 ${
                   this.loggedIn
                     ? html`
@@ -190,7 +190,7 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
                   this.loggedIn ? this.logoutLabel : this.loginLabel,
                   { user: this.user },
                 )}</span>
-            </a>
+            </button>
 
             <form action="login">
                 <pb-dialog ?modal="${this.auto}">
@@ -225,10 +225,10 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
                 </pb-dialog>
             </form>
 
-            <iron-ajax id="checkLogin" with-credentials
+            <pb-fetch id="checkLogin" with-credentials
                 handle-as="json" @response="${this._handleResponse}" @error="${this._handleError}"
                 method="post"
-                content-type="application/x-www-form-urlencoded"></iron-ajax>
+                content-type="application/x-www-form-urlencoded"></pb-fetch>
         `;
   }
 

@@ -3,7 +3,7 @@ import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
 import './pb-icon.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * A client for the Distributed Text Services (DTS) protocol. This defines an API
@@ -237,22 +237,22 @@ export class DtsClient extends pbMixin(LitElement) {
       <slot name="toolbar"></slot>
       ${this.baseUri ? this._renderClient() : ''}
 
-      <iron-ajax
+      <pb-fetch
         id="queryAPI"
         verbose
         handle-as="json"
         method="get"
         @response="${this._handleResponse}"
         @error="${this._handleError}"
-      ></iron-ajax>
-      <iron-ajax
+      ></pb-fetch>
+      <pb-fetch
         id="documentsAPI"
         verbose
         handle-as="json"
         method="get"
         @response="${this._handlePreview}"
         @error="${this._handleError}"
-      ></iron-ajax>
+      ></pb-fetch>
     `;
   }
 
@@ -289,9 +289,9 @@ export class DtsClient extends pbMixin(LitElement) {
       return html`
         <pb-icon icon="icons:folder-open" decorative></pb-icon>
         <div class="details">
-          <a href="#" @click="${ev => this._navigate(ev, member)}" part="link">
+          <button @click="${ev => this._navigate(ev, member)}" part="link" type="button">
             <h4 class="collection" part="collection-title">${member.title}</h4>
-          </a>
+          </button>
         </div>
       `;
     }
@@ -300,9 +300,9 @@ export class DtsClient extends pbMixin(LitElement) {
       <pb-icon icon="icons:code" decorative></pb-icon>
       <div class="details">
         <div>
-          <a href="#" @click="${ev => this._preview(ev, member)}" part="link">
+          <button @click="${ev => this._preview(ev, member)}" part="link" type="button">
             <h4 part="title">${member.title}</h4>
-          </a>
+          </button>
           <p part="creator" class="creator">${DtsClient._getCreator(member)}</p>
           ${license
             ? html`<p part="license" class="license">

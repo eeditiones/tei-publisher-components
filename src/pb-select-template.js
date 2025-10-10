@@ -3,7 +3,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
 
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * `pb-select-template`: Switch between available page templates.
@@ -73,13 +73,13 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
         )}
       </select>
 
-      <iron-ajax
+      <pb-fetch
         id="getTemplates"
         with-credentials
         handle-as="json"
         @response="${this._handleTemplatesResponse}"
         method="GET"
-      ></iron-ajax>
+      ></pb-fetch>
     `;
   }
 

@@ -8,7 +8,7 @@ import { pbHotkeys } from './pb-hotkeys.js';
 import '@vaadin/vaadin-tabs/vaadin-tabs';
 import '@vaadin/vaadin-tabs/vaadin-tab';
 
-import '@polymer/iron-ajax/iron-ajax';
+import './pb-fetch.js';
 import './pb-edit-xml.js';
 import './pb-icon-button.js';
 import './pb-autocomplete.js';
@@ -369,15 +369,15 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
   render() {
     return html`
-      <iron-ajax
+      <pb-fetch
         id="loadContent"
         handle-as="json"
         content-type="application/x-www-form-urlencoded"
         with-credentials
         method="GET"
-      ></iron-ajax>
+      ></pb-fetch>
 
-      <iron-ajax id="saveOdd" handle-as="json" with-credentials></iron-ajax>
+      <pb-fetch id="saveOdd" handle-as="json" with-credentials></pb-fetch>
 
       <div id="layout">
         <div id="drawer">
@@ -659,7 +659,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    request.completes.then(r => this.handleOdd(r));
+    request.then(data => this.handleOdd({ response: data }));
   }
 
   handleOdd(req) {
@@ -938,7 +938,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
     const request = this.loadContent.generateRequest();
-    request.completes.then(this._handleElementSpecResponse.bind(this));
+    request.then(data => this._handleElementSpecResponse({ response: data }));
   }
 
   _handleElementSpecResponse(req) {
@@ -1128,9 +1128,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     const request = saveOdd.generateRequest();
-    request.completes
-      .then(req => {
-        this.handleSaveComplete(req, download);
+    request
+      .then(data => {
+        this.handleSaveComplete({ response: data }, download);
       })
       .catch(this.handleSaveError.bind(this));
   }

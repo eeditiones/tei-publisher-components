@@ -17,7 +17,7 @@ describe('Demo: pb-link + pb-view', () => {
         const done = () => resolve()
         view.addEventListener('pb-end-update', done, { once: true })
         cy.contains('pb-link', /Kant chapter/i)
-          .find('a')
+          .find('button')
           .click({ force: true })
           .then(() => view.removeEventListener('pb-end-update', done))
       })
