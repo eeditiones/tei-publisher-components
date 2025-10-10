@@ -90,8 +90,8 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
 
   render() {
     return html`
-      <a
-        href="#"
+      <button
+        type="button"
         @click="${this._handleClick}"
         title="${this.direction === 'in'
           ? translate('toolbar.zoom.in')
@@ -114,18 +114,33 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
                 </svg>
               `}
         </slot>
-      </a>
+      </button>
     `;
   }
 
   static get styles() {
     return css`
-      a {
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font: inherit;
         color: inherit;
-        text-decoration: none;
+        cursor: pointer;
+        min-width: 24px;
+        min-height: 24px;
       }
-      a:hover {
+      button:hover {
         color: inherit;
+      }
+      svg {
+        display: block;
+        width: 24px;
+        height: 24px;
       }
     `;
   }

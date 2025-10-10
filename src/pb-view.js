@@ -4,7 +4,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -690,7 +690,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.static !== null) {
       this._staticUrl(params).then(url => {
         loadContent.url = url;
-        loadContent.generateRequest();
+        loadContent.generateRequest().catch(() => {
+          // Error handled by @error event listener
+        });
       });
       return;
     }
@@ -711,7 +713,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     loadContent.url = url;
     loadContent.params = params;
-    loadContent.generateRequest();
+    loadContent.generateRequest().catch(() => {
+      // Error handled by @error event listener
+    });
   }
 
   /**
@@ -1450,7 +1454,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           ${this.infiniteScroll ? html`<div id="bottom-observer" class="observer"></div>` : null}
           <div id="footnotes" part="footnotes">${this._footnotes}</div>
         </div>
-        <iron-ajax
+        <pb-fetch
           id="loadContent"
           verbose
           handle-as="json"
@@ -1458,7 +1462,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           with-credentials
           @response="${this._handleContent}"
           @error="${this._handleError}"
-        ></iron-ajax>
+        ></pb-fetch>
       `,
     ];
   }

@@ -64,12 +64,12 @@ export class PbMessage extends themableMixin(LitElement) {
 
         <div class="buttons" slot="footer">
           ${this.isMessage()
-            ? html`<button class="close" autofocus="autofocus">
+            ? html`<button class="close" autofocus="autofocus" type="button">
                 ${translate('dialogs.close')}
               </button>`
             : html`
-                <button class="confirm" autofocus="autofocus">${translate('dialogs.yes')}</button>
-                <button class="reject" autofocus="autofocus">${translate('dialogs.no')}</button>
+                <button class="confirm" autofocus="autofocus" type="button">${translate('dialogs.yes')}</button>
+                <button class="reject" autofocus="autofocus" type="button">${translate('dialogs.no')}</button>
               `}
         </div>
       </pb-dialog>

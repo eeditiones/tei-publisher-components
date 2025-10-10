@@ -124,7 +124,7 @@ ${cpCode}
         .code=${this.code}
       ></pb-code-highlight>
       <div class="buttons">
-        <button class="pretty-button" @click=${this._toggleSource}>
+        <button class="pretty-button" @click=${this._toggleSource} type="button">
           ${translate(this._showCodeLabel)}
         </button>
         <form action="https://codepen.io/pen/define" method="POST" target="_blank">

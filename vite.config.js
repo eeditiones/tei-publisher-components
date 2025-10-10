@@ -78,12 +78,7 @@ export default defineConfig({
   resolve: {
     // Ensure a single instance of Polymer & friends across the graph
     dedupe: [
-      '@polymer/polymer',
-      '@polymer/iron-ajax',
-      '@polymer/paper-button',
-      '@polymer/paper-item',
-      '@polymer/paper-dialog',
-      '@polymer/paper-dialog-scrollable'
+      '@polymer/polymer'
     ],
     alias: [
       // Normalize any accidental /node_modules path imports to bare package names
@@ -100,12 +95,7 @@ export default defineConfig({
   optimizeDeps: {
     // Prebundle Polymer deps once so they aren't evaluated from multiple URLs
     include: [
-      '@polymer/polymer',
-      '@polymer/iron-ajax/iron-ajax.js',
-      '@polymer/paper-button/paper-button.js',
-      '@polymer/paper-item/paper-item.js',
-      '@polymer/paper-dialog/paper-dialog.js',
-      '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js'
+      '@polymer/polymer'
     ],
     exclude: [
       // keep heavy/legacy libs out of prebundle

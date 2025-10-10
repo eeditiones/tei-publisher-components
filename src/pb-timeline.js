@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { SearchResultService } from './search-result-service.js';
 import { ParseDateService } from './parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
 
@@ -810,7 +810,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         ${this.resettable
           ? html`
               <button id="clear" title="${translate('timeline.clear')}"
-                @click="${this._dispatchPbTimelineResetSelectionEvent}"></button>
+                @click="${this._dispatchPbTimelineResetSelectionEvent}" type="button"></button>
             `
           : null}
       </div>
@@ -820,7 +820,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         @mouseleave="${this._hideTooltip}"
       >
         ${this.dataObj ? this.renderBins() : ''} ${this.renderTooltip()}
-        <iron-ajax
+        <pb-fetch
           id="loadData"
           verbose
           handle-as="json"
@@ -829,7 +829,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
           @response="${this._handleResponse}"
           url="${this.url}?start=${this.startDate}&end=${this.endDate}"
           ?auto="${this.auto}"
-        ></iron-ajax>
+        ></pb-fetch>
       </div>
     `;
   }

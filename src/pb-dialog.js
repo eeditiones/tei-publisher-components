@@ -65,7 +65,7 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
         <article>
           <header>
             ${this.title ? unsafeHTML(this.title) : html`<slot name="title"></slot>`}
-            <button rel="prev" aria-label="Close"></button>
+            <button rel="prev" aria-label="Close" type="button"></button>
           </header>
           ${this.message ? unsafeHTML(this.message) : html`<slot></slot>`}
           <footer>

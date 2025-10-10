@@ -6,7 +6,6 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import '@polymer/polymer/lib/elements/dom-repeat';
 import './pb-icon-button.js';
-import '@polymer/paper-styles/color';
 
 import './pb-message.js';
 import './pb-odd-model-editor.js';
@@ -53,7 +52,7 @@ export class PbOddElementspecEditor extends LitElement {
         display: inline-block;
         text-transform: uppercase;
         border-radius: 12px;
-        color: var(--paper-grey-700);
+        color: #616161;
         background: var(--paper-grey-300);
         padding: 2px 6px;
         border: thin solid var(--paper-grey-500);

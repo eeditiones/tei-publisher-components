@@ -19,7 +19,7 @@ describe('pb-link', () => {
     const wait = new Cypress.Promise((resolve) => {
       document.addEventListener('pb-refresh', resolve, { once: true })
     })
-    cy.get('#lnk a').click()
+    cy.get('#lnk button').click()
     cy.wrap(wait).then((ev) => {
       expect(ev.detail.id).to.equal('intro')
     })
@@ -30,7 +30,7 @@ describe('pb-link', () => {
     const wait = new Cypress.Promise((resolve) => {
       document.addEventListener('pb-refresh', resolve, { once: true })
     })
-    cy.get('#lnk a').click()
+    cy.get('#lnk button').click()
     cy.wrap(wait).then((ev) => {
       expect(ev.detail.root).to.equal('3.5.6')
       expect(ev.detail.hash).to.equal('p2')
@@ -46,7 +46,7 @@ describe('pb-link', () => {
       })
       // Ensure component property is false; boolean attribute handling treats presence as true
       cy.get('#lnk').then(($el) => { $el[0].history = false })
-      cy.get('#lnk a').click()
+      cy.get('#lnk button').click()
       cy.wrap(wait).then((ev) => {
         expect(ev.detail.id).to.equal('intro')
       })
@@ -63,7 +63,7 @@ describe('pb-link', () => {
       })
       // Ensure default behavior: history true
       cy.get('#lnk').then(($el) => { $el[0].history = true })
-      cy.get('#lnk a').click()
+      cy.get('#lnk button').click()
       cy.wrap(wait).then((ev) => {
         expect(ev.detail.id).to.equal('go')
       })
@@ -81,7 +81,7 @@ describe('pb-link', () => {
     const wait = new Cypress.Promise((resolve) => {
       document.addEventListener('pb-refresh', resolve, { once: true })
     })
-    cy.get('#lnk a').click()
+    cy.get('#lnk button').click()
     cy.wrap(wait).then((ev) => {
       expect(ev.detail.id).to.equal('intro')
       expect(ev.detail.odd).to.equal('myodd')
