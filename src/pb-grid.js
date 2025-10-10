@@ -136,21 +136,36 @@ export class PbGrid extends pbMixin(LitElement) {
       
       // Animate each element with a staggered delay
       animated.forEach((element, index) => {
-        animate(element, {
+        const animation = animate(element, {
           opacity: [0, 0.6],
           translateX: [2000, 0],
           duration: 400,
           delay: 100 + (index * 100),
           ease: 'linear',
-        }).finished.then(() => {
-          // Second phase: fade to full opacity
-          animate(element, {
-            opacity: [0.6, 1],
-            duration: 200,
-            delay: index * 50,
-            ease: 'linear',
-          });
         });
+        
+        // Check if animation has a finished promise
+        if (animation && animation.finished) {
+          animation.finished.then(() => {
+            // Second phase: fade to full opacity
+            animate(element, {
+              opacity: [0.6, 1],
+              duration: 200,
+              delay: index * 50,
+              ease: 'linear',
+            });
+          });
+        } else {
+          // Fallback: use setTimeout if no promise available
+          setTimeout(() => {
+            animate(element, {
+              opacity: [0.6, 1],
+              duration: 200,
+              delay: index * 50,
+              ease: 'linear',
+            });
+          }, 400 + (index * 100));
+        }
       });
     }
   }
