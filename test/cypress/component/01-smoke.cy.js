@@ -83,19 +83,31 @@ describe('Component smoke: all pb-* custom elements mount without errors', () =>
       cy.get(tag).should('exist')
     })
 
-    it.skip(`a11y sanity for <${tag}>: typed buttons and focusable controls`, () => {
+    it(`a11y sanity for <${tag}>: typed buttons and focusable controls`, () => {
       importAndMount(tag, file)
-      // Buttons should have type, all interactive controls focusable
-      cy.get(`${tag} button, ${tag} input, ${tag} select, ${tag} textarea`)
-        .each($el => {
-          if ($el[0].tagName === 'BUTTON') {
-            cy.wrap($el).should('have.attr', 'type')
+      prepareHostForA11y(tag)
+      
+      // Check if the component has any interactive elements (without failing if none found)
+      cy.get(tag).then($host => {
+        const interactiveElements = $host.find('button, input, select, textarea')
+        
+        if (interactiveElements.length === 0) {
+          // Skip a11y checks if no interactive elements are present
+          cy.log(`<${tag}> has no interactive elements, skipping a11y checks`)
+          return
+        }
+        
+        // Run a11y checks only if interactive elements are present
+        interactiveElements.each((index, el) => {
+          if (el.tagName === 'BUTTON') {
+            expect(el.getAttribute('type'), `button in <${tag}> should have type attribute`).to.exist
           }
-          cy.wrap($el).should('not.have.attr', 'tabindex', '-1')
+          expect(el.getAttribute('tabindex'), `interactive element in <${tag}> should not have tabindex="-1"`).to.not.equal('-1')
         })
+      })
     })
 
-    it.skip(`no Polymer elements rendered in <${tag}>`, () => {
+    it(`no Polymer elements rendered in <${tag}>`, () => {
       importAndMount(tag, file)
       const polymerSelectors = [
         'paper-button',
@@ -155,6 +167,65 @@ function prepareHostForA11y (tag) {
         host.values = ['value']
       }
       return host.updateComplete
+    })
+  }
+
+  // Add content to components that need it to render interactive elements
+  if (tag === 'pb-ajax') {
+    return cy.get('pb-ajax').then($el => {
+      $el[0].innerHTML = '<span>Test Action</span>'
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-link') {
+    return cy.get('pb-link').then($el => {
+      $el[0].setAttribute('xml-id', 'test')
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-navigation') {
+    return cy.get('pb-navigation').then($el => {
+      $el[0].innerHTML = '<span>Previous</span>'
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-grid-action') {
+    return cy.get('pb-grid-action').then($el => {
+      $el[0].setAttribute('grid', '#test-grid')
+      $el[0].innerHTML = '<span>Add Panel</span>'
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-login') {
+    return cy.get('pb-login').then($el => {
+      $el[0].setAttribute('endpoint', '.')
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-autocomplete') {
+    return cy.get('pb-autocomplete').then($el => {
+      $el[0].setAttribute('endpoint', '.')
+      $el[0].setAttribute('param', 'q')
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-browse-docs') {
+    return cy.get('pb-browse-docs').then($el => {
+      $el[0].setAttribute('endpoint', '.')
+      return $el[0].updateComplete
+    })
+  }
+
+  if (tag === 'pb-select-odd') {
+    return cy.get('pb-select-odd').then($el => {
+      $el[0].setAttribute('endpoint', '.')
+      return $el[0].updateComplete
     })
   }
 

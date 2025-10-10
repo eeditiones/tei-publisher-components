@@ -42,7 +42,7 @@ export class PbGridAction extends pbMixin(LitElement) {
   }
 
   render() {
-    return html` <a @click="${this._click}"><slot></slot></a> `;
+    return html` <button @click="${this._click}" type="button"><slot></slot></button> `;
   }
 
   static get styles() {

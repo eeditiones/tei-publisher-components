@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { translate } from './pb-i18n.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 import { themableMixin } from './theming.js';
 
 /**
@@ -167,14 +167,14 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
         </div>
         <slot></slot>
       </form>
-      <iron-ajax
+      <pb-fetch
         id="autocompleteLoader"
         verbose
         handle-as="json"
         method="get"
         with-credentials
         @response="${this._updateSuggestions}"
-      ></iron-ajax>
+      ></pb-fetch>
     `;
   }
 

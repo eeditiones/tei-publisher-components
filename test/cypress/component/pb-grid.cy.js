@@ -149,7 +149,7 @@ describe('pb-grid', () => {
     `)
     cy.window().then((win) => {
       cy.stub(win.console, 'error').as('consoleError')
-      cy.get('#act').shadow().find('a').click({ force: true })
+      cy.get('#act').shadow().find('button').click({ force: true })
       cy.get('@consoleError').should('have.been.called')
     })
   })
@@ -177,7 +177,7 @@ describe('pb-grid', () => {
         }
       })
     })
-    cy.get('#act').find('a').click({ force: true })
+    cy.get('#act').find('button').click({ force: true })
     // Assert a panel with active="0" exists
     cy.get('#grid ._grid_panel[active="0"]').should('exist')
   })
@@ -202,7 +202,7 @@ describe('pb-grid', () => {
       grid.addPanel(1)
     })
     cy.get('#grid ._grid_panel').should('have.length.at.least', 2)
-    cy.get('#rm').find('a').click({ force: true })
+    cy.get('#rm').find('button').click({ force: true })
     // Expect panel count to eventually drop below initial
     cy.get('#grid ._grid_panel').then(($panels) => {
       const initial = $panels.length

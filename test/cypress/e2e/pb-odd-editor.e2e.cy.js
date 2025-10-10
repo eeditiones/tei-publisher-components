@@ -18,6 +18,11 @@ describe('Demo: pb-odd-editor', () => {
       body: { api: '1.0.0', app: { version: '1.0.0' }, engine: { version: '1.0.0' } }
     }).as('version')
 
+    cy.intercept('GET', '**/api/odd/**', {
+      statusCode: 200,
+      body: oddFixture
+    }).as('stubOddApi')
+
     Cypress.env('stubOddResponse', oddFixture)
 
     cy.visit('/demo/pb-odd-editor.html')
