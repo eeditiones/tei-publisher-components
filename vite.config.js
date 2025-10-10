@@ -76,6 +76,7 @@ export default defineConfig({
     exclude: [
       // keep heavy/legacy libs out of prebundle
       'gridjs',
+      'hotkeys-js',
       'construct-style-sheets-polyfill'
     ]
   },
