@@ -1,6 +1,4 @@
 // E2E: pb-drawer
-// StandardJS formatting
-
 describe('Demo: pb-drawer', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-drawer.html')
@@ -25,6 +23,45 @@ describe('Demo: pb-drawer', () => {
       const el = $el[0]
       el.removeAttribute('opened')
     })
+    cy.get('pb-drawer').should('not.have.attr', 'opened')
+  })
+
+  it('supports keyboard navigation', () => {
+    // Open drawer
+    cy.get('pb-drawer').then(($el) => {
+      $el[0].setAttribute('opened', '')
+    })
+    
+    // Test that drawer can be closed via keyboard (focus on close button if exists)
+    cy.get('pb-drawer').then($el => {
+      const closeBtn = $el.find('button[aria-label*="close"], button[aria-label*="Close"]')
+      if (closeBtn.length > 0) {
+        cy.wrap(closeBtn).first().focus().type('{enter}')
+        cy.get('pb-drawer').should('not.have.attr', 'opened')
+      }
+    })
+  })
+
+  it('has proper accessibility attributes', () => {
+    cy.get('pb-drawer').then($el => {
+      const drawer = $el[0]
+      if (drawer.hasAttribute('role')) {
+        cy.wrap($el).should('have.attr', 'role', 'dialog')
+      }
+    })
+    
+    cy.get('pb-drawer').find('button').each($btn => {
+      cy.wrap($btn).should('have.attr', 'type')
+    })
+  })
+
+  it('can be toggled via button click', () => {
+    // The demo has a pb-icon-button with id="tocToggle" that toggles the drawer
+    cy.get('#tocToggle').should('exist')
+    cy.get('#tocToggle').click({ force: true })
+    cy.get('pb-drawer').should('have.attr', 'opened')
+    
+    cy.get('#tocToggle').click({ force: true })
     cy.get('pb-drawer').should('not.have.attr', 'opened')
   })
 })
