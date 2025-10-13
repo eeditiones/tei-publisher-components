@@ -4,7 +4,6 @@ import { LitElement, html, css } from 'lit';
 
 import { repeat } from 'lit/directives/repeat.js';
 
-import '@polymer/polymer/lib/elements/dom-repeat';
 import './pb-icon-button.js';
 
 import './pb-message.js';

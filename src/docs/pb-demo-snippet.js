@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing } from '../lit-compat.js'
+import { LitElement, html, css, nothing } from 'lit'
 import { translate } from '../pb-i18n.js'
 import { ready, firePageReady, syncPbSelect, autoWireForms } from './demo-utils.js'
 import '../pb-code-highlight.js'

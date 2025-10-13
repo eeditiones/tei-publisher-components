@@ -8,12 +8,6 @@
     <!--scripts-->
     
     
-    <script>
-        // Workaround for Polymer modules under Vite: some @polymer/* packages
-        // reference this Closure helper; define a no-op if absent.
-        // See: https://github.com/Polymer/polymer/issues/4845
-        window.JSCompiler_renameProperty = window.JSCompiler_renameProperty || function (prop, obj) { return prop; };
-    </script>
     <script type="module" src="../src/pb-icon-button.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-custom-form.js"></script>
@@ -69,13 +63,14 @@
                 </pb-custom-form>
                 <pre id="output"></pre>
             </pb-page>
-            <script>
+<script>
                 window.addEventListener('WebComponentsReady', () => {
                     pbEvents.subscribe('pb-submit', null, (ev) => {
                         document.getElementById('output').innerText = JSON.stringify(ev.detail.params);
                     });
                 });
-            </script>
+
+</script>
         </template>
     </pb-demo-snippet>
 </body>
