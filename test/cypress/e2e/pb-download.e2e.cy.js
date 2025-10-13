@@ -1,9 +1,8 @@
-// E2E: pb-download computes href and target
+// E2E: pb-download component functionality
 
-describe('Demo: pb-download', () => {
+describe('pb-download', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-download.html')
-    // Wait for pb-page-ready event to ensure pb-download computes its href
     cy.window().then(win => {
       return new Cypress.Promise(resolve => {
         win.addEventListener('pb-page-ready', resolve, { once: true })
@@ -11,11 +10,10 @@ describe('Demo: pb-download', () => {
     })
   })
 
-  it('computes href for document-based download', () => {
+  it('should compute href for document-based download', () => {
     cy.get('pb-download[type="pdf"][src="document1"]').find('#button')
       .should('have.attr', 'href')
       .then((href) => {
-        // Check if it's the new API format or old format
         if (href.includes('/api/document/')) {
           cy.wrap(href).should('match', /api\/document\/.*\/pdf\?odd=.*\.odd&token=\d+/)
         } else {
@@ -25,7 +23,7 @@ describe('Demo: pb-download', () => {
       .and('include', 'docbook.odd')
   })
 
-  it('sets target _blank when source flag is present', () => {
+  it('should set target _blank when source flag is present', () => {
     cy.contains('span', 'FO source').parents('pb-download').find('#button')
       .should('have.attr', 'target', '_blank')
   })

@@ -1,11 +1,10 @@
-// E2E: pb-mei playback controls
+// E2E: pb-mei component functionality
 
-describe('Demo: pb-mei playback', () => {
+describe('pb-mei', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-mei.html')
     cy.get('pb-mei').first().as('viewer')
 
-    // Wait for player controls to appear (script load is async)
     cy.get('@viewer')
       .find('#player button.pb-button--icon', { timeout: 10000 })
       .should('have.length.at.least', 2)
@@ -14,7 +13,7 @@ describe('Demo: pb-mei playback', () => {
     })
   })
 
-  it('toggles play and pause controls', () => {
+  it('should toggle play and pause controls', () => {
     cy.get('@viewer')
       .find('#player button')
       .first()
