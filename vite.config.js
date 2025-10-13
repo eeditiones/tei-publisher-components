@@ -31,6 +31,10 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/demo/, ''),
       },
     },
+    // Ensure lib/ directory is served as static files
+    fs: {
+      allow: ['..', '.', 'lib']
+    }
   },
   plugins: [
     {

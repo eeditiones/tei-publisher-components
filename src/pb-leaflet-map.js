@@ -283,8 +283,15 @@ firstUpdated() {
 
   const loadGeocodingOrInit = () => {
     if (this.geoCoding) {
-      window.ESGlobalBridge.instance
-        .load('geocoding', geoCodingPath)
+      // Check if the geocoding script URL is accessible before trying to load it
+      fetch(geoCodingPath, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            return window.ESGlobalBridge.instance.load('geocoding', geoCodingPath);
+          } else {
+            throw new Error(`Geocoding script not available at ${geoCodingPath} (${response.status})`);
+          }
+        })
         .then(this._initMap.bind(this))
         .catch(error => {
           console.warn('<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:', error);
@@ -402,6 +409,19 @@ _configureGeoCoding() {
   if (!this.geoCoding) {
     return;
   }
+  
+  // Check if geocoding library is properly loaded
+  if (!L.Control || !L.Control.Geocoder) {
+    console.warn('<pb-leaflet-map> Geocoding library not properly loaded, skipping geocoding configuration');
+    return;
+  }
+  
+  // Check if nominatim method exists
+  if (!L.Control.Geocoder.nominatim) {
+    console.warn('<pb-leaflet-map> Nominatim geocoder not available, skipping geocoding configuration');
+    return;
+  }
+  
   const geocoder = L.Control.Geocoder.nominatim({
     geocodingQueryParams: {
       'accept-language': 'en',
