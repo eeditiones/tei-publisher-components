@@ -28,19 +28,19 @@ describe('pb-svg', () => {
     })
   })
 
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-svg></pb-svg>')
     cy.get('pb-svg').should('exist')
   })
 
-  it('accepts url property', () => {
+  it('should accept url property', () => {
     cy.mount('<pb-svg url="test.svg"></pb-svg>')
     cy.get('pb-svg').then($el => {
       expect($el[0].url).to.equal('test.svg')
     })
   })
 
-  it('works with ESGlobalBridge v8.0.2', () => {
+  it('should work with ESGlobalBridge v8.0.2', () => {
     cy.mount('<pb-svg url="test.svg"></pb-svg>')
     
     cy.window().then(win => {
@@ -55,24 +55,24 @@ describe('pb-svg', () => {
     cy.get('pb-svg').should('exist')
   })
 
-  it('has load method', () => {
+  it('should have load method', () => {
     cy.mount('<pb-svg></pb-svg>')
     cy.get('pb-svg').then($el => {
       expect($el[0].load).to.be.a('function')
     })
   })
 
-  it('renders image container', () => {
+  it('should render image container', () => {
     cy.mount('<pb-svg></pb-svg>')
     cy.get('pb-svg').find('#image').should('exist')
   })
 
-  it('renders slot content', () => {
+  it('should render slot content', () => {
     cy.mount('<pb-svg><div class="test-content">Test</div></pb-svg>')
     cy.get('pb-svg').find('.test-content').should('contain.text', 'Test')
   })
 
-  it('url property is reactive', () => {
+  it('should have reactive url property', () => {
     cy.mount('<pb-svg url="test1.svg"></pb-svg>')
     
     cy.get('pb-svg').then($el => {

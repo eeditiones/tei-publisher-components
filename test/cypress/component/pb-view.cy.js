@@ -81,7 +81,7 @@ describe('pb-view', () => {
     }).as('parts')
   }
 
-  it('emits and receives events', () => {
+  it('should emit and receive events', () => {
     interceptParts()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
@@ -118,7 +118,7 @@ describe('pb-view', () => {
     cy.get('pb-view').find('#content pb-geolocation[key=CanFloque] *').should('have.text', 'Can Floque')
   })
 
-  it('shows placeholder for non existing document', () => {
+  it('should show placeholder for non existing document', () => {
     interceptParts()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
@@ -130,7 +130,7 @@ describe('pb-view', () => {
     cy.get('pb-view').find('#content').invoke('html').should('contain', 'Not found')
   })
 
-  it('shows footnotes', () => {
+  it('should show footnotes', () => {
     interceptParts()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
@@ -142,7 +142,7 @@ describe('pb-view', () => {
     cy.get('pb-view').find('#footnotes').invoke('html').should('contain', 'brata')
   })
 
-  it('renders formulas after loading via pb-view', () => {
+  it('should render formulas after loading via pb-view', () => {
     // Intercept parts to return a pb-formula inside content
     cy.intercept('GET', '**/api/parts/**/json*', (req) => {
       req.reply({
@@ -171,7 +171,7 @@ describe('pb-view', () => {
     })
   })
 
-  it('handles animations with animejs v4.2.2', () => {
+  it('should handle animations with animejs v4.2.2', () => {
     interceptParts()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">

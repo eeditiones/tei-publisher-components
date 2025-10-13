@@ -2,12 +2,12 @@
 import '../../../src/pb-odd-parameter-editor.js'
 
 describe('pb-odd-parameter-editor', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-odd-parameter-editor></pb-odd-parameter-editor>')
     cy.get('pb-odd-parameter-editor').should('exist')
   })
 
-  it('uses native controls instead of paper-* elements', () => {
+  it('should use native controls instead of paper-* elements', () => {
     cy.mount('<pb-odd-parameter-editor behaviour="alternate"></pb-odd-parameter-editor>')
     cy.get('pb-odd-parameter-editor').then(($el) => {
       const comp = $el[0]

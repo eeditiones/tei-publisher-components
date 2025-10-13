@@ -2,7 +2,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-select-template.js'
 
 describe('pb-select-template', () => {
-  it('mounts and renders dropdown', () => {
+  it('should mount and render dropdown', () => {
     const html = '<pb-page endpoint="." api-version="1.0.0"><pb-select-template id="sel"></pb-select-template></pb-page>'
     cy.mount(html)
     cy.document().then((doc) => {

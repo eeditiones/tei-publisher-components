@@ -2,7 +2,7 @@ import '../../../src/pb-upload.js'
 import '../../../src/pb-page.js'
 
 describe('pb-upload', () => {
-    it.skip('renders vaadin-upload and slots', () => {
+    it.skip('should render vaadin-upload and slots', () => {
         cy.mount('<pb-upload id="up"></pb-upload>')
         cy.get('#up').then($el => $el[0].updateComplete).then(() => {
             cy.get('#up').find('vaadin-upload#uploader').should('exist')
@@ -12,7 +12,7 @@ describe('pb-upload', () => {
         })
     })
 
-    it.skip('emits end and load after successful upload; refreshes odds for .odd files', () => {
+    it.skip('should emit end and load after successful upload; refreshes odds for .odd files', () => {
     // Intercept upload target
     cy.intercept('POST', '**/api/upload/**', {
         statusCode: 200,

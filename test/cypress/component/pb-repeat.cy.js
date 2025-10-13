@@ -7,11 +7,11 @@ describe('pb-repeat', () => {
     cy.mount(html)
   })
 
-  it('renders initial instance', () => {
+  it('should render initial instance', () => {
     cy.get('#rep .instances .instance').should('have.length', 1)
   })
 
-  it('uses native icon buttons instead of paper-icon-button', () => {
+  it('should use native icon buttons instead of paper-icon-button', () => {
     cy.get('#rep').find('paper-icon-button').should('not.exist')
     cy.get('#rep')
       .find('button.pb-button--icon')

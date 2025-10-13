@@ -9,12 +9,12 @@ describe('pb-browse-docs', () => {
     }).as('autocomplete')
   })
 
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').should('exist')
   })
 
-  it('uses native buttons for toolbar and dialogs', () => {
+  it('should use native buttons for toolbar and dialogs', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('paper-button').should('not.exist')
     cy.get('pb-browse-docs')
@@ -25,28 +25,28 @@ describe('pb-browse-docs', () => {
       .should('have.attr', 'type', 'button')
   })
 
-  it('accepts sort-by property', () => {
+  it('should accept sort-by property', () => {
     cy.mount('<pb-browse-docs sort-by="title"></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       expect($el[0].sortBy).to.equal('title')
     })
   })
 
-  it('accepts filter property', () => {
+  it('should accept filter property', () => {
     cy.mount('<pb-browse-docs filter="philosophy"></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       expect($el[0].filter).to.equal('philosophy')
     })
   })
 
-  it('accepts filter-by property', () => {
+  it('should accept filter-by property', () => {
     cy.mount('<pb-browse-docs filter-by="genre"></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       expect($el[0].filterBy).to.equal('genre')
     })
   })
 
-  it('accepts sort-options array', () => {
+  it('should accept sort-options array', () => {
     cy.mount('<pb-browse-docs id="browse"></pb-browse-docs>')
     cy.get('#browse').then($el => {
       $el[0].sortOptions = [
@@ -57,7 +57,7 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('accepts filter-options array', () => {
+  it('should accept filter-options array', () => {
     cy.mount('<pb-browse-docs id="browse"></pb-browse-docs>')
     cy.get('#browse').then($el => {
       $el[0].filterOptions = [
@@ -68,7 +68,7 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('can accept sort-options array', () => {
+  it('should accept sort-options array', () => {
     cy.mount('<pb-browse-docs id="browse"></pb-browse-docs>')
     cy.get('#browse').then($el => {
       $el[0].sortOptions = [
@@ -78,7 +78,7 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('can accept filter-options array', () => {
+  it('should accept filter-options array', () => {
     cy.mount('<pb-browse-docs id="browse"></pb-browse-docs>')
     cy.get('#browse').then($el => {
       $el[0].filterOptions = [
@@ -88,24 +88,24 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('renders autocomplete input', () => {
+  it('should render autocomplete input', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('pb-autocomplete').should('exist')
   })
 
-  it('renders delete button in toolbar', () => {
+  it('should render delete button in toolbar', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('#delete').should('exist')
   })
 
-  it('all buttons have type attribute', () => {
+  it('should have all buttons with type attribute', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('button').each($btn => {
       expect($btn).to.have.attr('type', 'button')
     })
   })
 
-  it('extends PbLoad base class', () => {
+  it('should extend PbLoad base class', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       // Should have load method from PbLoad
@@ -113,31 +113,31 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('accepts subscribe property for event channel', () => {
+  it('should accept subscribe property for event channel', () => {
     cy.mount('<pb-browse-docs subscribe="my-channel"></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       expect($el[0].subscribe).to.equal('my-channel')
     })
   })
 
-  it('accepts emit property for event channel', () => {
+  it('should accept emit property for event channel', () => {
     cy.mount('<pb-browse-docs emit="my-channel"></pb-browse-docs>')
     cy.get('pb-browse-docs').then($el => {
       expect($el[0].emit).to.equal('my-channel')
     })
   })
 
-  it('renders delete dialog', () => {
+  it('should render delete dialog', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('pb-dialog#deleteDialog').should('exist')
   })
 
-  it('uses native checkboxes instead of paper-checkbox', () => {
+  it('should use native checkboxes instead of paper-checkbox', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('paper-checkbox').should('not.exist')
   })
 
-  it('accepts URL for content loading', () => {
+  it('should accept URL for content loading', () => {
     cy.mount('<pb-browse-docs id="browse"></pb-browse-docs>')
     cy.get('#browse').then($el => {
       $el[0].url = 'api/documents'
@@ -145,7 +145,7 @@ describe('pb-browse-docs', () => {
     })
   })
 
-  it('has working pb-fetch for content loading', () => {
+  it('should have working pb-fetch for content loading', () => {
     cy.mount('<pb-browse-docs></pb-browse-docs>')
     cy.get('pb-browse-docs').find('pb-fetch#loadContent').should('exist')
   })

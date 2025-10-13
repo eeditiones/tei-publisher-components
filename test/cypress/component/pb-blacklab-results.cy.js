@@ -2,17 +2,17 @@
 import '../../../src/pb-blacklab-results.js'
 
 describe('pb-blacklab-results', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').should('exist')
   })
 
-  it('does not render Polymer icon buttons', () => {
+  it('should not render Polymer icon buttons', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').find('paper-icon-button, iron-icon').should('not.exist')
   })
 
-  it('exposes accessible structure', () => {
+  it('should expose accessible structure', () => {
     const markup = `
       <pb-blacklab-results per-page="2" pattern="test" target="/docs">
       </pb-blacklab-results>
@@ -33,35 +33,35 @@ describe('pb-blacklab-results', () => {
       })
   })
 
-  it('accepts per-page property', () => {
+  it('should accept per-page property', () => {
     cy.mount('<pb-blacklab-results per-page="10"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       expect($el[0].perPage).to.equal(10)
     })
   })
 
-  it('accepts pattern property', () => {
+  it('should accept pattern property', () => {
     cy.mount('<pb-blacklab-results pattern="test query"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       expect($el[0].pattern).to.equal('test query')
     })
   })
 
-  it('accepts target property', () => {
+  it('should accept target property', () => {
     cy.mount('<pb-blacklab-results target="/documents"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       expect($el[0].target).to.equal('/documents')
     })
   })
 
-  it('accepts doc property', () => {
+  it('should accept doc property', () => {
     cy.mount('<pb-blacklab-results doc="doc123"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       expect($el[0].doc).to.equal('doc123')
     })
   })
 
-  it('can set documents array', () => {
+  it('should set documents array', () => {
     cy.mount('<pb-blacklab-results id="results"></pb-blacklab-results>')
     cy.get('#results').then($el => {
       $el[0].documents = [
@@ -72,7 +72,7 @@ describe('pb-blacklab-results', () => {
     })
   })
 
-  it('can set data object', () => {
+  it('should set data object', () => {
     cy.mount('<pb-blacklab-results id="results"></pb-blacklab-results>')
     cy.get('#results').then($el => {
       $el[0].data = { 
@@ -84,28 +84,28 @@ describe('pb-blacklab-results', () => {
     })
   })
 
-  it('renders table with correct headers', () => {
+  it('should render table with correct headers', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').find('table thead').should('exist')
     cy.get('pb-blacklab-results').find('table thead th').should('have.length', 5)
   })
 
-  it('renders pagination component', () => {
+  it('should render pagination component', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').find('pb-paginate').should('exist')
   })
 
-  it('pagination receives per-page attribute', () => {
+  it('should pass per-page attribute to pagination', () => {
     cy.mount('<pb-blacklab-results per-page="20"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').find('pb-paginate').should('have.attr', 'per-page', '20')
   })
 
-  it('renders table body for results', () => {
+  it('should render table body for results', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').find('table tbody').should('exist')
   })
 
-  it('can store data property', () => {
+  it('should store data property', () => {
     cy.mount('<pb-blacklab-results id="results"></pb-blacklab-results>')
     cy.get('#results').then($el => {
       $el[0].data = { summary: { numberOfHits: 10 } }
@@ -113,7 +113,7 @@ describe('pb-blacklab-results', () => {
     })
   })
 
-  it('has subscribe and emit properties for event channels', () => {
+  it('should have subscribe and emit properties for event channels', () => {
     cy.mount('<pb-blacklab-results subscribe="search" emit="results"></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       expect($el[0].subscribe).to.equal('search')
@@ -121,7 +121,7 @@ describe('pb-blacklab-results', () => {
     })
   })
 
-  it('initializes with empty documents array', () => {
+  it('should initialize with empty documents array', () => {
     cy.mount('<pb-blacklab-results></pb-blacklab-results>')
     cy.get('pb-blacklab-results').then($el => {
       // Component should handle empty state gracefully
@@ -131,7 +131,7 @@ describe('pb-blacklab-results', () => {
     })
   })
 
-  it('can accept documents array', () => {
+  it('should accept documents array', () => {
     cy.mount('<pb-blacklab-results id="results"></pb-blacklab-results>')
     cy.get('#results').then($el => {
       // Just verify we can set the property without crashing

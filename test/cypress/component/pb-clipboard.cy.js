@@ -12,7 +12,7 @@ describe('pb-clipboard', () => {
     cy.mount(base)
   })
 
-  it('copies slotted text to clipboard on click', () => {
+  it('should copy slotted text to clipboard on click', () => {
     cy.window().then((win) => {
       // Provide a clipboard API stub if missing and spy on writeText
       if (!win.navigator.clipboard) {

@@ -2,12 +2,12 @@
 import '../../../src/pb-odd-model-editor.js'
 
 describe('pb-odd-model-editor', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-odd-model-editor></pb-odd-model-editor>')
     cy.get('pb-odd-model-editor').should('exist')
   })
 
-  it('uses native inputs/selects instead of paper-* elements', () => {
+  it('should use native inputs/selects instead of paper-* elements', () => {
     cy.mount('<pb-odd-model-editor type="model" behaviour="inline" output="web"></pb-odd-model-editor>')
     cy.get('pb-odd-model-editor').then(($el) => {
       const comp = $el[0]

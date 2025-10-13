@@ -2,12 +2,12 @@
 import '../../../src/pb-odd-rendition-editor.js'
 
 describe('pb-odd-rendition-editor', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-odd-rendition-editor></pb-odd-rendition-editor>')
     cy.get('pb-odd-rendition-editor').should('exist')
   })
 
-  it('uses native select instead of paper-dropdown-menu', () => {
+  it('should use native select instead of paper-dropdown-menu', () => {
     cy.mount('<pb-odd-rendition-editor></pb-odd-rendition-editor>')
 
     cy.get('pb-odd-rendition-editor').then($els => $els[0].updateComplete)

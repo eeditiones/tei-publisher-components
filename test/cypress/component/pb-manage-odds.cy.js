@@ -2,7 +2,7 @@
 import '../../../src/pb-manage-odds.js'
 
 describe('pb-manage-odds', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-manage-odds></pb-manage-odds>')
     cy.get('pb-manage-odds').should('exist')
   })

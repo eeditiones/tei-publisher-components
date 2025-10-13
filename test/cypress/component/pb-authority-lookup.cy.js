@@ -2,7 +2,7 @@
 import '../../../src/pb-authority-lookup.js'
 
 describe('pb-authority-lookup', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-authority-lookup></pb-authority-lookup>')
     cy.get('pb-authority-lookup').should('exist')
   })

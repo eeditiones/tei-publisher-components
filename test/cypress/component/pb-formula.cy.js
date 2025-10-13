@@ -3,7 +3,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-formula.js'
 
 describe('pb-formula', () => {
-  it('formats TeX math in display mode', () => {
+  it('should format TeX math in display mode', () => {
     cy.mount(`
       <pb-page api-version="1.0.0">
         <pb-formula display>\\frac{y}{z^{m-1}}+\\frac{\\overline{m-1}^{2}y}{z^{m+1}}=Q</pb-formula>
@@ -19,7 +19,7 @@ describe('pb-formula', () => {
     })
   })
 
-  it('formats TeX math in inline mode', () => {
+  it('should format TeX math in inline mode', () => {
     cy.mount(`
       <pb-page api-version="1.0.0">
         <h2>Formula in heading: <pb-formula>a^{2}\\dot{x}+x\\dot{y}^{2}=0</pb-formula></h2>
@@ -35,7 +35,7 @@ describe('pb-formula', () => {
     })
   })
 
-  it('formats MathML math in display mode', () => {
+  it('should format MathML math in display mode', () => {
     cy.mount(`
       <pb-page api-version="1.0.0">
         <pb-formula>
@@ -67,7 +67,7 @@ describe('pb-formula', () => {
     })
   })
 
-  it('reports error in TeX notation', () => {
+  it('should report error in TeX notation', () => {
     cy.mount(`
       <pb-page api-version="1.0.0">
         <pb-formula display>\\frac{1}{z</pb-formula>

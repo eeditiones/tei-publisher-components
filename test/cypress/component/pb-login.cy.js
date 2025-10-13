@@ -2,7 +2,7 @@
 import '../../../src/pb-login.js'
 
 describe('pb-login', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-login></pb-login>')
     cy.get('pb-login').should('exist')
   })
