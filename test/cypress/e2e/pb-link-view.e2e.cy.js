@@ -3,6 +3,9 @@
 describe('Demo: pb-link + pb-view', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-link.html')
+    // Wait for components to be visible and initialized
+    cy.get('pb-view', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-link', { timeout: 10000 }).should('be.visible')
   })
 
   it('clicking pb-link updates pb-view content', () => {
@@ -10,20 +13,10 @@ describe('Demo: pb-link + pb-view', () => {
     // Snapshot initial content text
     cy.get('pb-view').find('[part=content]').invoke('text').then((t) => { before = t || '' })
 
-    // Set up a one-time listener for pb-end-update directly on the view, then click the link
-    cy.get('pb-view').then(($view) => {
-      const view = $view[0]
-      return new Cypress.Promise((resolve) => {
-        const done = () => resolve()
-        view.addEventListener('pb-end-update', done, { once: true })
-        cy.contains('pb-link', /Kant chapter/i)
-          .find('button')
-          .click({ force: true })
-          .then(() => view.removeEventListener('pb-end-update', done))
-      })
-    })
-
-    // Assert that the content actually changed
+    // Click the link and wait for content to change using a more robust approach
+    cy.contains('pb-link', /Kant chapter/i).find('button').click({ force: true })
+    
+    // Wait for the pb-view content to actually change (more reliable than waiting for events)
     cy.get('pb-view').find('[part=content]').invoke('text').should((after) => {
       expect(after && after.trim(), 'content changed').to.not.eq((before || '').trim())
     })
