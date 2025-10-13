@@ -1,6 +1,5 @@
-// E2E: pb-page-header component functionality
-
-describe('pb-page-header', () => {
+// Cypress E2E: pb-page-header
+describe('pb-page-header e2e', () => {
   it('should load without throwing and render content', () => {
     cy.visit('/demo/pb-page-header.html')
     cy.get('pb-page').should('exist')

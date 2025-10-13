@@ -1,5 +1,5 @@
-// test/cypress/e2e/design-system.cy.js
-describe('Design System Demo Page', () => {
+// Cypress E2E: design-system
+describe('design-system e2e', () => {
     beforeEach(() => {
     cy.visit('/demo/design-system.html')
   })

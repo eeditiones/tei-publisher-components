@@ -1,6 +1,5 @@
-// E2E: pb-events component functionality
-
-describe('pb-events', () => {
+// Cypress E2E: pb-events
+describe('pb-events e2e', () => {
   it('should expose window.pbEvents and classic global pbEvents after demos load', () => {
     cy.visit('/demo/pb-popover.html')
 

@@ -1,6 +1,5 @@
-// E2E: pb-dialog component functionality
-
-describe('pb-dialog', () => {
+// Cypress E2E: pb-dialog
+describe('pb-dialog e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-dialog.html')
   })

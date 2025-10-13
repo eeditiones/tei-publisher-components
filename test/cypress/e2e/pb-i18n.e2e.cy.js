@@ -1,6 +1,5 @@
-// E2E: pb-i18n component functionality
-
-describe('pb-i18n', () => {
+// Cypress E2E: pb-i18n
+describe('pb-i18n e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-i18n.html')
   })

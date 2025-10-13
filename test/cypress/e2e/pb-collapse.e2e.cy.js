@@ -1,6 +1,5 @@
-// E2E: pb-collapse component functionality
-
-describe('pb-collapse', () => {
+// Cypress E2E: pb-collapse
+describe('pb-collapse e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-collapse.html')
   })

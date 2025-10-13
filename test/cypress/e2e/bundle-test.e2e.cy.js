@@ -1,5 +1,5 @@
-// E2E: pb-zoom scaffolded test
-describe('Demo: bundle-test', () => {
+// Cypress E2E: bundle-test
+describe('bundle-test e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/bundle-test.html')
   })

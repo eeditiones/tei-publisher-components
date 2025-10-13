@@ -1,5 +1,5 @@
-// E2E coverage for demo/pb-select3.html
-describe('Demo: pb-select3', () => {
+// Cypress E2E: pb-select3
+describe('pb-select3 e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-select3.html')
     cy.get('#select3-form').should('exist')

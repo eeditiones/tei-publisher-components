@@ -1,6 +1,5 @@
-// E2E: pb-drawer component functionality
-
-describe('pb-drawer', () => {
+// Cypress E2E: pb-drawer
+describe('pb-drawer e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-drawer.html')
     cy.window().then(win => {

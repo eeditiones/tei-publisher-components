@@ -1,6 +1,5 @@
-// E2E: pb-zoom zoom functionality
-
-describe('Demo: pb-zoom', () => {
+// Cypress E2E: pb-zoom
+describe('pb-zoom e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-zoom.html')
     // Wait for components to be visible

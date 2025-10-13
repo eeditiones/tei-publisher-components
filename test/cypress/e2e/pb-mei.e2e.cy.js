@@ -1,6 +1,5 @@
-// E2E: pb-mei component functionality
-
-describe('pb-mei', () => {
+// Cypress E2E: pb-mei
+describe('pb-mei e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-mei.html')
     cy.get('pb-mei').first().as('viewer')

@@ -1,6 +1,5 @@
-// E2E: pb-highlight component functionality
-
-describe('pb-highlight', () => {
+// Cypress E2E: pb-highlight
+describe('pb-highlight e2e', () => {
   beforeEach(() => {
     cy.intercept(
       { method: 'GET', url: '**/components.css', middleware: true },

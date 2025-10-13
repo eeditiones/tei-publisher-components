@@ -1,6 +1,5 @@
-// E2E: pb-clipboard component functionality
-
-describe('pb-clipboard', () => {
+// Cypress E2E: pb-clipboard
+describe('pb-clipboard e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-clipboard.html')
   })
