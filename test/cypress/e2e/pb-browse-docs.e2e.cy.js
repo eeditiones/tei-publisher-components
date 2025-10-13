@@ -1,67 +1,7 @@
 describe('Demo: pb-browse-docs', () => {
   beforeEach(() => {
-    // Override centralized intercepts to ensure consistent behavior
-    // Force new API version to use /api/collection endpoint
-    cy.intercept('GET', '**/api/version', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: { api: '1.0.0', app: { version: '1.0.0' }, engine: { version: '1.0.0' } }
-    }).as('version')
-
-    // Mock login endpoints to prevent 401 errors
-    cy.intercept('GET', '**/exist/apps/tei-publisher/login*', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: { loggedIn: false, user: null, groups: [], success: true }
-    }).as('mockLogin')
-    
-    cy.intercept('POST', '**/exist/apps/tei-publisher/login*', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: { loggedIn: false, user: null, groups: [], success: true }
-    }).as('mockLoginPost')
-    
-    // Override ALL collection endpoints to return consistent data
-    // This covers both new API (/api/collection) and old API (/collection/) patterns
-    cy.intercept('GET', '**/api/collection**', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: {
-        items: [{ id: 'collection-entry', label: 'Collection Item' }],
-        start: 1,
-        total: 1
-      }
-    }).as('collectionApi')
-    
-    cy.intercept('GET', '**/collection/**', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: {
-        items: [{ id: 'collection-entry', label: 'Collection Item' }],
-        start: 1,
-        total: 1
-      }
-    }).as('collectionOldApi')
-    
-    cy.intercept('GET', '**/exist/apps/tei-publisher/api/collection**', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: {
-        items: [{ id: 'collection-entry', label: 'Collection Item' }],
-        start: 1,
-        total: 1
-      }
-    }).as('collectionExistApi')
-    
-    cy.intercept('GET', '**/exist/apps/tei-publisher/collection/**', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: {
-        items: [{ id: 'collection-entry', label: 'Collection Item' }],
-        start: 1,
-        total: 1
-      }
-    }).as('collectionExistOldApi')
+    // All intercepts are now centralized in e2e.js support file
+    // No need for duplicate intercepts here
     
     cy.visit('/demo/pb-browse-docs.html')
     // Wait for the component to be visible and loaded
