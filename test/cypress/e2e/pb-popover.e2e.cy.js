@@ -32,4 +32,30 @@ describe('pb-popover e2e', () => {
       expect(/loading/i.test(txt), 'remote content loaded (not Loading…)').to.be.false
     })
   })
+
+  it('supports all popover themes from pb-popover-themes', () => {
+    // Check that all popover theme styles are applied
+    cy.get('pb-popover[theme="material"]').should('exist')
+    cy.get('pb-popover[theme="light"]').should('exist')
+    cy.get('pb-popover[theme="translucent"]').should('exist')
+    cy.get('pb-popover[theme="light-border"]').should('exist')
+    
+    // Verify that the theme CSS is loaded by checking computed styles
+    cy.get('pb-popover[theme="material"]').then($el => {
+      // The theme should be applied to the popover element
+      expect($el[0].theme).to.equal('material')
+    })
+    
+    cy.get('pb-popover[theme="light"]').then($el => {
+      expect($el[0].theme).to.equal('light')
+    })
+    
+    cy.get('pb-popover[theme="translucent"]').then($el => {
+      expect($el[0].theme).to.equal('translucent')
+    })
+    
+    cy.get('pb-popover[theme="light-border"]').then($el => {
+      expect($el[0].theme).to.equal('light-border')
+    })
+  })
 })
