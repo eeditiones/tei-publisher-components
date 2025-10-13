@@ -62,7 +62,6 @@ export default defineConfig({
   resolve: {
     alias: [
       // Normalize any accidental /node_modules path imports to bare package names
-      { find: /^\/?node_modules\/(@polymer\/.+)/, replacement: '$1' }
     ]
   },
   define: {

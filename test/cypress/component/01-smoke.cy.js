@@ -42,13 +42,6 @@ const MIGRATED_COMPONENTS = [
 ]
 
 function importAndMount (tag, file) {
-  // Closure shim for legacy Polymer builds (safe no-op in modern code)
-  cy.window().then(win => {
-    if (!win.JSCompiler_renameProperty) {
-      win.JSCompiler_renameProperty = function (prop, obj) { return prop }
-    }
-  })
-
   // Import the module first
   cy.then(() => {
     const key = `../../../src/${file}`
