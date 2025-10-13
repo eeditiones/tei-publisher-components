@@ -285,7 +285,11 @@ firstUpdated() {
     if (this.geoCoding) {
       window.ESGlobalBridge.instance
         .load('geocoding', geoCodingPath)
-        .then(this._initMap.bind(this));
+        .then(this._initMap.bind(this))
+        .catch(error => {
+          console.warn('<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:', error);
+          this._initMap();
+        });
     } else {
       this._initMap();
     }
@@ -293,10 +297,15 @@ firstUpdated() {
 
   window.ESGlobalBridge.instance.load('leaflet', leafletPath).then(() => {
     if (this.cluster) {
-      window.ESGlobalBridge.instance.load('plugin', pluginPath).then(loadGeocodingOrInit);
+      window.ESGlobalBridge.instance.load('plugin', pluginPath).then(loadGeocodingOrInit).catch(error => {
+        console.warn('<pb-leaflet-map> Failed to load marker cluster plugin, initializing without clustering:', error);
+        loadGeocodingOrInit();
+      });
     } else {
       loadGeocodingOrInit();
     }
+  }).catch(error => {
+    console.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
   });
 }
 
