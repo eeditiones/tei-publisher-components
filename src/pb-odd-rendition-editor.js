@@ -10,8 +10,6 @@ import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
  * represents an odd parameter element for editing
  *
  * @customElement
- *
- * @polymer
  */
 export class PbOddRenditionEditor extends LitElement {
   static get styles() {

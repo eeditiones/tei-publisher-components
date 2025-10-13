@@ -19,8 +19,6 @@ import { get as i18n, translate } from './pb-i18n.js';
  * represents an odd model element for editing
  *
  * @customElement
- *
- * @polymer
  */
 export class PbOddModelEditor extends LitElement {
   static get styles() {
