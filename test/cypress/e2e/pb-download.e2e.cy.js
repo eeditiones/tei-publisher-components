@@ -1,6 +1,5 @@
-// E2E: pb-download component functionality
-
-describe('pb-download', () => {
+// Cypress E2E: pb-download
+describe('pb-download e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-download.html')
     cy.window().then(win => {

@@ -1,6 +1,5 @@
-// E2E: pb-grid component functionality
-
-describe('pb-grid', () => {
+// Cypress E2E: pb-grid
+describe('pb-grid e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-grid.html')
   })

@@ -1,6 +1,5 @@
-// E2E: pb-browse-docs component functionality
-
-describe('pb-browse-docs', () => {
+// Cypress E2E: pb-browse-docs
+describe('pb-browse-docs e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-browse-docs.html')
     cy.get('pb-browse-docs', { timeout: 10000 }).should('be.visible')

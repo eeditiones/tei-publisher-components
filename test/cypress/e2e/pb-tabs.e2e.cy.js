@@ -1,6 +1,5 @@
-// E2E: pb-tabs basic switching
-
-describe('Demo: pb-tabs', () => {
+// Cypress E2E: pb-tabs
+describe('pb-tabs e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-tabs.html')
   })

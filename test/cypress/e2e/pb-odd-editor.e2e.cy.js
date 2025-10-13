@@ -6,7 +6,8 @@ before(() => {
   })
 })
 
-describe('pb-odd-editor', () => {
+// Cypress E2E: pb-odd-editor
+describe('pb-odd-editor e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-odd-editor.html')
     cy.get('pb-odd-editor', { timeout: 10000 }).should('be.visible')

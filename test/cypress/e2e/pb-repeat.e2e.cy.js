@@ -1,6 +1,5 @@
-// E2E: pb-repeat form field repetition functionality
-
-describe('Demo: pb-repeat', () => {
+// Cypress E2E: pb-repeat
+describe('pb-repeat e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-repeat.html')
     // Wait for components to be visible

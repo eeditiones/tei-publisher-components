@@ -1,6 +1,5 @@
-// E2E: pb-search component functionality
-
-describe('pb-search', () => {
+// Cypress E2E: pb-search
+describe('pb-search e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-search.html')
     cy.get('pb-search', { timeout: 10000 }).should('be.visible')
