@@ -1,10 +1,8 @@
-// E2E: pb-drawer
-describe('Demo: pb-drawer', () => {
+// E2E: pb-drawer component functionality
+
+describe('pb-drawer', () => {
   beforeEach(() => {
-    // Document contents API intercept is now centralized in e2e.js support file
-    
     cy.visit('/demo/pb-drawer.html')
-    // Wait for pb-page-ready event to ensure all components are initialized
     cy.window().then(win => {
       return new Cypress.Promise(resolve => {
         win.addEventListener('pb-page-ready', resolve, { once: true })
@@ -12,21 +10,19 @@ describe('Demo: pb-drawer', () => {
     })
   })
 
-  it('renders and is closed by default', () => {
+  it('should render and be closed by default', () => {
     cy.get('pb-drawer').should('exist').and(($el) => {
       expect($el[0].hasAttribute('opened'), 'no opened attribute').to.be.false
     })
   })
 
-  it('can be opened and closed programmatically via attribute', () => {
-    // open
+  it('should open and close programmatically via attribute', () => {
     cy.get('pb-drawer').then(($el) => {
       const el = $el[0]
       el.setAttribute('opened', '')
     })
     cy.get('pb-drawer').should('have.attr', 'opened')
 
-    // close
     cy.get('pb-drawer').then(($el) => {
       const el = $el[0]
       el.removeAttribute('opened')
@@ -34,13 +30,11 @@ describe('Demo: pb-drawer', () => {
     cy.get('pb-drawer').should('not.have.attr', 'opened')
   })
 
-  it('supports keyboard navigation', () => {
-    // Open drawer
+  it('should support keyboard navigation', () => {
     cy.get('pb-drawer').then(($el) => {
       $el[0].setAttribute('opened', '')
     })
     
-    // Test that drawer can be closed via keyboard (focus on close button if exists)
     cy.get('pb-drawer').then($el => {
       const closeBtn = $el.find('button[aria-label*="close"], button[aria-label*="Close"]')
       if (closeBtn.length > 0) {
@@ -50,7 +44,7 @@ describe('Demo: pb-drawer', () => {
     })
   })
 
-  it('has proper accessibility attributes', () => {
+  it('should have proper accessibility attributes', () => {
     cy.get('pb-drawer').then($el => {
       const drawer = $el[0]
       if (drawer.hasAttribute('role')) {
@@ -63,8 +57,7 @@ describe('Demo: pb-drawer', () => {
     })
   })
 
-  it('can be toggled via button click', () => {
-    // The demo has a pb-icon-button with id="tocToggle" that toggles the drawer
+  it('should toggle via button click', () => {
     cy.get('#tocToggle').should('exist')
     cy.get('#tocToggle').click({ force: true })
     cy.get('pb-drawer').should('have.attr', 'opened')
