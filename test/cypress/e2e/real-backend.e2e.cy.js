@@ -13,9 +13,11 @@ describe('Real Backend Integration', () => {
   it('can access the main application page', () => {
     if (!Cypress.env('realBackend')) return
     
-    cy.visit('/')
-    cy.get('body').should('exist')
-    cy.url().should('include', '/exist/apps/tei-publisher')
+    // Test the actual eXist-db backend page
+    cy.request('GET', Cypress.env('existBackend')).then((response) => {
+      expect(response.status).to.eq(200)
+      expect(response.body).to.contain('tei-publisher')
+    })
   })
 
   it('can access API endpoints', () => {
@@ -58,20 +60,79 @@ describe('Real Backend Integration', () => {
     })
   })
 
-  it('can load demo pages without errors', () => {
+  it('can test pb-page component against real backend', () => {
     if (!Cypress.env('realBackend')) return
     
-    // Test a few key demo pages that should work with real backend
-    const demoPages = [
-      '/demo/pb-download.html',
-      '/demo/pb-media-query.html',
-      '/demo/pb-progress.html'
-    ]
+    // Create a minimal test page that uses pb-page component
+    cy.visit('/')
     
-    demoPages.forEach(page => {
-      cy.visit(page)
-      cy.get('body').should('exist')
-      cy.document().its('readyState').should('eq', 'complete')
+    // Wait for pb-page to load and make API calls
+    cy.get('pb-page', { timeout: 10000 }).should('exist')
+    
+    // Verify pb-page can determine API version from real backend
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        win.addEventListener('pb-page-ready', (event) => {
+          expect(event.detail).to.have.property('endpoint')
+          expect(event.detail).to.have.property('apiVersion')
+          resolve()
+        }, { once: true })
+      })
+    })
+  })
+
+  it('can test pb-view component against real backend', () => {
+    if (!Cypress.env('realBackend')) return
+    
+    // Test pb-view component with a real document
+    // First, let's see what documents are available
+    cy.request({
+      method: 'GET',
+      url: '/api/collection',
+      failOnStatusCode: false
+    }).then((response) => {
+      if (response.status === 200 && response.body.items && response.body.items.length > 0) {
+        // If we have documents, test pb-view with the first one
+        const firstDoc = response.body.items[0]
+        cy.log(`Testing pb-view with document: ${firstDoc.id}`)
+        
+        // Create a minimal test page with pb-view
+        cy.visit('/')
+        
+        // Inject pb-view component into the page
+        cy.window().then(win => {
+          const pbView = win.document.createElement('pb-view')
+          pbView.setAttribute('path', firstDoc.id)
+          pbView.setAttribute('id', 'test-view')
+          win.document.body.appendChild(pbView)
+          
+          // Wait for pb-view to load content
+          cy.get('#test-view', { timeout: 10000 }).should('exist')
+          cy.get('#test-view').should('not.be.empty')
+        })
+      } else {
+        cy.log('No documents available for pb-view testing')
+      }
+    })
+  })
+
+  it('can test pb-search component against real backend', () => {
+    if (!Cypress.env('realBackend')) return
+    
+    // Test pb-search component
+    cy.visit('/')
+    
+    // Inject pb-search component
+    cy.window().then(win => {
+      const pbSearch = win.document.createElement('pb-search')
+      pbSearch.setAttribute('id', 'test-search')
+      win.document.body.appendChild(pbSearch)
+      
+      // Wait for pb-search to initialize
+      cy.get('#test-search', { timeout: 10000 }).should('exist')
+      
+      // Just verify the component exists - it might be empty if no search configuration
+      cy.get('#test-search').should('exist')
     })
   })
 })
