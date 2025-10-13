@@ -16,7 +16,6 @@ import { get as i18n, translate } from './pb-i18n.js';
  *
  *
  * @customElement
- * @polymer
  */
 export class PbOddElementspecEditor extends LitElement {
   static get styles() {
