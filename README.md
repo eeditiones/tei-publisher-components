@@ -80,6 +80,41 @@ When adding or editing demo files, please:
 
 By following these guidelines, all demo pages remain portable: they can run standalone in Vite (offline) or against a live TEI Publisher backend without code changes.
 
+### E2E Test Page Load Strategies
+
+When writing E2E tests for demo pages, use the appropriate wait strategy based on the demo page's initialization pattern:
+
+**1. Pages with `firePageReady()` calls:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-tabs.html')
+  cy.window().then(win => {
+    return new Cypress.Promise(resolve => {
+      win.addEventListener('pb-page-ready', resolve, { once: true })
+    })
+  })
+})
+```
+Use for: `pb-tabs.html`, `pb-autocomplete.html`, `pb-select.html`, `pb-select2.html`, `pb-select3.html`, `pb-autocomplete2.html`, `pb-autocomplete3.html`
+
+**2. Pages with `<pb-page>` but no `firePageReady()`:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-dialog.html')
+  cy.get('pb-page', { timeout: 5000 }).should('exist')
+})
+```
+Use for: Most demo pages with `<pb-page>` elements that don't call `firePageReady()`
+
+**3. Simple pages:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-progress.html')
+  cy.get('body', { timeout: 3000 }).should('be.visible')
+})
+```
+Use for: Simple demo pages without complex initialization
+
 ### App configuration
 
 You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment. 

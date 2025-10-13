@@ -2,6 +2,7 @@
 describe('pb-grid e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-grid.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should add and remove panels', () => {

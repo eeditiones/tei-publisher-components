@@ -2,8 +2,7 @@
 describe('pb-browse-docs e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-browse-docs.html')
-    cy.get('pb-browse-docs', { timeout: 10000 }).should('be.visible')
-    cy.get('pb-browse-docs').should('not.be.empty')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render the document list and filters results', () => {

@@ -292,3 +292,4 @@ Cypress.Commands.add('inShadow', (hostSelector, innerSelector) => {
 Cypress.Commands.add('waitUpdate', (hostSelector) => {
   return cy.get(hostSelector).then($el => cy.wrap($el[0].updateComplete))
 })
+

@@ -2,6 +2,7 @@
 describe('pb-media-query e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-media-query.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should respond to viewport changes', () => {

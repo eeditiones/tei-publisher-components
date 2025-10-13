@@ -2,6 +2,7 @@
 describe('pb-dialog e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-dialog.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should open and close the dialog', () => {

@@ -2,8 +2,7 @@
 describe('pb-table-grid e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-table-grid.html')
-    cy.get('pb-table-grid', { timeout: 10000 }).should('be.visible')
-    cy.get('pb-table-grid').find('table', { timeout: 10000 }).should('exist')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render headers and rows from people.json', () => {

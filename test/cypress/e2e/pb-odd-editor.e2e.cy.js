@@ -10,7 +10,7 @@ before(() => {
 describe('pb-odd-editor e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-odd-editor.html')
-    cy.get('pb-odd-editor', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render the pb-odd-editor UI', () => {
