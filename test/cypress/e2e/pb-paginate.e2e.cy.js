@@ -2,7 +2,7 @@
 describe('pb-paginate e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-browse-docs.html')
-    cy.get('pb-paginate', { timeout: 10000 }).should('exist')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render pagination controls', () => {

@@ -2,8 +2,7 @@
 describe('pb-panel e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-grid.html')
-    // Wait for components to be visible
-    cy.get('pb-panel', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('renders panel components', () => {

@@ -2,7 +2,15 @@
 describe('pb-select3 e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-select3.html')
-    cy.get('#select3-form').should('exist')
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        const timeout = setTimeout(resolve, 2000) // 2s timeout
+        win.addEventListener('pb-page-ready', () => {
+          clearTimeout(timeout)
+          resolve()
+        }, { once: true })
+      })
+    })
   })
 
   it('submits selected result together with subform values', () => {

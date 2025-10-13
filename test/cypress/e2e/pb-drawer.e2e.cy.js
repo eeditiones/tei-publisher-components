@@ -2,11 +2,7 @@
 describe('pb-drawer e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-drawer.html')
-    cy.window().then(win => {
-      return new Cypress.Promise(resolve => {
-        win.addEventListener('pb-page-ready', resolve, { once: true })
-      })
-    })
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render and be closed by default', () => {

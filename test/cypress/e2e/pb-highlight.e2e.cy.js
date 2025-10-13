@@ -1,12 +1,8 @@
 // Cypress E2E: pb-highlight
 describe('pb-highlight e2e', () => {
   beforeEach(() => {
-    cy.intercept(
-      { method: 'GET', url: '**/components.css', middleware: true },
-      (req) => { req.continue() }
-      , { log: false }).as('demoCss')
-
     cy.visit('/demo/pb-highlight.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should load and render text inside pb-highlight', () => {

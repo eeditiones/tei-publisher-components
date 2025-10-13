@@ -2,6 +2,7 @@
 describe('pb-clipboard e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-clipboard.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should write to clipboard on click', () => {

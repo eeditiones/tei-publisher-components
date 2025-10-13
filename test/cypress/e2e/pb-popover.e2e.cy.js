@@ -2,6 +2,7 @@
 describe('pb-popover e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-popover.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('shows alternate content on click', () => {

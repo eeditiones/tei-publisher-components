@@ -2,6 +2,7 @@
 describe('pb-collapse e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-collapse.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should toggle details open state on click', () => {

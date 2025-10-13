@@ -2,8 +2,7 @@
 describe('pb-repeat e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-repeat.html')
-    // Wait for components to be visible
-    cy.get('pb-repeat', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('renders form fields for repetition', () => {

@@ -1,12 +1,8 @@
 // Cypress E2E: pb-view
 describe('pb-view e2e', () => {
   beforeEach(() => {
-    // do not log css transform requests
-    cy.intercept(
-      { method: 'GET', url: '**/transform/*.css', middleware: true },
-      (req) => { req.continue() }
-      , { log: false }).as('oddCss')
     cy.visit('/demo/pb-view.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('renders the demo page', () => {

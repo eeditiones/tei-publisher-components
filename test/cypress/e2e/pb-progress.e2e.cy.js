@@ -2,6 +2,7 @@
 describe('pb-progress e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-progress.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('shows progress bar with proper attributes', () => {

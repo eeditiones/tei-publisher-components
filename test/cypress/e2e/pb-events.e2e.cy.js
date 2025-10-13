@@ -1,8 +1,11 @@
 // Cypress E2E: pb-events
 describe('pb-events e2e', () => {
-  it('should expose window.pbEvents and classic global pbEvents after demos load', () => {
+  beforeEach(() => {
     cy.visit('/demo/pb-popover.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
+  })
 
+  it('should expose window.pbEvents and classic global pbEvents after demos load', () => {
     cy.window().then((win) => {
       expect(win.pbEvents, 'window.pbEvents exists').to.exist
 
