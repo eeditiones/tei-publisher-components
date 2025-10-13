@@ -2,47 +2,47 @@
 import '../../../src/pb-split-list.js'
 
 describe('pb-split-list', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').should('exist')
   })
 
-  it('accepts url attribute', () => {
+  it('should accept url attribute', () => {
     cy.mount('<pb-split-list url="api/people"></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       expect($el[0].url).to.equal('api/people')
     })
   })
 
-  it('accepts selected attribute', () => {
+  it('should accept selected attribute', () => {
     cy.mount('<pb-split-list selected="A"></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       expect($el[0].selected).to.equal('A')
     })
   })
 
-  it('accepts subforms attribute', () => {
+  it('should accept subforms attribute', () => {
     cy.mount('<pb-split-list subforms="#myform"></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       expect($el[0].subforms).to.equal('#myform')
     })
   })
 
-  it('has load method', () => {
+  it('should have load method', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       expect($el[0].load).to.be.a('function')
     })
   })
 
-  it('has submit method', () => {
+  it('should have submit method', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       expect($el[0].submit).to.be.a('function')
     })
   })
 
-  it('renders header for categories', () => {
+  it('should render header for categories', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       const component = $el[0]
@@ -59,7 +59,7 @@ describe('pb-split-list', () => {
     cy.get('pb-split-list').find('[part*="category"]').should('have.length', 2)
   })
 
-  it('renders active category with correct part', () => {
+  it('should render active category with correct part', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       const component = $el[0]
@@ -76,13 +76,13 @@ describe('pb-split-list', () => {
     cy.get('pb-split-list').find('[part="active-category"]').should('contain.text', 'A')
   })
 
-  it('renders slot for items', () => {
+  it('should render slot for items', () => {
     cy.mount('<pb-split-list><div class="test-item">Test</div></pb-split-list>')
     cy.get('pb-split-list').find('#items').should('exist')
     cy.get('pb-split-list').find('.test-item').should('contain.text', 'Test')
   })
 
-  it('category click changes selection', () => {
+  it('should change selection on category click', () => {
     cy.mount('<pb-split-list></pb-split-list>')
     cy.get('pb-split-list').then($el => {
       const component = $el[0]

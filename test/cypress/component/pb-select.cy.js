@@ -2,7 +2,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-select.js'
 
 describe('pb-select', () => {
-  it('submits in form', () => {
+  it('should submit in form', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <form id="form" action="">
@@ -39,7 +39,7 @@ describe('pb-select', () => {
     })
   })
 
-  it('supports multiple selection', () => {
+  it('should support multiple selection', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <form id="form" action="">
@@ -75,7 +75,7 @@ describe('pb-select', () => {
     })
   })
 
-  it('works in standard HTML form', () => {
+  it('should work in standard HTML form', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <form action="" id="form">
@@ -105,7 +105,7 @@ describe('pb-select', () => {
     })
   })
 
-  it('does not render Polymer elements', () => {
+  it('should not render Polymer elements', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-select label="Items" name="key">
@@ -125,7 +125,7 @@ describe('pb-select initialized from remote data source', () => {
     }).as('selectData')
   }
 
-  it('submits in form', () => {
+  it('should submit in form', () => {
     stubRemote()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">

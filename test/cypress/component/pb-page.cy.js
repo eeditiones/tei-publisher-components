@@ -7,7 +7,7 @@ describe('pb-page', () => {
     cy.intercept('GET', '**/i18n/common/de.json', { fixture: 'i18n/common/de.json' })
   }
 
-  it('reports endpoint and language', () => {
+  it('should report endpoint and language', () => {
     stubLocales()
     cy.mount('<pb-page endpoint="." require-language language="de" api-version="1.0.0"></pb-page>')
     cy.waitForEvent('pb-page-ready').then((ev) => {
@@ -18,7 +18,7 @@ describe('pb-page', () => {
     })
   })
 
-  it('allows only one pb-page', () => {
+  it('should allow only one pb-page', () => {
     stubLocales()
     cy.mount(`
       <div>

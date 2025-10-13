@@ -5,7 +5,7 @@ import '../../../src/pb-panel.js'
 import '../../../src/pb-zoom.js'
 
 describe('pb-zoom', () => {
-  it('emits pb-zoom and grid reacts', () => {
+  it('should emit pb-zoom and grid reacts', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-zoom id="zin" direction="in">+</pb-zoom>

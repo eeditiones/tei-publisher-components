@@ -3,7 +3,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-autocomplete.js'
 
 describe('pb-autocomplete', () => {
-  it('filters suggestions on input and emits selection when an option is chosen', () => {
+  it('should filter suggestions on input and emit selection when an option is chosen', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-autocomplete name="q"></pb-autocomplete>
@@ -37,7 +37,7 @@ describe('pb-autocomplete', () => {
     cy.get('@inputEvent').should('have.been.called')
   })
 
-  it('preloads suggestions on page ready when preload is set', () => {
+  it('should preload suggestions on page ready when preload is set', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-autocomplete name="q" source="demo/ac.json" preload></pb-autocomplete>
@@ -60,7 +60,7 @@ describe('pb-autocomplete', () => {
     })
   })
 
-  it('submits in native form with static suggestions', () => {
+  it('should submit in native form with static suggestions', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <form action="" id="form">

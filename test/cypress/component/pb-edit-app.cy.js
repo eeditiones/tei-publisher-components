@@ -2,7 +2,7 @@
 import '../../../src/pb-edit-app.js'
 
 describe('pb-edit-app', () => {
-  it('mounts', () => {
+  it('should mount', () => {
     cy.intercept('GET', '**/api/templates*', {
       statusCode: 200,
       body: [{ name: 'view.html', title: 'Default Template' }]
@@ -15,7 +15,7 @@ describe('pb-edit-app', () => {
     cy.get('pb-edit-app').should('exist')
   })
 
-  it('renders native buttons instead of paper-button', () => {
+  it('should render native buttons instead of paper-button', () => {
     cy.intercept('GET', '**/api/templates*', {
       statusCode: 200,
       body: [{ name: 'view.html', title: 'Default Template' }]

@@ -11,7 +11,7 @@ describe('pb-media-query', () => {
   beforeEach(() => {
     cy.mount(base)
   })
-  it('renders content when query matches and emits changed(true)', () => {
+  it('should render content when query matches and emit changed(true)', () => {
     cy.window().then((win) => {
       // Stub matchMedia to return matches=true
       cy.stub(win, 'matchMedia').callsFake(() => ({
@@ -28,7 +28,7 @@ describe('pb-media-query', () => {
     cy.get('#inner').should('have.text', 'Shown')
   })
 
-  it('does not render when query does not match', () => {
+  it('should not render when query does not match', () => {
     cy.window().then((win) => {
       // Stub matchMedia to return matches=false
       cy.stub(win, 'matchMedia').callsFake(() => ({
@@ -48,7 +48,7 @@ describe('pb-media-query', () => {
     cy.get('#inner').should('not.be.visible')
   })
 
-  it('emits changed events when match state toggles', () => {
+  it('should emit changed events when match state toggles', () => {
     cy.window().then((win) => {
       // Toggleable stub
       let matches = false
@@ -82,7 +82,7 @@ describe('pb-media-query', () => {
     cy.get('#mq').should('have.prop', 'match', false)
   })
 
-  it('updates when query attribute changes', () => {
+  it('should update when query attribute changes', () => {
     cy.window().then((win) => {
       // Stub matchMedia to reflect based on the provided query string
       cy.stub(win, 'matchMedia').callsFake((q) => ({
@@ -108,7 +108,7 @@ describe('pb-media-query', () => {
     cy.get('#mq').should('have.prop', 'match', true)
   })
 
-  it('fires changed events with expected detail values', () => {
+  it('should fire changed events with expected detail values', () => {
     cy.window().then((win) => {
       let matches = false
       cy.stub(win, 'matchMedia').callsFake(() => ({

@@ -5,7 +5,6 @@ import '../../../src/pb-panel.js'
 import '../../../src/pb-grid-action.js'
 
 describe('pb-grid', () => {
-  // Base markup for default cases: direct pb-panel child
   const base = `
     <pb-page endpoint="." api-version="1.0.0">
       <pb-grid id="grid">
@@ -21,7 +20,8 @@ describe('pb-grid', () => {
     cy.mount(base)
     cy.resetPanels('#grid')
   })
-  it('can open a panel and emit pb-panel', () => {
+
+  it('should open a panel and emit pb-panel', () => {
     cy.get('pb-grid pb-panel').then(($panel) => {
       const panel = $panel[0]
       const p = new Cypress.Promise((resolve) => {
@@ -32,7 +32,6 @@ describe('pb-grid', () => {
       return cy.wrap(p)
     }).then((ev) => {
       expect(ev.detail.active).to.equal(1)
-      // Wait for panel re-render, then assert selectedIndex/value on native select
       cy.get('pb-panel').then(($p) => $p[0].updateComplete).then(() => {
         cy.get('pb-panel').find('select[name="panels"]').should(($select) => {
           const el = /** @type {HTMLSelectElement} */ ($select[0])
@@ -43,7 +42,7 @@ describe('pb-grid', () => {
     })
   })
 
-  it('supports add/remove panels and maintains state', () => {
+  it('should support add/remove panels and maintain state', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -70,7 +69,7 @@ describe('pb-grid', () => {
     })
   })
 
-  it('reorders panels via pb-drop', () => {
+  it('should reorder panels via pb-drop', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -88,14 +87,11 @@ describe('pb-grid', () => {
       .then(($grid) => $grid[0].updateComplete)
       .then(() => {
         const grid = /** @type {any} */ (document.getElementById('grid'))
-        // Open two panels: [0, 1]
         grid.addPanel(0)
         grid.addPanel(1)
-        // Move second panel (index 1) before the first panel
         const first = grid.querySelectorAll('._grid_panel')[0]
         grid.dispatchEvent(new CustomEvent('pb-drop', { detail: { panel: '1', target: first }, bubbles: true, composed: true }))
       })
-    // Assert DOM order reflects reorder (retryable) without enforcing exact count
     cy.get('#grid ._grid_panel').should(($panels) => {
       expect($panels.length).to.be.gte(2)
       expect($panels.eq(0)).to.have.attr('active', '1')
@@ -103,8 +99,7 @@ describe('pb-grid', () => {
     })
   })
 
-  it('zooms in/out by adjusting font-size', () => {
-    // base is mounted; set initial font-size
+  it('should zoom in/out by adjusting font-size', () => {
     cy.get('#grid').invoke('attr', 'style', 'font-size: 10px')
     cy.get('#grid').then(($grid) => {
       const grid = $grid[0]
@@ -117,7 +112,7 @@ describe('pb-grid', () => {
     })
   })
 
-  it('computes column widths from child max-width', () => {
+  it('should compute column widths from child max-width', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -134,14 +129,13 @@ describe('pb-grid', () => {
       const grid = /** @type {any} */ ($grid[0])
       grid.addPanel(0)
       grid.addPanel(1)
-      // Force update to compute widths
       grid._update()
       const val = grid.style.getPropertyValue('--pb-computed-column-widths').trim()
       expect(val).to.contain('200px')
     })
   })
 
-  it('pb-grid-action no-ops when grid selector is invalid', () => {
+  it('should no-op when grid selector is invalid', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid-action id="act" grid="#missing"><span>Do it</span></pb-grid-action>
@@ -154,7 +148,7 @@ describe('pb-grid', () => {
     })
   })
 
-  it('grid-action adds a panel when clicked', () => {
+  it('should add a panel when clicked', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -168,7 +162,6 @@ describe('pb-grid', () => {
         <pb-grid-action id="act" grid="#grid" action="add" initial="0">Add</pb-grid-action>
       </pb-page>
     `)
-    // Reset registry to avoid leftover state from previous tests
     cy.get('#grid').then(($grid) => {
       const grid = $grid[0]
       cy.window().then((win) => {
@@ -178,11 +171,10 @@ describe('pb-grid', () => {
       })
     })
     cy.get('#act').find('button').click({ force: true })
-    // Assert a panel with active="0" exists
     cy.get('#grid ._grid_panel[active="0"]').should('exist')
   })
-  // see #249
-  it.skip('grid-action removes the containing panel (flaky, revisit after deps update)', () => {
+
+  it.skip('should remove the containing panel (flaky, revisit after deps update)', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -203,7 +195,6 @@ describe('pb-grid', () => {
     })
     cy.get('#grid ._grid_panel').should('have.length.at.least', 2)
     cy.get('#rm').find('button').click({ force: true })
-    // Expect panel count to eventually drop below initial
     cy.get('#grid ._grid_panel').then(($panels) => {
       const initial = $panels.length
       cy.get('#grid ._grid_panel').should(($p2) => {

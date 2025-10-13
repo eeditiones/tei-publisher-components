@@ -6,7 +6,7 @@ describe('pb-drawer', () => {
     cy.mount('<button id="toggle">Toggle</button><pb-drawer id="dr" toggle="toggle" max-width="10000px"><div>Content</div></pb-drawer>')
   })
 
-  it('toggles open via toggle button and closes on pb-refresh', () => {
+  it('should toggle open via toggle button and close on pb-refresh', () => {
     cy.get('#toggle').click()
     cy.get('#dr').should('have.attr', 'opened')
     cy.document().then((doc) => {

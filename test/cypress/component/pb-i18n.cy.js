@@ -4,8 +4,7 @@ import '../../../src/pb-i18n.js'
 import { defaultChannel } from '../../../src/pb-mixin.js'
 
 describe('pb-i18n', () => {
-
-  it('uses default translations and attribute bindings', () => {
+  it('should use default translations and attribute bindings', () => {
     cy.mount(`
       <pb-page require-language language="en" api-version="1.0.0">
         <span data-i18n="document.contents">unset</span>
@@ -24,7 +23,7 @@ describe('pb-i18n', () => {
     })
   })
 
-  it('reacts to change of options', () => {
+  it('should react to change of options', () => {
     cy.mount(`
       <pb-page require-language language="en" api-version="1.0.0">
         <pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n>
@@ -49,13 +48,12 @@ describe('pb-i18n', () => {
     })
   })
 
-  it('reacts to language change', () => {
+  it('should react to language change', () => {
     cy.mount(`
       <pb-page require-language api-version="1.0.0">
         <span data-i18n="document.contents">unset</span>
       </pb-page>
     `)
-    // Ensure initial i18n applied, then trigger language change to German
     cy.waitForEvent('pb-i18n-update')
     cy.fixture('i18n/common/en.json').then((fx) => {
       cy.get('span[data-i18n]').should('have.text', fx.document.contents)
@@ -69,8 +67,7 @@ describe('pb-i18n', () => {
     })
   })
 
-  it('loads custom translations (demo)', () => {
-    // stub demo-specific locales
+  it('should load custom translations (demo)', () => {
     cy.intercept('GET', '**/demo/i18n/app_en.json', { fixture: 'demo/i18n/app_en.json' })
     cy.intercept('GET', '**/demo/i18n/custom_en.json', { fixture: 'demo/i18n/custom_en.json' })
     cy.intercept('GET', '**/demo/i18n/app_de.json', { fixture: 'demo/i18n/app_de.json' }).as('demoAppDe')
@@ -98,7 +95,7 @@ describe('pb-i18n', () => {
     })
   })
 
-  it('translates to German (demo)', () => {
+  it('should translate to German (demo)', () => {
     cy.intercept('GET', '**/demo/i18n/app_en.json', { fixture: 'demo/i18n/app_en.json' })
     cy.intercept('GET', '**/demo/i18n/custom_en.json', { fixture: 'demo/i18n/custom_en.json' })
     cy.intercept('GET', '**/demo/i18n/app_de.json', { fixture: 'demo/i18n/app_de.json' })

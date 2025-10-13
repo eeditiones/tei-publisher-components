@@ -7,11 +7,9 @@ describe('pb-highlight', () => {
     cy.mount(html)
   })
 
-  it('emits and reacts to highlight events by key', () => {
-    // Hover triggers emit and should highlight matching key
+  it('should emit and react to highlight events by key', () => {
     cy.get('#a').find('span').first().trigger('mouseover', { force: true })
     cy.get('#b').find('#content').should('have.class', 'highlight-on')
-    // Global off event removes highlight
     cy.document().then((doc) => {
       const ev = new CustomEvent('pb-highlight-off', { detail: { key: '__default__', source: {} }, bubbles: true, composed: true })
       doc.dispatchEvent(ev)
@@ -19,7 +17,7 @@ describe('pb-highlight', () => {
     cy.get('#b').find('#content').should('have.class', 'highlight-off')
   })
 
-  it('does not react when disabled', () => {
+  it('should not react when disabled', () => {
     cy.get('#b').then(($el) => { $el[0].command('disable', true) })
     cy.get('#a').find('span').first().trigger('mouseover', { force: true })
     cy.get('#b').find('#content').should('not.exist')
