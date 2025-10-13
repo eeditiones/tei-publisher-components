@@ -3,6 +3,10 @@
 const fallbackOddResponse = require('../fixtures/odd-editor/sample.json')
 
 beforeEach(() => {
+  // Clear cookies and localStorage to ensure clean state between tests
+  cy.clearCookies()
+  cy.clearLocalStorage()
+  
   // Skip mocking if running against real backend
   if (Cypress.env('realBackend')) {
     return
@@ -73,9 +77,11 @@ beforeEach(() => {
     body: ''
   })
 
+  // Collection API - centralized defaults (can be overridden by specific tests)
+  // Note: Tests can override these by defining more specific intercepts
   cy.intercept({
     method: 'GET',
-    pathname: /\/exist\/apps\/tei-publisher\/api\/(browse|collection|docs).*$/
+    pathname: /\/exist\/apps\/tei-publisher\/api\/(browse|docs).*$/
   }, {
     statusCode: 200,
     headers: { 'content-type': 'text/html' },
@@ -114,15 +120,7 @@ beforeEach(() => {
     req.reply({ statusCode: 200, headers: { 'content-type': 'application/json' }, body: stub })
   }).as('stubOddApi')
 
-  cy.intercept({ method: 'GET', pathname: /\/exist\/apps\/tei-publisher\/api\/odd$/ }, {
-    statusCode: 200,
-    headers: { 'content-type': 'application/json' },
-    body: [
-      { name: 'default', label: 'Default' },
-      { name: 'alt', label: 'Alternative' }
-    ]
-  }).as('stubOddList')
-
+  // ODD API - centralized defaults (can be overridden by specific tests)
   cy.intercept({ method: 'GET', pathname: /\/api\/odd$/ }, {
     statusCode: 200,
     headers: { 'content-type': 'application/json' },
@@ -130,7 +128,7 @@ beforeEach(() => {
       { name: 'default', label: 'Default' },
       { name: 'alt', label: 'Alternative' }
     ]
-  })
+  }).as('stubOddList')
 
   cy.intercept({ method: 'GET', pathname: /\/modules\/lib\/components-list-templates\.xql$/ }, {
     statusCode: 200,
@@ -195,17 +193,7 @@ beforeEach(() => {
     })
   }).as('stubCollection')
 
-  cy.intercept({ method: 'GET', pathname: /\/exist\/apps\/tei-publisher\/api\/search\/autocomplete$/ }, (req) => {
-    req.reply({
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: [
-        { text: 'Kant', value: 'kant' },
-        { text: 'Descartes', value: 'descartes' }
-      ]
-    })
-  }).as('stubAutocomplete')
-
+  // Autocomplete API - centralized defaults (can be overridden by specific tests)
   cy.intercept({ method: 'GET', pathname: /\/api\/search\/autocomplete$/ }, (req) => {
     req.reply({
       statusCode: 200,
@@ -215,7 +203,7 @@ beforeEach(() => {
         { text: 'Descartes', value: 'descartes' }
       ]
     })
-  })
+  }).as('stubAutocomplete')
 
   cy.intercept({ method: 'GET', pathname: /\/demo\/api\/login\/?$/ }, {
     statusCode: 200,

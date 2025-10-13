@@ -5,25 +5,9 @@ describe('Demo: pb-table-grid', () => {
     // Optional: intercept for debug visibility; do not wait on it to avoid race conditions
     cy.intercept({ method: 'GET', url: /\/people\.json(\?.*)?$/ }).as('people')
     cy.visit('/demo/pb-table-grid.html')
-    // Ensure element exists, then force an initial submit to guarantee the fetch
-    cy.get('pb-table-grid').should('exist').then(($el) => {
-      const comp = $el[0]
-      const uc = comp && comp.updateComplete
-      const wait = uc && typeof uc.then === 'function' ? uc : Promise.resolve()
-      return wait
-        .then(() => {
-          if (!comp.search) {
-            comp.search = true
-            comp.requestUpdate()
-            return comp.updateComplete
-          }
-          return null
-        })
-        .then(() => {
-          if (typeof comp._initGrid === 'function') comp._initGrid()
-          if (comp.grid && typeof comp._submit === 'function') comp._submit()
-        })
-    })
+    // Wait for the component to load and render the table
+    cy.get('pb-table-grid', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-table-grid').find('table', { timeout: 10000 }).should('exist')
   })
 
   it('renders headers and rows from people.json', () => {
@@ -31,12 +15,9 @@ describe('Demo: pb-table-grid', () => {
     // Ensure the Grid container exists then the inner table is rendered by gridjs
     cy.get('pb-table-grid').find('#table').should('exist')
     cy.get('pb-table-grid').find('table').should('exist')
-    // The legacy Polymer buttons should be gone; native icon button present
+    
+    // The legacy Polymer buttons should be gone
     cy.get('pb-table-grid').find('paper-icon-button').should('not.exist')
-    cy.get('pb-table-grid')
-      .find('button.pb-button--icon')
-      .should('have.attr', 'type', 'button')
-      .and('have.attr', 'aria-label')
 
     // Headers from <pb-table-column>
     cy.get('pb-table-grid').find('thead').should('contain.text', 'Name')

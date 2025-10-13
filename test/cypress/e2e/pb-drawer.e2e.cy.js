@@ -1,7 +1,20 @@
 // E2E: pb-drawer
 describe('Demo: pb-drawer', () => {
   beforeEach(() => {
+    // Mock the contents API call that pb-load makes
+    cy.intercept('GET', '**/api/document/**/contents**', {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: '<ul><li><a href="#section1">Section 1</a></li><li><a href="#section2">Section 2</a></li></ul>'
+    }).as('contentsApi')
+    
     cy.visit('/demo/pb-drawer.html')
+    // Wait for pb-page-ready event to ensure all components are initialized
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        win.addEventListener('pb-page-ready', resolve, { once: true })
+      })
+    })
   })
 
   it('renders and is closed by default', () => {

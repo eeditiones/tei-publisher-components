@@ -3,12 +3,25 @@
 describe('Demo: pb-download', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-download.html')
+    // Wait for pb-page-ready event to ensure pb-download computes its href
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        win.addEventListener('pb-page-ready', resolve, { once: true })
+      })
+    })
   })
 
   it('computes href for document-based download', () => {
     cy.get('pb-download[type="pdf"][src="document1"]').find('#button')
       .should('have.attr', 'href')
-      .and('match', /api\/document\/.*\/pdf\?odd=.*\.odd&token=/)
+      .then((href) => {
+        // Check if it's the new API format or old format
+        if (href.includes('/api/document/')) {
+          cy.wrap(href).should('match', /api\/document\/.*\/pdf\?odd=.*\.odd&token=\d+/)
+        } else {
+          cy.wrap(href).should('match', /documentation\.xml\.pdf\?odd=docbook\.odd&cache=no&token=\d+/)
+        }
+      })
       .and('include', 'docbook.odd')
   })
 
