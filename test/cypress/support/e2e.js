@@ -97,6 +97,48 @@ beforeEach(() => {
     body: '<ul class="pb-mock-list"><li><a href="#">Collection Entry</a></li></ul>'
   }).as('stubCollectionPage')
 
+  // Comprehensive Collection API coverage - centralized defaults
+  // These cover all the patterns used by pb-browse-docs and similar components
+  cy.intercept('GET', '**/api/collection**', {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: {
+      items: [{ id: 'collection-entry', label: 'Collection Item' }],
+      start: 1,
+      total: 1
+    }
+  }).as('stubCollectionApi')
+
+  cy.intercept('GET', '**/collection/**', {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: {
+      items: [{ id: 'collection-entry', label: 'Collection Item' }],
+      start: 1,
+      total: 1
+    }
+  }).as('stubCollectionOldApi')
+
+  cy.intercept('GET', '**/exist/apps/tei-publisher/api/collection**', {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: {
+      items: [{ id: 'collection-entry', label: 'Collection Item' }],
+      start: 1,
+      total: 1
+    }
+  }).as('stubCollectionExistApi')
+
+  cy.intercept('GET', '**/exist/apps/tei-publisher/collection/**', {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: {
+      items: [{ id: 'collection-entry', label: 'Collection Item' }],
+      start: 1,
+      total: 1
+    }
+  }).as('stubCollectionExistOldApi')
+
   cy.intercept({
     method: 'GET',
     pathname: /\/exist\/apps\/tei-publisher\/api\/templates$/
@@ -222,6 +264,13 @@ beforeEach(() => {
     headers: { 'content-type': 'application/json' },
     body: []
   }).as('stubDemoOdd')
+
+  // Document Contents API - centralized defaults
+  cy.intercept('GET', '**/api/document/**/contents**', {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: '<ul><li><a href="#section1">Section 1</a></li><li><a href="#section2">Section 2</a></li></ul>'
+  }).as('stubDocumentContents')
 
 })
 
