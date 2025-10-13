@@ -101,7 +101,6 @@ export function getSubscribedChannels(elem) {
  * channel *transcription* and another one subscribing to *translation*. By using distinct
  * channels, other components can address only one of the two.
  *
- * @polymer
  * @mixinFunction
  */
 export const pbMixin = superclass =>
