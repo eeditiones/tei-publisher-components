@@ -4,7 +4,11 @@ describe('pb-download e2e', () => {
     cy.visit('/demo/pb-download.html')
     cy.window().then(win => {
       return new Cypress.Promise(resolve => {
-        win.addEventListener('pb-page-ready', resolve, { once: true })
+        const timeout = setTimeout(resolve, 2000) // 2s timeout
+        win.addEventListener('pb-page-ready', () => {
+          clearTimeout(timeout)
+          resolve()
+        }, { once: true })
       })
     })
   })

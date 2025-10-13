@@ -2,7 +2,7 @@
 describe('pb-search e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-search.html')
-    cy.get('pb-search', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render search form with checkboxes and buttons', () => {

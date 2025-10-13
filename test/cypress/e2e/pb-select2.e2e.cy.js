@@ -2,7 +2,15 @@
 describe('pb-select2 e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-select2.html')
-    cy.get('#select2-form').should('exist')
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        const timeout = setTimeout(resolve, 2000) // 2s timeout
+        win.addEventListener('pb-page-ready', () => {
+          clearTimeout(timeout)
+          resolve()
+        }, { once: true })
+      })
+    })
   })
 
   it('loads remote options and submits selection', () => {

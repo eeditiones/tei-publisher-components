@@ -2,6 +2,7 @@
 describe('pb-leaflet-map e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-leaflet-map.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should initialize Leaflet and render a base layer', () => {

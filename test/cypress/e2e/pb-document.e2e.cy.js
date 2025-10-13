@@ -2,6 +2,7 @@
 describe('pb-document e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-document.html')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should render the demo with two pb-document elements', () => {

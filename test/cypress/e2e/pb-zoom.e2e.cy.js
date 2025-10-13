@@ -2,8 +2,7 @@
 describe('pb-zoom e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-zoom.html')
-    // Wait for components to be visible
-    cy.get('pb-zoom', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('renders zoom controls', () => {

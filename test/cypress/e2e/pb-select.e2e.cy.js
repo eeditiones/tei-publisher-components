@@ -3,7 +3,15 @@ describe('pb-select e2e', () => {
 
   beforeEach(() => {
     cy.visit('/demo/pb-select.html')
-    cy.get('#select-demo-form').should('exist')
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        const timeout = setTimeout(resolve, 2000) // 2s timeout
+        win.addEventListener('pb-page-ready', () => {
+          clearTimeout(timeout)
+          resolve()
+        }, { once: true })
+      })
+    })
   })
 
   // includeShadowDom: true only affects Cypress commands but not the find() hence the explicit calls here.

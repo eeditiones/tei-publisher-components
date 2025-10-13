@@ -2,17 +2,19 @@
 describe('pb-mei e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-mei.html')
-    cy.get('pb-mei').first().as('viewer')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
+  })
 
+  it('should toggle play and pause controls', () => {
+    cy.get('pb-mei').first().as('viewer')
+    
     cy.get('@viewer')
       .find('#player button.pb-button--icon', { timeout: 10000 })
       .should('have.length.at.least', 2)
     cy.get('@viewer').should($el => {
       expect($el[0]._midiPlayer, 'midi player initialized').to.exist
     })
-  })
 
-  it('should toggle play and pause controls', () => {
     cy.get('@viewer')
       .find('#player button')
       .first()

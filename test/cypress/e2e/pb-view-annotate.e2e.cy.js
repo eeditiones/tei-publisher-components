@@ -2,8 +2,7 @@
 describe('pb-view-annotate e2e', () => {
   beforeEach(() => {
     cy.visit('/')
-    // Wait for page to load
-    cy.get('body', { timeout: 10000 }).should('be.visible')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('can instantiate pb-view-annotate component', () => {

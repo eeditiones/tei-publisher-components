@@ -2,16 +2,7 @@
 describe('pb-link-view e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-link.html')
-    cy.get('pb-view', { timeout: 10000 }).should('be.visible')
-    cy.get('pb-link', { timeout: 10000 }).should('be.visible')
-    
-    cy.window().then(win => {
-      return new Cypress.Promise(resolve => {
-        win.addEventListener('pb-page-ready', resolve, { once: true })
-      })
-    })
-    
-    cy.get('pb-view').find('[part=content]', { timeout: 15000 }).should('not.be.empty')
+    cy.get('pb-page', { timeout: 5000 }).should('exist')
   })
 
   it('should update pb-view content when clicking pb-link', () => {

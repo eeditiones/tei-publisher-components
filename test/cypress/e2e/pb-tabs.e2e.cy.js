@@ -2,6 +2,15 @@
 describe('pb-tabs e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-tabs.html')
+    cy.window().then(win => {
+      return new Cypress.Promise(resolve => {
+        const timeout = setTimeout(resolve, 2000) // 2s timeout
+        win.addEventListener('pb-page-ready', () => {
+          clearTimeout(timeout)
+          resolve()
+        }, { once: true })
+      })
+    })
   })
 
   it('switches pages when clicking tabs', () => {
