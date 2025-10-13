@@ -1,6 +1,5 @@
-// E2E: pb-popover demo
-
-describe('Demo: pb-popover', () => {
+// Cypress E2E: pb-popover
+describe('pb-popover e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-popover.html')
   })

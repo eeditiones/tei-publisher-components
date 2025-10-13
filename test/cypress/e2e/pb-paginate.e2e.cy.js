@@ -1,6 +1,5 @@
-// E2E: pb-paginate component functionality
-
-describe('pb-paginate', () => {
+// Cypress E2E: pb-paginate
+describe('pb-paginate e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-browse-docs.html')
     cy.get('pb-paginate', { timeout: 10000 }).should('exist')

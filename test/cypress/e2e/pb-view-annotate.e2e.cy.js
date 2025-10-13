@@ -1,6 +1,5 @@
-// E2E: pb-view-annotate annotation functionality
-
-describe('Demo: pb-view-annotate', () => {
+// Cypress E2E: pb-view-annotate
+describe('pb-view-annotate e2e', () => {
   beforeEach(() => {
     cy.visit('/')
     // Wait for page to load

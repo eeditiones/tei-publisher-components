@@ -1,6 +1,5 @@
-// E2E: pb-media-query component functionality
-
-describe('pb-media-query', () => {
+// Cypress E2E: pb-media-query
+describe('pb-media-query e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-media-query.html')
   })

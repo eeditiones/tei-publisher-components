@@ -1,5 +1,5 @@
-// E2E: pb-progress loading states
-describe('Demo: pb-progress', () => {
+// Cypress E2E: pb-progress
+describe('pb-progress e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-progress.html')
   })

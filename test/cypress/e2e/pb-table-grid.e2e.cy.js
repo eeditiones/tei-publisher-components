@@ -1,6 +1,5 @@
-// E2E: pb-table-grid component functionality
-
-describe('pb-table-grid', () => {
+// Cypress E2E: pb-table-grid
+describe('pb-table-grid e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-table-grid.html')
     cy.get('pb-table-grid', { timeout: 10000 }).should('be.visible')

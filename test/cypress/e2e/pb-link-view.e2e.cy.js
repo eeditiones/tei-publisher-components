@@ -1,6 +1,5 @@
-// E2E: pb-link-view component functionality
-
-describe('pb-link-view', () => {
+// Cypress E2E: pb-link-view
+describe('pb-link-view e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-link.html')
     cy.get('pb-view', { timeout: 10000 }).should('be.visible')

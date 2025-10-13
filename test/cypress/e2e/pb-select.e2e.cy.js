@@ -1,5 +1,5 @@
-// E2E coverage for demo/pb-select.html
-describe('Demo: pb-select', () => {
+// Cypress E2E: pb-select
+describe('pb-select e2e', () => {
 
   beforeEach(() => {
     cy.visit('/demo/pb-select.html')

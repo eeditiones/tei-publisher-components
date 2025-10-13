@@ -1,5 +1,5 @@
-// E2E: pb-view scaffolded test
-describe('Demo: pb-view', () => {
+// Cypress E2E: pb-view
+describe('pb-view e2e', () => {
   beforeEach(() => {
     // do not log css transform requests
     cy.intercept(

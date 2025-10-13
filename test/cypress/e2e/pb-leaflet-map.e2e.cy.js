@@ -1,6 +1,5 @@
-// E2E: pb-leaflet-map component functionality
-
-describe('pb-leaflet-map', () => {
+// Cypress E2E: pb-leaflet-map
+describe('pb-leaflet-map e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-leaflet-map.html')
   })

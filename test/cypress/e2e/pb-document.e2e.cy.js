@@ -1,6 +1,5 @@
-// E2E: pb-document component functionality
-
-describe('pb-document', () => {
+// Cypress E2E: pb-document
+describe('pb-document e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-document.html')
   })

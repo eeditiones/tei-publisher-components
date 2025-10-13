@@ -1,6 +1,5 @@
-// E2E: pb-panel panel functionality
-
-describe('Demo: pb-panel', () => {
+// Cypress E2E: pb-panel
+describe('pb-panel e2e', () => {
   beforeEach(() => {
     cy.visit('/demo/pb-grid.html')
     // Wait for components to be visible
