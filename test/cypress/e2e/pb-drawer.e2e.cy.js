@@ -1,12 +1,7 @@
 // E2E: pb-drawer
 describe('Demo: pb-drawer', () => {
   beforeEach(() => {
-    // Mock the contents API call that pb-load makes
-    cy.intercept('GET', '**/api/document/**/contents**', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: '<ul><li><a href="#section1">Section 1</a></li><li><a href="#section2">Section 2</a></li></ul>'
-    }).as('contentsApi')
+    // Document contents API intercept is now centralized in e2e.js support file
     
     cy.visit('/demo/pb-drawer.html')
     // Wait for pb-page-ready event to ensure all components are initialized

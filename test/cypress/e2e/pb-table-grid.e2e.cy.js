@@ -2,8 +2,7 @@
 
 describe('Demo: pb-table-grid', () => {
   beforeEach(() => {
-    // Optional: intercept for debug visibility; do not wait on it to avoid race conditions
-    cy.intercept({ method: 'GET', url: /\/people\.json(\?.*)?$/ }).as('people')
+    // People JSON API intercept is now centralized in e2e.js support file
     cy.visit('/demo/pb-table-grid.html')
     // Wait for the component to load and render the table
     cy.get('pb-table-grid', { timeout: 10000 }).should('be.visible')

@@ -8,31 +8,8 @@ before(() => {
 
 describe('Demo: pb-odd-editor', () => {
   beforeEach(() => {
-    // Override centralized intercepts with test-specific data
-    cy.intercept('GET', '**/api/version', {
-      statusCode: 200,
-      body: { api: '1.0.0', app: { version: '1.0.0' }, engine: { version: '1.0.0' } }
-    }).as('version')
-
-    // Mock login endpoints to prevent 401 errors
-    cy.intercept('GET', '**/exist/apps/tei-publisher/login*', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: { loggedIn: false, user: null, groups: [], success: true }
-    }).as('mockLogin')
-    
-    cy.intercept('POST', '**/exist/apps/tei-publisher/login*', {
-      statusCode: 200,
-      headers: { 'content-type': 'application/json' },
-      body: { loggedIn: false, user: null, groups: [], success: true }
-    }).as('mockLoginPost')
-
-    cy.intercept('GET', '**/api/odd/**', {
-      statusCode: 200,
-      body: oddFixture
-    }).as('stubOddApi')
-
-    Cypress.env('stubOddResponse', oddFixture)
+    // All intercepts are now centralized in e2e.js support file
+    // No need for duplicate intercepts here
 
     cy.visit('/demo/pb-odd-editor.html')
     // Wait for the component to be visible instead of waiting for events
