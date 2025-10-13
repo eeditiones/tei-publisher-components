@@ -7,6 +7,19 @@ describe('Demo: pb-browse-docs', () => {
       headers: { 'content-type': 'application/json' },
       body: { api: '1.0.0', app: { version: '1.0.0' }, engine: { version: '1.0.0' } }
     }).as('version')
+
+    // Mock login endpoints to prevent 401 errors
+    cy.intercept('GET', '**/exist/apps/tei-publisher/login*', {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: { loggedIn: false, user: null, groups: [], success: true }
+    }).as('mockLogin')
+    
+    cy.intercept('POST', '**/exist/apps/tei-publisher/login*', {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: { loggedIn: false, user: null, groups: [], success: true }
+    }).as('mockLoginPost')
     
     // Override ALL collection endpoints to return consistent data
     // This covers both new API (/api/collection) and old API (/collection/) patterns
