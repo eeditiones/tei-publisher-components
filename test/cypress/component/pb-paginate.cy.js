@@ -6,7 +6,7 @@ describe('pb-paginate', () => {
     cy.mount('<pb-paginate id="pg" per-page="10"></pb-paginate>')
   })
 
-  it('emits events when page is clicked after receiving results', () => {
+  it('should emit events when page is clicked after receiving results', () => {
     cy.get('#pg').then($el => {
       const host = $el[0]
       host._refresh({ detail: { start: 1, count: 30 } })

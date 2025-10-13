@@ -3,7 +3,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-facsimile.js'
 
 describe('pb-facsimile', () => {
-  it('navigates to target page and adds overlay for annotation', () => {
+  it('should navigate to target page and add overlay for annotation', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-facsimile></pb-facsimile>

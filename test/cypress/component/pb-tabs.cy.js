@@ -16,7 +16,7 @@ describe('pb-tabs', () => {
     cy.get('#tabs').then(($el) => $el[0].updateComplete)
   })
 
-  it('selects first tab by default and switches when selected changes', () => {
+  it('should select first tab by default and switch when selected changes', () => {
     cy.get('#tabs').find('paper-tab, paper-tabs, iron-pages').should('not.exist')
     cy.get('#tabs').find('[slot="page"]').eq(0).should('not.be.hidden')
 

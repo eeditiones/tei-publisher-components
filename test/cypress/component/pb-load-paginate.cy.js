@@ -3,7 +3,7 @@ import '../../../src/pb-load.js'
 import '../../../src/pb-paginate.js'
 
 describe('pb-load + pb-paginate', () => {
-    it('updates paginate on results and triggers reload on page click', () => {
+    it('should update paginate on results and trigger reload on page click', () => {
         cy.intercept('GET', '**/demo/fragment.html*', req => {
             const start = req.query && req.query.start ? String(req.query.start) : '1'
             const body = start === '11' ? '<div id="content">Page2</div>' : '<div id="content">Page1</div>'

@@ -8,12 +8,12 @@ describe('pb-progress', () => {
     cy.mount(base)
   })
 
-  it('is hidden and disabled by default', () => {
+  it('should be hidden and disabled by default', () => {
     cy.get('#p').should('have.css', 'visibility', 'hidden')
     cy.get('#p').find('progress').should('have.attr', 'disabled')
   })
 
-  it('shows on pb-start-update and hides on pb-end-update', () => {
+  it('should show on pb-start-update and hide on pb-end-update', () => {
     cy.document().then((doc) => {
       doc.dispatchEvent(new CustomEvent('pb-start-update', { detail: { key: '__default__' }, bubbles: true, composed: true }))
     })

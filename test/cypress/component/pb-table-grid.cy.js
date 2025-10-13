@@ -4,14 +4,13 @@ import '../../../src/pb-table-grid.js'
 import '../../../src/pb-table-column.js'
 
 describe('pb-table-grid', () => {
-  it('renders rows from server and supports search', () => {
+  it('should render rows from server and support search', () => {
     const rows = [
       { name: 'Kant', birth: 1724, death: 1804 },
       { name: 'Hegel', birth: 1770, death: 1831 },
       { name: 'Fichte', birth: 1762, death: 1814 },
     ]
 
-    // Robustly stub fetch for our grid endpoint (pre- and post-mount)
     cy.stubFetchJson(/demo\/grid\.json/, (href, win) => {
       const url = new URL(href, win.location.origin)
       const limit = Number(url.searchParams.get('limit') || 10)
@@ -35,17 +34,13 @@ describe('pb-table-grid', () => {
         </pb-table-grid>
       </pb-page>
     `)
-    // After mount, ensure grid instance exists and trigger first request
 
     cy.waitForEvent('pb-page-ready')
-    // Ensure grid instance is created, then force a render to trigger first request
     cy.get('pb-table-grid').should(($el) => { expect($el[0].grid, 'grid instance').to.exist })
     cy.get('pb-table-grid').then(($el) => { $el[0]._submit() })
     cy.get('@fetch').should('be.called')
-    // Assert first page shows first two names
     cy.get('pb-table-grid').find('#table').should('contain.text', 'Kant').and('contain.text', 'Hegel')
 
-    // Trigger a search programmatically for stability
     cy.get('pb-table-grid').then(($el) => {
       const comp = $el[0]
       comp._params = { ...(comp._params || {}), search: 'he' }
@@ -55,7 +50,7 @@ describe('pb-table-grid', () => {
     cy.get('pb-table-grid').find('#table').should('contain.text', 'Hegel')
   })
 
-  it('works with GridJS v6.2.0', () => {
+  it('should work with GridJS v6.2.0', () => {
     const rows = [
       { name: 'Test', birth: 2000, death: 2020 },
     ]
@@ -79,15 +74,12 @@ describe('pb-table-grid', () => {
     cy.get('pb-table-grid').then($el => {
       const component = $el[0]
       
-      // Test that GridJS v6.2.0 API works
       expect(component.grid).to.exist
       expect(component.grid.config).to.exist
       
-      // Test that the grid renders correctly
       expect(component._initialized).to.be.true
     })
     
-    // Verify the table renders
     cy.get('pb-table-grid').find('#table').should('exist')
   })
 })

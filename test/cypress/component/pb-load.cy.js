@@ -2,8 +2,7 @@
 import '../../../src/pb-load.js'
 
 describe('pb-load', () => {
-  it('loads content via XHR and injects into self', () => {
-    // Stub XHR for iron-ajax
+  it('should load content via XHR and inject into self', () => {
     cy.intercept('GET', '**/demo/fragment.html', {
       statusCode: 200,
       headers: {
@@ -15,7 +14,6 @@ describe('pb-load', () => {
     }).as('frag')
 
     cy.mount('<pb-load id="ld" url="/demo/fragment.html"></pb-load>')
-    // Wait for initial render so iron-ajax exists in shadowRoot, then trigger load
     cy.get('#ld').then(($el) => $el[0].updateComplete).then(() => {
       cy.get('#ld').then(($el) => { $el[0].load() })
     })

@@ -13,8 +13,7 @@ describe('pb-link', () => {
     cy.mount(base)
   })
 
-  it('emits pb-refresh with xml-id', () => {
-    // Configure the link on the mounted base
+  it('should emit pb-refresh with xml-id', () => {
     cy.get('#lnk').invoke('attr', 'xml-id', 'intro')
     const wait = new Cypress.Promise((resolve) => {
       document.addEventListener('pb-refresh', resolve, { once: true })
@@ -25,7 +24,7 @@ describe('pb-link', () => {
     })
   })
 
-  it('emits pb-refresh with node-id and hash', () => {
+  it('should emit pb-refresh with node-id and hash', () => {
     cy.get('#lnk').invoke('attr', 'node-id', '3.5.6').invoke('attr', 'hash', 'p2')
     const wait = new Cypress.Promise((resolve) => {
       document.addEventListener('pb-refresh', resolve, { once: true })
@@ -37,14 +36,13 @@ describe('pb-link', () => {
     })
   })
 
-  it('does not push history when history=false', () => {
+  it('should not push history when history=false', () => {
     cy.get('#lnk').invoke('attr', 'xml-id', 'intro')
     cy.window().then((win) => {
       cy.stub(win.history, 'pushState').as('push')
       const wait = new Cypress.Promise((resolve) => {
         document.addEventListener('pb-refresh', resolve, { once: true })
       })
-      // Ensure component property is false; boolean attribute handling treats presence as true
       cy.get('#lnk').then(($el) => { $el[0].history = false })
       cy.get('#lnk button').click()
       cy.wrap(wait).then((ev) => {
@@ -54,14 +52,13 @@ describe('pb-link', () => {
     })
   })
 
-  it('pushes history by default when clicked', () => {
+  it('should push history by default when clicked', () => {
     cy.get('#lnk').invoke('attr', 'xml-id', 'go')
     cy.window().then((win) => {
       cy.stub(win.history, 'pushState').as('push')
       const wait = new Cypress.Promise((resolve) => {
         document.addEventListener('pb-refresh', resolve, { once: true })
       })
-      // Ensure default behavior: history true
       cy.get('#lnk').then(($el) => { $el[0].history = true })
       cy.get('#lnk button').click()
       cy.wrap(wait).then((ev) => {
@@ -71,7 +68,7 @@ describe('pb-link', () => {
     })
   })
 
-  it('emits pb-refresh with odd/view/xpath parameters', () => {
+  it('should emit pb-refresh with odd/view/xpath parameters', () => {
     cy.get('#lnk')
       .invoke('attr', 'xml-id', 'intro')
       .invoke('attr', 'odd', 'myodd')
@@ -90,9 +87,8 @@ describe('pb-link', () => {
     })
   })
 
-  it('adds active class on pb-visible for matching node-id and hash', () => {
+  it('should add active class on pb-visible for matching node-id and hash', () => {
     cy.get('#lnk').invoke('attr', 'node-id', '3.5.6').invoke('attr', 'hash', 'p2')
-    // Dispatch a matching pb-visible event
     cy.document().then((doc) => {
       const ev = new CustomEvent('pb-visible', { detail: { key: '__default__', data: '3.5.6, p2' }, bubbles: true, composed: true })
       doc.dispatchEvent(ev)

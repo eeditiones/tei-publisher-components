@@ -9,19 +9,19 @@ describe('pb-timeline', () => {
     '?': { count: 2, info: ['<a href="/unknown">Unknown date</a>'] }
   }
 
-  it('mounts', () => {
+  it('should mount', () => {
     cy.mount('<pb-timeline></pb-timeline>')
     cy.get('pb-timeline').should('exist')
   })
 
-  it('accepts url property', () => {
+  it('should accept url property', () => {
     cy.mount('<pb-timeline url="api/timeline"></pb-timeline>')
     cy.get('pb-timeline').then($el => {
       expect($el[0].url).to.equal('api/timeline')
     })
   })
 
-  it('accepts start and end date properties', () => {
+  it('should accept start and end date properties', () => {
     cy.mount('<pb-timeline start-date="2020-01-01" end-date="2020-12-31"></pb-timeline>')
     cy.get('pb-timeline').then($el => {
       expect($el[0].startDate).to.equal('2020-01-01')
@@ -29,14 +29,14 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('accepts scope property', () => {
+  it('should accept scope property', () => {
     cy.mount('<pb-timeline scope="M"></pb-timeline>')
     cy.get('pb-timeline').then($el => {
       expect($el[0].scope).to.equal('M')
     })
   })
 
-  it('accepts scopes array', () => {
+  it('should accept scopes array', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     cy.get('#tl').then($el => {
       $el[0].scopes = ['D', 'M', 'Y']
@@ -44,12 +44,12 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('accepts resettable attribute', () => {
+  it('should accept resettable attribute', () => {
     cy.mount('<pb-timeline resettable></pb-timeline>')
     cy.get('pb-timeline').should('have.attr', 'resettable')
   })
 
-  it('accepts subscribe and emit properties', () => {
+  it('should accept subscribe and emit properties', () => {
     cy.mount('<pb-timeline subscribe="docs" emit="timeline"></pb-timeline>')
     cy.get('pb-timeline').then($el => {
       expect($el[0].subscribe).to.equal('docs')
@@ -57,7 +57,7 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('renders label slot', () => {
+  it('should render label slot', () => {
     cy.mount(`
       <pb-timeline>
         <span slot="label">Time Range: </span>
@@ -66,12 +66,12 @@ describe('pb-timeline', () => {
     cy.get('pb-timeline').should('contain.text', 'Time Range:')
   })
 
-  it('uses pb-fetch for data loading', () => {
+  it('should use pb-fetch for data loading', () => {
     cy.mount('<pb-timeline url="test-url"></pb-timeline>')
     cy.get('pb-timeline').find('pb-fetch').should('exist')
   })
 
-  it('can store timeline bins data', () => {
+  it('should store timeline bins data', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     cy.get('#tl').then($el => {
       // Verify component can accept bins property
@@ -82,7 +82,7 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('shows clear button when resettable and selection exists', () => {
+  it('should show clear button when resettable and selection exists', () => {
     cy.mount('<pb-timeline resettable id="tl"></pb-timeline>')
     
     cy.get('#tl').then($el => {
@@ -97,7 +97,7 @@ describe('pb-timeline', () => {
     cy.get('#tl').find('button').should('exist')
   })
 
-  it('hides wrapper when empty', () => {
+  it('should hide wrapper when empty', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     
     cy.get('#tl').then($el => {
@@ -111,7 +111,7 @@ describe('pb-timeline', () => {
     cy.get('#tl').find('.wrapper.empty').should('exist')
   })
 
-  it('can store undated marker data', () => {
+  it('should store undated marker data', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     cy.get('#tl').then($el => {
       $el[0]._undated = { count: 2, info: ['Unknown'] }
@@ -119,7 +119,7 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('has searchResult property after data load', () => {
+  it('should have searchResult property after data load', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     cy.get('#tl').then($el => {
       // searchResult is created when timeline data is loaded
@@ -129,7 +129,7 @@ describe('pb-timeline', () => {
     })
   })
 
-  it('clear button has type attribute', () => {
+  it('should have clear button with type attribute', () => {
     cy.mount('<pb-timeline resettable id="tl"></pb-timeline>')
     
     cy.get('#tl').then($el => {
@@ -142,14 +142,14 @@ describe('pb-timeline', () => {
     cy.get('#tl').find('button').should('have.attr', 'type', 'button')
   })
 
-  it('accepts max-interval attribute', () => {
+  it('should accept max-interval attribute', () => {
     cy.mount('<pb-timeline max-interval="100"></pb-timeline>')
     cy.get('pb-timeline').then($el => {
       expect($el[0].maxInterval).to.equal(100)
     })
   })
 
-  it('can programmatically set data', () => {
+  it('should programmatically set data', () => {
     cy.mount('<pb-timeline id="tl"></pb-timeline>')
     
     cy.get('#tl').then($el => {

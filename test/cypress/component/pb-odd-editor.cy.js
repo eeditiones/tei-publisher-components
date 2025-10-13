@@ -13,12 +13,12 @@ describe('pb-odd-editor', () => {
     })
   })
 
-  it('mounts without errors', () => {
+  it('should mount without errors', () => {
     cy.mount('<pb-odd-editor></pb-odd-editor>')
     cy.get('pb-odd-editor').should('exist')
   })
 
-  it('works with browser-fs-access v0.38.0', () => {
+  it('should work with browser-fs-access v0.38.0', () => {
     cy.mount('<pb-odd-editor></pb-odd-editor>')
     
     cy.window().then(win => {
@@ -31,7 +31,7 @@ describe('pb-odd-editor', () => {
     })
   })
 
-  it('has save method and can handle file operations', () => {
+  it('should have save method and handle file operations', () => {
     cy.mount('<pb-odd-editor odd="test.odd"></pb-odd-editor>')
     
     cy.get('pb-odd-editor').then($el => {

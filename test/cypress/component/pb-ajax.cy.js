@@ -3,7 +3,7 @@ import '../../../src/pb-page.js'
 import '../../../src/pb-ajax.js'
 
 describe('pb-ajax', () => {
-  it('recompiles and shows message', () => {
+  it('should recompile and show message', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-ajax url="api/version">
@@ -44,7 +44,7 @@ describe('pb-ajax', () => {
     cy.get('pb-ajax').find('pb-message').find('h2').should('contain.text', 'Version')
   })
 
-  it('shows error message on failed request', () => {
+  it('should show error message on failed request', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-ajax url="api/version">
