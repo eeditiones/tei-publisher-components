@@ -76,7 +76,9 @@ module.exports = defineConfig({
     env: {
       demoPages: listDemoPagesSync(),
       // Allow tests to detect if running against real backend
-      realBackend: process.env.CYPRESS_realBackend === 'true'
+      realBackend: process.env.CYPRESS_realBackend === 'true',
+      // Backend URL for real backend testing
+      existBackend: process.env.CYPRESS_existBackend || 'http://localhost:8080/exist/apps/tei-publisher'
     }
   }
 })

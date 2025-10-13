@@ -14,6 +14,19 @@ describe('Demo: pb-odd-editor', () => {
       body: { api: '1.0.0', app: { version: '1.0.0' }, engine: { version: '1.0.0' } }
     }).as('version')
 
+    // Mock login endpoints to prevent 401 errors
+    cy.intercept('GET', '**/exist/apps/tei-publisher/login*', {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: { loggedIn: false, user: null, groups: [], success: true }
+    }).as('mockLogin')
+    
+    cy.intercept('POST', '**/exist/apps/tei-publisher/login*', {
+      statusCode: 200,
+      headers: { 'content-type': 'application/json' },
+      body: { loggedIn: false, user: null, groups: [], success: true }
+    }).as('mockLoginPost')
+
     cy.intercept('GET', '**/api/odd/**', {
       statusCode: 200,
       body: oddFixture
