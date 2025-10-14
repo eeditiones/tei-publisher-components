@@ -107,4 +107,48 @@ describe('pb-page', () => {
       }).to.not.throw()
     })
   })
+
+  describe('i18next integration', () => {
+    it('should create i18next instance', () => {
+      stubLocales()
+      cy.mount('<pb-page require-language language="en" api-version="1.0.0"></pb-page>')
+      cy.waitForEvent('pb-page-ready').then(() => {
+        cy.get('pb-page').then($el => {
+          const page = $el[0]
+          expect(page._i18nInstance).to.exist
+          expect(page._i18nInstance.language).to.equal('en')
+        })
+      })
+    })
+
+    it('should initialize with LanguageDetector and Backend', () => {
+      stubLocales()
+      cy.mount('<pb-page require-language language="en" api-version="1.0.0"></pb-page>')
+      cy.waitForEvent('pb-page-ready').then(() => {
+        cy.get('pb-page').then($el => {
+          const page = $el[0]
+          const instance = page._i18nInstance
+          
+          // Check that backends are loaded
+          expect(instance.services.backendConnector).to.exist
+          expect(instance.services.languageDetector).to.exist
+        })
+      })
+    })
+
+    it('should handle getBestMatchFromCodes fallback behavior', () => {
+      stubLocales()
+      cy.mount('<pb-page require-language language="en" api-version="1.0.0"></pb-page>')
+      cy.waitForEvent('pb-page-ready').then(() => {
+        cy.get('pb-page').then($el => {
+          const page = $el[0]
+          const instance = page._i18nInstance
+          
+          // Test getBestMatchFromCodes with fallback (v25.0.0 enhancement)
+          const bestMatch = instance.services.languageUtils.getBestMatchFromCodes(['zh-CN', 'zh-TW'], ['en', 'de'])
+          expect(bestMatch).to.exist
+        })
+      })
+    })
+  })
 })
