@@ -69,7 +69,7 @@
     "tippy.js": "^6.3.7",
     "tom-select": "^2.2.2",
     "uniqolor": "^1.1.0",
-    "verovio": "^3.16.0",
+    "verovio": "^5.6.0",
     "web-midi-player": "^1.4.1"
   },
   "devDependencies": {
