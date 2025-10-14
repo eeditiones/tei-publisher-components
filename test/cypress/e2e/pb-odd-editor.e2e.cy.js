@@ -15,6 +15,14 @@ describe('pb-odd-editor e2e', () => {
     }
     
     cy.visit('/demo/pb-odd-editor.html')
+    
+    // Update endpoint if running against real backend
+    if (Cypress.env('realBackend')) {
+      cy.get('pb-page').then($el => {
+        $el[0].endpoint = Cypress.env('existBackend')
+      })
+    }
+    
     cy.get('pb-page', { timeout: 5000 }).should('exist')
     
     // Wait for pb-odd-editor to be visible and ready
