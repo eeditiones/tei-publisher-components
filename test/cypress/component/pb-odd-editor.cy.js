@@ -47,4 +47,30 @@ describe('pb-odd-editor', () => {
       expect(component.tagName).to.equal('PB-ODD-EDITOR')
     })
   })
+
+  it('should render vaadin-tabs element', () => {
+    cy.mount('<pb-odd-editor odd="test.odd"></pb-odd-editor>')
+    
+    cy.get('pb-odd-editor').then($el => $el[0].updateComplete).then(() => {
+      // Check for vaadin-tabs element
+      cy.get('pb-odd-editor').find('vaadin-tabs').should('exist')
+      cy.get('pb-odd-editor').find('vaadin-tabs').should('have.attr', 'id', 'tabs')
+    })
+  })
+
+  it('should have tab management methods', () => {
+    cy.mount('<pb-odd-editor odd="test.odd"></pb-odd-editor>')
+    
+    cy.get('pb-odd-editor').then($el => {
+      const component = $el[0]
+      
+      // Test that tab management methods exist
+      expect(component._selectTab).to.be.a('function')
+      expect(component._closeTabHandler).to.be.a('function')
+      expect(component._closeTab).to.be.a('function')
+      
+      // Test that tabs array exists
+      expect(component.tabs).to.be.an('array')
+    })
+  })
 })

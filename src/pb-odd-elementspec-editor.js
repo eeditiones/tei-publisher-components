@@ -177,7 +177,7 @@ export class PbOddElementspecEditor extends LitElement {
 
       <div>
         ${repeat(
-          this.models,
+          this.models || [],
           (model, index) => html`
             <pb-odd-model-editor
               behaviour="${model.behaviour || ''}"
