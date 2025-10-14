@@ -274,13 +274,6 @@ beforeEach(() => {
 
 })
 
-// Reduce noise from benign errors while demos initialize
-Cypress.on('uncaught:exception', (err) => {
-  if (/Cannot read (properties|property) of null.*language/i.test(err.message)) {
-    return false
-  }
-})
-
 // Convenience: find inside a component's shadow DOM using simple chains
 // Usage: cy.inShadow('pb-select[name="lang1"]', 'select option')
 Cypress.Commands.add('inShadow', (hostSelector, innerSelector) => {

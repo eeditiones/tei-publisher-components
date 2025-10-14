@@ -103,16 +103,6 @@ Cypress.Commands.add('waitForEvent', (name) => {
   }))
 })
 
-// Ignore a known benign app error seen intermittently during setup
-// "Cannot read properties of null (reading 'language')"
-// This prevents noisy console failures without hiding other errors.
-Cypress.on('uncaught:exception', (err) => {
-  if (/Cannot read (properties|property) of null.*language/i.test(err.message)) {
-    return false
-  }
-  // Let other errors fail the test
-})
-
 // Helper: robustly stub window.fetch for JSON endpoints (works pre- and post-mount)
 // Usage:
 //   cy.stubFetchJson(/demo\/grid\.json/, (url, win) => new win.Response(JSON.stringify({...}), {status:200, headers:{'Content-Type':'application/json'}}))
