@@ -211,8 +211,14 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
 
     const autocomplete = this.shadowRoot.getElementById('filterString');
     if (autocomplete) {
-      autocomplete.addEventListener('pb-autocomplete-selected', this._handleAutocompleteSelected.bind(this));
-      autocomplete.addEventListener('pb-autocomplete-input', this._handleAutocompleteInput.bind(this));
+      autocomplete.addEventListener(
+        'pb-autocomplete-selected',
+        this._handleAutocompleteSelected.bind(this),
+      );
+      autocomplete.addEventListener(
+        'pb-autocomplete-input',
+        this._handleAutocompleteInput.bind(this),
+      );
     }
 
     const sortSelect = this.shadowRoot.getElementById('sortSelect');
@@ -336,11 +342,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
           >
             ${translate('dialogs.yes')}
           </button>
-          <button
-            class="pb-button pb-button--text"
-            type="button"
-            rel="prev"
-          >
+          <button class="pb-button pb-button--text" type="button" rel="prev">
             ${translate('dialogs.no')}
           </button>
         </div>
@@ -411,8 +413,8 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.5) 50%),
           linear-gradient(135deg, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
           linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-        background-position: calc(100% - 18px) calc(1em + 2px),
-          calc(100% - 13px) calc(1em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px),
+          calc(100% - 2.5rem) 0.5em;
         background-size: 5px 5px, 5px 5px, 1px 2.25em;
         background-repeat: no-repeat;
         font: inherit;
@@ -499,9 +501,11 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const selected = [];
     if (this.container) {
       document.querySelectorAll(this.container).forEach(container =>
-        container.querySelectorAll('.document-select input[type="checkbox"]:checked').forEach(checkbox => {
-          selected.push(checkbox.value);
-        }),
+        container
+          .querySelectorAll('.document-select input[type="checkbox"]:checked')
+          .forEach(checkbox => {
+            selected.push(checkbox.value);
+          }),
       );
     } else {
       this.querySelectorAll('.document-select input[type="checkbox"]:checked').forEach(checkbox => {

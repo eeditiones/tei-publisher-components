@@ -390,7 +390,6 @@ export const pbMixin = superclass =>
         readyEventsFired.add(key);
       }
 
-       
       const detail = Object.assign({ key, _source: this }, options);
       const ev = new CustomEvent(type, {
         detail,

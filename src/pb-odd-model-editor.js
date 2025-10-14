@@ -498,25 +498,27 @@ export class PbOddModelEditor extends LitElement {
                           this._paste
                         }" icon="content-paste"></pb-icon-button>
 
-                        ${this._isGroupOrSequence()
-                          ? html`
-                              <label class="modelTypeMenu">
-                                <span class="sr-only">Add nested model</span>
-                                <select class="pb-select" @change=${this._handleAddNested}>
-                                  <option value="">Add…</option>
-                                  ${this.type === 'modelSequence'
-                                    ? html`<option value="model">model</option>`
-                                    : nothing}
-                                  ${this.type === 'modelGrp'
-                                    ? html`
-                                        <option value="modelSequence">modelSequence</option>
-                                        <option value="model">model</option>
-                                      `
-                                    : nothing}
-                                </select>
-                              </label>
-                            `
-                          : nothing}
+                        ${
+                          this._isGroupOrSequence()
+                            ? html`
+                                <label class="modelTypeMenu">
+                                  <span class="sr-only">Add nested model</span>
+                                  <select class="pb-select" @change=${this._handleAddNested}>
+                                    <option value="">Add…</option>
+                                    ${this.type === 'modelSequence'
+                                      ? html`<option value="model">model</option>`
+                                      : nothing}
+                                    ${this.type === 'modelGrp'
+                                      ? html`
+                                          <option value="modelSequence">modelSequence</option>
+                                          <option value="model">model</option>
+                                        `
+                                      : nothing}
+                                  </select>
+                                </label>
+                              `
+                            : nothing
+                        }
                     </span>
                 </h4>
                 <div class="info">
@@ -536,13 +538,13 @@ export class PbOddModelEditor extends LitElement {
                         .value=${this.output || ''}
                         @change=${this._selectOutput}
                       >
-                        ${this.outputs.map(
-                          item => html`<option value="${item}">${item}</option>`,
-                        )}
+                        ${this.outputs.map(item => html`<option value="${item}">${item}</option>`)}
                       </select>
                     </label>
                     <label class="pb-field">
-                      <span class="pb-field__label">${translate('odd.editor.model.mode-placeholder')}</span>
+                      <span class="pb-field__label">${translate(
+                        'odd.editor.model.mode-placeholder',
+                      )}</span>
                       <input
                         id="mode"
                         class="pb-input"
@@ -553,14 +555,14 @@ export class PbOddModelEditor extends LitElement {
                     </label>
                 </div>
                 <label class="pb-field">
-                  <span class="pb-field__label">${translate('odd.editor.model.description-placeholder')}</span>
+                  <span class="pb-field__label">${translate(
+                    'odd.editor.model.description-placeholder',
+                  )}</span>
                   <input
                     id="desc"
                     class="pb-input"
                     .value=${this.desc || ''}
-                    placeholder="${translate(
-      'odd.editor.model.description-placeholder',
-    )}"
+                    placeholder="${translate('odd.editor.model.description-placeholder')}"
                     @change=${this._inputDesc}
                   />
                 </label>
@@ -583,7 +585,9 @@ export class PbOddModelEditor extends LitElement {
                         <div>
                           <div class="behaviourWrapper">
                             <label class="pb-field">
-                              <span class="pb-field__label">${translate('odd.editor.model.behaviour')}</span>
+                              <span class="pb-field__label"
+                                >${translate('odd.editor.model.behaviour')}</span
+                              >
                               <select
                                 id="behaviour"
                                 class="pb-select"
@@ -600,14 +604,16 @@ export class PbOddModelEditor extends LitElement {
                               ${translate('odd.editor.model.link-with-or')}
                             </span>
                             <label class="pb-field">
-                              <span class="pb-field__label">${translate('odd.editor.model.custom-behaviour-placeholder')}</span>
+                              <span class="pb-field__label"
+                                >${translate('odd.editor.model.custom-behaviour-placeholder')}</span
+                              >
                               <input
                                 id="custombehaviour"
                                 class="pb-input"
                                 @input=${this._handleCustomBehaviour}
                                 placeholder="${translate(
-                                'odd.editor.model.custom-behaviour-placeholder',
-                              )}"
+                                  'odd.editor.model.custom-behaviour-placeholder',
+                                )}"
                               />
                             </label>
                             <span></span>
@@ -641,7 +647,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="selectElement"
                                   data-key="mod-e mod-s"
                                   title="Select element around current cursor position"
-                                >&lt;|></button>
+                                >
+                                  &lt;|>
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text"
@@ -649,7 +657,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="encloseWith"
                                   data-key="mod-e mod-e"
                                   title="Enclose selection in new element"
-                                >&lt;...&gt;</button>
+                                >
+                                  &lt;...&gt;
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text sep"
@@ -657,7 +667,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="removeEnclosing"
                                   title="Remove enclosing tags"
                                   data-key="mod-e mod-r"
-                                >&lt;X></button>
+                                >
+                                  &lt;X>
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text"
@@ -665,7 +677,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="selectElement"
                                   data-key="mod-e mod-s"
                                   title="Select element around current cursor position"
-                                >&lt;|></button>
+                                >
+                                  &lt;|>
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text"
@@ -673,7 +687,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="encloseWith"
                                   data-key="mod-e mod-e"
                                   title="Enclose selection in new element"
-                                >&lt;...&gt;</button>
+                                >
+                                  &lt;...&gt;
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text sep"
@@ -681,7 +697,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="removeEnclosing"
                                   title="Remove enclosing tags"
                                   data-key="mod-e mod-r"
-                                >&lt;X></button>
+                                >
+                                  &lt;X>
+                                </button>
                                 <button
                                   type="button"
                                   class="pb-button pb-button--text"
@@ -689,7 +707,9 @@ export class PbOddModelEditor extends LitElement {
                                   data-command="snippet"
                                   data-params="[[\${_}]]"
                                   title="Insert template variable"
-                                >[[...]]</button>
+                                >
+                                  [[...]]
+                                </button>
                               </div>
                             </jinn-codemirror>
                           </div>

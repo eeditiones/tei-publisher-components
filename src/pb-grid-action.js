@@ -62,7 +62,7 @@ export class PbGridAction extends pbMixin(LitElement) {
     console.log('<pb-grid-action> Clicked, action:', this.action);
     console.log('<pb-grid-action> Grid found:', grid);
     console.log('<pb-grid-action> Closest element:', this.closest('pb-panel,pb-grid'));
-    
+
     if (this.action === 'add') {
       grid.addPanel(this.initial);
     } else {

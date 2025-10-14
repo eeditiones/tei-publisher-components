@@ -63,29 +63,6 @@ export default [
     },
   },
 
-  // Mocha + Karma test files (unit tests)
-  {
-    files: [
-      "test/**/*.test.{js,ts}",
-      "test/**/*.spec.{js,ts}",
-      "test/util.js",
-    ],
-    languageOptions: {
-      globals: {
-        ...globals.mocha,
-        __karma__: "readonly",
-      },
-    },
-    plugins: {
-      "chai-friendly": chaiFriendly,
-    },
-    rules: {
-      // Use chai-friendly variant in tests
-      "chai-friendly/no-unused-expressions": "error",
-      "no-unused-expressions": "off",
-    },
-  },
-
   // Cypress tests (component/e2e)
   // Use plugin recommended config, but only for Cypress-related files
   {

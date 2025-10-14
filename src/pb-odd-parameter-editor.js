@@ -77,7 +77,9 @@ export class PbOddParameterEditor extends LitElement {
     return html`
       <div class="wrapper">
         <div class="pb-field">
-          <span class="pb-field__label">${translate('odd.editor.model.param-name-placeholder')}</span>
+          <span class="pb-field__label"
+            >${translate('odd.editor.model.param-name-placeholder')}</span
+          >
           <pb-autocomplete
             id="combo"
             .suggestions=${this._currentParameters}

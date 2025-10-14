@@ -81,7 +81,9 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   render() {
-    return html` <button id="button" @click="${this._handleClick}" type="button"><slot></slot></button> `;
+    return html`
+      <button id="button" @click="${this._handleClick}" type="button"><slot></slot></button>
+    `;
   }
 
   static get styles() {

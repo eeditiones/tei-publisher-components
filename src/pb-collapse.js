@@ -197,11 +197,7 @@ export class PbCollapse extends themableMixin(pbMixin(LitElement)) {
     const sprite = this.iconSprite || null;
     return html`
       <span class="collapse-icon" data-custom="${hasCustomImage ? 'true' : 'false'}">
-        <pb-icon
-          icon="${iconName}"
-          sprite=${ifDefined(sprite || undefined)}
-          decorative
-        ></pb-icon>
+        <pb-icon icon="${iconName}" sprite=${ifDefined(sprite || undefined)} decorative></pb-icon>
       </span>
     `;
   }
