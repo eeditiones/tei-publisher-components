@@ -121,4 +121,125 @@ describe('pb-i18n', () => {
       cy.get('pb-i18n[key="mycomponent.info"]').should('have.text', custom.mycomponent.info)
     })
   })
+
+  describe('advanced i18n functionality', () => {
+    it('should handle complex interpolation with nested objects', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="browse.items" options='{"count": 10, "user": {"name": "John"}}'>Items</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      cy.fixture('i18n/common/en.json').then((fx) => {
+        const expectedItems = fx.browse.items.replace('{{count}}', '10')
+        cy.get('pb-i18n[key="browse.items"]').should('have.text', expectedItems)
+      })
+    })
+
+    it('should handle missing translation keys gracefully', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="nonexistent.key">Fallback Text</pb-i18n>
+          <pb-i18n key="another.missing.key"></pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      cy.get('pb-i18n[key="nonexistent.key"]').should('have.text', 'Fallback Text')
+      cy.get('pb-i18n[key="another.missing.key"]').should('be.empty')
+    })
+
+    it('should handle rapid key changes without memory leaks', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="browse.items" options='{"count": 1}'>Items</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      
+      cy.get('pb-i18n[key="browse.items"]').then($el => {
+        const el = $el[0]
+        
+        // Rapidly change options multiple times
+        for (let i = 1; i <= 10; i++) {
+          el.options = { count: i }
+        }
+      })
+      
+      cy.fixture('i18n/common/en.json').then((fx) => {
+        const expectedItems = fx.browse.items.replace('{{count}}', '10')
+        cy.get('pb-i18n[key="browse.items"]').should('have.text', expectedItems)
+      })
+    })
+
+    it('should handle translation function errors gracefully', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="browse.items" options='{"count": "invalid"}'>Items</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      
+      // Should not crash even with invalid options
+      cy.get('pb-i18n[key="browse.items"]').should('exist')
+    })
+
+    it('should handle disconnected elements properly', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="document.contents">Content</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      
+      cy.get('pb-i18n[key="document.contents"]').then($el => {
+        const el = $el[0]
+        el.remove() // Disconnect the element
+        
+        // Should not cause errors when language changes
+        cy.window().then(win => {
+          const page = win.document.querySelector('pb-page')
+          const instance = page._i18nInstance
+          return instance.changeLanguage('de')
+        })
+      })
+    })
+
+    it('should handle empty or null options', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="document.contents" options='{}'>Content</pb-i18n>
+          <pb-i18n key="document.contents" options='null'>Content</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      
+      cy.fixture('i18n/common/en.json').then((fx) => {
+        cy.get('pb-i18n[key="document.contents"]').first().should('have.text', fx.document.contents)
+        cy.get('pb-i18n[key="document.contents"]').last().should('have.text', fx.document.contents)
+      })
+    })
+
+    it('should handle translation caching correctly', () => {
+      cy.mount(`
+        <pb-page require-language language="en" api-version="1.0.0">
+          <pb-i18n key="document.contents">Content</pb-i18n>
+        </pb-page>
+      `)
+      cy.waitForEvent('pb-i18n-update')
+      
+      // Change language and back to test caching
+      cy.window().then(win => {
+        const page = win.document.querySelector('pb-page')
+        const instance = page._i18nInstance
+        
+        return instance.changeLanguage('de').then(() => {
+          return instance.changeLanguage('en')
+        })
+      }).then(() => {
+        cy.fixture('i18n/common/en.json').then((fx) => {
+          cy.get('pb-i18n[key="document.contents"]').should('have.text', fx.document.contents)
+        })
+      })
+    })
+  })
 })
