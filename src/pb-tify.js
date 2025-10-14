@@ -118,36 +118,113 @@ export class PbTify extends pbMixin(LitElement) {
       this._tify.destroy();
     }
 
-    this._tify = new Tify({
-      manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint()),
-    });
-    this._tify.ready.then(() => {
-      // open initial page if set earlier via pb-load-facsimile event
-      if (this._initialPages) {
-        this._tify.setPage(this._initialPages);
-      }
-
-      // extend tify's setPage function to allow emitting an event
-      const { app } = this._tify;
-      const originalSetPage = app.setPage;
-
-      app.setPage = pages => {
-        const page = Array.isArray(pages) ? pages[0] : pages;
-        if (this._currentPage === page) {
-          return;
+    try {
+      this._tify = new Tify({
+        manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint()),
+      });
+      
+      this._tify.ready.then(() => {
+        // Clear any previous error messages
+        this._clearError();
+        
+        // open initial page if set earlier via pb-load-facsimile event
+        if (this._initialPages) {
+          this._tify.setPage(this._initialPages);
         }
 
-        const canvas = app.$root.canvases[page - 1];
+        // extend tify's setPage function to allow emitting an event
+        const { app } = this._tify;
+        const originalSetPage = app.setPage;
 
-        this._switchPage(canvas);
-        originalSetPage(pages);
-        this._currentPage = page;
-      };
+        app.setPage = pages => {
+          const page = Array.isArray(pages) ? pages[0] : pages;
+          if (this._currentPage === page) {
+            return;
+          }
 
-      this._setPage = app.setPage;
+          const canvas = app.$root.canvases[page - 1];
+
+          this._switchPage(canvas);
+          originalSetPage(pages);
+          this._currentPage = page;
+        };
+
+        this._setPage = app.setPage;
+      }).catch(error => {
+        console.error('<pb-tify> Failed to load IIIF manifest:', error);
+        this._handleManifestError(error);
+      });
+
+      this._tify.mount(this._container);
+    } catch (error) {
+      console.error('<pb-tify> Failed to initialize Tify:', error);
+      this._handleManifestError(error);
+    }
+  }
+
+  _handleManifestError(error) {
+    // Clear any existing error message
+    this._clearError();
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'pb-tify-error';
+    errorDiv.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      color: #6c757d;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+    `;
+    
+    // Determine error message based on error type
+    let errorMessage = 'Failed to load IIIF manifest';
+    
+    // Check error message, status, and other properties
+    const errorText = error.message || error.toString() || '';
+    const status = error.status || error.statusCode;
+    
+    if (status === 404 || errorText.includes('404') || errorText.includes('Not Found')) {
+      errorMessage = 'IIIF manifest not found';
+    } else if (status === 403 || errorText.includes('403') || errorText.includes('Forbidden')) {
+      errorMessage = 'Access denied to IIIF manifest';
+    } else if (errorText.includes('NetworkError') || errorText.includes('Failed to fetch') || errorText.includes('network')) {
+      errorMessage = 'Network error loading IIIF manifest';
+    } else if (errorText.includes('Invalid JSON') || errorText.includes('SyntaxError') || errorText.includes('parse') || 
+               errorText.includes('Unexpected token') || errorText.includes('JSON') || 
+               errorText.includes('$meta') || errorText.includes('manifest')) {
+      errorMessage = 'Invalid IIIF manifest format';
+    }
+    
+    errorDiv.textContent = errorMessage;
+    
+    // Add error element to container
+    if (this._container) {
+      this._container.appendChild(errorDiv);
+    }
+    
+    // Emit error event for parent components to handle
+    this.emitTo('pb-tify-error', { 
+      error: error.message || 'Unknown error',
+      manifest: this.manifest 
     });
-
-    this._tify.mount(this._container);
+  }
+  
+  _clearError() {
+    if (this._container) {
+      const existingError = this._container.querySelector('.pb-tify-error');
+      if (existingError) {
+        existingError.remove();
+      }
+    }
   }
 
   _switchPage(canvas) {
