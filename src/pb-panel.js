@@ -124,9 +124,7 @@ export class PbPanel extends themableMixin(pbMixin(LitElement)) {
             <select name="panels" class="dropdown" @change="${this._update}">
               ${this.panels.map(
                 (item, index) =>
-                  html`<option value="${index}" ?selected=${index === this.active}>
-                    ${item}
-                  </option>`,
+                  html`<option value="${index}" ?selected=${index === this.active}>${item}</option>`,
               )}
             </select>
           </li>
