@@ -133,7 +133,8 @@ if (!window.pbEvents) {
   try {
     const s = document.createElement('script');
     s.type = 'text/javascript';
-    s.text = 'if (typeof pbEvents === "undefined") { try { pbEvents = window.pbEvents; } catch(e) {} }';
+    s.text =
+      'if (typeof pbEvents === "undefined") { try { pbEvents = window.pbEvents; } catch(e) {} }';
     (document.head || document.documentElement).appendChild(s);
   } catch (e) {
     // ignore if DOM not ready; legacy code may still read via window.pbEvents

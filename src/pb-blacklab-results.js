@@ -199,8 +199,8 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
                     <td class="left" colspan="2">${match.left}</td>
                     <td class="hit">
                       <a
-                        href="${this.target}/${document.id}.xml?pattern=${this.pattern}&match=${match
-                          .match.words[0]}&page=${match.page[0]}"
+                        href="${this.target}/${document.id}.xml?pattern=${this
+                          .pattern}&match=${match.match.words[0]}&page=${match.page[0]}"
                         target="_blank"
                         >${match.match.display}</a
                       >

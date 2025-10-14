@@ -677,23 +677,24 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    request.then(data => this.handleOdd({ response: data }))
-           .catch(error => {
-             console.warn('pb-odd-editor: Failed to load ODD data:', error);
-             this.loading = false;
-             document.dispatchEvent(new CustomEvent('pb-end-update'));
-           });
+    request
+      .then(data => this.handleOdd({ response: data }))
+      .catch(error => {
+        console.warn('pb-odd-editor: Failed to load ODD data:', error);
+        this.loading = false;
+        document.dispatchEvent(new CustomEvent('pb-end-update'));
+      });
   }
 
   handleOdd(req) {
     const data = req.response;
-    
+
     // Handle case where data is null (request failed)
     if (!data) {
       console.warn('pb-odd-editor: Failed to load ODD data');
       return;
     }
-    
+
     this.loggedIn = data.canWrite;
     this.source = data.source;
     this.title = data.title;
@@ -821,7 +822,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   _closeTab(index) {
     const newTabs = [...this.tabs];
     newTabs.splice(index, 1);
-    
+
     // last tab closed
     if (newTabs.length === 0) {
       this.shadowRoot.getElementById('currentElement').innerHTML = '';
@@ -1005,7 +1006,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
     this.requestUpdate().then(() => {
-    const elem = this.shadowRoot.querySelectorAll('.nav-item');
+      const elem = this.shadowRoot.querySelectorAll('.nav-item');
       const idx = this.elementSpecs.indexOf(newSpec);
 
       this._updateAutoComplete();

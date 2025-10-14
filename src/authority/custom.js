@@ -89,7 +89,6 @@ export class Custom extends Registry {
           let totalItems = json.length;
 
           for (const connector of this._connectors) {
-             
             const dr = await connector.query(key);
             results = results.concat(dr.items.filter(result => !localResults.has(result.id)));
             totalItems += dr.totalItems;
@@ -123,7 +122,6 @@ export class Custom extends Registry {
           if (response.status === 404) {
             for (const connector of this._connectors) {
               try {
-                 
                 const cr = await connector.info(key, container);
                 if (cr) {
                   resolve(cr);
@@ -147,7 +145,6 @@ export class Custom extends Registry {
   async select(item) {
     let entry;
     for (const connector of this._connectors) {
-       
       entry = await connector.getRecord(item.id).catch(() => null);
       if (entry) {
         break;

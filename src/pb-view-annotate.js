@@ -52,7 +52,6 @@ function absoluteOffset(container, node, offset) {
   while (walker.previousNode()) {
     const sibling = walker.currentNode;
     if (!(sibling.nodeType === Node.ELEMENT_NODE || isSkippedNode(sibling))) {
-       
       offset += sibling.textContent.length;
     }
   }

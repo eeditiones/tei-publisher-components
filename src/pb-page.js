@@ -229,7 +229,7 @@ export class PbPage extends pbMixin(LitElement) {
 
   get localeFallbackNs() {
     // Expose a space-separated view of the current fallback namespaces
-    return (this._localeFallbacks && this._localeFallbacks.length)
+    return this._localeFallbacks && this._localeFallbacks.length
       ? this._localeFallbacks.join(' ')
       : '';
   }
@@ -334,8 +334,6 @@ export class PbPage extends pbMixin(LitElement) {
       });
     }
     // Note: If requireLanguage is true, pb-page-ready will be signaled after i18n initialization in firstUpdated()
-
-
   }
 
   firstUpdated() {
@@ -427,15 +425,11 @@ export class PbPage extends pbMixin(LitElement) {
     // React to language change events by updating i18n and notifying listeners
     this.subscribeTo('pb-i18n-language', ev => {
       const { language } = ev.detail;
-      this._i18nInstance.changeLanguage(language).then(
-        t => {
-          this._updateI18n(t);
-          this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
-        },
-        [],
-      );
+      this._i18nInstance.changeLanguage(language).then(t => {
+        this._updateI18n(t);
+        this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
+      }, []);
     });
-
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
     this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));

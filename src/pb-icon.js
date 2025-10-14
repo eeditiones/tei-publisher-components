@@ -41,27 +41,27 @@ const polymerIconMap = {
   'content-paste': 'content-paste',
   'icons:arrow-downward': 'arrow-downward',
   'icons:refresh': 'refresh',
-  'icons:save': 'save'
+  'icons:save': 'save',
 };
 
 /**
  * A versatile icon component that replaces iron-icon and iron-icons.
  * Supports both SVG sprite references and inline SVG content.
- * 
+ *
  * @example
  * <!-- Using icon name (requires icon sprite) -->
  * <pb-icon icon="expand-more"></pb-icon>
- * 
+ *
  * <!-- Using external sprite (default dist/images/icons.svg) -->
  * <pb-icon icon="expand-more" sprite="dist/images/icons.svg"></pb-icon>
- * 
+ *
  * <!-- Using inline SVG -->
  * <pb-icon>
  *   <svg viewBox="0 0 24 24">
  *     <path d="M7 10l5 5 5-5z"/>
  *   </svg>
  * </pb-icon>
- * 
+ *
  * @slot - Inline SVG content when not using icon name
  * @cssprop [--pb-icon-color] - Icon color (defaults to currentColor)
  * @cssprop [--pb-icon-size] - Icon size (defaults to 1em)
@@ -94,7 +94,7 @@ export class PbIcon extends LitElement {
       /**
        * Whether the icon is decorative (hidden from screen readers).
        */
-      decorative: { type: Boolean }
+      decorative: { type: Boolean },
     };
   }
 
@@ -106,7 +106,8 @@ export class PbIcon extends LitElement {
     this.decorative = false;
     // Default sprite path: use dev path when running under Vite, otherwise built docs path
     try {
-      const isDev = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ||
+      const isDev =
+        (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ||
         (typeof location !== 'undefined' && /localhost|127\.0\.0\.1/.test(location.hostname));
       this.sprite = isDev ? '/images/icons.svg' : '/dist/images/icons.svg';
     } catch (_) {
@@ -119,7 +120,7 @@ export class PbIcon extends LitElement {
     const ariaLabel = this._getAriaLabel();
 
     return html`
-      <span 
+      <span
         class="pb-icon ${sizeClass}"
         role="img"
         aria-label="${ariaLabel}"
@@ -135,11 +136,17 @@ export class PbIcon extends LitElement {
     if (!iconName) {
       return html``;
     }
-    const href = this.sprite && !this.sprite.startsWith('#')
-      ? `${this.sprite}#icon-${iconName}`
-      : `#icon-${iconName}`;
+    const href =
+      this.sprite && !this.sprite.startsWith('#')
+        ? `${this.sprite}#icon-${iconName}`
+        : `#icon-${iconName}`;
     return html`
-            <svg width="1em" height="1em" viewBox="0 0 24 24" aria-hidden="${this.decorative ? 'true' : 'false'}">
+      <svg
+        width="1em"
+        height="1em"
+        viewBox="0 0 24 24"
+        aria-hidden="${this.decorative ? 'true' : 'false'}"
+      >
         <use href="${href}"></use>
       </svg>
     `;

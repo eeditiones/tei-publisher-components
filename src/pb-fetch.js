@@ -34,7 +34,11 @@ export class PbFetch extends HTMLElement {
       this.attributeChangedCallback('handle-as', null, this.getAttribute('handle-as'));
     }
     if (this.hasAttribute('with-credentials')) {
-      this.attributeChangedCallback('with-credentials', null, this.getAttribute('with-credentials'));
+      this.attributeChangedCallback(
+        'with-credentials',
+        null,
+        this.getAttribute('with-credentials'),
+      );
     }
     if (this.hasAttribute('content-type')) {
       this.attributeChangedCallback('content-type', null, this.getAttribute('content-type'));
@@ -235,19 +239,20 @@ export class PbFetch extends HTMLElement {
         }
       }
     });
-    
+
     if (paramPairs.length === 0) {
       return this._url;
     }
-    
+
     const separator = this._url.includes('?') ? '&' : '?';
     return `${this._url}${separator}${paramPairs.join('&')}`;
   }
 
   _buildRequestInit() {
-    const baseHeaders = this.headers && typeof this.headers.entries === 'function'
-      ? Object.fromEntries(this.headers.entries())
-      : this.headers || {};
+    const baseHeaders =
+      this.headers && typeof this.headers.entries === 'function'
+        ? Object.fromEntries(this.headers.entries())
+        : this.headers || {};
     const headers = new Headers(baseHeaders);
     const init = {
       method: this._method || 'GET',
@@ -268,7 +273,11 @@ export class PbFetch extends HTMLElement {
       return undefined;
     }
 
-    if (this.body instanceof FormData || this.body instanceof Blob || this.body instanceof ArrayBuffer) {
+    if (
+      this.body instanceof FormData ||
+      this.body instanceof Blob ||
+      this.body instanceof ArrayBuffer
+    ) {
       return this.body;
     }
 
@@ -346,9 +355,7 @@ export class PbFetch extends HTMLElement {
       responseURL: response.url,
       getResponseHeader: name => response.headers.get(name),
       getAllResponseHeaders: () =>
-        [...response.headers.entries()]
-          .map(([key, value]) => `${key}: ${value}`)
-          .join('\r\n'),
+        [...response.headers.entries()].map(([key, value]) => `${key}: ${value}`).join('\r\n'),
     };
   }
 

@@ -90,11 +90,16 @@ export class PbGrid extends pbMixin(LitElement) {
 
     this._isUpdatingFromRegistry = false;
     registry.subscribe(this, state => {
-      console.log('<pb-grid> Registry subscribe callback triggered, _isUpdatingFromRegistry:', this._isUpdatingFromRegistry);
+      console.log(
+        '<pb-grid> Registry subscribe callback triggered, _isUpdatingFromRegistry:',
+        this._isUpdatingFromRegistry,
+      );
       // Only rebuild DOM if state change came from external source (e.g., browser navigation)
       // not from our own registry.commit() calls
       if (this._isUpdatingFromRegistry) {
-        console.log('<pb-grid> Skipping registry subscribe callback due to _isUpdatingFromRegistry flag');
+        console.log(
+          '<pb-grid> Skipping registry subscribe callback due to _isUpdatingFromRegistry flag',
+        );
         return;
       }
       const newState = state.panels ? state.panels.split('.') : [];
@@ -148,17 +153,17 @@ export class PbGrid extends pbMixin(LitElement) {
     if (this.animation) {
       // console.log('animated elements', document.querySelectorAll('pb-panel'));
       const animated = document.querySelectorAll(this.animated);
-      
+
       // Animate each element with a staggered delay
       animated.forEach((element, index) => {
         const animation = animate(element, {
           opacity: [0, 0.6],
           translateX: [2000, 0],
           duration: 400,
-          delay: 100 + (index * 100),
+          delay: 100 + index * 100,
           ease: 'linear',
         });
-        
+
         // Check if animation has a finished promise
         if (animation && animation.finished) {
           animation.finished.then(() => {
@@ -179,7 +184,7 @@ export class PbGrid extends pbMixin(LitElement) {
               delay: index * 50,
               ease: 'linear',
             });
-          }, 400 + (index * 100));
+          }, 400 + index * 100);
         }
       });
     }
@@ -203,7 +208,10 @@ export class PbGrid extends pbMixin(LitElement) {
 
     console.log('<pb-grid> Adding panel with value:', value);
     console.log('<pb-grid> Current panels before add:', this.panels);
-    console.log('<pb-grid> Current panel count before add:', this.querySelectorAll('._grid_panel').length);
+    console.log(
+      '<pb-grid> Current panel count before add:',
+      this.querySelectorAll('._grid_panel').length,
+    );
 
     this._columns += 1;
     this.panels.push(value);
@@ -214,9 +222,12 @@ export class PbGrid extends pbMixin(LitElement) {
     this._isUpdatingFromRegistry = false;
     this._update();
     this.emitTo('pb-refresh');
-    
+
     console.log('<pb-grid> After adding panel - panels:', this.panels);
-    console.log('<pb-grid> After adding panel - panel count:', this.querySelectorAll('._grid_panel').length);
+    console.log(
+      '<pb-grid> After adding panel - panel count:',
+      this.querySelectorAll('._grid_panel').length,
+    );
   }
 
   /**
@@ -238,7 +249,7 @@ export class PbGrid extends pbMixin(LitElement) {
     console.log('<pb-grid> Container:', container);
     console.log('<pb-grid> Current panels:', [...this.panels]);
     console.log('<pb-grid> Current panel count:', this.querySelectorAll('._grid_panel').length);
-    
+
     this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
     container.parentNode.removeChild(container);
@@ -248,19 +259,22 @@ export class PbGrid extends pbMixin(LitElement) {
     this._isUpdatingFromRegistry = false;
     this._assignPanelIds();
     this._update();
-    
+
     console.log('<pb-grid> After removal - panels:', [...this.panels]);
-    console.log('<pb-grid> After removal - panel count:', this.querySelectorAll('._grid_panel').length);
+    console.log(
+      '<pb-grid> After removal - panel count:',
+      this.querySelectorAll('._grid_panel').length,
+    );
   }
 
   _insertPanel(active) {
     console.log('<pb-grid> _insertPanel called with active:', active);
     console.log('<pb-grid> Template content:', this.template.content);
     console.log('<pb-grid> Template firstElementChild:', this.template.content.firstElementChild);
-    
+
     const clone = document.importNode(this.template.content.firstElementChild, true);
     console.log('<pb-grid> Cloned element:', clone);
-    
+
     clone.setAttribute('active', active);
     if (this.direction === 'ltr' || this.querySelectorAll('._grid_panel').length === 0) {
       this.appendChild(clone);
@@ -269,8 +283,11 @@ export class PbGrid extends pbMixin(LitElement) {
     }
     clone.classList.add('_grid_panel');
     this._assignPanelIds();
-    
-    console.log('<pb-grid> After _insertPanel - DOM panels:', this.querySelectorAll('._grid_panel').length);
+
+    console.log(
+      '<pb-grid> After _insertPanel - DOM panels:',
+      this.querySelectorAll('._grid_panel').length,
+    );
   }
 
   _update() {

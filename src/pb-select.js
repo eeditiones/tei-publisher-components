@@ -242,7 +242,10 @@ export class PbSelect extends pbMixin(LitElement) {
     this._selected = selected;
     this.values = [...selected];
 
-    if (this._selected.length === oldSelected.length && this._selected.every((val, idx) => val === oldSelected[idx])) {
+    if (
+      this._selected.length === oldSelected.length &&
+      this._selected.every((val, idx) => val === oldSelected[idx])
+    ) {
       return;
     }
 
@@ -263,24 +266,26 @@ export class PbSelect extends pbMixin(LitElement) {
   _renderOptionsList() {
     const currentValues = Array.isArray(this.values) ? this.values : [];
     const items = [...this._getSlottedItems(), ...this._items];
-    return items.map(item => {
-      if (!item.value) {
-        return null;
-      }
-      const checked = currentValues.includes(item.value);
-      return html`
-        <label class="pb-select__option">
-          <input
-            class="pb-select__checkbox"
-            type="checkbox"
-            value="${item.value}"
-            .checked=${checked}
-            @change=${this._changed}
-          />
-          <span>${item.label}</span>
-        </label>
-      `;
-    }).filter(Boolean);
+    return items
+      .map(item => {
+        if (!item.value) {
+          return null;
+        }
+        const checked = currentValues.includes(item.value);
+        return html`
+          <label class="pb-select__option">
+            <input
+              class="pb-select__checkbox"
+              type="checkbox"
+              .value="${item.value}"
+              .checked=${checked}
+              @change=${this._changed}
+            />
+            <span>${item.label}</span>
+          </label>
+        `;
+      })
+      .filter(Boolean);
   }
 
   _getSlottedItems() {
@@ -306,9 +311,7 @@ export class PbSelect extends pbMixin(LitElement) {
       return;
     }
 
-    const values = this.multi
-      ? (Array.isArray(this.values) ? this.values : [])
-      : [this.value];
+    const values = this.multi ? (Array.isArray(this.values) ? this.values : []) : [this.value];
     values
       .filter(val => val !== undefined && val !== null && val !== '')
       .forEach(val => {

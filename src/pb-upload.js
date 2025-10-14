@@ -82,7 +82,7 @@ export class PbUpload extends pbMixin(LitElement) {
     });
     uploader.addEventListener('upload-error', event => {
       this.emitTo('pb-end-update');
-       
+
       event.detail.file.error = event.detail.xhr.responseText;
       this.requestUpdate();
     });
@@ -192,9 +192,7 @@ export class PbUpload extends pbMixin(LitElement) {
           // If it's not JSON, use the error as-is
           errorDescription = file.error;
         }
-        rows.push(html`
-          <li class="error" part="error">${errorDescription}</li>
-        `);
+        rows.push(html` <li class="error" part="error">${errorDescription}</li> `);
       }
     }
     return rows;

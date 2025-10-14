@@ -658,14 +658,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _doLoad(params) {
     // De-duplicate identical requests to avoid hammering the backend
-    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : ''
-    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params })
+    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
+    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
     if (this._lastRequestKey === reqKey) {
       // nothing changed; unlock and skip
-      this._loading = false
-      return
+      this._loading = false;
+      return;
     }
-    this._lastRequestKey = reqKey
+    this._lastRequestKey = reqKey;
 
     this.emitTo('pb-start-update', params);
 
@@ -1329,9 +1329,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       #view {
         position: relative;
         font-size: clamp(
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3.0))
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3))
         );
         line-height: calc(var(--pb-content-line-height, 1.5) * var(--pb-zoom-factor));
       }
@@ -1371,7 +1371,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
 
       a[rel='footnote'] {
-        font-size: calc(var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1));
+        font-size: calc(
+          var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1)
+        );
         font-family: var(--pb-footnote-font-family, --pb-content-font-family);
         vertical-align: super;
         color: var(--pb-footnote-color, var(--pb-color-primary, #333333));

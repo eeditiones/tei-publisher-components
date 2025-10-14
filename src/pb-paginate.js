@@ -16,7 +16,7 @@ import './pb-icon.js';
  * @csspart count - the span displaying the number of items
  */
 export class PbPaginate extends pbMixin(LitElement) {
-  static get properties () {
+  static get properties() {
     return {
       ...super.properties,
       total: { type: Number, reflect: true },
@@ -26,28 +26,28 @@ export class PbPaginate extends pbMixin(LitElement) {
       page: { type: Number },
       pageCount: { type: Number, attribute: 'page-count', reflect: true },
       range: { type: Number },
-      pages: { type: Array }
-    }
+      pages: { type: Array },
+    };
   }
 
-  constructor () {
-    super()
-    this.total = 0
-    this.start = 1
-    this.perPage = 10
-    this.page = 1
-    this.pageCount = 10
-    this.range = 5
-    this.pages = []
-    this.foundLabel = 'browse.items'
+  constructor() {
+    super();
+    this.total = 0;
+    this.start = 1;
+    this.perPage = 10;
+    this.page = 1;
+    this.pageCount = 10;
+    this.range = 5;
+    this.pages = [];
+    this.foundLabel = 'browse.items';
   }
 
-  connectedCallback () {
-    super.connectedCallback()
-    this.subscribeTo('pb-results-received', this._refresh.bind(this))
+  connectedCallback() {
+    super.connectedCallback();
+    this.subscribeTo('pb-results-received', this._refresh.bind(this));
   }
 
-  render () {
+  render() {
     return html`
       <button
         type="button"
@@ -58,16 +58,18 @@ export class PbPaginate extends pbMixin(LitElement) {
       >
         <pb-icon icon="chevron-left"></pb-icon>
       </button>
-      ${this.pages.map((item, index) => html`
-        <button
-          type="button"
-          class="pb-paginate__page ${item.class}"
-          @click=${() => this._handleClick(item, index)}
-          aria-current=${item.class === 'active' ? 'page' : nothing}
-        >
-          ${item.label}
-        </button>
-      `)}
+      ${this.pages.map(
+        (item, index) => html`
+          <button
+            type="button"
+            class="pb-paginate__page ${item.class}"
+            @click=${() => this._handleClick(item, index)}
+            aria-current=${item.class === 'active' ? 'page' : nothing}
+          >
+            ${item.label}
+          </button>
+        `,
+      )}
       <button
         type="button"
         class="pb-paginate__nav"
@@ -79,10 +81,10 @@ export class PbPaginate extends pbMixin(LitElement) {
       </button>
 
       <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
-    `
+    `;
   }
 
-  static get styles () {
+  static get styles() {
     return css`
       :host([total='0']) {
         display: none;
@@ -116,86 +118,85 @@ export class PbPaginate extends pbMixin(LitElement) {
         line-height: 1em;
         padding: 0.4em;
         text-align: center;
-        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
-          0 1px 8px 0 rgba(0, 0, 0, 0.12),
+        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12),
           0 3px 3px -2px rgba(0, 0, 0, 0.4);
       }
 
       .pb-paginate__page:focus-visible,
       .pb-paginate__nav:focus-visible {
-      outline: 2px solid var(--pb-color-primary);
-      outline-offset: 2px;
+        outline: 2px solid var(--pb-color-primary);
+        outline-offset: 2px;
       }
 
       .found {
         padding-left: 20px;
       }
-    `
+    `;
   }
 
-  _update (start, total) {
+  _update(start, total) {
     if (!total || !start) {
-      return
+      return;
     }
-    this.pageCount = Math.ceil(total / this.perPage)
-    this.page = Math.ceil(start / this.perPage)
-    let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1)
-    const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount)
-    lowerBound = Math.max(upperBound - this.range + 1, 1)
+    this.pageCount = Math.ceil(total / this.perPage);
+    this.page = Math.ceil(start / this.perPage);
+    let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1);
+    const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount);
+    lowerBound = Math.max(upperBound - this.range + 1, 1);
 
-    const pages = []
+    const pages = [];
     for (let i = lowerBound; i <= upperBound; i++) {
       pages.push({
         label: i,
-        class: i === this.page ? 'active' : ''
-      })
+        class: i === this.page ? 'active' : '',
+      });
     }
-    this.pages = pages
+    this.pages = pages;
   }
 
-  _refresh (ev) {
-    this.start = Number(ev.detail.start)
-    this.total = ev.detail.count
-    this._update(this.start, this.total)
+  _refresh(ev) {
+    this.start = Number(ev.detail.start);
+    this.total = ev.detail.count;
+    this._update(this.start, this.total);
   }
 
-  _handleClick (_item, index) {
-    this.start = (this.pages[index].label - 1) * this.perPage + 1
+  _handleClick(_item, index) {
+    this.start = (this.pages[index].label - 1) * this.perPage + 1;
     for (const ev of ['pb-load', 'pb-paginate']) {
       this.emitTo(ev, {
         params: {
           start: this.start,
           'per-page': this.perPage,
-          page: index
-        }
-      })
+          page: index,
+        },
+      });
     }
   }
 
-  _handleFirst () {
-    this.start = 1
+  _handleFirst() {
+    this.start = 1;
     for (const ev of ['pb-load', 'pb-paginate']) {
       this.emitTo(ev, {
         params: {
           start: 1,
           'per-page': this.perPage,
-          page: 0
-        }
-      })
+          page: 0,
+        },
+      });
     }
   }
 
-  _handleLast () {
-    this.start = (this.pageCount - 1) * this.perPage + 1
+  _handleLast() {
+    this.start = (this.pageCount - 1) * this.perPage + 1;
     for (const ev of ['pb-load', 'pb-paginate']) {
       this.emitTo(ev, {
         params: {
           start: this.start,
           'per-page': this.perPage,
-          page: this.pageCount - 1
-        }
-      })
+          page: this.pageCount - 1,
+        },
+      });
     }
   }
 }
-customElements.define('pb-paginate', PbPaginate)
+customElements.define('pb-paginate', PbPaginate);

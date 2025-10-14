@@ -190,8 +190,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     const labelId = labelText ? `${this._inputId}-label` : undefined;
     const helperId = helperText ? `${this._inputId}-helper` : undefined;
     const ariaLabel = !labelId && labelText ? labelText : undefined;
-    const placeholderText =
-      labelId || !this.placeholder ? '' : translate(this.placeholder);
+    const placeholderText = labelId || !this.placeholder ? '' : translate(this.placeholder);
 
     return html`
       <div class="autocomplete">
@@ -478,7 +477,10 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     }
     const list = normalizeList(this.suggestions);
     const lower = String(value).toLowerCase();
-    return list.find(item => item.value.toLowerCase() === lower || item.text.toLowerCase() === lower) ?? null;
+    return (
+      list.find(item => item.value.toLowerCase() === lower || item.text.toLowerCase() === lower) ??
+      null
+    );
   }
 
   _syncInputValueFromSuggestions() {

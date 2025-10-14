@@ -204,8 +204,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
         @change=${this._selectionChanged}
       >
         ${items.map(
-          (item, index) =>
-            html`<option value="${index}">${translate(item.name)}</option>`,
+          (item, index) => html`<option value="${index}">${translate(item.name)}</option>`,
         )}
       </select>
     `;

@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
@@ -28,7 +28,7 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
       zoomFactor: {
         type: Number,
         reflect: true,
-        attribute: 'zoom-factor'
+        attribute: 'zoom-factor',
       },
     };
   }
@@ -57,19 +57,20 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
    */
   zoom(direction) {
     const currentZoom = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--pb-zoom-factor') || '1'
+      getComputedStyle(document.documentElement).getPropertyValue('--pb-zoom-factor') || '1',
     );
     const step = 0.1;
     const minZoom = 0.5;
     const maxZoom = 2.0;
-    
-    let newZoom = direction === 'in' 
-    ? Math.min(currentZoom + step, maxZoom)
-    : Math.max(currentZoom - step, minZoom);
-    
+
+    let newZoom =
+      direction === 'in'
+        ? Math.min(currentZoom + step, maxZoom)
+        : Math.max(currentZoom - step, minZoom);
+
     document.documentElement.style.setProperty('--pb-zoom-factor', newZoom.toString());
     this.zoomFactor = newZoom;
-    
+
     // Store user preference
     localStorage.setItem('pb-zoom-preference', newZoom.toString());
   }

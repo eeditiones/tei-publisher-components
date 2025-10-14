@@ -213,7 +213,7 @@ export class PbMei extends pbMixin(LitElement) {
   show(str) {
     this._data = str;
     _verovio.setOptions(this._getOptions());
-    
+
     try {
       _verovio.loadData(this._data);
       this._pages = _verovio.getPageCount();
@@ -233,7 +233,7 @@ export class PbMei extends pbMixin(LitElement) {
   _handleError(error) {
     // Clear any existing error
     this._clearError();
-    
+
     // Create error message element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'pb-mei-error';
@@ -247,21 +247,23 @@ export class PbMei extends pbMixin(LitElement) {
       font-family: sans-serif;
       font-size: 14px;
     `;
-    
+
     let errorMessage = 'Failed to load MEI data';
     const errorText = error.message || error.toString() || '';
-    
-    if (errorText.includes('function or function signature mismatch') || 
-        errorText.includes('null function')) {
+
+    if (
+      errorText.includes('function or function signature mismatch') ||
+      errorText.includes('null function')
+    ) {
       errorMessage = 'Invalid MEI data format';
     } else if (errorText.includes('parse') || errorText.includes('XML')) {
       errorMessage = 'Invalid XML/MEI syntax';
     } else if (errorText.includes('WASM') || errorText.includes('module')) {
       errorMessage = 'MEI rendering engine error';
     }
-    
+
     errorDiv.textContent = errorMessage;
-    
+
     // Insert error message into the component
     if (this.shadowRoot) {
       const output = this.shadowRoot.querySelector('#output');
@@ -270,14 +272,16 @@ export class PbMei extends pbMixin(LitElement) {
         output.appendChild(errorDiv);
       }
     }
-    
+
     // Emit error event
-    this.dispatchEvent(new CustomEvent('pb-mei-error', {
-      detail: {
-        error: error.message || 'Unknown error',
-        data: this._data
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('pb-mei-error', {
+        detail: {
+          error: error.message || 'Unknown error',
+          data: this._data,
+        },
+      }),
+    );
   }
 
   _clearError() {
@@ -428,25 +432,49 @@ export class PbMei extends pbMixin(LitElement) {
       direction === 'left'
         ? 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'
         : 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z';
-    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    return html`<svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="${path}"></path>
     </svg>`;
   }
 
   _renderPlayIcon() {
-    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    return html`<svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M8 5v14l11-7z"></path>
     </svg>`;
   }
 
   _renderStopIcon() {
-    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    return html`<svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M6 6h12v12H6z"></path>
     </svg>`;
   }
 
   _renderPauseIcon() {
-    return html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    return html`<svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M6 19h4V5H6zm8-14v14h4V5h-4z"></path>
     </svg>`;
   }
