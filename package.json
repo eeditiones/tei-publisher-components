@@ -63,7 +63,7 @@
     "lit": "^3.3.1",
     "marked": "^1.2.0",
     "pagedjs": "^0.4.3",
-    "path-to-regexp": "^6.2.1",
+    "path-to-regexp": "^8.3.0",
     "prismjs": "^1.29.0",
     "tify": "^0.34.4",
     "tippy.js": "^6.3.7",
