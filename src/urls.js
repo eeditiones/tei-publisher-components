@@ -2,6 +2,28 @@ import { match, compile, pathToRegexp } from 'path-to-regexp';
 import { PbEvents } from './pb-events.js';
 import { getSubscribedChannels } from './pb-mixin.js';
 
+/**
+ * Convert path-to-regexp v6 syntax to v8 syntax
+ * - :param? becomes {:param} (optional parameters with braces)
+ * - /* becomes /*path (named wildcards)
+ * 
+ * This function is idempotent - it can be called multiple times safely
+ * and will not double-convert already converted patterns.
+ */
+function convertPathToRegexpSyntax(pattern) {
+  if (!pattern) return pattern;
+  
+  // Convert optional parameters :param? to {:param} for v8 compatibility
+  // Only convert if not already in v8 format (avoid double conversion)
+  let converted = pattern.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)\?/g, '{:$1}');
+  
+  // Convert unnamed wildcards /* to /*path
+  // Only convert if not already named (avoid double conversion)
+  converted = converted.replace(/\*$/g, '*path');
+  
+  return converted;
+}
+
 function log(...args) {
   args[0] = `%c<registry>%c ${args[0]}`;
   args.splice(1, 0, 'font-weight: bold; color: #99FF33;', 'color: inherit; font-weight: normal');
@@ -86,13 +108,16 @@ class Registry {
     }
 
     if (this.urlPattern) {
+      // Convert v6 syntax to v8 syntax
+      const convertedPattern = convertPathToRegexpSyntax(this.urlPattern);
+      
       // save a list of parameter names which go into the path
       const pathParams = [];
-      pathToRegexp(this.urlPattern, pathParams);
+      pathToRegexp(convertedPattern, pathParams);
       pathParams.forEach(param => this.pathParams.add(param.name));
       // compile URL pattern into a decode and encode function
-      this._decodePath = match(this.urlPattern);
-      this._encodePath = compile(this.urlPattern);
+      this._decodePath = match(convertedPattern);
+      this._encodePath = compile(convertedPattern);
     }
 
     // determine initial state of the registry by parsing current URL
