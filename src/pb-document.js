@@ -84,21 +84,24 @@ class PbDocument extends pbMixin(LitElement) {
       this.view = registry.state.view || this.view;
       this.odd = registry.state.odd || this.odd;
     }
+    
+    // Initialize the event key baseline to prevent unnecessary initial events
+    this._lastEventKey = this._computeEventKey();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
     // No-op if value did not change (prevents churn)
     if (oldVal === newVal) return;
+    
     // Coalesce multiple rapid attribute updates into a single emit
     if (this._emitScheduled) return;
+    
     this._emitScheduled = true;
     setTimeout(() => {
       this._emitScheduled = false;
       const key = this._computeEventKey();
       if (key !== this._lastEventKey) {
-        // unchanged behavior: log when we actually emit
-        console.log('<pb-document> Emit update event');
         this.emitTo('pb-document', this);
         this._lastEventKey = key;
       }
