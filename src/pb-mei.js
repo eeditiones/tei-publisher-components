@@ -185,8 +185,13 @@ export class PbMei extends pbMixin(LitElement) {
       _verovio
     ) {
       _verovio.setOptions(this._getOptions());
-      _verovio.loadData(this._data);
-      this.showPage();
+      try {
+        _verovio.loadData(this._data);
+        this.showPage();
+      } catch (error) {
+        console.error('<pb-mei> Failed to reload MEI data:', error);
+        this._handleError(error);
+      }
     }
   }
 
@@ -208,15 +213,83 @@ export class PbMei extends pbMixin(LitElement) {
   show(str) {
     this._data = str;
     _verovio.setOptions(this._getOptions());
-    _verovio.loadData(this._data);
-    this._pages = _verovio.getPageCount();
-    this._page = 1;
-    console.log('<pb-mei> Loaded %d pages', this._pages);
-    this.showPage();
+    
+    try {
+      _verovio.loadData(this._data);
+      this._pages = _verovio.getPageCount();
+      this._page = 1;
+      console.log('<pb-mei> Loaded %d pages', this._pages);
+      this.showPage();
+    } catch (error) {
+      console.error('<pb-mei> Failed to load MEI data:', error);
+      this._handleError(error);
+    }
   }
 
   showPage() {
     this._svg = _verovio.renderToSVG(this._page, {});
+  }
+
+  _handleError(error) {
+    // Clear any existing error
+    this._clearError();
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'pb-mei-error';
+    errorDiv.style.cssText = `
+      padding: 1rem;
+      margin: 1rem;
+      background-color: #fee;
+      border: 1px solid #fcc;
+      border-radius: 4px;
+      color: #c33;
+      font-family: sans-serif;
+      font-size: 14px;
+    `;
+    
+    let errorMessage = 'Failed to load MEI data';
+    const errorText = error.message || error.toString() || '';
+    
+    if (errorText.includes('function or function signature mismatch') || 
+        errorText.includes('null function')) {
+      errorMessage = 'Invalid MEI data format';
+    } else if (errorText.includes('parse') || errorText.includes('XML')) {
+      errorMessage = 'Invalid XML/MEI syntax';
+    } else if (errorText.includes('WASM') || errorText.includes('module')) {
+      errorMessage = 'MEI rendering engine error';
+    }
+    
+    errorDiv.textContent = errorMessage;
+    
+    // Insert error message into the component
+    if (this.shadowRoot) {
+      const output = this.shadowRoot.querySelector('#output');
+      if (output) {
+        output.innerHTML = '';
+        output.appendChild(errorDiv);
+      }
+    }
+    
+    // Emit error event
+    this.dispatchEvent(new CustomEvent('pb-mei-error', {
+      detail: {
+        error: error.message || 'Unknown error',
+        data: this._data
+      }
+    }));
+  }
+
+  _clearError() {
+    if (this.shadowRoot) {
+      const output = this.shadowRoot.querySelector('#output');
+      if (output) {
+        const existingError = output.querySelector('.pb-mei-error');
+        if (existingError) {
+          existingError.remove();
+        }
+      }
+    }
   }
 
   async play() {
@@ -239,17 +312,24 @@ export class PbMei extends pbMixin(LitElement) {
       return;
     }
 
-    _verovio.loadData(this._data);
-    const mdata = _verovio.renderToMIDI();
-    const raw = window.atob(mdata);
-    const rawLength = raw.length;
-    const array = new Uint8Array(new ArrayBuffer(rawLength));
+    try {
+      _verovio.loadData(this._data);
+      const mdata = _verovio.renderToMIDI();
+      const raw = window.atob(mdata);
+      const rawLength = raw.length;
+      const array = new Uint8Array(new ArrayBuffer(rawLength));
 
-    for (let i = 0; i < rawLength; i += 1) {
-      array[i] = raw.charCodeAt(i);
+      for (let i = 0; i < rawLength; i += 1) {
+        array[i] = raw.charCodeAt(i);
+      }
+      this._midiPlayer.play({ arrayBuffer: array });
+      this.requestUpdate('_isPlaying');
+    } catch (error) {
+      console.error('<pb-mei> Failed to play MIDI:', error);
+      this._isPlaying = false;
+      this.requestUpdate('_isPlaying');
+      this._handleError(error);
     }
-    this._midiPlayer.play({ arrayBuffer: array });
-    this.requestUpdate('_isPlaying');
   }
 
   pause() {
