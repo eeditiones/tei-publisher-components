@@ -23,7 +23,7 @@ describe('pb-clipboard e2e', () => {
     cy.get('@writeText').its('firstCall.args.0').should('match', /john doe/i)
   })
 
-  it.skip('should meet accessibility standards', () => {
+  it('should meet accessibility standards', () => {
     cy.get('pb-clipboard')
       .find('button, input, select, textarea')
       .each($el => {
@@ -33,17 +33,19 @@ describe('pb-clipboard e2e', () => {
         cy.wrap($el).should('not.have.attr', 'tabindex', '-1')
       })
     cy.get('pb-clipboard')
-      .find('button:first')
+      .find('button')
+      .first()
       .focus()
       .should('be.focused')
   })
 
-  it.skip('should support keyboard navigation', () => {
+  it('should support keyboard navigation', () => {
     cy.get('body')
     cy.press('Tab')
     cy.focused().should('exist')
     cy.get('pb-clipboard')
-      .find('button:first')
+      .find('button')
+      .first()
       .focus()
       .type('{enter}')
   })

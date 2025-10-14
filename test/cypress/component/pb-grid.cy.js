@@ -174,7 +174,7 @@ describe('pb-grid', () => {
     cy.get('#grid ._grid_panel[active="0"]').should('exist')
   })
 
-  it.skip('should remove the containing panel (flaky, revisit after deps update)', () => {
+  it.skip('should remove the containing panel (remove action not working properly)', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
         <pb-grid id="grid" panels="[]">
@@ -194,12 +194,17 @@ describe('pb-grid', () => {
       grid.addPanel(1)
     })
     cy.get('#grid ._grid_panel').should('have.length.at.least', 2)
-    cy.get('#rm').find('button').click({ force: true })
+    
+    // Get initial count
     cy.get('#grid ._grid_panel').then(($panels) => {
       const initial = $panels.length
-      cy.get('#grid ._grid_panel').should(($p2) => {
-        expect($p2.length).to.be.lessThan(initial)
-      })
+      cy.log(`Initial panel count: ${initial}`)
+      
+      // Click remove button
+      cy.get('#rm').find('button').click({ force: true })
+      
+      // Wait for the panel to be removed
+      cy.get('#grid ._grid_panel').should('have.length', initial - 1)
     })
   })
 })

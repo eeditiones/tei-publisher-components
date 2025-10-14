@@ -184,8 +184,16 @@ export class PbUpload extends pbMixin(LitElement) {
         </li>
       `);
       if (file.error) {
+        let errorDescription = file.error;
+        try {
+          const parsed = JSON.parse(file.error);
+          errorDescription = parsed.description || file.error;
+        } catch (e) {
+          // If it's not JSON, use the error as-is
+          errorDescription = file.error;
+        }
         rows.push(html`
-          <li class="error" part="error">${JSON.parse(file.error).description}</li>
+          <li class="error" part="error">${errorDescription}</li>
         `);
       }
     }
