@@ -332,14 +332,8 @@ export class PbPage extends pbMixin(LitElement) {
         template: this.template,
         apiVersion: this.apiVersion,
       });
-    } else if (this._i18nInstance) {
-      this.signalReady('pb-page-ready', {
-        endpoint: this.endpoint,
-        apiVersion: this.apiVersion,
-        template: this.template,
-        language: this._i18nInstance.language,
-      });
     }
+    // Note: If requireLanguage is true, pb-page-ready will be signaled after i18n initialization in firstUpdated()
 
 
   }
@@ -419,13 +413,13 @@ export class PbPage extends pbMixin(LitElement) {
       initTranslation(t);
       // initialized and ready to go!
       this._updateI18n(t);
-      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
-      if (this.requireLanguage && this.apiVersion) {
+      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
+      if (this.requireLanguage) {
         this.signalReady('pb-page-ready', {
           endpoint: this.endpoint,
           apiVersion: this.apiVersion,
           template: this.template,
-          language: this._i18nInstance.language,
+          language: this._i18nInstance?.language,
         });
       }
     });
@@ -436,7 +430,7 @@ export class PbPage extends pbMixin(LitElement) {
       this._i18nInstance.changeLanguage(language).then(
         t => {
           this._updateI18n(t);
-          this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
+          this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
         },
         [],
       );
