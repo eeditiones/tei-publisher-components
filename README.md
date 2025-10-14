@@ -115,6 +115,25 @@ npm run cy:run:e2e
 npm run cy:open
 ```
 
+**Running Individual Specs:**
+
+For **Component Tests** (single spec):
+```bash
+npx cypress run --component --spec "test/cypress/component/pb-button.cy.js"
+```
+
+For **E2E Tests** (single spec with dev server):
+```bash
+npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js"'
+```
+
+For **E2E Tests** (multiple specs with dev server):
+```bash
+npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js,test/cypress/e2e/pb-dialog.e2e.cy.js"'
+```
+
+**Note:** E2E tests require the Vite dev server to be running. The `concurrently` command automatically starts and stops the dev server as needed.
+
 ### Test Architecture
 
 - **Component Tests**: Test individual components in isolation using Cypress Component Testing
