@@ -1,17 +1,21 @@
 import { LitElement, html, css } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import * as marked from 'marked/lib/marked.js';
+import { marked } from 'marked';
 import '../pb-code-highlight.js';
 
-const renderer = new marked.Renderer();
-renderer.code = function code(content, infoString) {
-  return `<pb-code-highlight language="${infoString}" line-numbers>
-        <template>${content}</template>
-    </pb-code-highlight>`;
+// Configure marked with custom renderer
+const renderer = {
+  code(code, infostring, escaped) {
+    const language = code.lang || infostring || 'undefined';
+    const content = code.text || code;
+    return `<pb-code-highlight language="${language}" line-numbers>
+      <template>${content}</template>
+  </pb-code-highlight>`;
+  }
 };
 
-marked.setOptions({ renderer });
+marked.use({ renderer });
 
 function _md(md) {
   if (!md) {

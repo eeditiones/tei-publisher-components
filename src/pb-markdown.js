@@ -1,19 +1,21 @@
 import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import marked from 'marked/lib/marked.esm.js';
+import { marked } from 'marked';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import './pb-code-highlight.js';
 
-const renderer = new marked.Renderer();
-renderer.code = function code(code, infostring, escaped) {
-  return `<pb-code-highlight language="${infostring}" line-numbers>
-        <template>${code}</template>
-    </pb-code-highlight>`;
+// Configure marked with custom renderer
+const renderer = {
+  code(code, infostring, escaped) {
+    const language = code.lang || infostring || 'undefined';
+    const content = code.text || code;
+    return `<pb-code-highlight language="${language}" line-numbers>
+      <template>${content}</template>
+  </pb-code-highlight>`;
+  }
 };
 
-marked.setOptions({
-  renderer,
-});
+marked.use({ renderer });
 
 function removeIndent(input) {
   const indents = input.match(/^[^\S]*(?=\S)/gm);
@@ -113,7 +115,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
     if (!this.content) {
       return null;
     }
-    return html`<div>${unsafeHTML(marked(this.content))}</div>`;
+    return html`<div>${unsafeHTML(marked.parse(this.content))}</div>`;
   }
 
   zoom(direction) {
