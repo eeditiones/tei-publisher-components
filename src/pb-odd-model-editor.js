@@ -704,7 +704,7 @@ export class PbOddModelEditor extends LitElement {
                             ></pb-icon-button>
                           </div>
                           ${repeat(
-                            this.parameters,
+                            this.parameters || [],
                             parameter => parameter.name,
                             (parameter, index) =>
                               html`
@@ -739,7 +739,7 @@ export class PbOddModelEditor extends LitElement {
                           </div>
 
                           ${repeat(
-                            this.renditions,
+                            this.renditions || [],
                             rendition => rendition.name,
                             (rendition, index) =>
                               html`
@@ -759,7 +759,7 @@ export class PbOddModelEditor extends LitElement {
 
             <div class="models">
                 ${repeat(
-                  this.model.models,
+                  (this.model && this.model.models) || [],
                   (model, index) => html`
                     <pb-odd-model-editor
                       behaviour="${model.behaviour || 'inline'}"
