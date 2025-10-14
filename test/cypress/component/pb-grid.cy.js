@@ -174,37 +174,32 @@ describe('pb-grid', () => {
     cy.get('#grid ._grid_panel[active="0"]').should('exist')
   })
 
-  it.skip('should remove the containing panel (remove action not working properly)', () => {
+  it('should remove the containing panel', () => {
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
-        <pb-grid id="grid" panels="[]">
+        <pb-grid id="grid" panels="[0,1]">
           <template>
             <pb-panel>
               <template title="ONE">One</template>
               <template title="TWO">Two</template>
-              <span slot="toolbar"><pb-grid-action id="rm" grid="#grid" action="remove">Remove</pb-grid-action></span>
+              <li slot="toolbar">
+                <pb-grid-action grid="#grid" action="remove">Remove</pb-grid-action>
+              </li>
             </pb-panel>
           </template>
         </pb-grid>
       </pb-page>
     `)
-    cy.get('#grid').then(($grid) => {
-      const grid = /** @type {any} */ ($grid[0])
-      grid.addPanel(0)
-      grid.addPanel(1)
-    })
-    cy.get('#grid ._grid_panel').should('have.length.at.least', 2)
     
-    // Get initial count
-    cy.get('#grid ._grid_panel').then(($panels) => {
-      const initial = $panels.length
-      cy.log(`Initial panel count: ${initial}`)
-      
-      // Click remove button
-      cy.get('#rm').find('button').click({ force: true })
-      
-      // Wait for the panel to be removed
-      cy.get('#grid ._grid_panel').should('have.length', initial - 1)
+    // Verify we start with 2 panels (like demo page)
+    cy.get('#grid ._grid_panel').should('have.length', 2)
+    
+    // Click remove button within the first panel context (like E2E test)
+    cy.get('#grid ._grid_panel').first().within(() => {
+      cy.get('pb-grid-action').find('button').click({ force: true })
     })
+    
+    // Verify we have 1 panel left
+    cy.get('#grid ._grid_panel').should('have.length', 1)
   })
 })

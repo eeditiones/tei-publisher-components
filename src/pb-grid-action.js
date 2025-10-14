@@ -59,10 +59,16 @@ export class PbGridAction extends pbMixin(LitElement) {
     if (!(grid && grid.addPanel)) {
       return console.error('<pb-grid-action> grid not found: %s', this.grid);
     }
+    console.log('<pb-grid-action> Clicked, action:', this.action);
+    console.log('<pb-grid-action> Grid found:', grid);
+    console.log('<pb-grid-action> Closest element:', this.closest('pb-panel,pb-grid'));
+    
     if (this.action === 'add') {
       grid.addPanel(this.initial);
     } else {
-      grid.removePanel(this.closest('pb-panel,pb-grid'));
+      const closest = this.closest('pb-panel,pb-grid');
+      console.log('<pb-grid-action> Calling removePanel with:', closest);
+      grid.removePanel(closest);
     }
   }
 }
