@@ -24,8 +24,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Run Cypress CT
-        run: npx cypress run --component
+      - name: Run Cypress Component Tests
+        run: npm run cy:run:ct
 
   e2e:
       name: Cypress E2E Tests
@@ -42,15 +42,5 @@ jobs:
         run: npm ci
       - name: Build (production)
         run: npm run build:production
-      - name: Start Vite dev server
-        run: |
-          npm run dev &
-          echo $! > /tmp/vite-pid.txt
-      - name: Cypress e2e test
-        run: npx cypress run
-      - name: Stop dev server
-        if: always()
-        run: |
-          if [ -f /tmp/vite-pid.txt ]; then
-            kill $(cat /tmp/vite-pid.txt) || true
-          fi
+      - name: Run Cypress E2E Tests
+        run: npm run cy:run:e2e

@@ -42,15 +42,8 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
-      - name: Start Vite dev server for component testing
-        run: |
-          npm run dev &
-          sleep 10
-        env:
-          PORT: 5173
       - name: Run Cypress E2E tests against real backend
-        run: |
-          npx cypress run --config baseUrl=http://localhost:5173
+        run: npm run cy:run:e2e
         env:
           CYPRESS_baseUrl: http://localhost:5173
           CYPRESS_realBackend: true
