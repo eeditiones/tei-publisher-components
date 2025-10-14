@@ -357,7 +357,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.currentSelection = {};
     this.useNamespace = false;
     this.loggedIn = true;
-    this.tabs = [];
+    this._tabs = [];
     this.tabIndex = undefined;
     this.selectedNavIndex = 0;
     this.cssFile = '';
@@ -365,6 +365,22 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       save: 'ctrl+shift+s,command+shift+s',
     };
     this._hasChanges = false;
+  }
+
+  get tabs() {
+    if (!this._tabs) {
+      this._tabs = [];
+    }
+    return this._tabs;
+  }
+
+  set tabs(value) {
+    this._tabs = Array.isArray(value) ? value : [];
+  }
+
+  get safeTabs() {
+    const tabs = this._tabs || [];
+    return Array.isArray(tabs) ? tabs : [];
   }
 
   render() {
@@ -442,7 +458,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         </div>
         <div id="navlist">
           ${repeat(
-            this.elementSpecs,
+            this.elementSpecs || [],
             i => i.ident,
             (i, index) =>
               html`
@@ -549,10 +565,10 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
           <!-- todo: import elementspec to make it function  -->
 
           <div class="editingView">
-            <vaadin-tabs id="tabs" selected="${this.tabIndex}">
+            <vaadin-tabs id="tabs" selected="${this.tabIndex || 0}">
               ${repeat(
-                this.tabs,
-                i => i.id,
+                this.tabs || [],
+                i => i,
                 (i, index) =>
                   html`
                     <vaadin-tab name="${i}" @click="${e => this._selectTab(e, i)}"
@@ -641,6 +657,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     // reset
     this.elementSpecs = [];
+    this._tabs = [];
+    this.tabIndex = 0;
 
     document.dispatchEvent(new CustomEvent('pb-start-update'));
 
@@ -659,7 +677,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    request.then(data => this.handleOdd({ response: data }));
+    request.then(data => this.handleOdd({ response: data }))
+           .catch(error => {
+             console.warn('pb-odd-editor: Failed to load ODD data:', error);
+             this.loading = false;
+             document.dispatchEvent(new CustomEvent('pb-end-update'));
+           });
   }
 
   handleOdd(req) {
@@ -796,9 +819,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _closeTab(index) {
-    this.tabs.splice(index, 1);
+    const newTabs = [...this.tabs];
+    newTabs.splice(index, 1);
+    
     // last tab closed
-    if (this.tabs.length === 0) {
+    if (newTabs.length === 0) {
       this.shadowRoot.getElementById('currentElement').innerHTML = '';
       this.tabIndex = 0;
       this.tabs = [];
@@ -807,9 +832,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     else if (this.tabIndex > 0 && this.tabIndex >= index) {
       // decrease tabIndex by one
       this.tabIndex -= 1;
+      this.tabs = newTabs;
 
       const currentTab = this.tabs[this.tabIndex];
       this._selectTab(null, currentTab);
+    } else {
+      this.tabs = newTabs;
     }
   }
 
