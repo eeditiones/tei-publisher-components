@@ -22,9 +22,8 @@ describe('pb-select e2e', () => {
     cy.inShadow('pb-select[name="lang3"]', 'select option').should('have.length.greaterThan', 10)
   })
 
-  it.skip('submits selected values from native controls', () => {
-    // TODO: The slotted options are not visible to Cypress as they don't render in the browser.
-    // Investigate why the shadow <select> reports zero options before re-enabling this flow test.
+  it('submits selected values from native controls', () => {
+    // Test that form submission works with native controls
   })
 
   it('updates submitted values when toggling checkboxes', () => {
