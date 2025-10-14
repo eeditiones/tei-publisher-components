@@ -74,7 +74,9 @@ export class PbGrid extends pbMixin(LitElement) {
       console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
       this.panels[this.direction === 'rtl' ? this.panels.length - idx - 1 : idx] = ev.detail.active;
 
+      this._isUpdatingFromRegistry = true;
       registry.commit(this, this._getState());
+      this._isUpdatingFromRegistry = false;
     });
 
     this.subscribeTo('pb-zoom', ev => {
@@ -86,8 +88,17 @@ export class PbGrid extends pbMixin(LitElement) {
       this.panels = panelsParam.split('.').map(param => parseInt(param));
     }
 
+    this._isUpdatingFromRegistry = false;
     registry.subscribe(this, state => {
+      console.log('<pb-grid> Registry subscribe callback triggered, _isUpdatingFromRegistry:', this._isUpdatingFromRegistry);
+      // Only rebuild DOM if state change came from external source (e.g., browser navigation)
+      // not from our own registry.commit() calls
+      if (this._isUpdatingFromRegistry) {
+        console.log('<pb-grid> Skipping registry subscribe callback due to _isUpdatingFromRegistry flag');
+        return;
+      }
       const newState = state.panels ? state.panels.split('.') : [];
+      console.log('<pb-grid> Registry subscribe callback rebuilding DOM with panels:', newState);
       this.panels = newState;
       this.innerHTML = ''; // hard reset of child DOM
       this.panels.forEach(panelNum => this._insertPanel(panelNum));
@@ -99,7 +110,9 @@ export class PbGrid extends pbMixin(LitElement) {
 
   firstUpdated() {
     this.panels.forEach(panelNum => this._insertPanel(panelNum));
+    this._isUpdatingFromRegistry = true;
     registry.commit(this, this._getState());
+    this._isUpdatingFromRegistry = false;
     this._animate();
     this._update();
 
@@ -120,7 +133,9 @@ export class PbGrid extends pbMixin(LitElement) {
       this.panels.splice(targetPanelIdx, 0, this.panels.splice(draggedPanelIdx, 1)[0]);
       this.innerHTML = ''; // hard reset of child DOM
       this.panels.forEach(panelNum => this._insertPanel(panelNum));
+      this._isUpdatingFromRegistry = true;
       registry.commit(this, this._getState());
+      this._isUpdatingFromRegistry = false;
       this._update();
     });
   }
@@ -186,13 +201,22 @@ export class PbGrid extends pbMixin(LitElement) {
       value = max + 1;
     }
 
+    console.log('<pb-grid> Adding panel with value:', value);
+    console.log('<pb-grid> Current panels before add:', this.panels);
+    console.log('<pb-grid> Current panel count before add:', this.querySelectorAll('._grid_panel').length);
+
     this._columns += 1;
     this.panels.push(value);
 
     this._insertPanel(value);
+    this._isUpdatingFromRegistry = true;
     registry.commit(this, this._getState());
+    this._isUpdatingFromRegistry = false;
     this._update();
     this.emitTo('pb-refresh');
+    
+    console.log('<pb-grid> After adding panel - panels:', this.panels);
+    console.log('<pb-grid> After adding panel - panel count:', this.querySelectorAll('._grid_panel').length);
   }
 
   /**
@@ -211,17 +235,32 @@ export class PbGrid extends pbMixin(LitElement) {
       idx = this._getPanelIndex(panel);
     }
     console.log('<pb-grid> Removing panel %d', idx);
+    console.log('<pb-grid> Container:', container);
+    console.log('<pb-grid> Current panels:', [...this.panels]);
+    console.log('<pb-grid> Current panel count:', this.querySelectorAll('._grid_panel').length);
+    
     this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
     container.parentNode.removeChild(container);
     this._columns -= 1;
+    this._isUpdatingFromRegistry = true;
     registry.commit(this, this._getState());
+    this._isUpdatingFromRegistry = false;
     this._assignPanelIds();
     this._update();
+    
+    console.log('<pb-grid> After removal - panels:', [...this.panels]);
+    console.log('<pb-grid> After removal - panel count:', this.querySelectorAll('._grid_panel').length);
   }
 
   _insertPanel(active) {
+    console.log('<pb-grid> _insertPanel called with active:', active);
+    console.log('<pb-grid> Template content:', this.template.content);
+    console.log('<pb-grid> Template firstElementChild:', this.template.content.firstElementChild);
+    
     const clone = document.importNode(this.template.content.firstElementChild, true);
+    console.log('<pb-grid> Cloned element:', clone);
+    
     clone.setAttribute('active', active);
     if (this.direction === 'ltr' || this.querySelectorAll('._grid_panel').length === 0) {
       this.appendChild(clone);
@@ -230,6 +269,8 @@ export class PbGrid extends pbMixin(LitElement) {
     }
     clone.classList.add('_grid_panel');
     this._assignPanelIds();
+    
+    console.log('<pb-grid> After _insertPanel - DOM panels:', this.querySelectorAll('._grid_panel').length);
   }
 
   _update() {
