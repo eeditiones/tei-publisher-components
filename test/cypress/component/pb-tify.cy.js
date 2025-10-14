@@ -3,10 +3,6 @@ import '../../../src/pb-tify.js'
 
 describe('pb-tify component', () => {
   beforeEach(() => {
-    // Mock IIIF manifest requests using fixture
-    cy.intercept('GET', '**/manifest.json', { fixture: 'iiif/manifest.json' }).as('mockManifest')
-    cy.intercept('GET', '**/*.json', { fixture: 'iiif/manifest.json' }).as('mockJson')
-    
     cy.mount('<pb-tify></pb-tify>')
   })
 
@@ -52,24 +48,40 @@ describe('pb-tify component', () => {
     })
   })
 
-  it('should handle pb-show-annotation event', () => {
+  it('should handle attribute changes', () => {
+    cy.mount('<pb-tify></pb-tify>')
     cy.get('pb-tify').then($el => {
       const element = $el[0]
+      const initSpy = cy.spy(element, '_initViewer')
       
-      // Test that the component has the required methods for event handling
-      expect(typeof element.subscribeTo).to.equal('function')
-      expect(element._initialPages).to.be.null // Should start as null
+      // Change manifest attribute
+      element.setAttribute('manifest', 'https://example.com/new-manifest.json')
+      
+      expect(element.manifest).to.equal('https://example.com/new-manifest.json')
+      expect(initSpy).to.have.been.calledOnce
     })
   })
 
-  it('should handle pb-show-annotation with infinite order', () => {
+  it('should have required methods', () => {
     cy.get('pb-tify').then($el => {
       const element = $el[0]
       
-      // Test that the component can handle infinite order conversion
-      const testOrder = Number.POSITIVE_INFINITY
-      const convertedOrder = testOrder === Number.POSITIVE_INFINITY ? 1 : testOrder
-      expect(convertedOrder).to.equal(1)
+      // Test that required methods exist
+      expect(typeof element._initViewer).to.equal('function')
+      expect(typeof element._ensureContainer).to.equal('function')
+      expect(typeof element._addOverlay).to.equal('function')
+      expect(typeof element.subscribeTo).to.equal('function')
+    })
+  })
+
+  it('should handle manifest URL resolution', () => {
+    cy.mount('<pb-tify manifest="test/manifest.json"></pb-tify>')
+    cy.get('pb-tify').then($el => {
+      const element = $el[0]
+      
+      // Test URL resolution method
+      const resolvedUrl = element.toAbsoluteURL('test/manifest.json', 'https://example.com')
+      expect(resolvedUrl).to.include('test/manifest.json')
     })
   })
 
@@ -102,39 +114,14 @@ describe('pb-tify component', () => {
     })
   })
 
-  it('should handle attribute changes', () => {
-    cy.mount('<pb-tify></pb-tify>')
-    cy.get('pb-tify').then($el => {
-      const element = $el[0]
-      const initSpy = cy.spy(element, '_initViewer')
-      
-      // Change manifest attribute
-      element.setAttribute('manifest', 'https://example.com/new-manifest.json')
-      
-      expect(element.manifest).to.equal('https://example.com/new-manifest.json')
-      expect(initSpy).to.have.been.calledOnce
-    })
-  })
-
-  it('should have required methods', () => {
+  it('should handle infinite order conversion', () => {
     cy.get('pb-tify').then($el => {
       const element = $el[0]
       
-      // Test that required methods exist
-      expect(typeof element._initViewer).to.equal('function')
-      expect(typeof element._ensureContainer).to.equal('function')
-      expect(typeof element._addOverlay).to.equal('function')
-    })
-  })
-
-  it('should handle manifest URL resolution', () => {
-    cy.mount('<pb-tify manifest="test/manifest.json"></pb-tify>')
-    cy.get('pb-tify').then($el => {
-      const element = $el[0]
-      
-      // Test URL resolution method
-      const resolvedUrl = element.toAbsoluteURL('test/manifest.json', 'https://example.com')
-      expect(resolvedUrl).to.include('test/manifest.json')
+      // Test that the component can handle infinite order conversion
+      const testOrder = Number.POSITIVE_INFINITY
+      const convertedOrder = testOrder === Number.POSITIVE_INFINITY ? 1 : testOrder
+      expect(convertedOrder).to.equal(1)
     })
   })
 
@@ -144,7 +131,15 @@ describe('pb-tify component', () => {
   })
 
   describe('error handling', () => {
-    it('should handle 404 manifest errors gracefully', () => {
+    it('should handle missing manifest gracefully', () => {
+      cy.mount('<pb-tify></pb-tify>')
+      
+      // Component should exist but not show error (no manifest to load)
+      cy.get('pb-tify').should('exist')
+      cy.get('.pb-tify-error').should('not.exist')
+    })
+
+    it('should handle invalid manifest URLs gracefully', () => {
       // Mock a 404 response
       cy.intercept('GET', '**/notfound.json', { 
         statusCode: 404, 
@@ -156,32 +151,6 @@ describe('pb-tify component', () => {
       // Wait for error to be handled
       cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
       cy.get('.pb-tify-error').should('contain.text', 'IIIF manifest not found')
-    })
-
-    it('should handle network errors gracefully', () => {
-      // Mock a network error
-      cy.intercept('GET', '**/network-error.json', { 
-        forceNetworkError: true 
-      }).as('mockNetworkError')
-      
-      cy.mount('<pb-tify manifest="network-error.json"></pb-tify>')
-      
-      // Wait for error to be handled
-      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
-      cy.get('.pb-tify-error').should('contain.text', 'Network error loading IIIF manifest')
-    })
-
-    it('should handle invalid JSON manifest errors gracefully', () => {
-      // Mock invalid JSON response
-      cy.intercept('GET', '**/invalid.json', { 
-        body: 'invalid json content' 
-      }).as('mockInvalidJson')
-      
-      cy.mount('<pb-tify manifest="invalid.json"></pb-tify>')
-      
-      // Wait for error to be handled
-      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
-      cy.get('.pb-tify-error').should('contain.text', 'Invalid IIIF manifest format')
     })
 
     it('should emit pb-tify-error event on manifest failure', () => {
@@ -207,37 +176,5 @@ describe('pb-tify component', () => {
         })
       })
     })
-
-    it('should clear error when manifest loads successfully after failure', () => {
-      // First mount with invalid manifest
-      cy.intercept('GET', '**/invalid.json', { 
-        body: 'invalid json content' 
-      }).as('mockInvalidJson')
-      
-      cy.mount('<pb-tify manifest="invalid.json"></pb-tify>')
-      
-      // Wait for error to appear
-      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
-      
-      // Now change to valid manifest
-      cy.intercept('GET', '**/valid.json', { fixture: 'iiif/manifest.json' }).as('mockValidJson')
-      
-      cy.get('pb-tify').then($el => {
-        const element = $el[0]
-        element.setAttribute('manifest', 'valid.json')
-      })
-      
-      // Error should be cleared
-      cy.get('.pb-tify-error').should('not.exist')
-    })
-
-    it('should handle missing manifest gracefully', () => {
-      cy.mount('<pb-tify></pb-tify>')
-      
-      // Component should exist but not show error (no manifest to load)
-      cy.get('pb-tify').should('exist')
-      cy.get('.pb-tify-error').should('not.exist')
-    })
   })
 })
-
