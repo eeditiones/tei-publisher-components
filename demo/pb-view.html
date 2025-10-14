@@ -105,6 +105,14 @@
             </pb-page>
         </template>
     </pb-demo-snippet>
+    <script type="module">
+      import { firePageReady } from '../src/docs/demo-utils.js'
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => firePageReady({ endpoint: '/exist/apps/tei-publisher' }))
+      } else {
+        firePageReady({ endpoint: '/exist/apps/tei-publisher' })
+      }
+    </script>
 </body>
 
 </html>
