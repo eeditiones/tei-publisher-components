@@ -8,15 +8,6 @@ describe('pb-tify component', () => {
     cy.intercept('GET', '**/*.json', { fixture: 'iiif/manifest.json' }).as('mockJson')
     
     cy.mount('<pb-tify></pb-tify>')
-    
-    // Handle uncaught exceptions from IIIF loading
-    Cypress.on('uncaught:exception', (err) => {
-      if (err.message.includes('Error loading IIIF manifest') || 
-          err.message.includes('Failed to fetch') ||
-          err.message.includes('NetworkError')) {
-        return false // Don't fail the test
-      }
-    })
   })
 
   it('should create pb-tify element', () => {
@@ -150,6 +141,103 @@ describe('pb-tify component', () => {
   it('should have proper accessibility attributes', () => {
     cy.get('pb-tify').should('exist')
     // pb-tify is a viewer component, accessibility is handled by the IIIF viewer
+  })
+
+  describe('error handling', () => {
+    it('should handle 404 manifest errors gracefully', () => {
+      // Mock a 404 response
+      cy.intercept('GET', '**/notfound.json', { 
+        statusCode: 404, 
+        body: 'Not Found' 
+      }).as('mock404')
+      
+      cy.mount('<pb-tify manifest="notfound.json"></pb-tify>')
+      
+      // Wait for error to be handled
+      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
+      cy.get('.pb-tify-error').should('contain.text', 'IIIF manifest not found')
+    })
+
+    it('should handle network errors gracefully', () => {
+      // Mock a network error
+      cy.intercept('GET', '**/network-error.json', { 
+        forceNetworkError: true 
+      }).as('mockNetworkError')
+      
+      cy.mount('<pb-tify manifest="network-error.json"></pb-tify>')
+      
+      // Wait for error to be handled
+      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
+      cy.get('.pb-tify-error').should('contain.text', 'Network error loading IIIF manifest')
+    })
+
+    it('should handle invalid JSON manifest errors gracefully', () => {
+      // Mock invalid JSON response
+      cy.intercept('GET', '**/invalid.json', { 
+        body: 'invalid json content' 
+      }).as('mockInvalidJson')
+      
+      cy.mount('<pb-tify manifest="invalid.json"></pb-tify>')
+      
+      // Wait for error to be handled
+      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
+      cy.get('.pb-tify-error').should('contain.text', 'Invalid IIIF manifest format')
+    })
+
+    it('should emit pb-tify-error event on manifest failure', () => {
+      // Mock a 404 response
+      cy.intercept('GET', '**/error.json', { 
+        statusCode: 404, 
+        body: 'Not Found' 
+      }).as('mockError')
+      
+      cy.mount('<pb-tify manifest="error.json"></pb-tify>')
+      
+      // Listen for the error event
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        const errorSpy = cy.spy()
+        element.addEventListener('pb-tify-error', errorSpy)
+        
+        // Wait for error to be handled
+        cy.get('.pb-tify-error', { timeout: 5000 }).should('exist').then(() => {
+          expect(errorSpy).to.have.been.calledOnce
+          expect(errorSpy.firstCall.args[0].detail).to.have.property('error')
+          expect(errorSpy.firstCall.args[0].detail).to.have.property('manifest', 'error.json')
+        })
+      })
+    })
+
+    it('should clear error when manifest loads successfully after failure', () => {
+      // First mount with invalid manifest
+      cy.intercept('GET', '**/invalid.json', { 
+        body: 'invalid json content' 
+      }).as('mockInvalidJson')
+      
+      cy.mount('<pb-tify manifest="invalid.json"></pb-tify>')
+      
+      // Wait for error to appear
+      cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
+      
+      // Now change to valid manifest
+      cy.intercept('GET', '**/valid.json', { fixture: 'iiif/manifest.json' }).as('mockValidJson')
+      
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        element.setAttribute('manifest', 'valid.json')
+      })
+      
+      // Error should be cleared
+      cy.get('.pb-tify-error').should('not.exist')
+    })
+
+    it('should handle missing manifest gracefully', () => {
+      cy.mount('<pb-tify></pb-tify>')
+      
+      // Component should exist but not show error (no manifest to load)
+      cy.get('pb-tify').should('exist')
+      cy.get('.pb-tify-error').should('not.exist')
+    })
   })
 })
 
