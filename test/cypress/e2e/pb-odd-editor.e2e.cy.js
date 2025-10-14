@@ -9,6 +9,11 @@ before(() => {
 // Cypress E2E: pb-odd-editor
 describe('pb-odd-editor e2e', () => {
   beforeEach(() => {
+    // Login if running against real backend
+    if (Cypress.env('realBackend')) {
+      cy.login()
+    }
+    
     cy.visit('/demo/pb-odd-editor.html')
     cy.get('pb-page', { timeout: 5000 }).should('exist')
   })

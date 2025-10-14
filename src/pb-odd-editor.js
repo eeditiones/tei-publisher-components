@@ -664,6 +664,13 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
   handleOdd(req) {
     const data = req.response;
+    
+    // Handle case where data is null (request failed)
+    if (!data) {
+      console.warn('pb-odd-editor: Failed to load ODD data');
+      return;
+    }
+    
     this.loggedIn = data.canWrite;
     this.source = data.source;
     this.title = data.title;
@@ -679,7 +686,12 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     // update elementSpecs
-    this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
+    if (data.elementSpecs && Array.isArray(data.elementSpecs)) {
+      this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
+    } else {
+      console.warn('pb-odd-editor: elementSpecs data is missing or invalid');
+      this.elementSpecs = [];
+    }
 
     // init auto-complete list
     // const jumpTo = this.shadowRoot.getElementById('jumpTo');

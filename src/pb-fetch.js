@@ -179,11 +179,8 @@ export class PbFetch extends HTMLElement {
         this.lastResponse = null;
         this.loading = false;
         this.dispatchEvent(new CustomEvent('error', { detail: errorDetail }));
-        const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
-        error.status = response.status;
-        error.response = rawText;
-        error.xhr = response;
-        throw error;
+        // Don't throw error - let the error handler deal with it
+        return null;
       }
 
       this.lastError = null;
@@ -213,7 +210,8 @@ export class PbFetch extends HTMLElement {
         this.dispatchEvent(new CustomEvent('error', { detail: errorDetail }));
       }
       this.loading = false;
-      throw error;
+      // Don't throw error - let the error handler deal with it
+      return null;
     } finally {
       this._controller = null;
     }

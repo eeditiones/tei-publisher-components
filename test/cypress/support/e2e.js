@@ -81,7 +81,7 @@ beforeEach(() => {
   // Note: Tests can override these by defining more specific intercepts
   cy.intercept({
     method: 'GET',
-    pathname: /\/exist\/apps\/tei-publisher\/api\/(browse|docs).*$/
+    pathname: /\/exist\/apps\/tei-publisher\/api\/(browse|docs|collection).*$/
   }, {
     statusCode: 200,
     headers: { 'content-type': 'text/html' },
@@ -291,5 +291,29 @@ Cypress.Commands.add('inShadow', (hostSelector, innerSelector) => {
 // Usage: cy.waitUpdate('pb-select[name="lang1"]')
 Cypress.Commands.add('waitUpdate', (hostSelector) => {
   return cy.get(hostSelector).then($el => cy.wrap($el[0].updateComplete))
+})
+
+// Authentication helpers for real backend tests
+Cypress.Commands.add('login', (fixtureName = 'user') => {
+  return cy.fixture(fixtureName).then(({ user, password }) => {
+    return cy.request({
+      method: 'POST',
+      url: '/exist/apps/tei-publisher/api/login',
+      form: true,
+      body: { user, password },
+      headers: { Origin: 'http://localhost:8080', Accept: 'application/json' }
+    }).its('status').should('eq', 200)
+  })
+})
+
+Cypress.Commands.add('logout', () => {
+  // Best-effort server logout, then clear client-side cookies
+  cy.request({
+    method: 'POST',
+    url: '/exist/apps/tei-publisher/api/login',
+    qs: { logout: 'true' },
+    failOnStatusCode: false
+  })
+  cy.clearCookies()
 })
 
