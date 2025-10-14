@@ -23,7 +23,9 @@ export class PbIconButton extends LitElement {
 
   render() {
     const hostTitle = this.title || '';
-    const iconLabel = this.icon ? normalizeLabel(this.icon.includes(':') ? this.icon.split(':').pop() : this.icon) : '';
+    const iconLabel = this.icon
+      ? normalizeLabel(this.icon.includes(':') ? this.icon.split(':').pop() : this.icon)
+      : '';
     const ariaLabel = this.label || hostTitle || iconLabel;
 
     return html`
@@ -36,7 +38,9 @@ export class PbIconButton extends LitElement {
         aria-pressed=${this.toggles ? String(this.active) : undefined}
         @click=${this._handleClick}
       >
-        ${this.icon ? html`<pb-icon icon="${this.icon}" decorative></pb-icon>` : html`<slot></slot>`}
+        ${this.icon
+          ? html`<pb-icon icon="${this.icon}" decorative></pb-icon>`
+          : html`<slot></slot>`}
       </button>
     `;
   }

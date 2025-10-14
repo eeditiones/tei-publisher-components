@@ -35,12 +35,12 @@ export class PbRepeat extends pbMixin(LitElement) {
     this._instances = [];
   }
 
-  connectedCallback () {
-  super.connectedCallback()
-  const tpl = this.querySelector('template')
-  if (!tpl) return   // nothing to render yet; safe for smoke tests
-  this._add()
-}
+  connectedCallback() {
+    super.connectedCallback();
+    const tpl = this.querySelector('template');
+    if (!tpl) return; // nothing to render yet; safe for smoke tests
+    this._add();
+  }
 
   _computeInitial(params) {
     const sortedParams = Object.keys(params)
@@ -66,12 +66,12 @@ export class PbRepeat extends pbMixin(LitElement) {
     this.requestUpdate();
   }
 
-  _add (params) {
-    const tpl = this.querySelector('template')
-    if (!tpl || !tpl.content) return
-    const idx = this._instances.length + 1
-    const clone = document.importNode(tpl.content, true)
-    const wrapper = document.createElement('div')
+  _add(params) {
+    const tpl = this.querySelector('template');
+    if (!tpl || !tpl.content) return;
+    const idx = this._instances.length + 1;
+    const clone = document.importNode(tpl.content, true);
+    const wrapper = document.createElement('div');
     wrapper.appendChild(clone);
     wrapper.querySelectorAll('[name]').forEach(input => {
       // during inicialization of the default first instance
@@ -159,9 +159,7 @@ export class PbRepeat extends pbMixin(LitElement) {
       aria-hidden="true"
       focusable="false"
     >
-      <path
-        d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1z"
-      ></path>
+      <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1z"></path>
     </svg>`;
   }
 

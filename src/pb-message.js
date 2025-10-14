@@ -68,8 +68,12 @@ export class PbMessage extends themableMixin(LitElement) {
                 ${translate('dialogs.close')}
               </button>`
             : html`
-                <button class="confirm" autofocus="autofocus" type="button">${translate('dialogs.yes')}</button>
-                <button class="reject" autofocus="autofocus" type="button">${translate('dialogs.no')}</button>
+                <button class="confirm" autofocus="autofocus" type="button">
+                  ${translate('dialogs.yes')}
+                </button>
+                <button class="reject" autofocus="autofocus" type="button">
+                  ${translate('dialogs.no')}
+                </button>
               `}
         </div>
       </pb-dialog>

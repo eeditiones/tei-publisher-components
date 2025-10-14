@@ -71,9 +71,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <label class="dts-select__label" for="dts-select">
-        ${translate(this.label)}
-      </label>
+      <label class="dts-select__label" for="dts-select"> ${translate(this.label)} </label>
       <select
         id="dts-select"
         class="dts-select__select"
@@ -81,9 +79,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
         .value=${this.endpoint || ''}
         @change=${this._selected}
       >
-        ${this.endpoints.map(
-          ep => html`<option value="${ep.url ?? ''}">${ep.title}</option>`,
-        )}
+        ${this.endpoints.map(ep => html`<option value="${ep.url ?? ''}">${ep.title}</option>`)}
       </select>
     `;
   }

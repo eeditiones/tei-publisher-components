@@ -132,7 +132,11 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
         ${this._authorities[this.type] && this._authorities[this.type].editable
           ? html`
               <pb-restricted group="${this.group}">
-                <button @click="${this._addEntity}" title="${translate('annotations.add-entity')}" type="button">
+                <button
+                  @click="${this._addEntity}"
+                  title="${translate('annotations.add-entity')}"
+                  type="button"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
                     <path
                       fill="none"

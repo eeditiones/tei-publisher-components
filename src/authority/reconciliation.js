@@ -1,4 +1,3 @@
- 
 import { Registry } from './registry.js';
 
 // Todo:

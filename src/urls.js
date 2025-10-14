@@ -6,21 +6,21 @@ import { getSubscribedChannels } from './pb-mixin.js';
  * Convert path-to-regexp v6 syntax to v8 syntax
  * - :param? becomes {:param} (optional parameters with braces)
  * - /* becomes /*path (named wildcards)
- * 
+ *
  * This function is idempotent - it can be called multiple times safely
  * and will not double-convert already converted patterns.
  */
 function convertPathToRegexpSyntax(pattern) {
   if (!pattern) return pattern;
-  
+
   // Convert optional parameters :param? to {:param} for v8 compatibility
   // Only convert if not already in v8 format (avoid double conversion)
   let converted = pattern.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)\?/g, '{:$1}');
-  
+
   // Convert unnamed wildcards /* to /*path
   // Only convert if not already named (avoid double conversion)
   converted = converted.replace(/\*$/g, '*path');
-  
+
   return converted;
 }
 
@@ -110,7 +110,7 @@ class Registry {
     if (this.urlPattern) {
       // Convert v6 syntax to v8 syntax
       const convertedPattern = convertPathToRegexpSyntax(this.urlPattern);
-      
+
       // save a list of parameter names which go into the path
       const pathParams = [];
       pathToRegexp(convertedPattern, pathParams);
@@ -252,7 +252,6 @@ class Registry {
     // make sure all intermediate steps are available
     const lastIntermediate = components.reduce((result, nextComponent) => {
       if (!result[nextComponent]) {
-         
         result[nextComponent] = {};
       }
       return result[nextComponent];
@@ -356,26 +355,30 @@ class Registry {
   }
 }
 
-export const registry = new Registry()
+export const registry = new Registry();
 
 // Expose the registry under both historical names and keep them in sync
 if (typeof window !== 'undefined') {
-  if (!window.pbRegistry) window.pbRegistry = registry
-  if (!window.PB) window.PB = {}
+  if (!window.pbRegistry) window.pbRegistry = registry;
+  if (!window.PB) window.PB = {};
 
   // Define PB.pbRegistry as a live alias of window.pbRegistry so reads/writes stay in sync
   try {
-    const desc = Object.getOwnPropertyDescriptor(window.PB, 'pbRegistry')
+    const desc = Object.getOwnPropertyDescriptor(window.PB, 'pbRegistry');
     if (!desc || typeof desc.get !== 'function') {
       Object.defineProperty(window.PB, 'pbRegistry', {
         configurable: true,
         enumerable: true,
-        get () { return window.pbRegistry },
-        set (val) { window.pbRegistry = val }
-      })
+        get() {
+          return window.pbRegistry;
+        },
+        set(val) {
+          window.pbRegistry = val;
+        },
+      });
     }
   } catch (e) {
     // Fallback if defineProperty is blocked or pbRegistry already exists as a data property
-    if (!window.PB.pbRegistry) window.PB.pbRegistry = window.pbRegistry
+    if (!window.PB.pbRegistry) window.PB.pbRegistry = window.pbRegistry;
   }
 }

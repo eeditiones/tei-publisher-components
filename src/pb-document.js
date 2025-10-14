@@ -84,7 +84,7 @@ class PbDocument extends pbMixin(LitElement) {
       this.view = registry.state.view || this.view;
       this.odd = registry.state.odd || this.odd;
     }
-    
+
     // Initialize the event key baseline to prevent unnecessary initial events
     this._lastEventKey = this._computeEventKey();
   }
@@ -93,10 +93,10 @@ class PbDocument extends pbMixin(LitElement) {
     super.attributeChangedCallback(name, oldVal, newVal);
     // No-op if value did not change (prevents churn)
     if (oldVal === newVal) return;
-    
+
     // Coalesce multiple rapid attribute updates into a single emit
     if (this._emitScheduled) return;
-    
+
     this._emitScheduled = true;
     setTimeout(() => {
       this._emitScheduled = false;
@@ -115,7 +115,7 @@ class PbDocument extends pbMixin(LitElement) {
       rootPath: this.rootPath || '',
       odd: this.odd || '',
       view: this.view || '',
-      sourceView: this.sourceView || ''
+      sourceView: this.sourceView || '',
     });
   }
 

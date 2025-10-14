@@ -12,7 +12,7 @@ const renderer = {
     return `<pb-code-highlight language="${language}" line-numbers>
       <template>${content}</template>
   </pb-code-highlight>`;
-  }
+  },
 };
 
 marked.use({ renderer });

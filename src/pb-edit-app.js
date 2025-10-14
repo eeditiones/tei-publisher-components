@@ -115,7 +115,15 @@ export class PbEditApp extends pbMixin(LitElement) {
     }
   }
 
-  _renderTextField({ id, name, type = 'text', required = false, pattern, placeholder = '', label }) {
+  _renderTextField({
+    id,
+    name,
+    type = 'text',
+    required = false,
+    pattern,
+    placeholder = '',
+    label,
+  }) {
     return html`
       <label class="pb-field" for="${id}">
         <span class="pb-field__label">${label}</span>
@@ -237,158 +245,144 @@ export class PbEditApp extends pbMixin(LitElement) {
   render() {
     return html`
       <form id="form" method="POST" accept="application/json" enctype="application/json">
-          <fieldset class="pb-fieldset">
-            <legend>${translate('document.selectODD')}</legend>
-            ${this.odds.map(
-              odd => html`
-                <label class="pb-checkbox">
-                  <input
-                    type="checkbox"
-                    name="odd"
-                    value="${odd.name}"
-                    ?checked=${Boolean(odd.checked)}
-                  />
-                  <span>${odd.label}</span>
-                </label>
-              `,
-            )}
-          </fieldset>
+        <fieldset class="pb-fieldset">
+          <legend>${translate('document.selectODD')}</legend>
+          ${this.odds.map(
+            odd => html`
+              <label class="pb-checkbox">
+                <input
+                  type="checkbox"
+                  name="odd"
+                  .value="${odd.name}"
+                  ?checked=${Boolean(odd.checked)}
+                />
+                <span>${odd.label}</span>
+              </label>
+            `,
+          )}
+        </fieldset>
 
+        ${this._renderTextField({
+          id: 'uri',
+          name: 'uri',
+          type: 'url',
+          required: true,
+          placeholder: 'https://e-editiones.org/apps/my-simple-app',
+          label: translate('appgen.uri'),
+        })}
+        ${this._renderTextField({
+          id: 'abbrev',
+          name: 'abbrev',
+          pattern: '[a-zA-Z0-9-_]+',
+          required: true,
+          placeholder: translate('appgen.abbrev.placeholder'),
+          label: translate('appgen.abbrev.label'),
+        })}
+        ${this._renderTextField({
+          id: 'data-collection',
+          name: 'data-collection',
+          pattern: '[a-zA-Z0-9-_/]+',
+          placeholder: 'data',
+          label: translate('appgen.collection'),
+        })}
+        ${this._renderTextField({
+          id: 'title',
+          name: 'title',
+          required: true,
+          placeholder: translate('appgen.title.label'),
+          label: translate('appgen.title.help'),
+        })}
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.template.help')}</legend>
+          <label class="pb-field" for="template">
+            <span class="pb-field__label">${translate('appgen.template.label')}</span>
+            <select
+              id="template"
+              class="pb-select"
+              name="template"
+              .value=${this._templateValue || ''}
+              @change=${this._onTemplateChange}
+            >
+              ${this.templates.map(t => html`<option value="${t.name}">${t.title}</option>`)}
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.view.help')}</legend>
+          <label class="pb-field" for="defaultView">
+            <span class="pb-field__label">${translate('appgen.label')}</span>
+            <select
+              id="defaultView"
+              class="pb-select"
+              name="default-view"
+              .value=${this._defaultViewValue || ''}
+              @change=${this._onDefaultViewChange}
+            >
+              <option value="div">${translate('appgen.view.div')}</option>
+              <option value="page">${translate('appgen.view.page')}</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.index.help')}</legend>
+          <label class="pb-field" for="index">
+            <span class="pb-field__label">${translate('appgen.index.label')}</span>
+            <select
+              id="index"
+              class="pb-select"
+              name="index"
+              .value=${this._indexValue || ''}
+              @change=${this._onIndexChange}
+            >
+              <option value="tei:div">${translate('appgen.index.index-div')}</option>
+              <option value="tei:text">${translate('appgen.index.index-text')}</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.account.user')}</legend>
           ${this._renderTextField({
-            id: 'uri',
-            name: 'uri',
-            type: 'url',
+            id: 'owner',
+            name: 'owner',
             required: true,
-            placeholder: 'https://e-editiones.org/apps/my-simple-app',
-            label: translate('appgen.uri'),
+            placeholder: translate('login.user'),
+            label: translate('appgen.account.owner'),
           })}
-
           ${this._renderTextField({
-            id: 'abbrev',
-            name: 'abbrev',
-            pattern: '[a-zA-Z0-9-_]+',
+            id: 'password',
+            name: 'password',
+            type: 'password',
             required: true,
-            placeholder: translate('appgen.abbrev.placeholder'),
-            label: translate('appgen.abbrev.label'),
+            placeholder: translate('login.password'),
+            label: translate('appgen.account.password'),
           })}
-
-          ${this._renderTextField({
-            id: 'data-collection',
-            name: 'data-collection',
-            pattern: '[a-zA-Z0-9-_/]+',
-            placeholder: 'data',
-            label: translate('appgen.collection'),
-          })}
-
-          ${this._renderTextField({
-            id: 'title',
-            name: 'title',
-            required: true,
-            placeholder: translate('appgen.title.label'),
-            label: translate('appgen.title.help'),
-          })}
-
-          <fieldset class="pb-fieldset">
-            <legend>${translate('appgen.template.help')}</legend>
-            <label class="pb-field" for="template">
-              <span class="pb-field__label">${translate('appgen.template.label')}</span>
-              <select
-                id="template"
-                class="pb-select"
-                name="template"
-                .value=${this._templateValue || ''}
-                @change=${this._onTemplateChange}
-              >
-                ${this.templates.map(
-                  t => html`<option value="${t.name}">${t.title}</option>`,
-                )}
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset class="pb-fieldset">
-            <legend>${translate('appgen.view.help')}</legend>
-            <label class="pb-field" for="defaultView">
-              <span class="pb-field__label">${translate('appgen.label')}</span>
-              <select
-                id="defaultView"
-                class="pb-select"
-                name="default-view"
-                .value=${this._defaultViewValue || ''}
-                @change=${this._onDefaultViewChange}
-              >
-                <option value="div">${translate('appgen.view.div')}</option>
-                <option value="page">${translate('appgen.view.page')}</option>
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset class="pb-fieldset">
-            <legend>${translate('appgen.index.help')}</legend>
-            <label class="pb-field" for="index">
-              <span class="pb-field__label">${translate('appgen.index.label')}</span>
-              <select
-                id="index"
-                class="pb-select"
-                name="index"
-                .value=${this._indexValue || ''}
-                @change=${this._onIndexChange}
-              >
-                <option value="tei:div">${translate('appgen.index.index-div')}</option>
-                <option value="tei:text">${translate('appgen.index.index-text')}</option>
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset class="pb-fieldset">
-            <legend>${translate('appgen.account.user')}</legend>
-            ${this._renderTextField({
-              id: 'owner',
-              name: 'owner',
-              required: true,
-              placeholder: translate('login.user'),
-              label: translate('appgen.account.owner'),
-            })}
-            ${this._renderTextField({
-              id: 'password',
-              name: 'password',
-              type: 'password',
-              required: true,
-              placeholder: translate('login.password'),
-              label: translate('appgen.account.password'),
-            })}
-          </fieldset>
-          <button
-            id="submit"
-            class="pb-button pb-button--contained"
-            type="button"
-            @click="${this._doSubmit}"
-          >
-            <pb-icon icon="save"></pb-icon>
-            ${translate('appgen.submit')}
-          </button>
-        </form>
+        </fieldset>
+        <button
+          id="submit"
+          class="pb-button pb-button--contained"
+          type="button"
+          @click="${this._doSubmit}"
+        >
+          <pb-icon icon="save"></pb-icon>
+          ${translate('appgen.submit')}
+        </button>
+      </form>
       <pb-dialog id="dialog" title="${translate('appgen.dialog.title')}">
         <div id="dialogContent">
           ${this.error
             ? html`<div id="error">${this.error}</div>`
-            : html`<a
-                  href="${this.url}"
-                  target="_blank"
-                  class="pb-button pb-button--text"
-                >
+            : html`<a href="${this.url}" target="_blank" class="pb-button pb-button--text">
                   <pb-icon icon="icons:open-in-new"></pb-icon>
                   ${translate('appgen.open')}
                 </a>
                 <p>${translate('appgen.success')}</p>`}
         </div>
         <div slot="footer" class="buttons">
-          <button
-            class="pb-button pb-button--text"
-            type="button"
-            rel="prev"
-            autofocus
-          >
+          <button class="pb-button pb-button--text" type="button" rel="prev" autofocus>
             ${translate('dialogs.close')}
           </button>
         </div>

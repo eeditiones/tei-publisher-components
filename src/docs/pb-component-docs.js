@@ -68,14 +68,17 @@ export class PbComponentDocs extends LitElement {
       }
     });
 
-    document.addEventListener('pb-api-component', /** @param {CustomEvent} ev */ ev => {
-      const { component, tab } = ev.detail;
-      const url = `#${component.name}.${tab}`;
-      history.pushState({ component, tab }, 'view component', url);
-      this.view?.show(component, tab);
-      this._drawerOpen = false;
-      this.requestUpdate();
-    });
+    document.addEventListener(
+      'pb-api-component',
+      /** @param {CustomEvent} ev */ ev => {
+        const { component, tab } = ev.detail;
+        const url = `#${component.name}.${tab}`;
+        history.pushState({ component, tab }, 'view component', url);
+        this.view?.show(component, tab);
+        this._drawerOpen = false;
+        this.requestUpdate();
+      },
+    );
   }
 
   firstUpdated() {
@@ -171,7 +174,11 @@ export class PbComponentDocs extends LitElement {
           >
             ${this._drawerOpen ? 'Hide component list' : 'Show component list'}
           </button>
-          <pb-component-view id="view" ._target="${this._target}" ._api="${this._api}"></pb-component-view>
+          <pb-component-view
+            id="view"
+            ._target="${this._target}"
+            ._api="${this._api}"
+          ></pb-component-view>
         </section>
       </div>
     `;

@@ -1,9 +1,9 @@
-import { LitElement, html, css, nothing } from 'lit'
-import { translate } from '../pb-i18n.js'
-import { ready, firePageReady, syncPbSelect, autoWireForms } from './demo-utils.js'
-import '../pb-code-highlight.js'
+import { LitElement, html, css, nothing } from 'lit';
+import { translate } from '../pb-i18n.js';
+import { ready, firePageReady, syncPbSelect, autoWireForms } from './demo-utils.js';
+import '../pb-code-highlight.js';
 
-const codePenEndpoint = 'https://teipublisher.com/exist/apps/tei-publisher'
+const codePenEndpoint = 'https://teipublisher.com/exist/apps/tei-publisher';
 
 /**
  * Viewer for demo code.
@@ -15,32 +15,34 @@ export class PbDemoSnippet extends LitElement {
     title: { type: String },
     code: { type: String },
     _showCodeLabel: { type: String },
-    _requirePbTify: { type: Boolean }
+    _requirePbTify: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.title = 'TEI Publisher Webcomponents Example';
+    this.code = 'Loading ...';
+    this._showCodeLabel = 'demo.showCode.show';
+    this._requirePbTify = false;
   }
 
-  constructor () {
-    super()
-    this.title = 'TEI Publisher Webcomponents Example'
-    this.code = 'Loading ...'
-    this._showCodeLabel = 'demo.showCode.show'
-    this._requirePbTify = false
-  }
+  connectedCallback() {
+    super.connectedCallback();
+    this._requirePbTify = this.hasAttribute('require-pb-tify');
 
-  connectedCallback () {
-    super.connectedCallback()
-    this._requirePbTify = this.hasAttribute('require-pb-tify')
-
-    const template = this.querySelector('template')
+    const template = this.querySelector('template');
     if (!template) {
-      console.warn('<pb-demo-snippet> no <template> found inside snippet')
-      return
+      console.warn('<pb-demo-snippet> no <template> found inside snippet');
+      return;
     }
 
-    this.code = PbDemoSnippet.removeIndent(template.innerHTML)
-      .replace(/\s*<style[\s\S]*?>[\s\S]*?<\/style>\s*/g, '')
+    this.code = PbDemoSnippet.removeIndent(template.innerHTML).replace(
+      /\s*<style[\s\S]*?>[\s\S]*?<\/style>\s*/g,
+      '',
+    );
 
-    const clone = template.content.cloneNode(true)
-    this.append(clone)
+    const clone = template.content.cloneNode(true);
+    this.append(clone);
 
     // After stamping, normalize demos:
     // - If pb-select is present and defined, reflect initial values into the inner controls
@@ -48,25 +50,31 @@ export class PbDemoSnippet extends LitElement {
     queueMicrotask(async () => {
       try {
         if (customElements.get('pb-select')) {
-          const selects = this.querySelectorAll('pb-select')
+          const selects = this.querySelectorAll('pb-select');
           for (const el of selects) {
-            try { await syncPbSelect(el) } catch (_) { /* non-fatal for demos */ }
+            try {
+              await syncPbSelect(el);
+            } catch (_) {
+              /* non-fatal for demos */
+            }
           }
         }
-      } catch (_) { /* ignore */ }
-      autoWireForms(this)
-      firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
-    })
+      } catch (_) {
+        /* ignore */
+      }
+      autoWireForms(this);
+      firePageReady({ endpoint: '.', apiVersion: '1.0.0' });
+    });
   }
 
-  render () {
-    const style = this.querySelector('style')
-    const css = style ? style.innerText : ''
+  render() {
+    const style = this.querySelector('style');
+    const css = style ? style.innerText : '';
 
     const cpCode = PbDemoSnippet.indent(
       this.code.replace(/(endpoint="[^"]+")/, `endpoint="${codePenEndpoint}"`),
-      2
-    )
+      2,
+    );
 
     const cpCss = `
 @import url('https://fonts.googleapis.com/css?family=Oswald|Roboto&display=swap');
@@ -81,7 +89,7 @@ body {
 }
 
 ${PbDemoSnippet.removeIndent(css)}
-`
+`;
 
     const cpHtml = `
 <html>
@@ -102,7 +110,7 @@ ${cpCode}
       ? '<script type="module" src="https://unpkg.com/@teipublisher/pb-components@latest/dist/pb-tify.js"></script>'
       : ''
   }
-</html>`
+</html>`;
 
     const cpOptions = {
       title: this.title,
@@ -111,8 +119,8 @@ ${cpCode}
       css: cpCss,
       css_starter: 'normalize',
       template: false,
-      editors: 110
-    }
+      editors: 110,
+    };
 
     return html`
       <div class="snippet"><slot></slot></div>
@@ -128,38 +136,36 @@ ${cpCode}
           ${translate(this._showCodeLabel)}
         </button>
         <form action="https://codepen.io/pen/define" method="POST" target="_blank">
-          <input type="hidden" name="data" .value=${JSON.stringify(cpOptions)}>
-          <button class="pretty-button" type="submit">
-            ${translate('demo.editCode.show')}
-          </button>
+          <input type="hidden" name="data" .value=${JSON.stringify(cpOptions)} />
+          <button class="pretty-button" type="submit">${translate('demo.editCode.show')}</button>
         </form>
       </div>
-    `
+    `;
   }
 
-  _toggleSource () {
-    const source = this.renderRoot.querySelector('#source')
-    if (!source) return
+  _toggleSource() {
+    const source = this.renderRoot.querySelector('#source');
+    if (!source) return;
     if (source.classList.contains('open')) {
-      source.classList.remove('open')
-      this._showCodeLabel = 'demo.showCode.show'
+      source.classList.remove('open');
+      this._showCodeLabel = 'demo.showCode.show';
     } else {
-      source.classList.add('open')
-      this._showCodeLabel = 'demo.showCode.hide'
+      source.classList.add('open');
+      this._showCodeLabel = 'demo.showCode.hide';
     }
   }
 
-  static removeIndent (input = '') {
-    const indents = input.match(/^[^\S\n]*(?=\S)/gm)
-    if (!indents || !indents[0]) return input
-    const min = indents.reduce((acc, indent) => Math.min(acc, indent.length), indents[0].length)
-    if (!min) return input
-    return input.replace(new RegExp(`^${' '.repeat(min)}`, 'gm'), '')
+  static removeIndent(input = '') {
+    const indents = input.match(/^[^\S\n]*(?=\S)/gm);
+    if (!indents || !indents[0]) return input;
+    const min = indents.reduce((acc, indent) => Math.min(acc, indent.length), indents[0].length);
+    if (!min) return input;
+    return input.replace(new RegExp(`^${' '.repeat(min)}`, 'gm'), '');
   }
 
-  static indent (input, tabs) {
-    const indent = '\t'.repeat(tabs)
-    return input.replace(/^[^\S\n]*(?=\S)/gm, indent + '$&')
+  static indent(input, tabs) {
+    const indent = '\t'.repeat(tabs);
+    return input.replace(/^[^\S\n]*(?=\S)/gm, indent + '$&');
   }
 
   static styles = css`
@@ -217,7 +223,7 @@ ${cpCode}
       border-color: #999;
       color: #999;
     }
-  `
+  `;
 }
 
-customElements.define('pb-demo-snippet', PbDemoSnippet)
+customElements.define('pb-demo-snippet', PbDemoSnippet);

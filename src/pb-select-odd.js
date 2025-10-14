@@ -63,9 +63,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <label class="pb-select-odd__label" for="${this._selectId}">
-        ${translate(this.label)}
-      </label>
+      <label class="pb-select-odd__label" for="${this._selectId}"> ${translate(this.label)} </label>
       <div class="pb-select-odd__control">
         <select
           id="${this._selectId}"
@@ -74,11 +72,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
           .value=${this.odd ?? ''}
           @change=${this._handleChange}
         >
-          ${this.odds.map(
-            item => html`<option value="${item.name}">
-              ${item.label}
-            </option>`,
-          )}
+          ${this.odds.map(item => html`<option value="${item.name}">${item.label}</option>`)}
         </select>
       </div>
     `;
@@ -114,8 +108,8 @@ export class PbSelectOdd extends pbMixin(LitElement) {
         background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.5) 50%),
           linear-gradient(135deg, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
           linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-        background-position: calc(100% - 18px) calc(1em + 2px),
-          calc(100% - 13px) calc(1em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px),
+          calc(100% - 2.5rem) 0.5em;
         background-size: 5px 5px, 5px 5px, 1px 2.25em;
         background-repeat: no-repeat;
         font: inherit;

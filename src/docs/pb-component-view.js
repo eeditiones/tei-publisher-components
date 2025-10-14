@@ -12,7 +12,7 @@ const renderer = {
     return `<pb-code-highlight language="${language}" line-numbers>
       <template>${content}</template>
   </pb-code-highlight>`;
-  }
+  },
 };
 
 marked.use({ renderer });
@@ -100,18 +100,16 @@ export class PbComponentView extends LitElement {
 
   render() {
     const heading = this._component
-      ? html`<h1>&lt;${this._component.name}&gt;<span class="path">${this._component.path}</span></h1>`
+      ? html`<h1>
+          &lt;${this._component.name}&gt;<span class="path">${this._component.path}</span>
+        </h1>`
       : html`<h1>${this.defaultTitle}</h1>`;
 
     return html`
       <div class="viewer">
-        <header class="viewer__header">
-          ${heading}
-        </header>
+        <header class="viewer__header">${heading}</header>
         ${this._component ? this._renderTabs() : null}
-        <main class="viewer__body">
-          ${this._component ? this._renderPanels() : null}
-        </main>
+        <main class="viewer__body">${this._component ? this._renderPanels() : null}</main>
       </div>
     `;
   }
@@ -121,7 +119,9 @@ export class PbComponentView extends LitElement {
     return html`
       <div class="tabs" role="tablist" aria-label="Component sections">
         ${this._renderTab(0, 'API', 'tab-api', 'panel-api')}
-        ${demoLabels.map((label, idx) => this._renderTab(idx + 1, label, `tab-demo-${idx + 1}`, `panel-demo-${idx + 1}`))}
+        ${demoLabels.map((label, idx) =>
+          this._renderTab(idx + 1, label, `tab-demo-${idx + 1}`, `panel-demo-${idx + 1}`),
+        )}
       </div>
     `;
   }
@@ -191,8 +191,7 @@ export class PbComponentView extends LitElement {
     return html`
       <div class="api-content">
         <p class="description">${_md(this._component.description)}</p>
-        ${_renderSection('Slots', this._component.slots)}
-        ${this._renderPropertiesSection()}
+        ${_renderSection('Slots', this._component.slots)} ${this._renderPropertiesSection()}
         ${_renderSection('Events', this._component.events)}
         ${_renderSection('CSS Properties', this._component.cssProperties, true)}
         ${_renderSection('CSS Parts', this._component.cssParts)}
@@ -204,7 +203,10 @@ export class PbComponentView extends LitElement {
     if (!this._component?.properties) {
       return null;
     }
-    return html`<section><h2>Properties</h2>${this._renderProperties()}</section>`;
+    return html`<section>
+      <h2>Properties</h2>
+      ${this._renderProperties()}
+    </section>`;
   }
 
   _renderProperties() {

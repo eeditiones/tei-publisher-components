@@ -83,7 +83,9 @@ export class PbAjax extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <button id="button" @click="${this._handleClick}" title="${this.title}" type="button"><slot></slot></button>
+      <button id="button" @click="${this._handleClick}" title="${this.title}" type="button">
+        <slot></slot>
+      </button>
       <pb-fetch
         id="loadContent"
         verbose

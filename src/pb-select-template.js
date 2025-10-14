@@ -68,9 +68,7 @@ export class PbSelectTemplate extends pbMixin(LitElement) {
         @change="${this._selected}"
         .value="${this.template || ''}"
       >
-        ${this._templates.map(
-          item => html`<option value="${item.name}">${item.title}</option>`,
-        )}
+        ${this._templates.map(item => html`<option value="${item.name}">${item.title}</option>`)}
       </select>
 
       <pb-fetch
