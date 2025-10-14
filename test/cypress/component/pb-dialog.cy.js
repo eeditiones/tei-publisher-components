@@ -23,17 +23,17 @@ describe('pb-dialog', () => {
     cy.get('#d').should('not.have.attr', 'open')
   })
   
-  it.skip('should close on Escape key (expected)', () => {
+  it.skip('should close on Escape key (Escape key handling not working)', () => {
     cy.get('#d').then(($d) => $d[0].updateComplete).then(() => {
       const d = /** @type {any} */ (document.getElementById('d'))
       d.openDialog()
     })
     cy.get('#d').should('have.attr', 'open')
-    cy.get('body').type('{esc}')
+    cy.get('body').trigger('keydown', { key: 'Escape' })
     cy.get('#d').should('not.have.attr', 'open')
   })
 
-  it.skip('should close on backdrop click (expected)', () => {
+  it('should close on backdrop click', () => {
     cy.get('#d').then(($d) => $d[0].updateComplete).then(() => {
       const d = /** @type {any} */ (document.getElementById('d'))
       d.openDialog()
