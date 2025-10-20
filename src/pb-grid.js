@@ -330,19 +330,15 @@ export class PbGrid extends pbMixin(LitElement) {
         grid-template-columns: var(--pb-grid-column-widths, var(--pb-computed-column-widths));
         grid-column-gap: var(--pb-grid-column-gap, 20px);
         justify-content: space-between;
+        font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
       }
     `;
   }
 
   zoom(direction) {
-    const fontSize = window.getComputedStyle(this).getPropertyValue('font-size');
-    const size = parseInt(fontSize.replace(/^(\d+)px/, '$1'));
-
-    if (direction === 'in') {
-      this.style.fontSize = `${size + 1}px`;
-    } else {
-      this.style.fontSize = `${size - 1}px`;
-    }
+    // Zoom is now handled globally by pb-zoom component using CSS custom properties
+    // This method is kept for compatibility but does nothing
+    // The component should rely on CSS: font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
   }
 }
 if (!customElements.get('pb-grid')) {
