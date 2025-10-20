@@ -118,15 +118,19 @@ export class PbMarkdown extends pbMixin(LitElement) {
     return html`<div>${unsafeHTML(marked.parse(this.content))}</div>`;
   }
 
-  zoom(direction) {
-    const fontSize = window.getComputedStyle(this).getPropertyValue('font-size');
-    const size = parseInt(fontSize.replace(/^(\d+)px/, '$1'));
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
+      }
+    `;
+  }
 
-    if (direction === 'in') {
-      this.style.fontSize = `${size + 1}px`;
-    } else {
-      this.style.fontSize = `${size - 1}px`;
-    }
+  zoom(direction) {
+    // Zoom is now handled globally by pb-zoom component using CSS custom properties
+    // This method is kept for compatibility but does nothing
+    // The component should rely on CSS: font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
   }
 }
 customElements.define('pb-markdown', PbMarkdown);

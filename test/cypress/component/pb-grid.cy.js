@@ -99,16 +99,19 @@ describe('pb-grid', () => {
     })
   })
 
-  it('should zoom in/out by adjusting font-size', () => {
+  it('should handle zoom events (zoom method is now a compatibility stub)', () => {
     cy.get('#grid').invoke('attr', 'style', 'font-size: 10px')
     cy.get('#grid').then(($grid) => {
       const grid = $grid[0]
       const getSize = () => parseInt(getComputedStyle(grid).getPropertyValue('font-size'))
       expect(getSize()).to.equal(10)
+      
+      // The zoom method is now a compatibility stub that does nothing
+      // Zoom is handled globally by pb-zoom component using CSS custom properties
       grid.zoom('in')
-      expect(getSize()).to.equal(11)
+      expect(getSize()).to.equal(10) // Should remain unchanged
       grid.zoom('out')
-      expect(getSize()).to.equal(10)
+      expect(getSize()).to.equal(10) // Should remain unchanged
     })
   })
 
