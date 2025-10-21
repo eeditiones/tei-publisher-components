@@ -95,4 +95,88 @@ describe('pb-link', () => {
     })
     cy.get('#lnk').should('have.class', 'active')
   })
+
+  it('should NOT duplicate content when rendering (regression test)', () => {
+    // Test with complex content that could be duplicated
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-link id="complex-link" node-id="3.6.2.20">
+          <span class="tei-head tei-head1">Vorrede.</span>
+        </pb-link>
+      </pb-page>
+    `)
+    
+    // Wait for component to render and check it exists
+    cy.get('#complex-link').should('exist')
+    
+    // Wait for the button to be rendered
+    cy.get('#complex-link button').should('exist')
+    
+    // Check that content appears only once (not duplicated)
+    cy.get('#complex-link').within(() => {
+      // Should have exactly one button
+      cy.get('button').should('have.length', 1)
+      
+      // Should have exactly one span with the content
+      cy.get('span.tei-head.tei-head1').should('have.length', 1)
+      
+      // The span should contain the text
+      cy.get('span.tei-head.tei-head1').should('contain.text', 'Vorrede.')
+    })
+    
+    // Check that the text "Vorrede." appears only once in the entire component
+    cy.get('#complex-link').then(($el) => {
+      const textContent = $el.text()
+      const vorredeCount = (textContent.match(/Vorrede\./g) || []).length
+      expect(vorredeCount).to.equal(1)
+    })
+  })
+
+  it('should NOT duplicate content with nested HTML elements (regression test)', () => {
+    // Test with nested content that could be duplicated
+    cy.mount(`
+      <pb-page endpoint="." api-version="1.0.0">
+        <pb-link id="nested-link" xml-id="chapter1">
+          <div class="content">
+            <span class="title">Chapter 1</span>
+            <p>This is a paragraph with <em>emphasis</em>.</p>
+          </div>
+        </pb-link>
+      </pb-page>
+    `)
+    
+    // Wait for component to render and check it exists
+    cy.get('#nested-link').should('exist')
+    
+    // Wait for the button to be rendered
+    cy.get('#nested-link button').should('exist')
+    
+    // Check that nested content appears only once
+    cy.get('#nested-link').within(() => {
+      // Should have exactly one button
+      cy.get('button').should('have.length', 1)
+      
+      // Should have exactly one div.content
+      cy.get('div.content').should('have.length', 1)
+      
+      // Should have exactly one span.title
+      cy.get('span.title').should('have.length', 1)
+      
+      // Should have exactly one p element
+      cy.get('p').should('have.length', 1)
+      
+      // Should have exactly one em element
+      cy.get('em').should('have.length', 1)
+      
+      // Check that the span contains the expected text
+      cy.get('span.title').should('contain.text', 'Chapter 1')
+    })
+    
+    // Check that "Chapter 1" appears only once
+    cy.get('#nested-link').then(($el) => {
+      const textContent = $el.text()
+      const chapterCount = (textContent.match(/Chapter 1/g) || []).length
+      expect(chapterCount).to.equal(1)
+    })
+  })
 })
