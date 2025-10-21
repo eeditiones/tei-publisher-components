@@ -367,7 +367,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
     if (this._facsimiles.length === 0) {
       return this.viewer.close();
     }
-    const uris = this._facsimiles.map(facsLink => {
+    
+    // Limit the number of facsimiles to prevent runaway requests
+    // Only load the first 10 facsimiles to avoid server overload
+    const maxFacsimiles = 10;
+    const limitedFacsimiles = this._facsimiles.slice(0, maxFacsimiles);
+    
+    const uris = limitedFacsimiles.map(facsLink => {
       const url = this.baseUri + (facsLink.getImage ? facsLink.getImage() : facsLink);
       if (this.type === 'iiif') {
         return `${url}/info.json`;
