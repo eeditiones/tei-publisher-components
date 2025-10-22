@@ -356,7 +356,9 @@ export class PbPage extends pbMixin(LitElement) {
       { once: true },
     );
 
-    const defaultLocales = `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
+    const defaultLocales = this.endpoint 
+      ? `${this.toAbsoluteURL('resources/i18n/', this.endpoint)}{{ns}}/{{lng}}.json`
+      : `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
     console.log(
       '<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
       defaultLocales,
