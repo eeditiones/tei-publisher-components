@@ -10,5 +10,16 @@
     },
     "document": {
         "contents": "Inhaltsverzeichnis angepasst"
+    },
+    "browse": {
+        "items": "Gefunden {{count}} Einträge"
+    },
+    "dialogs": {
+        "downloadMessage": "Download Nachricht"
+    },
+    "menu": {
+        "download": {
+            "title": "Download"
+        }
     }
 }
