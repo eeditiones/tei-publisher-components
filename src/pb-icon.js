@@ -104,12 +104,27 @@ export class PbIcon extends LitElement {
     this.size = '';
     this.label = '';
     this.decorative = false;
-    // Default sprite path: use dev path when running under Vite, otherwise built docs path
+    // Default sprite path: try to determine the correct base URL
     try {
       const isDev =
         (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ||
         (typeof location !== 'undefined' && /localhost|127\.0\.0\.1/.test(location.hostname));
-      this.sprite = isDev ? '/images/icons.svg' : '/dist/images/icons.svg';
+      
+      if (isDev) {
+        // In dev mode, check if we're running in TEI Publisher context
+        const currentHost = window.location.hostname;
+        const currentPort = window.location.port;
+        
+        // If we're on the TEI Publisher port (8080), use the app's resources path
+        if (currentPort === '8080' || currentHost.includes('tei-publisher')) {
+          this.sprite = '/exist/apps/tei-publisher/resources/images/icons.svg';
+        } else {
+          // Otherwise use the Vite dev server path
+          this.sprite = '/images/icons.svg';
+        }
+      } else {
+        this.sprite = '/dist/images/icons.svg';
+      }
     } catch (_) {
       this.sprite = '/dist/images/icons.svg';
     }
