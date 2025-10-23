@@ -45,6 +45,11 @@ describe('Smoke: all pb-*.html demos load', () => {
               return
             }
             
+            // Ignore 404s from API version detection flow (pb-page tries /login first)
+            if (req.url.endsWith('/login') && res.statusCode === 404) {
+              return
+            }
+            
             // When running against real backend, ignore 404s and 500s for eXist-db endpoints
             // since demo pages have hardcoded backend URLs but we're testing against Vite dev server
             if (Cypress.env('realBackend') && isExistDbEndpoint && (res.statusCode === 404 || res.statusCode === 500)) {
