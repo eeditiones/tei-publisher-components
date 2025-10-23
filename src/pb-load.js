@@ -140,6 +140,8 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     this.language = null;
     this.noCredentials = false;
     this.silent = false;
+    this._retryCount = 0;
+    this._maxRetries = 10; // Maximum retries for document resolution
   }
 
   connectedCallback() {
@@ -311,6 +313,20 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     if (!this.plain) {
       if (doc) {
         params.doc = doc.path;
+        this._retryCount = 0; // Reset retry counter when document is found
+      } else if (this.src) {
+        // Document not found but src is specified - wait for it to be available
+        if (this._retryCount < this._maxRetries) {
+          this._retryCount++;
+          console.warn(`<pb-load> Document with id "${this.src}" not found, retrying in 100ms (attempt ${this._retryCount}/${this._maxRetries})`);
+          setTimeout(() => {
+            this.load(ev);
+          }, 100);
+          return;
+        } else {
+          console.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
+          return;
+        }
       }
 
       // set start parameter to start property, but only if not provided otherwise already
