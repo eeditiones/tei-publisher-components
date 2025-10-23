@@ -121,6 +121,39 @@ describe('pb-page', () => {
       })
     })
 
+    it('should handle locale-fallback-ns attribute correctly', () => {
+      stubLocales()
+      cy.mount('<pb-page require-language language="en" api-version="1.0.0" locale-fallback-ns="common app"></pb-page>')
+      cy.waitForEvent('pb-page-ready').then(() => {
+        cy.get('pb-page').then($el => {
+          const page = $el[0]
+          const instance = page._i18nInstance
+          
+          // Verify fallback namespaces are set correctly
+          expect(page._localeFallbacks).to.deep.equal(['common', 'app'])
+          expect(instance.options.defaultNS).to.equal('common')
+          expect(instance.options.fallbackNS).to.deep.equal(['app'])
+          expect(instance.options.ns).to.deep.equal(['common', 'app'])
+        })
+      })
+    })
+
+    it('should use default namespace when no fallback is specified', () => {
+      stubLocales()
+      cy.mount('<pb-page require-language language="en" api-version="1.0.0"></pb-page>')
+      cy.waitForEvent('pb-page-ready').then(() => {
+        cy.get('pb-page').then($el => {
+          const page = $el[0]
+          const instance = page._i18nInstance
+          
+          // Verify default namespace is used when no fallback is specified
+          expect(page._localeFallbacks).to.deep.equal([])
+          expect(instance.options.defaultNS).to.equal('common')
+          expect(instance.options.ns).to.deep.equal(['common'])
+        })
+      })
+    })
+
     it('should initialize with LanguageDetector and Backend', () => {
       stubLocales()
       cy.mount('<pb-page require-language language="en" api-version="1.0.0"></pb-page>')
