@@ -277,10 +277,6 @@ export class PbPage extends pbMixin(LitElement) {
 
     this.endpoint = this.endpoint.replace(/\/+$/, '');
 
-    if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
-      this._localeFallbacks.push('app');
-    }
-    this._localeFallbacks.push('common');
 
     const target = registry.state._target;
     if (target) {
@@ -342,6 +338,7 @@ export class PbPage extends pbMixin(LitElement) {
     if (this.disabled) {
       return;
     }
+
 
     const slot = this.shadowRoot.querySelector('slot');
     slot.addEventListener(
