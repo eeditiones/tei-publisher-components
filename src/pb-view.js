@@ -372,7 +372,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.loadCss) {
       waitOnce('pb-page-ready', () => {
         loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
-          this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          if (theme) {
+            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          }
         });
       });
     }
