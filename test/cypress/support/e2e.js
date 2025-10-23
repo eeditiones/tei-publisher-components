@@ -56,6 +56,20 @@ beforeEach(() => {
     headers: { 'content-type': 'application/json' }
   }).as('mockVersion')
 
+  // Mock API version for demo pages (endpoint=".")
+  cy.intercept({
+    method: 'GET',
+    pathname: /\/demo\/api\/version\/?$/
+  }, {
+    statusCode: 200,
+    body: {
+      api: '1.0.0',
+      app: { name: 'mock-app', version: '0.0.0' },
+      engine: { name: 'mock-engine', version: '0.0.0' }
+    },
+    headers: { 'content-type': 'application/json' }
+  }).as('mockDemoVersion')
+
   // - Parts API: some views request parts JSON for navigation; if backend isn't seeded, return a mock
   cy.intercept({ method: 'GET', pathname: /\/exist\/apps\/tei-publisher\/api\/parts\/.*\/json$/ }, {
     statusCode: 200,
@@ -259,11 +273,42 @@ beforeEach(() => {
     body: { success: true }
   })
 
+  // Mock legacy login endpoint for pb-odd-editor demo
+  cy.intercept({ method: 'GET', url: '**/login' }, {
+    statusCode: 404,
+    headers: { 'content-type': 'text/plain' },
+    body: 'Not Found'
+  }).as('stubDemoLegacyLogin')
+
   cy.intercept({ method: 'GET', pathname: /\/demo\/api\/odd$/ }, {
     statusCode: 200,
     headers: { 'content-type': 'application/json' },
     body: []
   }).as('stubDemoOdd')
+
+  // Mock ODD editor endpoint for pb-odd-editor demo (legacy format)
+  cy.intercept({ method: 'GET', pathname: /\/demo\/modules\/editor\.xql$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: Cypress.env('stubOddResponse') || {
+      odd: 'graves.odd',
+      root: '/db/apps/tei-publisher/odd',
+      elementSpecs: [],
+      tabs: []
+    }
+  }).as('stubDemoEditor')
+
+  // Mock ODD API endpoint for pb-odd-editor demo (new format)
+  cy.intercept({ method: 'GET', pathname: /\/demo\/api\/odd\/.*$/ }, {
+    statusCode: 200,
+    headers: { 'content-type': 'application/json' },
+    body: Cypress.env('stubOddResponse') || {
+      odd: 'graves.odd',
+      root: '/db/apps/tei-publisher/odd',
+      elementSpecs: [],
+      tabs: []
+    }
+  }).as('stubDemoOddApi')
 
   // Document Contents API - centralized defaults
   cy.intercept('GET', '**/api/document/**/contents**', {
