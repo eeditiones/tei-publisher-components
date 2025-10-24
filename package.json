@@ -87,7 +87,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "concurrently": "^9.2.1",
-    "cypress": "^15.4.0",
+    "cypress": "^15.5.0",
     "deepmerge": "^4.2.2",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
@@ -100,7 +100,7 @@
     "rollup": "^4.52.4",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-copy": "^3.5.0",
-    "semantic-release": "^24.2.9",
+    "semantic-release": "^25.0.1",
     "vite": "^7.1.9",
     "web-component-analyzer": "^2.0.0"
   },
