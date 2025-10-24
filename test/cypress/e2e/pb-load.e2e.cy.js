@@ -58,4 +58,37 @@ describe('pb-load Document Resolution Regression', () => {
       expect(text).to.not.include('Loading table of contents...')
     })
   })
+
+  it('pb-load resolves {doc} parameter correctly without double slashes', () => {
+    // This test specifically verifies that the {doc} parameter is resolved correctly
+    // and doesn't create URLs with double slashes like /api/document//contents
+    
+    // First, let's check that both components exist
+    cy.get('pb-load').should('exist')
+    cy.get('pb-document').should('exist')
+    
+    // Check that pb-load has the src attribute
+    cy.get('pb-load').should('have.attr', 'src', 'document1')
+    
+    // Check that pb-document has the correct id
+    cy.get('pb-document').should('have.attr', 'id', 'document1')
+    
+    // Intercept network requests to check URL construction
+    cy.intercept('GET', '**/api/document/**/contents**').as('tocRequest')
+    
+    // Wait for the pb-load to make its request
+    cy.wait('@tocRequest', { timeout: 10000 }).then((interception) => {
+      const url = interception.request.url
+      
+      // The URL should NOT contain double slashes
+      expect(url).to.not.include('//contents')
+      
+      // The URL should contain the document path
+      expect(url).to.include('/api/document/')
+      expect(url).to.include('/contents')
+      
+      // Should not be a 404 (which would indicate unresolved {doc})
+      expect(interception.response.statusCode).to.not.equal(404)
+    })
+  })
 })
