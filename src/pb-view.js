@@ -353,8 +353,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._selector = {};
     this._chunks = [];
     this._scrollTarget = null;
-    this.static = null;
+    this._loading = false;
     this._lastRequestKey = null;
+    this.static = null;
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -596,11 +597,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         const doc = this.getDocument();
         doc.path = ev.detail.path;
       }
-      if (ev.detail.id) {
-        this.xmlId = ev.detail.id;
-      } else if (ev.detail.id == null) {
-        this.xmlId = null;
-      }
+    if (ev.detail.id !== undefined) {
+      this.xmlId = ev.detail.id;
+    }
       this.odd = ev.detail.odd || this.odd;
       if (ev.detail.columnSeparator !== undefined) {
         this.columnSeparator = ev.detail.columnSeparator;
@@ -645,8 +644,20 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
 
-    if (this._loading) {
-      return;
+    if (this._loading && this._lastRequestKey) {
+      const testParams = this.getParameters(pos);
+      const testReqKey = JSON.stringify({ url: this.url || '', doc: doc.path, params: testParams });
+      if (this._lastRequestKey === testReqKey) {
+        return;
+      }
+      // Cancel the pending request
+      const loader = this.shadowRoot.getElementById('loadContent');
+      if (loader) {
+        loader.abort();
+      }
+      // Clear the old request key so new requests aren't blocked
+      this._lastRequestKey = null;
+      this._loading = false;
     }
     this._loading = true;
 
@@ -671,7 +682,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     this.emitTo('pb-start-update', params);
 
-    console.log('<pb-view> Loading view with params %o', params);
     if (!this.infiniteScroll) {
       this._clear();
     }
@@ -706,14 +716,24 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     let url = `${this.getEndpoint()}/${this.url}`;
+    console.log('<pb-view> Base URL:', url);
 
     if (this.minApiVersion('1.0.0')) {
-      url += `/${encodeURIComponent(this.getDocument().path)}/json`;
+      // Encode the entire path as a single unit for the API
+      const doc = this.getDocument();
+      if (doc && doc.path) {
+        const docPath = encodeURIComponent(doc.path);
+        url += `/${docPath}/json`;
+        console.log('<pb-view> Final URL:', url);
+      } else {
+        console.warn('<pb-view> No document path available for URL construction');
+        return;
+      }
     }
 
     loadContent.url = url;
     loadContent.params = params;
-    loadContent.generateRequest().catch(() => {
+    loadContent.generateRequest().catch((error) => {
       // Error handled by @error event listener
     });
   }
@@ -773,9 +793,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _handleError() {
+    console.error('<pb-view> _handleError called');
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
+    console.error('<pb-view> Error details:', loader.lastError);
     let message;
     const { response } = loader.lastError;
 
@@ -806,6 +828,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
     if (resp.error) {
+      console.error('<pb-view> Response has error:', resp.error);
       if (this.notFound != null) {
         this._content = this.notFound;
       }
@@ -814,6 +837,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
 
+    console.log('<pb-view> Processing response content:', resp);
     this._replaceContent(resp, loader.params._dir);
 
     this.animate();
@@ -886,6 +910,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _doReplaceContent(elem, resp, direction) {
+    
     if (this.columnSeparator) {
       this._replaceColumns(elem);
       this._loading = false;
@@ -1055,7 +1080,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _getParameters() {
-    const params = [];
+    const params = {};  // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
       params[`user.${param.getAttribute('name')}`] = param.getAttribute('value');
     });
