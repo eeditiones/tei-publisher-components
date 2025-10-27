@@ -1044,7 +1044,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
         const src = new URL(oldSrc, base);
-        image.src = src;
+        image.src = src.href;
       });
       content.querySelectorAll('a').forEach(link => {
         const oldHref = link.getAttribute('href');
@@ -1052,7 +1052,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           link.addEventListener('click', ev => this._scrollToElement(ev, link));
         } else {
           const href = new URL(oldHref, base);
-          link.href = href;
+          link.href = href.href;
         }
       });
     } else {
