@@ -7,6 +7,7 @@ node_modules
 !.gitignore
 !.vscode
 !.github
+!.eslintrc.json
 analysis.json
 pb-elements.json
 ./assets
@@ -17,5 +18,11 @@ build
 lib/*
 !lib/openseadragon.min.js
 docs/
+!src/docs/
+!src/docs/**
+!docs/demo-utils.js
 *.iml
-.notes.md
+migration_plan/
+test/cypress/screenshots/
+test/cypress/videos/
+test/cypress/downloads/

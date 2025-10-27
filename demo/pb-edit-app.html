@@ -3,11 +3,11 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-odd-editor Demo</title>
+        <title>pb-edit-app Demo</title>
         <link rel="stylesheet" href="demo.css">
         <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+        
+        
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-login.js"></script>
@@ -25,7 +25,7 @@
     </head>
 
     <body>
-        <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+        <pb-page endpoint="." url-path="query">
             <pb-login group="tei"></pb-login>
             <pb-edit-app></pb-edit-app>
         </pb-page>

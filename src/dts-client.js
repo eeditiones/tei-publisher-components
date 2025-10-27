@@ -1,12 +1,9 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
-
-import '@polymer/iron-ajax';
-import '@polymer/iron-icon';
-import '@polymer/iron-icons';
-import '@polymer/paper-button';
+import './pb-icon.js';
+import './pb-fetch.js';
 
 /**
  * A client for the Distributed Text Services (DTS) protocol. This defines an API
@@ -240,22 +237,22 @@ export class DtsClient extends pbMixin(LitElement) {
       <slot name="toolbar"></slot>
       ${this.baseUri ? this._renderClient() : ''}
 
-      <iron-ajax
+      <pb-fetch
         id="queryAPI"
         verbose
         handle-as="json"
         method="get"
         @response="${this._handleResponse}"
         @error="${this._handleError}"
-      ></iron-ajax>
-      <iron-ajax
+      ></pb-fetch>
+      <pb-fetch
         id="documentsAPI"
         verbose
         handle-as="json"
         method="get"
         @response="${this._handlePreview}"
         @error="${this._handleError}"
-      ></iron-ajax>
+      ></pb-fetch>
     `;
   }
 
@@ -265,10 +262,15 @@ export class DtsClient extends pbMixin(LitElement) {
       <h3 part="collection-title">${this.data ? this.data.title : 'Loading ...'}</h3>
       <slot name="pagination"></slot>
       ${this._parentCollections.length > 0 || this.collection
-        ? html` <paper-button part="parent-link" @click="${this._navigateUp}">
-            <iron-icon icon="icons:arrow-upward"></iron-icon>
+        ? html` <button
+            part="parent-link"
+            class="pb-button pb-button--text"
+            type="button"
+            @click="${this._navigateUp}"
+          >
+            <pb-icon icon="icons:arrow-upward" decorative></pb-icon>
             ${translate('browse.up')}
-          </paper-button>`
+          </button>`
         : null}
       ${this.data ? this._renderMembers() : ''}
     `;
@@ -285,22 +287,22 @@ export class DtsClient extends pbMixin(LitElement) {
   _renderMember(member) {
     if (member['@type'] === 'Collection') {
       return html`
-        <iron-icon icon="icons:folder-open"></iron-icon>
+        <pb-icon icon="icons:folder-open" decorative></pb-icon>
         <div class="details">
-          <a href="#" @click="${ev => this._navigate(ev, member)}" part="link">
+          <button @click="${ev => this._navigate(ev, member)}" part="link" type="button">
             <h4 class="collection" part="collection-title">${member.title}</h4>
-          </a>
+          </button>
         </div>
       `;
     }
     const license = DtsClient._getLicense(member);
     return html`
-      <iron-icon icon="icons:code"></iron-icon>
+      <pb-icon icon="icons:code" decorative></pb-icon>
       <div class="details">
         <div>
-          <a href="#" @click="${ev => this._preview(ev, member)}" part="link">
+          <button @click="${ev => this._preview(ev, member)}" part="link" type="button">
             <h4 part="title">${member.title}</h4>
-          </a>
+          </button>
           <p part="creator" class="creator">${DtsClient._getCreator(member)}</p>
           ${license
             ? html`<p part="license" class="license">
@@ -308,12 +310,11 @@ export class DtsClient extends pbMixin(LitElement) {
               </p>`
             : ''}
         </div>
-        <iron-icon
+        <pb-icon
           title="${translate('dts.import')}"
           icon="icons:file-download"
           @click="${ev => this._download(ev, member)}"
-        >
-        </iron-icon>
+        ></pb-icon>
       </div>
     `;
   }
@@ -341,7 +342,7 @@ export class DtsClient extends pbMixin(LitElement) {
         display: flex;
         justify-content: space-between;
       }
-      .member iron-icon {
+      .member pb-icon {
         width: 24px;
       }
       .member h4 {

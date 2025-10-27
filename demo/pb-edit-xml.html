@@ -6,7 +6,7 @@
 
     <title>pb-edit-xml Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-edit-xml.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -16,7 +16,7 @@
 <body>
     <pb-demo-snippet>
         <template>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="/exist/apps/tei-publisher">
                 <ul>
                     <li><pb-edit-xml path="/db/apps/tei-publisher/data/doc/documentation.xml">View Documentation</pb-edit-xml></li>
                 </ul>

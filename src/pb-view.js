@@ -1,10 +1,10 @@
-import { LitElement, html, css } from 'lit-element';
-import anime from 'animejs';
+import { LitElement, html, css } from 'lit';
+import { animate } from 'animejs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -353,6 +353,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._selector = {};
     this._chunks = [];
     this._scrollTarget = null;
+    this._loading = false;
+    this._lastRequestKey = null;
     this.static = null;
   }
 
@@ -371,7 +373,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.loadCss) {
       waitOnce('pb-page-ready', () => {
         loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
-          this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          if (theme) {
+            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          }
         });
       });
     }
@@ -398,11 +402,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.nodeId = registry.state.root;
       }
 
+      const _doc = this.getDocument ? this.getDocument() : null;
       const newState = {
         id: this.xmlId,
         view: this.getView(),
         odd: this.getOdd(),
-        path: this.getDocument().path,
+        path: _doc ? _doc.path : undefined,
       };
       if (this.view !== 'single') {
         newState.root = this.nodeId;
@@ -428,7 +433,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       this.navigate(ev.detail.direction);
     });
-    
+
     this.subscribeTo('pb-toggle', ev => {
       this.toggleFeature(ev);
     });
@@ -522,11 +527,19 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    * @returns the ODD being used
    */
   getOdd() {
-    return this.odd || this.getDocument().odd || 'teipublisher';
+    try {
+      return this.odd || this.getDocument().odd || 'teipublisher';
+    } catch {
+      return this.odd || 'teipublisher';
+    }
   }
 
   getView() {
-    return this.view || this.getDocument().view || 'single';
+    try {
+      return this.view || this.getDocument().view || 'single';
+    } catch {
+      return this.view || 'single';
+    }
   }
 
   /**
@@ -540,20 +553,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // animate new element if 'animation' property is 'true'
     if (this.animation) {
       if (this.lastDirection === 'forward') {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        animate(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       } else {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        animate(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [-1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       }
     }
@@ -586,11 +597,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         const doc = this.getDocument();
         doc.path = ev.detail.path;
       }
-      if (ev.detail.id) {
-        this.xmlId = ev.detail.id;
-      } else if (ev.detail.id == null) {
-        this.xmlId = null;
-      }
+    if (ev.detail.id !== undefined) {
+      this.xmlId = ev.detail.id;
+    }
       this.odd = ev.detail.odd || this.odd;
       if (ev.detail.columnSeparator !== undefined) {
         this.columnSeparator = ev.detail.columnSeparator;
@@ -627,30 +636,52 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _load(pos, direction) {
-    const doc = this.getDocument();
+    const doc = this.getDocument ? this.getDocument() : null;
 
-    if (!doc.path) {
-      console.log('No path');
+    // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
+    if (!doc || !doc.path) {
+      console.warn('<pb-view> No path');
       return;
     }
 
-    if (this._loading) {
-      return;
+    if (this._loading && this._lastRequestKey) {
+      const testParams = this.getParameters(pos);
+      const testReqKey = JSON.stringify({ url: this.url || '', doc: doc.path, params: testParams });
+      if (this._lastRequestKey === testReqKey) {
+        return;
+      }
+      // Cancel the pending request
+      const loader = this.shadowRoot.getElementById('loadContent');
+      if (loader) {
+        loader.abort();
+      }
+      // Clear the old request key so new requests aren't blocked
+      this._lastRequestKey = null;
+      this._loading = false;
     }
     this._loading = true;
+
     const params = this.getParameters(pos);
     if (direction) {
       params._dir = direction;
     }
-    // this.$.view.style.opacity=0;
 
     this._doLoad(params);
   }
 
   _doLoad(params) {
+    // De-duplicate identical requests to avoid hammering the backend
+    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
+    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
+    if (this._lastRequestKey === reqKey) {
+      // nothing changed; unlock and skip
+      this._loading = false;
+      return;
+    }
+    this._lastRequestKey = reqKey;
+
     this.emitTo('pb-start-update', params);
 
-    console.log('<pb-view> Loading view with params %o', params);
     if (!this.infiniteScroll) {
       this._clear();
     }
@@ -669,7 +700,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.static !== null) {
       this._staticUrl(params).then(url => {
         loadContent.url = url;
-        loadContent.generateRequest();
+        loadContent.generateRequest().catch(() => {
+          // Error handled by @error event listener
+        });
       });
       return;
     }
@@ -683,14 +716,26 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     let url = `${this.getEndpoint()}/${this.url}`;
+    console.log('<pb-view> Base URL:', url);
 
     if (this.minApiVersion('1.0.0')) {
-      url += `/${encodeURIComponent(this.getDocument().path)}/json`;
+      // Encode the entire path as a single unit for the API
+      const doc = this.getDocument();
+      if (doc && doc.path) {
+        const docPath = encodeURIComponent(doc.path);
+        url += `/${docPath}/json`;
+        console.log('<pb-view> Final URL:', url);
+      } else {
+        console.warn('<pb-view> No document path available for URL construction');
+        return;
+      }
     }
 
     loadContent.url = url;
     loadContent.params = params;
-    loadContent.generateRequest();
+    loadContent.generateRequest().catch((error) => {
+      // Error handled by @error event listener
+    });
   }
 
   /**
@@ -707,7 +752,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return urlComponents.join('&');
     }
 
-    const index = await fetch(`index.json`).then(response => response.json());
+    const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
+    const baseUrl = new URL(`${baseDir}/`, window.location.href);
+    const indexUrl = new URL('index.json', baseUrl).href;
+    const index = await fetch(indexUrl).then(response => response.json());
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),
@@ -720,7 +768,15 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     console.log('<pb-view> Static lookup %s: %s', url, file);
-    return `${file}`;
+    if (!file) {
+      console.warn('<pb-view> No static mapping found for %s', url);
+      const fallback = Object.values(index)[0];
+      if (!fallback) {
+        return baseUrl.href;
+      }
+      file = fallback;
+    }
+    return new URL(file, baseUrl).href;
   }
 
   _clear() {
@@ -737,8 +793,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _handleError() {
+    console.error('<pb-view> _handleError called');
     this._clear();
+    this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
+    console.error('<pb-view> Error details:', loader.lastError);
     let message;
     const { response } = loader.lastError;
 
@@ -764,17 +823,21 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const resp = loader.lastResponse;
 
     if (!resp) {
+      this._loading = false;
       console.error('<pb-view> No response received');
       return;
     }
     if (resp.error) {
+      console.error('<pb-view> Response has error:', resp.error);
       if (this.notFound != null) {
         this._content = this.notFound;
       }
       this.emitTo('pb-end-update', null);
+      this._loading = false;
       return;
     }
 
+    console.log('<pb-view> Processing response content:', resp);
     this._replaceContent(resp, loader.params._dir);
 
     this.animate();
@@ -820,6 +883,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     });
 
     this.emitTo('pb-end-update', null);
+    // allow subsequent loads with new params
+    this._loading = false;
   }
 
   _replaceContent(resp, direction) {
@@ -845,6 +910,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _doReplaceContent(elem, resp, direction) {
+    
     if (this.columnSeparator) {
       this._replaceColumns(elem);
       this._loading = false;
@@ -973,12 +1039,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _fixLinks(content) {
     if (this.fixLinks) {
-      const doc = this.getDocument();
-      const base = this.toAbsoluteURL(doc.path);
+      const doc = this.getDocument ? this.getDocument() : null;
+      const base = this.toAbsoluteURL(doc && doc.path ? doc.path : '');
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
         const src = new URL(oldSrc, base);
-        image.src = src;
+        image.src = src.href;
       });
       content.querySelectorAll('a').forEach(link => {
         const oldHref = link.getAttribute('href');
@@ -986,7 +1052,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           link.addEventListener('click', ev => this._scrollToElement(ev, link));
         } else {
           const href = new URL(oldHref, base);
-          link.href = href;
+          link.href = href.href;
         }
       });
     } else {
@@ -1014,7 +1080,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _getParameters() {
-    const params = [];
+    const params = {};  // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
       params[`user.${param.getAttribute('name')}`] = param.getAttribute('value');
     });
@@ -1036,9 +1102,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    */
   getParameters(pos) {
     pos = pos || this.nodeId;
-    const doc = this.getDocument();
+    const doc = this.getDocument ? this.getDocument() : null;
     const params = this._getParameters();
-    if (!this.minApiVersion('1.0.0')) {
+    if (!this.minApiVersion('1.0.0') && doc && doc.path) {
       params.doc = doc.path;
     }
     params.odd = `${this.getOdd()}.odd`;
@@ -1227,7 +1293,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
 
     if (properties.path) {
-      this.getDocument().path = properties.path;
+      const doc = this.getDocument ? this.getDocument() : null;
+      if (doc) doc.path = properties.path;
     }
 
     if (properties.selectors) {
@@ -1289,9 +1356,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       #view {
         position: relative;
         font-size: clamp(
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3.0))
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3))
         );
         line-height: calc(var(--pb-content-line-height, 1.5) * var(--pb-zoom-factor));
       }
@@ -1331,7 +1398,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
 
       a[rel='footnote'] {
-        font-size: calc(var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1));
+        font-size: calc(
+          var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1)
+        );
         font-family: var(--pb-footnote-font-family, --pb-content-font-family);
         vertical-align: super;
         color: var(--pb-footnote-color, var(--pb-color-primary, #333333));
@@ -1412,7 +1481,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           ${this.infiniteScroll ? html`<div id="bottom-observer" class="observer"></div>` : null}
           <div id="footnotes" part="footnotes">${this._footnotes}</div>
         </div>
-        <iron-ajax
+        <pb-fetch
           id="loadContent"
           verbose
           handle-as="json"
@@ -1420,7 +1489,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           with-credentials
           @response="${this._handleContent}"
           @error="${this._handleError}"
-        ></iron-ajax>
+        ></pb-fetch>
       `,
     ];
   }

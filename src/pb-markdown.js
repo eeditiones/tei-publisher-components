@@ -1,19 +1,21 @@
-import { LitElement, html, css } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import * as marked from 'marked/lib/marked.js';
+import { LitElement, html, css } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { marked } from 'marked';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import './pb-code-highlight.js';
 
-const renderer = new window.marked.Renderer();
-renderer.code = function code(code, infostring, escaped) {
-  return `<pb-code-highlight language="${infostring}" line-numbers>
-        <template>${code}</template>
-    </pb-code-highlight>`;
+// Configure marked with custom renderer
+const renderer = {
+  code(code, infostring, escaped) {
+    const language = code.lang || infostring || 'undefined';
+    const content = code.text || code;
+    return `<pb-code-highlight language="${language}" line-numbers>
+      <template>${content}</template>
+  </pb-code-highlight>`;
+  },
 };
 
-window.marked.setOptions({
-  renderer,
-});
+marked.use({ renderer });
 
 function removeIndent(input) {
   const indents = input.match(/^[^\S]*(?=\S)/gm);
@@ -113,18 +115,22 @@ export class PbMarkdown extends pbMixin(LitElement) {
     if (!this.content) {
       return null;
     }
-    return html`<div>${unsafeHTML(window.marked(this.content))}</div>`;
+    return html`<div>${unsafeHTML(marked.parse(this.content))}</div>`;
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
+      }
+    `;
   }
 
   zoom(direction) {
-    const fontSize = window.getComputedStyle(this).getPropertyValue('font-size');
-    const size = parseInt(fontSize.replace(/^(\d+)px/, '$1'));
-
-    if (direction === 'in') {
-      this.style.fontSize = `${size + 1}px`;
-    } else {
-      this.style.fontSize = `${size - 1}px`;
-    }
+    // Zoom is now handled globally by pb-zoom component using CSS custom properties
+    // This method is kept for compatibility but does nothing
+    // The component should rely on CSS: font-size: calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor, 1));
   }
 }
 customElements.define('pb-markdown', PbMarkdown);

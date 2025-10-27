@@ -6,7 +6,7 @@
 
     <title>pb-leaflet-map Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-events.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -39,11 +39,11 @@
                 width: 20rem;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint="/exist/apps/tei-publisher">
                 <main>
                     <pb-leaflet-map id="map" zoom="11" fit-markers geo-coding>
                         <pb-map-layer show base label="OpenTopo Map" url="//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" max-zoom="19"
-                            attribution='Map data: &copy; &lt;a href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt;/a> contributors, &lt;a href="http://viewfinderpanoramas.org">SRTM&lt;/a> | Map style: &copy; &lt;a href="https://opentopomap.org">OpenTopoMap&lt;/a> (&lt;a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA&lt;/a>)'></pb-map-layer>
+                            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'></pb-map-layer>
                     </pb-leaflet-map>
                     <form>
                         <label>Name:

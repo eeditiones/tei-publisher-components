@@ -3,9 +3,9 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-view Demo</title>
+        <title>pb-zoom Demo</title>
         <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+        
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-document.js"></script>
@@ -29,7 +29,7 @@
                     justify-content: space-between;
                 }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="/exist/apps/tei-publisher">
                     <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
                     <div class="toolbar">
