@@ -158,6 +158,14 @@
 * **pb-login:** drop polymer, use pb-dialog ([ffee19f](https://github.com/eeditiones/tei-publisher-components/commit/ffee19fa27f1e8520c8c3e9a877100b981e38ddf))
 * **pb-message:** replace paper-dialog with pb-dialog ([e60c401](https://github.com/eeditiones/tei-publisher-components/commit/e60c401153bd2756c0d081a09e70f2be31ab2526))
 
+
+## [2.25.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.6...v2.25.7) (2025-11-04)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** update OSD and override fullscreen differently ([ddb9e18](https://github.com/eeditiones/tei-publisher-components/commit/ddb9e188a84739f3a4b128c816ebb1ba55a08bd7))
+
 ## [2.25.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.5...v2.25.6) (2025-09-09)
 
 
