@@ -303,6 +303,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
     }
     this.viewer = OpenSeadragon(options);
 
+    if (this.showFullPageControl) {
+      this._overrideFullscreenButton();
+    }
+
     this.viewer.addHandler('open', () => {
       this.resetZoom();
       this.emitTo('pb-facsimile-status', { status: 'loaded', facsimiles: this._facsimiles });
@@ -459,6 +463,38 @@ export class PbFacsimile extends pbMixin(LitElement) {
       return;
     }
     this.viewer.viewport.goHome();
+  }
+
+  _overrideFullscreenButton() {
+    // The full page control in OSD makes all body elements disappear, causing all kinds of bugs in
+    // our webcomponents.  Replace it with something that just calls `requestFullScreen` instead.
+    // This approach (but more elaborate) is also PR-ed to OSD
+    // (https://github.com/openseadragon/openseadragon/pull/2786). This code can be dropped the
+    // moment we upgrade to OSD.
+
+    const toggleFullscreenButton = this.viewer.buttonGroup.buttons.find(
+      button => button.tooltip === 'Toggle full page',
+    );
+    if (!toggleFullscreenButton) {
+      return;
+    }
+    const releaseHandler = async () => {
+      if (!document.fullscreenElement) {
+        await this.viewer.element.requestFullscreen();
+        return;
+      }
+      await document.exitFullscreen();
+    };
+
+    toggleFullscreenButton.onRelease = releaseHandler;
+    const oldRaiseEvent = toggleFullscreenButton.raiseEvent;
+    toggleFullscreenButton.raiseEvent = (eventName, args) => {
+      if (eventName === 'release') {
+        releaseHandler();
+      } else {
+        oldRaiseEvent.call(toggleFullscreenButton, eventName, args);
+      }
+    };
   }
 }
 if (!customElements.get('pb-facsimile')) {
