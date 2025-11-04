@@ -1,3 +1,10 @@
+## [2.25.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.6...v2.25.7) (2025-11-04)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** update OSD and override fullscreen differently ([ddb9e18](https://github.com/eeditiones/tei-publisher-components/commit/ddb9e188a84739f3a4b128c816ebb1ba55a08bd7))
+
 ## [2.25.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.5...v2.25.6) (2025-09-09)
 
 
