@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit-element';
-import { pbMixin } from './pb-mixin';
+import { LitElement, html, css } from 'lit';
+import { pbMixin } from './pb-mixin.js';
 
 /**
  * Link elements to each other: if the user moves the mouse over one element,

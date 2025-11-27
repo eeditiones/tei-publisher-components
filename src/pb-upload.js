@@ -1,10 +1,9 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { getCSSProperty } from './utils.js';
+import './pb-icon.js';
 import '@vaadin/vaadin-upload';
-import '@polymer/paper-button';
-import '@polymer/paper-icon-button';
 
 /**
  * Component for uploading resources to TEI Publisher or a generated app.
@@ -83,7 +82,7 @@ export class PbUpload extends pbMixin(LitElement) {
     });
     uploader.addEventListener('upload-error', event => {
       this.emitTo('pb-end-update');
-      // eslint-disable-next-line no-param-reassign
+
       event.detail.file.error = event.detail.xhr.responseText;
       this.requestUpdate();
     });
@@ -128,21 +127,31 @@ export class PbUpload extends pbMixin(LitElement) {
         with-credentials
       >
         ${dropLabelIcon
-          ? html`<iron-icon slot="drop-label-icon" icon="${dropLabelIcon}"></iron-icon>`
+          ? html`<pb-icon slot="drop-label-icon" icon="${dropLabelIcon}" decorative></pb-icon>`
           : html`<span slot="drop-label-icon"></span>`}
         <span slot="drop-label">${translate('upload.drop', { accept: this.accept })}</span>
-        <paper-button id="uploadBtn" slot="add-button">
-          ${uploadIcon ? html`<iron-icon icon="${uploadIcon}"></iron-icon>` : null}
+        <button
+          id="uploadBtn"
+          slot="add-button"
+          class="pb-button pb-button--contained"
+          type="button"
+        >
+          ${uploadIcon ? html`<pb-icon icon="${uploadIcon}" decorative></pb-icon>` : null}
           ${translate('upload.upload')}
-        </paper-button>
+        </button>
         <div slot="file-list">
           <ul>
             ${this._files.size > 0
               ? html` <li class="close">
-                  <paper-icon-button
-                    icon="icons:clear"
+                  <button
+                    class="pb-button pb-button--icon"
+                    type="button"
+                    aria-label="${translate('dialogs.close')}"
+                    title="${translate('dialogs.close')}"
                     @click="${this.clearList}"
-                  ></paper-icon-button>
+                  >
+                    <pb-icon icon="icons:clear" decorative></pb-icon>
+                  </button>
                 </li>`
               : ''}
             ${this.renderFiles()}
@@ -170,14 +179,20 @@ export class PbUpload extends pbMixin(LitElement) {
       }
       rows.push(html`
         <li>
-          <iron-icon icon="${icon}"></iron-icon>
+          <pb-icon icon="${icon}" decorative></pb-icon>
           ${file.error ? file.name : html`<a href="${link}">${file.name}</a>`}
         </li>
       `);
       if (file.error) {
-        rows.push(html`
-          <li class="error" part="error">${JSON.parse(file.error).description}</li>
-        `);
+        let errorDescription = file.error;
+        try {
+          const parsed = JSON.parse(file.error);
+          errorDescription = parsed.description || file.error;
+        } catch (e) {
+          // If it's not JSON, use the error as-is
+          errorDescription = file.error;
+        }
+        rows.push(html` <li class="error" part="error">${errorDescription}</li> `);
       }
     }
     return rows;
@@ -204,8 +219,8 @@ export class PbUpload extends pbMixin(LitElement) {
       .error {
         color: red;
       }
-      #uploadBtn iron-icon {
-        padding-right: 8px;
+      #uploadBtn pb-icon {
+        margin-right: 8px;
       }
     `;
   }

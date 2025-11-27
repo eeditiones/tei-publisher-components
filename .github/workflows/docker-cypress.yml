@@ -1,0 +1,53 @@
+name: Docker and Cypress E2E Tests
+
+on:
+  pull_request:
+    branches: [ master, next* ]
+  push:
+    branches:
+      - next*
+  workflow_dispatch:
+
+jobs:
+  docker-cypress-e2e:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Build (production)
+        run: npm run build:production
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build docker image (cached)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          tags: exist-db:ci
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Start docker image
+        run: docker run --publish 8080:8080 --detach --name exist-ci exist-db:ci
+      - name: Wait for eXist
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
+      - name: Run Cypress E2E tests against real backend
+        run: npm run cy:run:e2e
+        env:
+          CYPRESS_baseUrl: http://localhost:5173
+          CYPRESS_realBackend: true
+          CYPRESS_existBackend: http://localhost:8080/exist/apps/tei-publisher
+      - name: Stop docker container
+        if: always()
+        run: docker rm --force exist-ci || true

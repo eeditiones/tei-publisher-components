@@ -6,8 +6,8 @@
         <title>dts-client Demo</title>
         <link rel="stylesheet" href="demo.css">
         <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+        
+        
         <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/dts-select-endpoint.js"></script>
@@ -24,7 +24,7 @@
                         margin-bottom: 10px;
                     }
                 </style>
-                <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page endpoint="/exist/apps/tei-publisher">
                     <!-- Display two document views side by side -->
                     <main>
                         <dts-client>
@@ -38,7 +38,7 @@
                     // configuration for the DTS endpoints
                     const dtsConfig = [
                         {
-                            "url": "http://localhost:8080/exist/apps/tei-publisher/api/dts",
+                            "url": "/exist/apps/tei-publisher/api/dts",
                             "title": "Local TEI Publisher"
                         },
                         {

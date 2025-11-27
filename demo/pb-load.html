@@ -6,10 +6,8 @@
 
     <title>pb-load Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
     <script type="module" src="../src/pb-view.js"></script>
@@ -23,10 +21,6 @@
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-            body {
-                --paper-fab-background: #35424b;
-            }
-
             main {
                 display: flex;
             }
@@ -53,7 +47,7 @@
                 color: #222222;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>
 
                 <main>

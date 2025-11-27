@@ -1,17 +1,10 @@
 // @ts-nocheck
 /* eslint-disable import/extensions */
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 
-import { repeat } from 'lit-html/directives/repeat';
+import { repeat } from 'lit/directives/repeat.js';
 
-import '@polymer/polymer/lib/elements/dom-repeat';
-import '@polymer/iron-icons/iron-icons';
-import '@polymer/iron-icon/iron-icon';
-import '@polymer/paper-icon-button/paper-icon-button';
-import '@polymer/paper-menu-button/paper-menu-button';
-import '@polymer/paper-listbox/paper-listbox';
-import '@polymer/paper-styles/color';
-import '@polymer/paper-item/paper-item';
+import './pb-icon-button.js';
 
 import './pb-message.js';
 import './pb-odd-model-editor.js';
@@ -23,7 +16,6 @@ import { get as i18n, translate } from './pb-i18n.js';
  *
  *
  * @customElement
- * @polymer
  */
 export class PbOddElementspecEditor extends LitElement {
   static get styles() {
@@ -58,7 +50,7 @@ export class PbOddElementspecEditor extends LitElement {
         display: inline-block;
         text-transform: uppercase;
         border-radius: 12px;
-        color: var(--paper-grey-700);
+        color: #616161;
         background: var(--paper-grey-300);
         padding: 2px 6px;
         border: thin solid var(--paper-grey-500);
@@ -91,8 +83,19 @@ export class PbOddElementspecEditor extends LitElement {
         align-self: center;
       }
 
-      paper-menu-button paper-icon-button {
-        margin-left: -10px;
+      .controls__add {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 8px;
+      }
+
+      .controls__add select {
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        padding: 0.25rem 0.5rem;
+        font: inherit;
       }
 
       /*todo: this does not take effect*/
@@ -148,27 +151,33 @@ export class PbOddElementspecEditor extends LitElement {
         <span class="spacer"></span>
 
         <span class="controls">
-          <paper-icon-button @click="${this._remove}" icon="delete"></paper-icon-button>
-          <paper-icon-button @click="${this._paste}" icon="content-paste"></paper-icon-button>
-          <paper-menu-button horizontal-align="right">
-            <paper-icon-button icon="add" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox
-              id="addModel"
-              slot="dropdown-content"
-              @iron-select="${this._addModel}"
-              attr-for-selected="value"
-            >
-              <paper-item value="model">model</paper-item>
-              <paper-item value="modelSequence">modelSequence</paper-item>
-              <paper-item value="modelGrp">modelGrp</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
+          <pb-icon-button
+            class="icon-button"
+            icon="delete"
+            title="${this._label('odd.editor.remove', 'Remove element')}"
+            @click="${this._remove}"
+          ></pb-icon-button>
+          <pb-icon-button
+            class="icon-button"
+            icon="content-paste"
+            title="${this._label('odd.editor.paste', 'Paste')}"
+            @click="${this._paste}"
+          ></pb-icon-button>
+          <label class="controls__add">
+            <span class="sr-only">${this._label('odd.editor.add', 'Add model')}</span>
+            <select id="addModel" @change=${this._handleAddModel}>
+              <option value="">${this._label('odd.editor.add', 'Add model')}</option>
+              <option value="model">model</option>
+              <option value="modelSequence">modelSequence</option>
+              <option value="modelGrp">modelGrp</option>
+            </select>
+          </label>
         </span>
       </h3>
 
       <div>
         ${repeat(
-          this.models,
+          this.models || [],
           (model, index) => html`
             <pb-odd-model-editor
               behaviour="${model.behaviour || ''}"
@@ -359,6 +368,11 @@ export class PbOddElementspecEditor extends LitElement {
       }),
     );
     // this.requestUpdate();
+  }
+
+  _label(key, fallback) {
+    const value = translate(key);
+    return value && value !== key ? value : fallback;
   }
 
   handleModelChanged(ev) {

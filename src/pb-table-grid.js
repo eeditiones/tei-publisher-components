@@ -1,12 +1,9 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { Grid } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from './theming.js';
-import '@polymer/paper-input/paper-input';
-import '@polymer/iron-icons';
-import '@polymer/iron-form';
-import '@polymer/paper-icon-button';
+import { translate } from './pb-i18n.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
 
@@ -81,6 +78,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
       _params: {
         type: Object,
       },
+      _initialized: {
+        type: Boolean,
+      },
       ...super.properties,
     };
   }
@@ -94,6 +94,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     this.perPage = 10;
     this.height = null;
     this.fixedHeader = false;
+    this._initialized = false;
   }
 
   async connectedCallback() {
@@ -131,7 +132,10 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
     const gridjsTheme = await loadStylesheets([`${resolveURL(this.cssPath)}/mermaid.min.css`]);
     const theme = importStyles(this);
-    const sheets = [...this.shadowRoot.adoptedStyleSheets, gridjsTheme];
+    const sheets = [...this.shadowRoot.adoptedStyleSheets];
+    if (gridjsTheme) {
+      sheets.push(gridjsTheme);
+    }
     if (theme) {
       sheets.push(theme);
     }
@@ -139,85 +143,134 @@ export class PbTableGrid extends pbMixin(LitElement) {
   }
 
   firstUpdated() {
-    const table = this.shadowRoot.getElementById('table');
-
-    const pbColumns = this.querySelectorAll('pb-table-column');
-    const columns = [];
-    pbColumns.forEach(column => columns.push(column.data()));
+    // Initialize after pb-page-ready if available; otherwise fall back to immediate init
     waitOnce('pb-page-ready', data => {
       if (data && data.language) {
         this.language = data.language;
       }
       this._params = registry.state;
-      const url = this.toAbsoluteURL(this.source);
-      const config = {
-        height: this.height,
-        fixedHeader: true,
-        columns,
-        resizable: this.resizable,
-        server: {
-          url,
-          then: data => data.results,
-          total: data => data.count,
-        },
-        sort: {
-          multiColumn: false,
-          enabled: true,
-          server: {
-            url: (prev, cols) => {
-              if (!cols.length) return prev;
-              const col = cols[0];
-              return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}order=${
-                columns[col.index].id
-              }&dir=${col.direction === 1 ? 'asc' : 'desc'}`;
-            },
-          },
-        },
-        pagination: {
-          enabled: true,
-          limit: this.perPage,
-          server: {
-            url: (prev, page, limit) => {
-              const form = this.shadowRoot.getElementById('form');
-              if (form) {
-                Object.assign(this._params, form.serializeForm());
-              }
-              this._params = this._paramsFromSubforms(this._params);
-              this._params.limit = limit;
-              this._params.start = page * limit + 1;
-              if (this.language) {
-                this._params.language = this.language;
-              }
-              registry.commit(this, this._params);
-
-              // copy params and remove null values
-              const urlParams = { ...this._params };
-              Object.keys(urlParams).forEach(key => {
-                if (urlParams[key] === null) {
-                  delete urlParams[key];
-                }
-              });
-              return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(
-                urlParams,
-              ).toString()}`;
-            },
-          },
-        },
-      };
-
-      this.grid = new Grid(config);
-      this.grid.on('load', () => {
-        this.emitTo('pb-results-received', {
-          params: this._params,
-        });
-      });
-
-      this.grid.render(table);
+      this._initGrid();
     });
+    // Fallback: ensure grid is initialized even if pb-page-ready never fires
+    requestAnimationFrame(() => this._initGrid());
+  }
+
+  _initGrid() {
+    if (this._initialized || this.grid) return;
+    const table = this.shadowRoot.getElementById('table');
+    if (!table) return;
+
+    const pbColumns = this.querySelectorAll('pb-table-column');
+    const columns = [];
+    pbColumns.forEach(column => columns.push(column.data()));
+
+    const server = (this.getEndpoint && this.getEndpoint()) || '.';
+    const url = this.toAbsoluteURL(this.source, server);
+    const config = {
+      height: this.height,
+      fixedHeader: true,
+      columns,
+      resizable: this.resizable,
+      server: {
+        url,
+        then: data => data.results,
+        total: data => data.count,
+      },
+      sort: {
+        multiColumn: false,
+        enabled: true,
+        server: {
+          url: (prev, cols) => {
+            if (!cols.length) return prev;
+            const col = cols[0];
+            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}order=${
+              columns[col.index].id
+            }&dir=${col.direction === 1 ? 'asc' : 'desc'}`;
+          },
+        },
+      },
+      pagination: {
+        enabled: true,
+        limit: this.perPage,
+        server: {
+          url: (prev, page, limit) => {
+            const form = this.shadowRoot.getElementById('form');
+            if (form) {
+              Object.assign(this._params, this._serializeSearchForm(form));
+            }
+            this._params = this._paramsFromSubforms(this._params);
+            this._params.limit = limit;
+            this._params.start = page * limit + 1;
+            if (this.language) {
+              this._params.language = this.language;
+            }
+            registry.commit(this, this._params);
+
+            // copy params and remove null values
+            const urlParams = { ...this._params };
+            Object.keys(urlParams).forEach(key => {
+              if (urlParams[key] === null) {
+                delete urlParams[key];
+              }
+            });
+            return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(
+              urlParams,
+            ).toString()}`;
+          },
+        },
+      },
+    };
+
+    this.grid = new Grid(config);
+    this.grid.on('load', () => {
+      this.emitTo('pb-results-received', {
+        params: this._params,
+      });
+    });
+
+    this.grid.render(table);
+    this._initialized = true;
   }
 
   _submit() {
-    this.grid.forceRender();
+    if (this.grid) {
+      this.grid.forceRender();
+    }
+  }
+
+  _handleFormSubmit(event) {
+    event.preventDefault();
+    this._submit();
+  }
+
+  _handleSearchKey(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this._submit();
+    }
+  }
+
+  _serializeSearchForm(form) {
+    const result = {};
+    const elements = Array.from(form.elements || []).filter(
+      el => el.name && !el.disabled && !el.closest('[disabled]'),
+    );
+    elements.forEach(element => {
+      if (!(element.name in result)) {
+        result[element.name] = null;
+      }
+    });
+    const data = new FormData(form);
+    data.forEach((value, key) => {
+      if (result[key] == null) {
+        result[key] = value;
+      } else if (Array.isArray(result[key])) {
+        result[key].push(value);
+      } else {
+        result[key] = [result[key], value];
+      }
+    });
+    return result;
   }
 
   _paramsFromSubforms(params) {
@@ -235,23 +288,41 @@ export class PbTableGrid extends pbMixin(LitElement) {
     return html`
       ${this.search
         ? html`
-            <iron-form id="form">
-              <form action="">
-                <paper-input
-                  id="search"
-                  name="search"
-                  label="Search"
-                  value="${this._params.search || ''}"
-                  @keyup="${e => (e.keyCode == 13 ? this._submit() : null)}"
-                >
-                  <paper-icon-button
-                    icon="search"
-                    @click="${this._submit}"
-                    slot="suffix"
-                  ></paper-icon-button>
-                </paper-input>
-              </form>
-            </iron-form>
+            <form id="form" action="" @submit=${this._handleFormSubmit}>
+              <label class="pb-table-grid__field" for="search">
+                <span class="pb-table-grid__label">${translate('search.search')}</span>
+                <div class="pb-table-grid__search">
+                  <input
+                    id="search"
+                    class="pb-table-grid__input"
+                    type="search"
+                    name="search"
+                    .value=${this._params.search || ''}
+                    placeholder="${translate('search.search')}"
+                    @keydown=${this._handleSearchKey}
+                  />
+                  <button
+                    class="pb-button pb-button--icon"
+                    type="button"
+                    aria-label="${translate('search.search')}"
+                    title="${translate('search.search')}"
+                    @click=${this._submit}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </label>
+            </form>
           `
         : null}
       <div id="table"></div>
@@ -263,8 +334,48 @@ export class PbTableGrid extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      button {
-        border: 0;
+      .pb-table-grid__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+      }
+
+      .pb-table-grid__label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .pb-table-grid__search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .pb-table-grid__input {
+        flex: 1 1 auto;
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        line-height: 1.4;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pb-table-grid__input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-table-grid__input:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
       }
     `;
   }

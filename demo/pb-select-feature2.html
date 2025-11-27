@@ -6,11 +6,13 @@
 
     <title>pb-select-feature Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
+    
+    
+
+    <script type="module">
+        import '../src/pb-icon-button.js';
+    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
     <script type="module" src="../src/pb-popover.js"></script>
@@ -52,7 +54,7 @@
                 display: block;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <p class="message">You are viewing the text in plain reading view.</p>
@@ -64,11 +66,11 @@
                     ]' emit="ex2" subscribe="ex2"></pb-select-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left" emit="ex2" subscribe="ex2">
-                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
                     </pb-navigation>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right" emit="ex2" subscribe="ex2">
-                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
                     </pb-navigation>
                 </div>
                 <main>

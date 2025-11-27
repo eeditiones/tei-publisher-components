@@ -6,13 +6,11 @@
         <title>pb-code-editor Demo</title>
         <link rel="stylesheet" href="demo.css">
         <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+        
+        
         <script type="module" src="../src/pb-code-editor.js"></script>
         <script type="module" src="../src/pb-page.js"></script>
         <script type="module" src="../src/pb-lang.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
         <!--/scripts-->
     </head>
 
@@ -22,17 +20,17 @@
                     <style>
                     pb-code-editor { margin-bottom: 32px; }
                     </style>
-                    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
+                    <pb-page endpoint="/exist/apps/tei-publisher" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
                         <pb-lang label="language" selected="en">
-                            <paper-item value="de">Deutsch</paper-item>
-                            <paper-item value="en">English</paper-item>
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
                         </pb-lang>
                         <!-- using old API endpoint for linter; old API is due for deprecation with Publisher 8
                             <pb-code-editor label="XQuery code, ambiance theme" code="for $i in (1, 2) return $i * 6" mode="xquery"
                             theme="ambiance"
-                            linter="http://localhost:8080/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor> -->
+                            linter="/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor> -->
                         <pb-code-editor label="XQuery code" code="for $i in (1, 2) return $i * 6" mode="xquery"
-                            linter="http://localhost:8080/exist/apps/tei-publisher/api/lint"></pb-code-editor>
+                            linter="/exist/apps/tei-publisher/api/lint"></pb-code-editor>
                         <pb-code-editor label="CSS" code="color: blue;
 font-decoration: underline;" mode="css"></pb-code-editor>
                         <pb-code-editor label="XML" code='&lt;elementSpec ident="correspDesc" mode="add"&gt;

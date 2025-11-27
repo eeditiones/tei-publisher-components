@@ -6,7 +6,7 @@
 
     <title>pb-link Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -42,7 +42,7 @@
                 text-decoration: none;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>
                 <main>
                     <ul>

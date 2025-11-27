@@ -20,7 +20,7 @@
 
         <pb-demo-snippet>
             <template>
-                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="/exist/apps/tei-publisher">
                     <form action="" id="form">
                         <h2>Suggestion list passed in a property</h2>
                         <pb-autocomplete name="autocomplete1" placeholder="Greek letter name" suggestions='["alpha", "beta", "gamma"]' value="alpha"></pb-autocomplete>
@@ -37,19 +37,31 @@
                                 <option value="author">Author</option>
                             </select>
                         </pb-autocomplete>
-                        <button type="submit"><paper-button>Submit</paper-button></button> 
+                        <button type="submit" class="pb-button pb-button--contained">Submit</button> 
                     </form>
                     <p>Parameters which would be sent: <code id="output"></code></p>
                 </pb-page>
-                <script>
-                    const form = document.getElementById('form');
-                    form.addEventListener('submit', (ev) => {
-                        ev.preventDefault();
-                        const data = new URLSearchParams(new FormData(form)).toString();
-                        document.getElementById('output').innerHTML = data;
-                    });
-                </script>
             </template>
         </pb-demo-snippet>
+        <script type="module">
+            import { ready, stampIfNeeded, wireFormOutput, firePageReady } from '../src/docs/demo-utils.js'
+            async function hydrate() {
+                await ready(['pb-demo-snippet','pb-autocomplete'])
+                const snippet = document.querySelector('pb-demo-snippet')
+                stampIfNeeded(snippet)
+                const form = document.getElementById('form')
+                const output = document.getElementById('output')
+                if (form && output) {
+                    const render = wireFormOutput(form, output)
+                    render()
+                }
+                firePageReady({ endpoint: '/exist/apps/tei-publisher', apiVersion: '1.0.0' })
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', hydrate)
+            } else {
+                hydrate()
+            }
+        </script>
     </body>
 </html>

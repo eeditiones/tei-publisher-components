@@ -26,7 +26,6 @@ All components talk to an endpoint, which will either be a TEI Publisher instanc
 To include components into your own application, you can load them from a CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
 ```
 
@@ -62,19 +61,128 @@ Run `npm run build:production` to generate the set of bundle files in `dist`, co
 
 ## Development
 
-For development, run `npm start` as described above. It will start a development server (on port 8000 by default), open a browser window and watch for file changes. Every component should have a demo to show its functionality.
+For development, run `npm start` as described above. It starts a Vite development server (port 5173 by default), opens a browser window, and watches for file changes. Every component should have a demo to show its functionality.
+
+When running locally with Vite, the demos can work in three ways:
+
+1. **Standalone (no backend):** the demos run fully in the browser using mocked responses.
+2. **Via Vite proxy:** the demos use relative or root-relative URLs (e.g. `/exist/...`) and Vite forwards those to your local eXist-db on `http://localhost:8080`.
+3. **Direct to eXist-db:** the demos point to `http://localhost:8080/exist/...` without Vite.
+
+### Demo best practices
+
+When adding or editing demo files, please:
+
+- Use **root-relative endpoints** (e.g. `/exist/...`) instead of hard-coding `http://localhost:8080/...`.
+- With the Vite proxy configured, `/exist/...` will be transparently forwarded to your local eXist-db.
+- Demo pages should be tested via `e2e` tests in cypress.
+- Standalone demos are preferable.
+
+By following these guidelines, all demo pages remain portable: they can run standalone in Vite (offline) or against a live TEI Publisher backend without code changes.
+
+### App configuration
 
 You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment. 
 
-In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value *dev*. Below, the variable `$config:webcomponents-cdn` should be set to `http://localhost:8000`:
+In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value *dev*. Below, set `$config:webcomponents-cdn` to `http://localhost:5173`:
 
 ```xquery
 declare variable $config:webcomponents := "dev";
 
-declare variable $config:webcomponents-cdn := "http://localhost:8000";
+declare variable $config:webcomponents-cdn := "http://localhost:5173";
 ```
 
 After reloading TEI Publisher in the browser, components should be loaded from your local development server.
+
+## Testing
+
+This project uses Cypress for both component testing and end-to-end testing.
+
+### Running Tests
+
+**Component Tests (Fast):**
+```bash
+npm run cy:run:ct
+```
+
+**End-to-End Tests (Full):**
+```bash
+npm run cy:run:e2e
+```
+
+**Interactive Mode:**
+```bash
+npm run cy:open
+```
+
+**Running Individual Specs:**
+
+For **Component Tests** (single spec):
+```bash
+npx cypress run --component --spec "test/cypress/component/pb-button.cy.js"
+```
+
+For **E2E Tests** (single spec with dev server):
+```bash
+npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js"'
+```
+
+For **E2E Tests** (multiple specs with dev server):
+```bash
+npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js,test/cypress/e2e/pb-dialog.e2e.cy.js"'
+```
+
+**Note:** E2E tests require the Vite dev server to be running. The `concurrently` command automatically starts and stops the dev server as needed.
+
+### Test Architecture
+
+- **Component Tests**: Test individual components in isolation using Cypress Component Testing
+- **E2E Tests**: Test complete demo pages and component interactions using Cypress E2E Testing
+- **Process Management**: Uses `concurrently` to automatically manage Vite dev server lifecycle during E2E tests
+
+### Test Development Guidelines
+
+When writing tests, follow these patterns:
+
+**Component Tests:**
+- Focus on component-specific functionality
+- Test props, events, and basic rendering
+- Avoid complex component interactions (use E2E tests instead)
+
+**E2E Tests:**
+- Test complete user workflows
+- Use appropriate page load strategies (see Development section)
+- Test component interactions and integration
+
+**Demo Page Load Strategies:**
+
+1. **Pages with `firePageReady()` calls:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-tabs.html')
+  cy.window().then(win => {
+    return new Cypress.Promise(resolve => {
+      win.addEventListener('pb-page-ready', resolve, { once: true })
+    })
+  })
+})
+```
+
+2. **Pages with `<pb-page>` but no `firePageReady()`:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-dialog.html')
+  cy.get('pb-page', { timeout: 5000 }).should('exist')
+})
+```
+
+3. **Simple pages:**
+```javascript
+beforeEach(() => {
+  cy.visit('/demo/pb-progress.html')
+  cy.get('body', { timeout: 3000 }).should('be.visible')
+})
+```
 
 ## Building Documentation
 

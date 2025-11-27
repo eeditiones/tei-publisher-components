@@ -2,5 +2,13 @@
     "i18n-ally.localesPaths": "i18n/common",
     "i18n-ally.enabledFrameworks": ["custom", "i18next"],
     "i18n-ally.keystyle": "nested",
-    "i18n-ally.annotations": true
+    "i18n-ally.annotations": true,
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
 }

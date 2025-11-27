@@ -1,7 +1,7 @@
-import { LitElement, css, html } from 'lit-element';
-import { pbMixin } from './pb-mixin';
-import { translate } from './pb-i18n';
-import { themableMixin } from './theming';
+import { LitElement, html, css } from 'lit';
+import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Zoom button to enlarge/shrink the font for the views. This component manages
@@ -28,7 +28,7 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
       zoomFactor: {
         type: Number,
         reflect: true,
-        attribute: 'zoom-factor'
+        attribute: 'zoom-factor',
       },
     };
   }
@@ -57,19 +57,20 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
    */
   zoom(direction) {
     const currentZoom = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--pb-zoom-factor') || '1'
+      getComputedStyle(document.documentElement).getPropertyValue('--pb-zoom-factor') || '1',
     );
     const step = 0.1;
     const minZoom = 0.5;
     const maxZoom = 2.0;
-    
-    let newZoom = direction === 'in' 
-    ? Math.min(currentZoom + step, maxZoom)
-    : Math.max(currentZoom - step, minZoom);
-    
+
+    let newZoom =
+      direction === 'in'
+        ? Math.min(currentZoom + step, maxZoom)
+        : Math.max(currentZoom - step, minZoom);
+
     document.documentElement.style.setProperty('--pb-zoom-factor', newZoom.toString());
     this.zoomFactor = newZoom;
-    
+
     // Store user preference
     localStorage.setItem('pb-zoom-preference', newZoom.toString());
   }
@@ -90,8 +91,8 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
 
   render() {
     return html`
-      <a
-        href="#"
+      <button
+        type="button"
         @click="${this._handleClick}"
         title="${this.direction === 'in'
           ? translate('toolbar.zoom.in')
@@ -114,18 +115,33 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
                 </svg>
               `}
         </slot>
-      </a>
+      </button>
     `;
   }
 
   static get styles() {
     return css`
-      a {
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font: inherit;
         color: inherit;
-        text-decoration: none;
+        cursor: pointer;
+        min-width: 24px;
+        min-height: 24px;
       }
-      a:hover {
+      button:hover {
         color: inherit;
+      }
+      svg {
+        display: block;
+        width: 24px;
+        height: 24px;
       }
     `;
   }

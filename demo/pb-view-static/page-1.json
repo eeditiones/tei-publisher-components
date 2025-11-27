@@ -1,0 +1,10 @@
+{
+  "content": "<section class=\"pb-view-page\" data-root=\"page-1\"><h2>Immanuel Kant</h2><p><strong>Critique of Pure Reason</strong> served as a touchstone for Enlightenment philosophy. Kant sought to reconcile empirical observation with rational thought, asking how human reason structures experience and knowledge. The short extract presented here mirrors the pagination used in the full demo, letting you flip through the work with the navigation buttons.</p><p>Use the forward button to imagine turning the next page, or explore the source structure through the other demos bundled with the components.</p></section>",
+  "footnotes": "",
+  "root": "page-1",
+  "next": null,
+  "previous": null,
+  "nextId": null,
+  "previousId": null,
+  "switchView": []
+}

@@ -6,9 +6,8 @@
 
     <title>pb-search Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
+    
+        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-search.js"></script>
@@ -52,7 +51,7 @@
                 margin-right: 10px;
             }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-progress></pb-progress>
                 <main>
                     <pb-search id="search-form">
@@ -75,6 +74,14 @@
             </pb-page>
         </template>
     </pb-demo-snippet>
+    <script type="module">
+      import { firePageReady } from '../src/docs/demo-utils.js'
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => firePageReady({ endpoint: '/exist/apps/tei-publisher' }))
+      } else {
+        firePageReady({ endpoint: '/exist/apps/tei-publisher' })
+      }
+    </script>
 </body>
 
 </html>

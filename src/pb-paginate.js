@@ -1,6 +1,7 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import './pb-icon.js';
 
 /**
  * Display a pagination control from which the user can select a page to view
@@ -18,60 +19,14 @@ export class PbPaginate extends pbMixin(LitElement) {
   static get properties() {
     return {
       ...super.properties,
-      /**
-       * total number of pages
-       */
-      total: {
-        type: Number,
-        reflect: true,
-      },
-      /**
-       * start page
-       */
-      start: {
-        type: Number,
-        reflect: true,
-      },
-      /**
-       * amount of entries per page
-       */
-      perPage: {
-        type: Number,
-        attribute: 'per-page',
-      },
-      /**
-       * i18n key to use for looking up the message showing number of items in list
-       * or fixed label to display
-       */
-      foundLabel: {
-        type: String,
-        attribute: 'found-label',
-      },
-      /**
-       * the current page
-       */
-      page: {
-        type: Number,
-      },
-      /**
-       * the amount of pages
-       */
-      pageCount: {
-        type: Number,
-        attribute: 'page-count',
-      },
-      /**
-       * todo
-       */
-      range: {
-        type: Number,
-      },
-      /**
-       * todo:
-       */
-      pages: {
-        type: Array,
-      },
+      total: { type: Number, reflect: true },
+      start: { type: Number, reflect: true },
+      perPage: { type: Number, attribute: 'per-page' },
+      foundLabel: { type: String, attribute: 'found-label' },
+      page: { type: Number },
+      pageCount: { type: Number, attribute: 'page-count', reflect: true },
+      range: { type: Number },
+      pages: { type: Array },
     };
   }
 
@@ -89,20 +44,41 @@ export class PbPaginate extends pbMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-
     this.subscribeTo('pb-results-received', this._refresh.bind(this));
   }
 
   render() {
     return html`
-      <span @click="${this._handleFirst}"><iron-icon icon="first-page"></iron-icon></span>
+      <button
+        type="button"
+        class="pb-paginate__nav"
+        data-page="first"
+        @click=${this._handleFirst}
+        aria-label=${translate('paginate.first')}
+      >
+        <pb-icon icon="chevron-left"></pb-icon>
+      </button>
       ${this.pages.map(
-        (item, index) =>
-          html`<span class="${item.class}" @click="${() => this._handleClick(item, index)}"
-            >${item.label}</span
-          >`,
+        (item, index) => html`
+          <button
+            type="button"
+            class="pb-paginate__page ${item.class}"
+            @click=${() => this._handleClick(item, index)}
+            aria-current=${item.class === 'active' ? 'page' : nothing}
+          >
+            ${item.label}
+          </button>
+        `,
       )}
-      <span @click="${this._handleLast}"><iron-icon icon="last-page"></iron-icon></span>
+      <button
+        type="button"
+        class="pb-paginate__nav"
+        data-page="last"
+        @click=${this._handleLast}
+        aria-label=${translate('paginate.last')}
+      >
+        <pb-icon icon="chevron-right"></pb-icon>
+      </button>
 
       <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
     `;
@@ -116,16 +92,24 @@ export class PbPaginate extends pbMixin(LitElement) {
 
       :host {
         display: flex;
-        flex-direction: row;
         align-items: center;
+        gap: 8px;
       }
 
-      span {
+      .pb-paginate__nav,
+      .pb-paginate__page {
         padding: 4px 8px;
         cursor: pointer;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .active {
+      .pb-paginate__page.active {
         background-color: var(--pb-color-primary);
         color: var(--pb-color-inverse);
         border-radius: 50%;
@@ -134,9 +118,14 @@ export class PbPaginate extends pbMixin(LitElement) {
         line-height: 1em;
         padding: 0.4em;
         text-align: center;
-
         box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12),
           0 3px 3px -2px rgba(0, 0, 0, 0.4);
+      }
+
+      .pb-paginate__page:focus-visible,
+      .pb-paginate__nav:focus-visible {
+        outline: 2px solid var(--pb-color-primary);
+        outline-offset: 2px;
       }
 
       .found {
@@ -154,16 +143,7 @@ export class PbPaginate extends pbMixin(LitElement) {
     let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1);
     const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount);
     lowerBound = Math.max(upperBound - this.range + 1, 1);
-    console.log(
-      '<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d',
-      start,
-      total,
-      this.perPage,
-      this.pageCount,
-      this.page,
-      lowerBound,
-      upperBound,
-    );
+
     const pages = [];
     for (let i = lowerBound; i <= upperBound; i++) {
       pages.push({
@@ -180,9 +160,9 @@ export class PbPaginate extends pbMixin(LitElement) {
     this._update(this.start, this.total);
   }
 
-  _handleClick(item, index) {
+  _handleClick(_item, index) {
     this.start = (this.pages[index].label - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(ev => {
+    for (const ev of ['pb-load', 'pb-paginate']) {
       this.emitTo(ev, {
         params: {
           start: this.start,
@@ -190,33 +170,33 @@ export class PbPaginate extends pbMixin(LitElement) {
           page: index,
         },
       });
-    });
+    }
   }
 
-  _handleFirst(ev) {
+  _handleFirst() {
     this.start = 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+    for (const ev of ['pb-load', 'pb-paginate']) {
+      this.emitTo(ev, {
         params: {
           start: 1,
           'per-page': this.perPage,
           page: 0,
         },
       });
-    });
+    }
   }
 
-  _handleLast(ev) {
+  _handleLast() {
     this.start = (this.pageCount - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+    for (const ev of ['pb-load', 'pb-paginate']) {
+      this.emitTo(ev, {
         params: {
           start: this.start,
           'per-page': this.perPage,
           page: this.pageCount - 1,
         },
       });
-    });
+    }
   }
 }
 customElements.define('pb-paginate', PbPaginate);

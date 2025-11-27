@@ -1,42 +1,47 @@
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-clipboard Demo</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
-        <link rel="Stylesheet" href="demo.css">
-        <!--scripts-->
-        <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-clipboard.js"></script>
-        
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-clipboard Demo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="Stylesheet" href="demo.css">
+    <!--scripts-->
+    
+    <!-- Closure Compiler helper used by some Polymer builds -->
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-clipboard.js"></script>
 
 
-        <!--/scripts-->
-    </head>
 
-    <body>
-        <pb-demo-snippet>
-            <template>
-                <style type="text/css">
-                    pb-page {
-                        position: relative;
-                    }
+    <!--/scripts-->
+</head>
 
-                    pb-clipboard {
-                        margin-bottom: 20px;
-                    }
-                </style>
-                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="http://localhost:8080/exist/apps/tei-publisher">
-                        <pb-clipboard data-i18n="[label]clipboard.copy">John Doe: "The miracles of foobar", Paradise Publishers, Little Village, Stardate 46254.7</pb-clipboard>
-                        <pb-clipboard data-i18n="[label]clipboard.copy">Coffey, Frank.  The Complete Idiot's Guide to Elvis.  Alpha Books, 1997. eBooks on EBSCOhost.11 May 2000.</pb-clipboard>
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+                pb-page {
+                    position: relative;
+                }
 
-                        <label for="test-clipboard"><pb-i18n key="clipboard.paste"></pb-i18n></label>
-                        <input type="text" name="test-clipboard" value="" size="60">
-                </pb-page>
-            </template>
-        </pb-demo-snippet>
-    </body>
+                pb-clipboard {
+                    margin-bottom: 20px;
+                }
+            </style>
+            <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="/exist/apps/tei-publisher">
+                <pb-clipboard data-i18n="[label]clipboard.copy">John Doe: "The miracles of foobar", Paradise Publishers,
+                    Little Village, Stardate 46254.7</pb-clipboard>
+                <pb-clipboard data-i18n="[label]clipboard.copy">Coffey, Frank. The Complete Idiot's Guide to Elvis.
+                    Alpha Books, 1997. eBooks on EBSCOhost.11 May 2000.</pb-clipboard>
+
+                <label for="test-clipboard"><pb-i18n key="clipboard.paste"></pb-i18n></label>
+                <input type="text" name="test-clipboard" value="" size="60">
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
 </html>

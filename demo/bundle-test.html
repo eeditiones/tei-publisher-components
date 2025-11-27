@@ -9,6 +9,7 @@
     <script type="module" src="../dist/pb-components-bundle.js"></script>
     <script type="module" src="../dist/pb-facsimile.js"></script>
     <script type="module" src="../dist/pb-leaflet-map.js"></script>
+    <script type="module" src="../src/pb-icon-button.js"></script>
 </head>
 
 <body>
@@ -42,18 +43,18 @@
             height: 480px;
         }
     </style>
-    <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+    <pb-page endpoint="/exist/apps/tei-publisher">
         <app-header-layout>
             <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
                 <app-toolbar class="toolbar" sticky="sticky">
                     <h3>Test Bundles</h3>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left">
-                        <paper-icon-button icon="icons:chevron-left" />
+                        <pb-icon-button icon="icons:chevron-left" />
                     </pb-navigation>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right">
-                        <paper-icon-button icon="icons:chevron-right" />
+                        <pb-icon-button icon="icons:chevron-right" />
                     </pb-navigation>
                 </app-toolbar>
             </app-header>

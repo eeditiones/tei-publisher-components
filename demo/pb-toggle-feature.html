@@ -7,9 +7,10 @@
     <title>pb-toggle-feature Demo</title>
     <link rel="stylesheet" href="demo.css">
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+    
+    <script type="module">
+        import '../src/pb-icon-button.js';
+    </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -46,30 +47,33 @@
     <pb-demo-snippet>
         <template>
             <style>
-            body {
-                --paper-fab-background: #35424b;
-            }
-            main {
-                display: flex;
-                justify-content: space-between;
-            }
-            .toolbar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #E0E0E0;
-            }
-            pb-toggle-feature {
-                display: block;
-            }
+                body {
+                    --paper-fab-background: #35424b;
+                }
+
+                main {
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .toolbar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px;
+                    background-color: #E0E0E0;
+                }
+
+                pb-toggle-feature {
+                    display: block;
+                }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
-                    <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover"
-                        action="disable" default="off">Plain Reading View</pb-toggle-feature>
+                    <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover" action="disable"
+                        default="off">Plain Reading View</pb-toggle-feature>
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter-->
                     <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
                     <!-- directly change properties of the pb-view -->
@@ -81,11 +85,11 @@
                     </pb-toggle-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left">
-                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
                     </pb-navigation>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right">
-                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
                     </pb-navigation>
                 </div>
                 <main>

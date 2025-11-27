@@ -1,0 +1,6 @@
+{
+  "odd=dta.odd&view=page": "page-1.json",
+  "odd=dta.odd&view=page&root=page-1": "page-1.json",
+  "odd=dta.odd&view=page&root=1": "page-1.json",
+  "odd=dta.odd&user.header=short&view=single&xpath=//teiHeader/fileDesc/titleStmt/title": "title.json"
+}

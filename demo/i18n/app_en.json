@@ -10,5 +10,16 @@
     },
     "document": {
         "contents": "Custom Table of Contents"
+    },
+    "browse": {
+        "items": "Found {{count}} items"
+    },
+    "dialogs": {
+        "downloadMessage": "Download message"
+    },
+    "menu": {
+        "download": {
+            "title": "Download"
+        }
     }
 }
