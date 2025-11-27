@@ -193,4 +193,43 @@ describe('pb-facs-link', () => {
       })
     })
   })
+
+  describe('IIIF manifest version compatibility', () => {
+    it('should work with IIIF 2.0 manifest URLs', () => {
+      cy.mount('<pb-facs-link facs="api/iiif/document-v2" order="1" emit-on-load="true"></pb-facs-link>')
+      
+      cy.get('pb-facs-link').then($el => {
+        const element = $el[0]
+        expect(element.getImage()).to.equal('api/iiif/document-v2')
+        expect(element.getOrder()).to.equal(1)
+        expect(element.facs).to.equal('api/iiif/document-v2')
+      })
+    })
+
+    it('should work with IIIF 3.0 manifest URLs', () => {
+      cy.mount('<pb-facs-link facs="api/iiif/document-v3" order="2" emit-on-load="true"></pb-facs-link>')
+      
+      cy.get('pb-facs-link').then($el => {
+        const element = $el[0]
+        expect(element.getImage()).to.equal('api/iiif/document-v3')
+        expect(element.getOrder()).to.equal(2)
+        expect(element.facs).to.equal('api/iiif/document-v3')
+      })
+    })
+
+    it('should handle manifest URLs with both versions in same document', () => {
+      // Test that pb-facs-link doesn't care about manifest version
+      cy.mount('<pb-facs-link facs="api/iiif/document-v2" order="1"></pb-facs-link>')
+      cy.get('pb-facs-link').then($el => {
+        const element = $el[0]
+        expect(element.facs).to.equal('api/iiif/document-v2')
+      })
+      
+      cy.mount('<pb-facs-link facs="api/iiif/document-v3" order="1"></pb-facs-link>')
+      cy.get('pb-facs-link').then($el => {
+        const element = $el[0]
+        expect(element.facs).to.equal('api/iiif/document-v3')
+      })
+    })
+  })
 })
