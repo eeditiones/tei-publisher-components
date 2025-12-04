@@ -1,0 +1,77 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@id": "https://example.com/manifest-v2.json",
+  "@type": "sc:Manifest",
+  "label": "Test Manifest v2",
+  "sequences": [
+    {
+      "@id": "https://example.com/manifest-v2.json/sequence/normal",
+      "@type": "sc:Sequence",
+      "canvases": [
+        {
+          "@id": "https://example.com/canvas/1",
+          "@type": "sc:Canvas",
+          "label": "Page 1",
+          "width": 2000,
+          "height": 3000,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://example.com/image1.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 2000,
+                "height": 3000,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://example.com/image1",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "https://example.com/canvas/1"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:8080/page1?root=1"
+            }
+          ]
+        },
+        {
+          "@id": "https://example.com/canvas/2",
+          "@type": "sc:Canvas",
+          "label": "Page 2",
+          "width": 2000,
+          "height": 3000,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://example.com/image2.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 2000,
+                "height": 3000,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://example.com/image2",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "https://example.com/canvas/2"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:8080/page2?root=2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

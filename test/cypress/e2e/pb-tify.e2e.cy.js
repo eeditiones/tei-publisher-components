@@ -112,4 +112,193 @@ describe('pb-tify e2e', () => {
       cy.get('pb-tify').should('be.visible')
     })
   })
+
+  describe('IIIF manifest version compatibility', () => {
+    describe('IIIF 2.0 manifest support', () => {
+      it('should load and display IIIF 2.0 manifest', () => {
+        cy.fixture('iiif/manifest-v2.json').as('manifest2')
+        cy.fixture('iiif/image-info.json').as('imageInfo')
+
+        cy.then(function () {
+          cy.intercept('GET', '**/manifest-v2.json**', {
+            statusCode: 200,
+            body: this.manifest2,
+            headers: { 'Content-Type': 'application/json' }
+          }).as('manifest2')
+
+          cy.intercept('GET', '**/image*/info.json', {
+            statusCode: 200,
+            body: this.imageInfo,
+            headers: { 'Content-Type': 'application/json' }
+          }).as('imageInfo')
+        })
+
+        cy.visit('/demo/pb-tify.html')
+        cy.get('pb-page', { timeout: 5000 }).should('exist')
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          element.setAttribute('manifest', 'manifest-v2.json')
+        })
+
+        cy.wait('@manifest2', { timeout: 10000 })
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          return new Cypress.Promise((resolve) => {
+            if (element._tify && element._tify.ready) {
+              element._tify.ready.then(() => resolve())
+            } else {
+              const checkReady = setInterval(() => {
+                if (element._tify && element._tify.ready) {
+                  clearInterval(checkReady)
+                  element._tify.ready.then(() => resolve())
+                } else if (element._tify && element._tify.app && element._tify.app.$root) {
+                  clearInterval(checkReady)
+                  resolve()
+                }
+              }, 100)
+              setTimeout(() => {
+                clearInterval(checkReady)
+                resolve()
+              }, 10000)
+            }
+          })
+        })
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          expect(element._tify).to.exist
+          expect(element._tify.app).to.exist
+          expect(element._tify.app.$root).to.exist
+
+          const canvases = element._getCanvases(element._tify.app.$root)
+          expect(canvases).to.have.length(2)
+          expect(canvases[0]['@id']).to.equal('https://example.com/canvas/1')
+        })
+      })
+    })
+
+    describe('IIIF 3.0 manifest support', () => {
+      it('should load and display IIIF 3.0 manifest', () => {
+        cy.fixture('iiif/manifest-v3.json').as('manifest3')
+        cy.fixture('iiif/image-info.json').as('imageInfo')
+
+        cy.then(function () {
+          cy.intercept('GET', '**/manifest-v3.json**', {
+            statusCode: 200,
+            body: this.manifest3,
+            headers: { 'Content-Type': 'application/ld+json' }
+          }).as('manifest3')
+
+          cy.intercept('GET', '**/image*/info.json', {
+            statusCode: 200,
+            body: this.imageInfo,
+            headers: { 'Content-Type': 'application/json' }
+          }).as('imageInfo')
+        })
+
+        cy.visit('/demo/pb-tify.html')
+        cy.get('pb-page', { timeout: 5000 }).should('exist')
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          element.setAttribute('manifest', 'manifest-v3.json')
+        })
+
+        cy.wait('@manifest3', { timeout: 10000 })
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          return new Cypress.Promise((resolve) => {
+            if (element._tify && element._tify.ready) {
+              element._tify.ready.then(() => resolve())
+            } else {
+              const checkReady = setInterval(() => {
+                if (element._tify && element._tify.ready) {
+                  clearInterval(checkReady)
+                  element._tify.ready.then(() => resolve())
+                } else if (element._tify && element._tify.app && element._tify.app.$root) {
+                  clearInterval(checkReady)
+                  resolve()
+                }
+              }, 100)
+              setTimeout(() => {
+                clearInterval(checkReady)
+                resolve()
+              }, 10000)
+            }
+          })
+        })
+
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+          expect(element._tify).to.exist
+          expect(element._tify.app).to.exist
+          expect(element._tify.app.$root).to.exist
+
+          const canvases = element._getCanvases(element._tify.app.$root)
+          expect(canvases).to.have.length(2)
+          expect(canvases[0].id).to.equal('https://example.com/canvas/1')
+        })
+      })
+    })
+
+    describe('rendering property compatibility', () => {
+      beforeEach(() => {
+        cy.visit('/demo/pb-tify.html')
+        cy.get('pb-page', { timeout: 5000 }).should('exist')
+      })
+
+      it('should handle rendering with @id (IIIF 2.0)', () => {
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+
+          const canvas = {
+            rendering: [{ '@id': 'http://example.com/page?root=1&param=value' }]
+          }
+
+          const renderingId = canvas.rendering[0]['@id'] || canvas.rendering[0].id
+          expect(renderingId).to.equal('http://example.com/page?root=1&param=value')
+
+          const url = new URL(renderingId)
+          expect(url.searchParams.get('root')).to.equal('1')
+          expect(url.searchParams.get('param')).to.equal('value')
+        })
+      })
+
+      it('should handle rendering with id (IIIF 3.0)', () => {
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+
+          const canvas = {
+            rendering: [{ id: 'http://example.com/page?root=2&param=value2' }]
+          }
+
+          const renderingId = canvas.rendering[0]['@id'] || canvas.rendering[0].id
+          expect(renderingId).to.equal('http://example.com/page?root=2&param=value2')
+
+          const url = new URL(renderingId)
+          expect(url.searchParams.get('root')).to.equal('2')
+          expect(url.searchParams.get('param')).to.equal('value2')
+        })
+      })
+
+      it('should prefer @id over id when both are present', () => {
+        cy.get('pb-tify').then($el => {
+          const element = $el[0]
+
+          const canvas = {
+            rendering: [{
+              '@id': 'http://example.com/page?root=1',
+              id: 'http://example.com/page?root=2'
+            }]
+          }
+
+          const renderingId = canvas.rendering[0]['@id'] || canvas.rendering[0].id
+          expect(renderingId).to.equal('http://example.com/page?root=1')
+        })
+      })
+    })
+  })
 })
