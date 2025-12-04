@@ -1,3 +1,15 @@
+# [2.26.0-next-3.19](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.18...v2.26.0-next-3.19) (2025-12-04)
+
+
+### Bug Fixes
+
+* corrects indentation ([99aac66](https://github.com/eeditiones/tei-publisher-components/commit/99aac66183710bee3b3fa05ee5ded93d3c13b7fb))
+
+
+### Features
+
+* **pb-authority-lookup:** add work entity ([b052241](https://github.com/eeditiones/tei-publisher-components/commit/b0522411c6ead850eba9a9e21b05da7e45816e16))
+
 # [2.26.0-next-3.18](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.17...v2.26.0-next-3.18) (2025-11-04)
 
 
