@@ -1,14 +1,8 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox';
-import '@polymer/paper-checkbox';
-import '@polymer/paper-dialog';
-import '@polymer/paper-dialog-scrollable';
-import '@polymer/iron-form';
+import './pb-icon.js';
+import './pb-dialog.js';
 
 /**
  * Editor component for the App Generator. Allows to edit all settings for an application.
@@ -32,6 +26,15 @@ export class PbEditApp extends pbMixin(LitElement) {
       odds: {
         type: Array,
       },
+      _templateValue: {
+        type: String,
+      },
+      _defaultViewValue: {
+        type: String,
+      },
+      _indexValue: {
+        type: String,
+      },
     };
   }
 
@@ -39,6 +42,9 @@ export class PbEditApp extends pbMixin(LitElement) {
     super();
     this.templates = [];
     this.odds = [];
+    this._templateValue = 'view.html';
+    this._defaultViewValue = 'div';
+    this._indexValue = 'tei:div';
   }
 
   connectedCallback() {
@@ -47,237 +53,340 @@ export class PbEditApp extends pbMixin(LitElement) {
 
   firstUpdated() {
     const form = this.shadowRoot.getElementById('form');
-    const defaultView = this.shadowRoot.getElementById('defaultView');
-    const index = this.shadowRoot.getElementById('index');
-    const template = this.shadowRoot.getElementById('template');
-    this.subscribeTo(
-      'pb-i18n-update',
-      options => {
-        // clear paper-listbox selection after language updates
-        const defaultViewListbox = this.shadowRoot.querySelector('#defaultView paper-listbox');
-        let old = defaultViewListbox.selected;
-        defaultViewListbox.selected = undefined;
-        defaultViewListbox.selected = old;
-
-        const indexListbox = this.shadowRoot.querySelector('#index paper-listbox');
-        old = indexListbox.selected;
-        indexListbox.selected = undefined;
-        indexListbox.selected = old;
-      },
-      [],
-    );
     waitOnce('pb-page-ready', detail => {
-      let url;
-      if (this.minApiVersion('1.0.0')) {
-        url = `${detail.endpoint}/api/templates`;
-      } else {
-        url = `${detail.endpoint}/modules/lib/components-list-templates.xql`;
+      const endpoint = detail.endpoint;
+      const templatesUrl = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/templates`
+        : `${endpoint}/modules/lib/components-list-templates.xql`;
+      const oddsUrl = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/odd`
+        : `${endpoint}/modules/lib/components-list-odds.xql`;
+      const action = this.minApiVersion('1.0.0')
+        ? `${endpoint}/api/apps/generate`
+        : `${endpoint}/modules/components-generate.xql`;
+
+      if (form) {
+        form.action = action;
       }
-      fetch(url, {
+
+      fetch(templatesUrl, {
         method: 'GET',
         mode: 'cors',
         credentials: 'same-origin',
       })
         .then(response => response.json())
         .then(json => {
-          this.templates = json;
-        });
+          const list = Array.isArray(json) ? json : [];
+          this.templates = list;
+          if (!list.find(item => item.name === this._templateValue)) {
+            this._templateValue = list.length ? list[0].name : '';
+          }
+          this.requestUpdate();
+        })
+        .catch(error => console.error('<pb-edit-app> Failed to load templates', error));
 
-      if (this.minApiVersion('1.0.0')) {
-        url = `${detail.endpoint}/api/odd`;
-      } else {
-        url = `${detail.endpoint}/modules/lib/components-list-odds.xql`;
-      }
-      fetch(url, {
+      fetch(oddsUrl, {
         method: 'GET',
         mode: 'cors',
         credentials: 'same-origin',
       })
         .then(response => response.json())
         .then(json => {
-          this.odds = json;
-        });
+          this.odds = Array.isArray(json) ? json : [];
+          this.requestUpdate();
+        })
+        .catch(error => console.error('<pb-edit-app> Failed to load odds list', error));
+    });
 
-      const htmlForm = this.shadowRoot.querySelector('form');
-      if (this.minApiVersion('1.0.0')) {
-        htmlForm.action = `${detail.endpoint}/api/apps/generate`;
-      } else {
-        htmlForm.action = `${detail.endpoint}/modules/components-generate.xql`;
-      }
-    });
-    form.addEventListener('iron-form-presubmit', function () {
-      const view = defaultView.selectedItem.getAttribute('value');
-      this.request.body['default-view'] = view;
-      this.request.body.index = index.selectedItem.getAttribute('value');
-      this.request.body.template = template.selectedItem.getAttribute('value');
-    });
-    form.addEventListener('iron-form-response', event => {
-      console.log(event);
-      event.detail.completes.then(r => {
-        this.emitTo('pb-end-update');
-        const result = r.parseResponse();
-        console.log('<pb-edit-app> Received response: %o', result);
-        if (result.target) {
-          const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, '$1');
-          this.url = `${baseURL}/${
-            this.shadowRoot.querySelector('paper-input[name=abbrev]').value
-          }`;
-          this.error = null;
-        } else {
-          this.error = result.description;
-        }
-        this.shadowRoot.getElementById('dialog').open();
-      });
-    });
-    form.addEventListener('iron-form-error', event => {
-      this.emitTo('pb-end-update');
-
-      console.log('<pb-edit-app> Received response: %o', event.detail.request.response);
-      this.error = event.detail.request.response.description;
-      this.shadowRoot.getElementById('dialog').open();
-    });
-    form.addEventListener('iron-form-invalid', () => this.emitTo('pb-end-update'));
+    if (form) {
+      form.addEventListener('submit', this._handleSubmit.bind(this));
+    }
   }
 
   _doSubmit() {
-    this.emitTo('pb-start-update');
     const form = this.shadowRoot.getElementById('form');
-    form.submit();
+    if (!form) {
+      return;
+    }
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  }
+
+  _renderTextField({
+    id,
+    name,
+    type = 'text',
+    required = false,
+    pattern,
+    placeholder = '',
+    label,
+  }) {
+    return html`
+      <label class="pb-field" for="${id}">
+        <span class="pb-field__label">${label}</span>
+        <input
+          id="${id}"
+          class="pb-input"
+          type="${type}"
+          name="${name}"
+          ?required=${required}
+          pattern=${pattern ? pattern : nothing}
+          placeholder="${placeholder}"
+        />
+      </label>
+    `;
+  }
+
+  _onTemplateChange(event) {
+    this._templateValue = event.target.value;
+  }
+
+  _onDefaultViewChange(event) {
+    this._defaultViewValue = event.target.value;
+  }
+
+  _onIndexChange(event) {
+    this._indexValue = event.target.value;
+  }
+
+  async _handleSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.reportValidity && !form.reportValidity()) {
+      return;
+    }
+
+    this.emitTo('pb-start-update');
+
+    const payload = this._collectFormData(form);
+    const action = form.action || '';
+
+    try {
+      const response = await fetch(action, {
+        method: form.method || 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+      const data = isJson ? await response.json() : await response.text();
+
+      if (!response.ok) {
+        const error = data && typeof data === 'object' ? data : { description: data };
+        throw Object.assign(new Error(error.description || response.statusText), { result: error });
+      }
+
+      this._handleSubmitSuccess(data, form);
+    } catch (error) {
+      this._handleSubmitError(error);
+    }
+  }
+
+  _collectFormData(form) {
+    const formData = new FormData(form);
+    const payload = {};
+    Array.from(form.elements || [])
+      .filter(el => el.name && !el.disabled && !el.closest('[disabled]'))
+      .forEach(element => {
+        if (!(element.name in payload)) {
+          payload[element.name] = null;
+        }
+      });
+    formData.forEach((value, key) => {
+      if (Object.prototype.hasOwnProperty.call(payload, key) && payload[key] != null) {
+        if (Array.isArray(payload[key])) {
+          payload[key].push(value);
+        } else {
+          payload[key] = [payload[key], value];
+        }
+      } else {
+        payload[key] = value;
+      }
+    });
+    return payload;
+  }
+
+  _handleSubmitSuccess(result, form) {
+    this.emitTo('pb-end-update');
+
+    if (result && result.target) {
+      const baseURL = window.location.href.replace(/^(.*)\/tei-publisher\/.*/, '$1');
+      const abbrev = form.querySelector('input[name=abbrev]');
+      this.url = `${baseURL}/${abbrev ? abbrev.value : ''}`;
+      this.error = null;
+    } else {
+      this.error = result && result.description ? result.description : 'Request failed';
+      this.url = null;
+    }
+
+    this._openDialog();
+  }
+
+  _handleSubmitError(error) {
+    this.emitTo('pb-end-update');
+    const description = error?.result?.description || error?.message || 'Request failed';
+    this.error = description;
+    this.url = null;
+    this._openDialog();
+  }
+
+  _openDialog() {
+    const dialog = this.shadowRoot.getElementById('dialog');
+    dialog?.openDialog();
   }
 
   render() {
     return html`
-      <iron-form id="form">
-        <form method="POST" accept="application/json" enctype="application/json">
-          <fieldset>
-            <legend>${translate('document.selectODD')}</legend>
-            ${this.odds.map(
-              odd =>
-                html`<paper-checkbox name="odd" value="${odd.name}">${odd.label}</paper-checkbox>`,
-            )}
-          </fieldset>
-          <paper-input
-            name="uri"
-            type="url"
-            required
-            placeholder="https://e-editiones.org/apps/my-simple-app"
-            label="${translate('appgen.uri')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            id="abbrev"
-            name="abbrev"
-            pattern="[a-zA-Z0-9-_]+"
-            required
-            placeholder="${translate('appgen.abbrev.placeholder')}"
-            label="${translate('appgen.abbrev.label')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            name="data-collection"
-            pattern="[a-zA-Z0-9-_/]+"
-            placeholder="data"
-            label="${translate('appgen.collection')}"
-            auto-validate
-          ></paper-input>
-          <paper-input
-            name="title"
-            required
-            placeholder="${translate('appgen.title.label')}"
-            label="${translate('appgen.title.help')}"
-          ></paper-input>
-          <fieldset>
-            <legend>${translate('appgen.template.help')}</legend>
-            <paper-dropdown-menu
+      <form id="form" method="POST" accept="application/json" enctype="application/json">
+        <fieldset class="pb-fieldset">
+          <legend>${translate('document.selectODD')}</legend>
+          ${this.odds.map(
+            odd => html`
+              <label class="pb-checkbox">
+                <input
+                  type="checkbox"
+                  name="odd"
+                  .value="${odd.name}"
+                  ?checked=${Boolean(odd.checked)}
+                />
+                <span>${odd.label}</span>
+              </label>
+            `,
+          )}
+        </fieldset>
+
+        ${this._renderTextField({
+          id: 'uri',
+          name: 'uri',
+          type: 'url',
+          required: true,
+          placeholder: 'https://e-editiones.org/apps/my-simple-app',
+          label: translate('appgen.uri'),
+        })}
+        ${this._renderTextField({
+          id: 'abbrev',
+          name: 'abbrev',
+          pattern: '[a-zA-Z0-9-_]+',
+          required: true,
+          placeholder: translate('appgen.abbrev.placeholder'),
+          label: translate('appgen.abbrev.label'),
+        })}
+        ${this._renderTextField({
+          id: 'data-collection',
+          name: 'data-collection',
+          pattern: '[a-zA-Z0-9-_/]+',
+          placeholder: 'data',
+          label: translate('appgen.collection'),
+        })}
+        ${this._renderTextField({
+          id: 'title',
+          name: 'title',
+          required: true,
+          placeholder: translate('appgen.title.label'),
+          label: translate('appgen.title.help'),
+        })}
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.template.help')}</legend>
+          <label class="pb-field" for="template">
+            <span class="pb-field__label">${translate('appgen.template.label')}</span>
+            <select
               id="template"
-              label="${translate('appgen.template.label')}"
+              class="pb-select"
               name="template"
+              .value=${this._templateValue || ''}
+              @change=${this._onTemplateChange}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                attr-for-selected="value"
-                selected="view.html"
-              >
-                ${this.templates.map(
-                  t => html`<paper-item value="${t.name}">${t.title}</paper-item>`,
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </fieldset>
-          <fieldset>
-            <legend>${translate('appgen.view.help')}</legend>
-            <paper-dropdown-menu
+              ${this.templates.map(t => html`<option value="${t.name}">${t.title}</option>`)}
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.view.help')}</legend>
+          <label class="pb-field" for="defaultView">
+            <span class="pb-field__label">${translate('appgen.label')}</span>
+            <select
               id="defaultView"
-              label="${translate('appgen.label')}"
+              class="pb-select"
               name="default-view"
+              .value=${this._defaultViewValue || ''}
+              @change=${this._onDefaultViewChange}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                selected="div"
-                attr-for-selected="value"
-              >
-                <paper-item value="div">${translate('appgen.view.div')}</paper-item>
-                <paper-item value="page">${translate('appgen.view.page')}</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </fieldset>
-          <fieldset>
-            <legend>${translate('appgen.index.help')}</legend>
-            <paper-dropdown-menu id="index" label="${translate('appgen.index.label')}" name="index">
-              <paper-listbox
-                slot="dropdown-content"
-                class="dropdown-content"
-                selected="tei:div"
-                attr-for-selected="value"
-              >
-                <paper-item value="tei:div">${translate('appgen.index.index-div')}</paper-item>
-                <paper-item value="tei:text">${translate('appgen.index.index-text')}</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </fieldset>
-          <fieldset>
-            <legend>${translate('appgen.account.user')}</legend>
-            <paper-input
-              name="owner"
-              required
-              placeholder="${translate('login.user')}"
-              label="${translate('appgen.account.owner')}"
-              auto-validate
-            ></paper-input>
-            <paper-input
-              name="password"
-              type="password"
-              required
-              placeholder="${translate('login.password')}"
-              label="${translate('appgen.account.password')}"
-              auto-validate
-            ></paper-input>
-          </fieldset>
-          <paper-button id="submit" @click="${this._doSubmit}"
-            ><iron-icon icon="save"></iron-icon> ${translate('appgen.submit')}</paper-button
-          >
-        </form>
-      </iron-form>
-      <paper-dialog id="dialog">
-        <h2>${translate('appgen.dialog.title')}</h2>
+              <option value="div">${translate('appgen.view.div')}</option>
+              <option value="page">${translate('appgen.view.page')}</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.index.help')}</legend>
+          <label class="pb-field" for="index">
+            <span class="pb-field__label">${translate('appgen.index.label')}</span>
+            <select
+              id="index"
+              class="pb-select"
+              name="index"
+              .value=${this._indexValue || ''}
+              @change=${this._onIndexChange}
+            >
+              <option value="tei:div">${translate('appgen.index.index-div')}</option>
+              <option value="tei:text">${translate('appgen.index.index-text')}</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="pb-fieldset">
+          <legend>${translate('appgen.account.user')}</legend>
+          ${this._renderTextField({
+            id: 'owner',
+            name: 'owner',
+            required: true,
+            placeholder: translate('login.user'),
+            label: translate('appgen.account.owner'),
+          })}
+          ${this._renderTextField({
+            id: 'password',
+            name: 'password',
+            type: 'password',
+            required: true,
+            placeholder: translate('login.password'),
+            label: translate('appgen.account.password'),
+          })}
+        </fieldset>
+        <button
+          id="submit"
+          class="pb-button pb-button--contained"
+          type="button"
+          @click="${this._doSubmit}"
+        >
+          <pb-icon icon="save"></pb-icon>
+          ${translate('appgen.submit')}
+        </button>
+      </form>
+      <pb-dialog id="dialog" title="${translate('appgen.dialog.title')}">
         <div id="dialogContent">
           ${this.error
             ? html`<div id="error">${this.error}</div>`
-            : html`<a href="${this.url}" target="_blank">
-                  <paper-button
-                    ><iron-icon icon="icons:open-in-new"></iron-icon> ${translate(
-                      'appgen.open',
-                    )}</paper-button
-                  >
+            : html`<a href="${this.url}" target="_blank" class="pb-button pb-button--text">
+                  <pb-icon icon="icons:open-in-new"></pb-icon>
+                  ${translate('appgen.open')}
                 </a>
                 <p>${translate('appgen.success')}</p>`}
         </div>
-        <div class="buttons">
-          <paper-button dialog-dismiss autofocus>${translate('dialogs.close')}</paper-button>
+        <div slot="footer" class="buttons">
+          <button class="pb-button pb-button--text" type="button" rel="prev" autofocus>
+            ${translate('dialogs.close')}
+          </button>
         </div>
-      </paper-dialog>
+      </pb-dialog>
     `;
   }
 
@@ -286,23 +395,73 @@ export class PbEditApp extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      paper-dropdown-menu {
-        width: 100%;
-        max-width: 864px;
-      }
-      fieldset {
-        margin-top: 16px;
-        margin-bottom: 16px;
+      .pb-fieldset {
+        margin: 16px 0;
         padding: 0;
         border: 0;
       }
-      legend {
+      .pb-fieldset legend {
         color: #909090;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
       }
-      paper-checkbox {
+      .pb-checkbox {
         display: block;
         margin-left: 20px;
         margin-top: 10px;
+        font-size: 0.95rem;
+        color: rgba(0, 0, 0, 0.87);
+        cursor: pointer;
+      }
+      .pb-checkbox input {
+        margin-right: 8px;
+      }
+      .pb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        margin-bottom: 1rem;
+        max-width: 864px;
+      }
+      .pb-field__label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.6);
+      }
+      .pb-input,
+      .pb-select {
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+        line-height: 1.4;
+      }
+      .pb-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .pb-input:focus,
+      .pb-select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
+      .pb-select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(0.6em + 2px),
+          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
       }
       paper-dialog {
         min-width: 420px;

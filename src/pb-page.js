@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
@@ -227,8 +227,22 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  get localeFallbackNs() {
+    // Expose a space-separated view of the current fallback namespaces
+    return this._localeFallbacks && this._localeFallbacks.length
+      ? this._localeFallbacks.join(' ')
+      : '';
+  }
+
   set localeFallbackNs(value) {
-    value.split(/\s+/).forEach(v => this._localeFallbacks.push(v));
+    // Replace (not append) to avoid uncontrolled growth when attribute re-applies
+    const next = (value || '')
+      .split(/\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    // Deduplicate while preserving order
+    const seen = new Set();
+    this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
   }
 
   disconnectedCallback() {
@@ -247,6 +261,12 @@ export class PbPage extends pbMixin(LitElement) {
       return;
     }
 
+    // Ensure attribute-provided endpoint is honored even before first update
+    const attrEndpoint = this.getAttribute('endpoint');
+    if (attrEndpoint) {
+      this.endpoint = attrEndpoint;
+    }
+
     registry.configure(
       this.urlPath === 'path',
       this.idHash,
@@ -257,10 +277,6 @@ export class PbPage extends pbMixin(LitElement) {
 
     this.endpoint = this.endpoint.replace(/\/+$/, '');
 
-    if (this.locales && this._localeFallbacks.indexOf('app') === -1) {
-      this._localeFallbacks.push('app');
-    }
-    this._localeFallbacks.push('common');
 
     const target = registry.state._target;
     if (target) {
@@ -312,14 +328,8 @@ export class PbPage extends pbMixin(LitElement) {
         template: this.template,
         apiVersion: this.apiVersion,
       });
-    } else if (this._i18nInstance) {
-      this.signalReady('pb-page-ready', {
-        endpoint: this.endpoint,
-        apiVersion: this.apiVersion,
-        template: this.template,
-        language: this._i18nInstance.language,
-      });
     }
+    // Note: If requireLanguage is true, pb-page-ready will be signaled after i18n initialization in firstUpdated()
   }
 
   firstUpdated() {
@@ -328,6 +338,7 @@ export class PbPage extends pbMixin(LitElement) {
     if (this.disabled) {
       return;
     }
+
 
     const slot = this.shadowRoot.querySelector('slot');
     slot.addEventListener(
@@ -342,7 +353,9 @@ export class PbPage extends pbMixin(LitElement) {
       { once: true },
     );
 
-    const defaultLocales = `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
+    const defaultLocales = this.endpoint 
+      ? `${this.toAbsoluteURL('resources/i18n/', this.endpoint)}{{ns}}/{{lng}}.json`
+      : `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
     console.log(
       '<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
       defaultLocales,
@@ -397,31 +410,38 @@ export class PbPage extends pbMixin(LitElement) {
       initTranslation(t);
       // initialized and ready to go!
       this._updateI18n(t);
-      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
-      if (this.requireLanguage && this.apiVersion) {
+      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
+      if (this.requireLanguage) {
         this.signalReady('pb-page-ready', {
           endpoint: this.endpoint,
           apiVersion: this.apiVersion,
           template: this.template,
-          language: this._i18nInstance.language,
+          language: this._i18nInstance?.language,
         });
       }
     });
 
+    // React to language change events by updating i18n and notifying listeners
     this.subscribeTo('pb-i18n-language', ev => {
       const { language } = ev.detail;
       this._i18nInstance.changeLanguage(language).then(t => {
         this._updateI18n(t);
-        this.emitTo('pb-i18n-update', { t, language: this._i18nInstance.language }, []);
+        this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
       }, []);
     });
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
     this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
-    this.unresolved = false;
+    // Avoid a Lit reactive update here; just remove the attribute instead.
+    this.removeAttribute('unresolved');
 
     console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
-    this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());
+    // Guard: some app-header implementations may not expose _notifyLayoutChanged
+    this.querySelectorAll('app-header').forEach(h => {
+      if (typeof h._notifyLayoutChanged === 'function') {
+        h._notifyLayoutChanged();
+      }
+    });
 
     typesetMath(this);
   }

@@ -6,10 +6,8 @@
 
     <title>pb-manage-odds Demo</title>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
     <script type="module" src="../src/pb-manage-odds.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-login.js"></script>
@@ -22,10 +20,15 @@
     <pb-demo-snippet>
         <template>
             <style type="text/css">
-            pb-download { margin-right: 10px; }
-            pb-progress { margin-bottom: 20px; }
+                pb-download {
+                    margin-right: 10px;
+                }
+
+                pb-progress {
+                    margin-bottom: 20px;
+                }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher">
+            <pb-page endpoint=".">
                 <pb-progress></pb-progress>
                 <pb-login id="login" group="tei"></pb-login>
                 <pb-restricted login="login" can-write>

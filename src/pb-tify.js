@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import 'tify';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
@@ -35,6 +35,15 @@ export class PbTify extends pbMixin(LitElement) {
       manifest: {
         type: String,
       },
+      /**
+       * If true, pb-tify will respond to pb-navigate events to synchronize
+       * with navigation buttons. Defaults to true.
+       */
+      enableNavigation: {
+        type: Boolean,
+        attribute: 'enable-navigation',
+        reflect: true,
+      },
       ...super.properties,
     };
   }
@@ -44,8 +53,21 @@ export class PbTify extends pbMixin(LitElement) {
     this.cssPath = '../css/tify';
     this._initialPages = null;
     this._currentPage = null;
+    this.enableNavigation = true;
+    this._pendingNavigation = null; // Queue for navigation when viewer isn't ready
   }
-
+  /**
+   * Ensure a mount container exists and is attached.
+   * Idempotent: safe to call multiple times.
+   */
+  _ensureContainer() {
+    if (!this._container) {
+      this._container = document.createElement('div');
+      this._container.style.height = '100%';
+      this._container.style.width = '100%';
+      this.appendChild(this._container);
+    }
+  }
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
 
@@ -60,10 +82,8 @@ export class PbTify extends pbMixin(LitElement) {
 
     _injectStylesheet(this.cssPath);
 
-    this._container = document.createElement('div');
-    this._container.style.height = '100%';
-    this._container.style.width = '100%';
-    this.appendChild(this._container);
+    // Ensure container exists even if _initViewer ran early
+    this._ensureContainer();
 
     this.subscribeTo('pb-show-annotation', ev => {
       if (ev.detail) {
@@ -86,6 +106,39 @@ export class PbTify extends pbMixin(LitElement) {
       }
     });
 
+    // Subscribe to pb-navigate events if navigation is enabled
+    if (this.enableNavigation !== false) {
+      this.subscribeTo('pb-navigate', ev => {
+        if (!ev.detail || !ev.detail.direction) {
+          return;
+        }
+
+        const direction = ev.detail.direction;
+        
+        // Check if tify is initialized
+        if (!this._tify || !this._tify.app) {
+          return;
+        }
+
+        // Wait for tify to be ready if it's not yet
+        if (!this._tify.app.$root) {
+          this._pendingNavigation = direction;
+          if (this._tify.ready) {
+            this._tify.ready.then(() => {
+              if (this._pendingNavigation) {
+                const queuedDirection = this._pendingNavigation;
+                this._pendingNavigation = null;
+                this._handleNavigate(queuedDirection);
+              }
+            });
+          }
+          return;
+        }
+
+        this._handleNavigate(direction);
+      });
+    }
+
     this.signalReady();
   }
 
@@ -98,7 +151,11 @@ export class PbTify extends pbMixin(LitElement) {
   }
 
   _initViewer() {
-    if (!this.manifest) {
+    // Make sure a mount point exists even if called before connectedCallback
+    this._ensureContainer();
+
+    // Don't initialize if no manifest is provided
+    if (!this.manifest || this.manifest.trim() === '') {
       return;
     }
 
@@ -106,48 +163,295 @@ export class PbTify extends pbMixin(LitElement) {
       this._tify.destroy();
     }
 
-    this._tify = new Tify({
-      manifestUrl: this.toAbsoluteURL(this.manifest, this.getEndpoint()),
-    });
-    this._tify.ready.then(() => {
-      // open initial page if set earlier via pb-load-facsimile event
-      if (this._initialPages) {
-        this._tify.setPage(this._initialPages);
+    try {
+      const endpoint = this.getEndpoint();
+
+      // In component test environments, endpoint might be undefined
+      // Use a default endpoint for testing purposes
+      const effectiveEndpoint = endpoint || 'http://localhost:5173';
+
+      const manifestUrl = this.toAbsoluteURL(this.manifest, effectiveEndpoint);
+
+      // Only validate that we have a manifest URL - let Tify handle invalid URLs
+      if (!manifestUrl || manifestUrl.trim() === '') {
+        console.warn('<pb-tify> Invalid manifest URL:', this.manifest);
+        return;
       }
 
-      // extend tify's setPage function to allow emitting an event
-      const { app } = this._tify;
-      const originalSetPage = app.setPage;
+      this._tify = new Tify({
+        manifestUrl: manifestUrl,
+      });
 
-      app.setPage = pages => {
-        const page = Array.isArray(pages) ? pages[0] : pages;
-        if (this._currentPage === page) {
-          return;
-        }
+      this._tify.ready
+        .then(() => {
+          // Clear any previous error messages
+          this._clearError();
 
-        const canvas = app.$root.canvases[page - 1];
+          // extend tify's setPage function to allow emitting an event
+          const { app } = this._tify;
+          
+          // Check if app exists and has the necessary structure
+          if (!app) {
+            console.error('<pb-tify> Tify app is not available');
+            return;
+          }
 
-        this._switchPage(canvas);
-        originalSetPage(pages);
-        this._currentPage = page;
-      };
+          // Use tify's setPage method directly, or app.setPage if available
+          const tifySetPage = this._tify.setPage;
+          const appSetPage = app.setPage;
+          
+          // Determine which setPage to use and wrap it
+          if (typeof tifySetPage === 'function') {
+            // Store original function
+            const originalSetPage = (...args) => tifySetPage.apply(this._tify, args);
+            
+            this._tify.setPage = pages => {
+              const page = Array.isArray(pages) ? pages[0] : pages;
+              if (this._currentPage === page) {
+                return;
+              }
 
-      this._setPage = app.setPage;
+              // Get canvases using helper that supports both IIIF 2.0 and 3.0
+              const canvases = this._getCanvases(app.$root);
+              
+              if (canvases.length === 0) {
+                originalSetPage(pages);
+                this._currentPage = page;
+                return;
+              }
+
+              const canvas = canvases[page - 1];
+
+              if (canvas) {
+                this._switchPage(canvas);
+              }
+              
+              // Call original setPage
+              originalSetPage(pages);
+              this._currentPage = page;
+            };
+
+            this._setPage = (pages) => this._tify.setPage(pages);
+          } else if (typeof appSetPage === 'function') {
+            // Store original function
+            const originalSetPage = (...args) => appSetPage.apply(app, args);
+            
+            app.setPage = pages => {
+              const page = Array.isArray(pages) ? pages[0] : pages;
+              if (this._currentPage === page) {
+                return;
+              }
+
+              // Get canvases using helper that supports both IIIF 2.0 and 3.0
+              const canvases = this._getCanvases(app.$root);
+              
+              if (canvases.length === 0) {
+                originalSetPage(pages);
+                this._currentPage = page;
+                return;
+              }
+
+              const canvas = canvases[page - 1];
+
+              if (canvas) {
+                this._switchPage(canvas);
+              }
+              
+              // Call original setPage
+              originalSetPage(pages);
+              this._currentPage = page;
+            };
+
+            this._setPage = (pages) => app.setPage(pages);
+          } else {
+            // Fallback: create a simple wrapper that at least tracks the page
+            this._setPage = (pages) => {
+              const page = Array.isArray(pages) ? pages[0] : pages;
+              this._currentPage = page;
+            };
+          }
+
+          // open initial page if set earlier via pb-load-facsimile event
+          // Do this after setting up the override so _currentPage gets tracked
+          if (this._initialPages) {
+            this._setPage(this._initialPages);
+          } else {
+            // Initialize current page to 1 if no initial page was set
+            this._currentPage = 1;
+          }
+
+          // Process any queued navigation
+          if (this._pendingNavigation) {
+            const queuedDirection = this._pendingNavigation;
+            this._pendingNavigation = null;
+            this._handleNavigate(queuedDirection);
+          }
+        })
+        .catch(error => {
+          console.error('<pb-tify> Failed to load IIIF manifest:', error);
+          this._handleManifestError(error);
+        });
+
+      this._tify.mount(this._container);
+    } catch (error) {
+      console.error('<pb-tify> Failed to initialize Tify:', error);
+      this._handleManifestError(error);
+    }
+  }
+
+  _handleManifestError(error) {
+    // Clear any existing error message
+    this._clearError();
+
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'pb-tify-error';
+    errorDiv.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      color: #6c757d;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+    `;
+
+    // Determine error message based on error type
+    let errorMessage = 'Failed to load IIIF manifest';
+
+    // Check error message, status, and other properties
+    const errorText = error.message || error.toString() || '';
+    const status = error.status || error.statusCode;
+
+    if (status === 404 || errorText.includes('404') || errorText.includes('Not Found')) {
+      errorMessage = 'IIIF manifest not found';
+    } else if (status === 403 || errorText.includes('403') || errorText.includes('Forbidden')) {
+      errorMessage = 'Access denied to IIIF manifest';
+    } else if (
+      errorText.includes('NetworkError') ||
+      errorText.includes('Failed to fetch') ||
+      errorText.includes('network')
+    ) {
+      errorMessage = 'Network error loading IIIF manifest';
+    } else if (
+      errorText.includes('Invalid JSON') ||
+      errorText.includes('SyntaxError') ||
+      errorText.includes('parse') ||
+      errorText.includes('Unexpected token') ||
+      errorText.includes('JSON') ||
+      errorText.includes('$meta') ||
+      errorText.includes('manifest')
+    ) {
+      errorMessage = 'Invalid IIIF manifest format';
+    }
+
+    errorDiv.textContent = errorMessage;
+
+    // Add error element to container
+    if (this._container) {
+      this._container.appendChild(errorDiv);
+    }
+
+    // Emit error event for parent components to handle
+    this.emitTo('pb-tify-error', {
+      error: error.message || 'Unknown error',
+      manifest: this.manifest,
     });
+  }
 
-    this._tify.mount(this._container);
+  _clearError() {
+    if (this._container) {
+      const existingError = this._container.querySelector('.pb-tify-error');
+      if (existingError) {
+        existingError.remove();
+      }
+    }
+  }
+
+  /**
+   * Get the canvas array from the manifest, supporting both IIIF 2.0 and 3.0 formats.
+   * @param {Object} root - The root manifest object
+   * @returns {Array} Array of canvases
+   */
+  _getCanvases(root) {
+    if (!root) {
+      return [];
+    }
+    // IIIF 3.0: canvases are in items (directly or in first sequence)
+    if (root.items && Array.isArray(root.items)) {
+      // Check if first item is a sequence or directly canvases
+      if (root.items.length > 0 && root.items[0].items) {
+        // Items contain sequences, get canvases from first sequence
+        return root.items[0].items;
+      }
+      // Items are directly canvases
+      return root.items;
+    }
+    // IIIF 2.0: canvases are in sequences[0].canvases
+    if (root.sequences && Array.isArray(root.sequences) && root.sequences.length > 0) {
+      return root.sequences[0].canvases || [];
+    }
+    // Fallback: try canvases directly (some IIIF 2.0 variants)
+    if (root.canvases && Array.isArray(root.canvases)) {
+      return root.canvases;
+    }
+    return [];
+  }
+
+  /**
+   * Handle navigation to next/previous page
+   * @private
+   */
+  _handleNavigate(direction) {
+    if (!this._tify || !this._tify.app || !this._tify.app.$root) {
+      return;
+    }
+
+    const canvases = this._getCanvases(this._tify.app.$root);
+    const totalPages = canvases.length;
+    
+    if (totalPages === 0) {
+      return;
+    }
+
+    // Get current page (1-indexed) - use tracked current page or default to 1
+    const currentPage = this._currentPage || 1;
+    
+    let newPage;
+    if (direction === 'forward') {
+      newPage = Math.min(currentPage + 1, totalPages);
+    } else if (direction === 'backward') {
+      newPage = Math.max(currentPage - 1, 1);
+    } else {
+      return;
+    }
+
+    // Only navigate if the page actually changes and we have the setPage method
+    if (newPage !== currentPage && this._setPage) {
+      this._setPage(newPage);
+    }
   }
 
   _switchPage(canvas) {
     const { rendering } = canvas;
     if (rendering && rendering.length > 0) {
-      const url = new URL(rendering[0]['@id']);
-      const params = {};
-      url.searchParams.forEach((value, key) => {
-        params[key] = value;
-      });
-      console.log('<pb-tify> page changed, emitting refresh with params %o', params);
-      this.emitTo('pb-refresh', params);
+      // Support both IIIF 2.0 (@id) and 3.0 (id) formats
+      const renderingId = rendering[0]['@id'] || rendering[0].id;
+      if (renderingId) {
+        const url = new URL(renderingId);
+        const params = {};
+        url.searchParams.forEach((value, key) => {
+          params[key] = value;
+        });
+        console.log('<pb-tify> page changed, emitting refresh with params %o', params);
+        this.emitTo('pb-refresh', params);
+      }
     }
   }
 

@@ -1,65 +1,68 @@
 <html>
-    <head>
-        <title>Using pb-select</title>
-        <link rel="stylesheet" href="demo.css">
-        <style>
-            pb-autocomplete {
-                margin-bottom: 20px;
-            }
-        </style>
-        <!--scripts-->
-        <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
-        <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-        <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
-        <script type="module" src="../node_modules/@polymer/iron-form/iron-form.js"></script>
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-select.js"></script>
-        <script type="module" src="../src/pb-lang.js"></script>        
-        <script type="module" src="../src/pb-i18n.js"></script>        
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <!--/scripts-->
-    </head>
-    <body>
-        <h1>Use pb-select with i18n and iron-form</h1>
-        
-        <p>This demo checks if option and selection labels are properly translated.</p>
 
-        <pb-demo-snippet>
-            <template>
-                <pb-page language="fr">
-                    <pb-lang label="language" selected="en">
-                        <paper-item value="tr">Türkçe</paper-item>
-                        <paper-item value="en">English</paper-item>
-                        <paper-item value="fr">Français</paper-item>
-                        <paper-item value="sl">Slovenščina</paper-item>
-                    </pb-lang>
-        
-                    <iron-form id="form">
-                        <form action="">
-                            <pb-select name="format" value="latex" multi>
-                                <paper-item value="latex"><pb-i18n key="menu.download.pdf-latex">untranslated</pb-i18n></paper-item>
-                                <paper-item value="fo"><pb-i18n key="menu.download.pdf-fo">untranslated</pb-i18n></paper-item>
-                                <paper-item value="epub"><pb-i18n key="menu.download.epub-download">untranslated</pb-i18n></paper-item>
-                            </pb-select>
+<head>
+    <title>Using pb-select</title>
+    <link rel="stylesheet" href="demo.css">
+    <style>
+        pb-autocomplete {
+            margin-bottom: 20px;
+        }
+    </style>
+    <!--scripts-->
+    
 
-                            <button type="submit"><paper-button>Submit</paper-button></button>
-                        </form>
-                    </iron-form>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-select.js"></script>
+    <script type="module" src="../src/pb-lang.js"></script>
+    <script type="module" src="../src/pb-i18n.js"></script>
+    <!--/scripts-->
+</head>
 
-                    <p>Parameters which would be sent: <code id="output"></code></p>
-                </pb-page>
-            
+<body>
+    <h1>Use pb-select with i18n</h1>
 
-                <script>
-                    const form = document.getElementById('form');
-                    form.addEventListener('iron-form-submit', (ev) => {
-                        ev.preventDefault();
-                        const data = JSON.stringify(form.serializeForm());
-                        document.getElementById('output').innerHTML = data;
-                    });
+    <p>This demo checks if option and selection labels are properly translated.</p>
+
+    <pb-demo-snippet>
+        <template>
+            <pb-page language="fr">
+                <pb-lang label="language" selected="en">
+                    <option value="tr">Türkçe</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="sl">Slovenščina</option>
+                </pb-lang>
+
+                <form action="" id="form">
+                    <pb-select name="format" value="latex" multi>
+                        <option value="latex"><pb-i18n
+                                key="menu.download.pdf-latex">untranslated</pb-i18n></option>
+                        <option value="fo"><pb-i18n
+                                key="menu.download.pdf-fo">untranslated</pb-i18n></option>
+                        <option value="epub"><pb-i18n
+                                key="menu.download.epub-download">untranslated</pb-i18n></option>
+                    </pb-select>
+
+                    <button type="submit" class="pb-button pb-button--contained">Submit</button>
+                </form>
+
+                <p>Parameters which would be sent: <code id="output"></code></p>
+                <script type="module">
+                  const form = document.getElementById('form')
+                  const output = document.getElementById('output')
+                  if (form && output) {
+                    form.addEventListener('submit', (ev) => {
+                      ev.preventDefault()
+                      const params = new URLSearchParams(new FormData(form)).toString()
+                      output.textContent = params
+                    })
+                  }
                 </script>
-            </template>
-        </pb-demo-snippet>
-       
-    </body>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+
+</body>
+
 </html>

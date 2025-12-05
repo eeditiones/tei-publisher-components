@@ -1,0 +1,76 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@type": "sc:Manifest",
+  "@id": "https://example.com/manifest.json",
+  "label": "Test IIIF Manifest",
+  "description": "A test manifest for pb-tify component testing",
+  "sequences": [
+    {
+      "@type": "sc:Sequence",
+      "@id": "https://example.com/sequence1",
+      "label": "Test Sequence",
+      "canvases": [
+        {
+          "@type": "sc:Canvas",
+          "@id": "https://example.com/canvas1",
+          "label": "Canvas 1",
+          "width": 1000,
+          "height": 1500,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@type": "dctypes:Image",
+                "@id": "https://example.com/image1.jpg",
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://example.com/image1",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "https://example.com/canvas1"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "https://example.com/canvas1/rendering",
+              "format": "text/html",
+              "label": "Canvas 1 Rendering"
+            }
+          ]
+        },
+        {
+          "@type": "sc:Canvas",
+          "@id": "https://example.com/canvas2",
+          "label": "Canvas 2",
+          "width": 1000,
+          "height": 1500,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@type": "dctypes:Image",
+                "@id": "https://example.com/image2.jpg",
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "https://example.com/image2",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "https://example.com/canvas2"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "https://example.com/canvas2/rendering",
+              "format": "text/html",
+              "label": "Canvas 2 Rendering"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

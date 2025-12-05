@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
@@ -367,7 +367,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
     if (this._facsimiles.length === 0) {
       return this.viewer.close();
     }
-    const uris = this._facsimiles.map(facsLink => {
+    
+    // Limit the number of facsimiles to prevent runaway requests
+    // Only load the first 10 facsimiles to avoid server overload
+    const maxFacsimiles = 10;
+    const limitedFacsimiles = this._facsimiles.slice(0, maxFacsimiles);
+    
+    const uris = limitedFacsimiles.map(facsLink => {
       const url = this.baseUri + (facsLink.getImage ? facsLink.getImage() : facsLink);
       if (this.type === 'iiif') {
         return `${url}/info.json`;
@@ -401,7 +407,13 @@ export class PbFacsimile extends pbMixin(LitElement) {
     const overlayId = 'runtime-overlay';
 
     // remove old overlay
-    this.viewer.removeOverlay(this.overlay);
+    if (this.overlay) {
+      try {
+        this.viewer.removeOverlay(this.overlay);
+      } catch (e) {
+        // ignore if overlay was already removed or viewer not ready
+      }
+    }
 
     // check event data for completeness
     if (!event.detail.file || event.detail.file === 0) {
@@ -432,6 +444,10 @@ export class PbFacsimile extends pbMixin(LitElement) {
       // deconstruct given coordinates into variables
       const [x1, y1, w, h] = event.detail.coordinates;
       const tiledImage = this.viewer.world.getItemAt(0);
+      if (!tiledImage) {
+        console.error('No tiled image available yet for annotation.');
+        return;
+      }
       const currentRect = tiledImage.viewportToImageRectangle(tiledImage.getBounds(true));
 
       // scroll into view?

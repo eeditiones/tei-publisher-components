@@ -1,6 +1,6 @@
-import { LitElement, css, html } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { pbMixin } from './pb-mixin';
+import { LitElement, html, css } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { pbMixin } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 
 /**
@@ -65,7 +65,7 @@ export class PbDialog extends themableMixin(pbMixin(LitElement)) {
         <article>
           <header>
             ${this.title ? unsafeHTML(this.title) : html`<slot name="title"></slot>`}
-            <button rel="prev" aria-label="Close"></button>
+            <button rel="prev" aria-label="Close" type="button"></button>
           </header>
           ${this.message ? unsafeHTML(this.message) : html`<slot></slot>`}
           <footer>

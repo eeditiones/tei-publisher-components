@@ -1,11 +1,8 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import { translate } from './pb-i18n.js';
 
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/iron-icons/iron-icons.js';
+import './pb-icon-button.js';
 
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
@@ -13,8 +10,6 @@ import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
  * represents an odd parameter element for editing
  *
  * @customElement
- *
- * @polymer
  */
 export class PbOddRenditionEditor extends LitElement {
   static get styles() {
@@ -37,10 +32,46 @@ export class PbOddRenditionEditor extends LitElement {
         color: var(--paper-grey-500);
       }
 
-      paper-dropdown-menu {
+      .pb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
       }
 
-      paper-icon-button {
+      .pb-field__label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .pb-select {
+        height: var(--pb-input-height, 48px);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        background: #fff;
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(0.6em + 2px),
+          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pb-select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
+      }
+
+      pb-icon-button {
         align-self: center;
       }
     `;
@@ -49,17 +80,14 @@ export class PbOddRenditionEditor extends LitElement {
   render() {
     return html`
       <div class="wrapper">
-        <paper-dropdown-menu label="Scope">
-          <paper-listbox
-            id="scopeList"
-            slot="dropdown-content"
-            selected="${this.scope}"
-            attr-for-selected="value"
-            @iron-select="${this._listchanged}"
-          >
-            ${this.scopes.map(scope => html` <paper-item value="${scope}">${scope}</paper-item> `)}
-          </paper-listbox>
-        </paper-dropdown-menu>
+        <div class="pb-field">
+          <span class="pb-field__label">Scope</span>
+          <select class="pb-select" .value=${this.scope || ''} @change=${this._handleScopeChange}>
+            ${this.scopes.map(
+              scope => html`<option value="${scope}">${this._displayScope(scope)}</option>`,
+            )}
+          </select>
+        </div>
         <div class="editor">
           <label>Rendition</label>
           <jinn-codemirror
@@ -70,11 +98,12 @@ export class PbOddRenditionEditor extends LitElement {
             @update="${this._handleCodeChange}"
           ></jinn-codemirror>
         </div>
-        <paper-icon-button
-          @click="${this._remove}"
+        <pb-icon-button
+          class="icon-button"
           icon="delete"
           title="delete this rendition"
-        ></paper-icon-button>
+          @click="${this._remove}"
+        ></pb-icon-button>
       </div>
 
       <slot></slot>
@@ -104,7 +133,8 @@ export class PbOddRenditionEditor extends LitElement {
     super();
     this.scopes = ['', 'before', 'after'];
     this.css = '';
-    this.scope = '';
+    const scopeAttr = this.getAttribute('scope');
+    this.scope = scopeAttr != null ? scopeAttr : '';
     this.selected = '';
     this._initialized = false;
   }
@@ -141,6 +171,15 @@ export class PbOddRenditionEditor extends LitElement {
 
   _handleCodeChange() {
     this.css = this.shadowRoot.getElementById('editor').value;
+    this._emitChange();
+  }
+
+  _handleScopeChange(event) {
+    this.scope = event.target.value;
+    this._emitChange();
+  }
+
+  _emitChange() {
     this.dispatchEvent(
       new CustomEvent('rendition-changed', {
         composed: true,
@@ -150,9 +189,11 @@ export class PbOddRenditionEditor extends LitElement {
     );
   }
 
-  _listchanged(e) {
-    const scopelist = this.shadowRoot.getElementById('scopeList');
-    this.scope = scopelist.selected;
+  _displayScope(scope) {
+    if (!scope) {
+      return '(default)';
+    }
+    return scope;
   }
 }
 customElements.define('pb-odd-rendition-editor', PbOddRenditionEditor);

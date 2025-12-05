@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 
@@ -81,7 +81,9 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   render() {
-    return html` <a id="button" @click="${this._handleClick}"><slot></slot></a> `;
+    return html`
+      <button id="button" @click="${this._handleClick}" type="button"><slot></slot></button>
+    `;
   }
 
   static get styles() {
