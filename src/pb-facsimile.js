@@ -202,7 +202,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       this._facsimiles.splice(insertAt, 0, element);
       this.loaded = this._facsimiles.length > 0;
 
-      this._facsimileObserver();
+      this._scheduleFacsimileObserver();
     });
     this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
   }
@@ -355,9 +355,22 @@ export class PbFacsimile extends pbMixin(LitElement) {
         }
       });
     }
-    this._facsimileObserver();
-    console.log('facsimile ready');
+    this._scheduleFacsimileObserver();
     this.signalReady();
+  }
+
+  /**
+   * A single transcription can have tons of pb-facs-link elements. Always debounce loading these
+   */
+  _scheduleFacsimileObserver() {
+    if (this._facsimileObserverScheduled) {
+      return;
+    }
+    this._facsimileObserverScheduled = true;
+    setTimeout(() => {
+      this._facsimileObserverScheduled = false;
+      this._facsimileObserver();
+    }, 0);
   }
 
   _facsimileObserver() {
@@ -365,7 +378,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
       return;
     }
     if (this._facsimiles.length === 0) {
-      return this.viewer.close();
+      this.viewer.close();
+      return;
     }
     const uris = this._facsimiles.map(facsLink => {
       const url = this.baseUri + (facsLink.getImage ? facsLink.getImage() : facsLink);
@@ -381,7 +395,16 @@ export class PbFacsimile extends pbMixin(LitElement) {
       };
     });
 
-    this.viewer.open(uris);
+    const deduplicatedUris = [];
+    const uriSet = new Set();
+    for (const uri of uris) {
+      const hashKey = JSON.stringify(uri);
+      if (!uriSet.has(hashKey)) {
+        uriSet.add(hashKey);
+        deduplicatedUris.push(uri);
+      }
+    }
+    this.viewer.open(deduplicatedUris);
     this.viewer.goToPage(0);
   }
 
