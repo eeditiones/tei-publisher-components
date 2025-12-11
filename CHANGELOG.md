@@ -1,3 +1,10 @@
+# [2.26.0-next-3.20](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.19...v2.26.0-next-3.20) (2025-12-11)
+
+
+### Bug Fixes
+
+* **pb-facsimile:** perform better with many pb-facs-links ([4766df1](https://github.com/eeditiones/tei-publisher-components/commit/4766df1da278b198ef9bdbea9d6ecbe7978753b8))
+
 # [2.26.0-next-3.19](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.18...v2.26.0-next-3.19) (2025-12-04)
 
 
