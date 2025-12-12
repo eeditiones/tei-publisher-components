@@ -356,6 +356,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._loading = false;
     this._lastRequestKey = null;
     this.static = null;
+    // Debouncing for refresh calls (Option 6: Hybrid approach)
+    this._refreshDebounceTimer = null;
+    this._pendingRefreshEvent = null;
+    this._hasLoadedOnce = false; // Track if view has loaded at least once
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -415,12 +419,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (this.fill) {
         newState.fill = this.fill;
       }
-      console.log('id: %s; state: %o', this.id, newState);
       registry.replace(this, newState);
 
       registry.subscribe(this, state => {
         this._setState(state);
-        this._refresh();
+        // Use debounced refresh to batch rapid registry changes
+        this._refresh(null); // Pass null as event, registry state will be used
       });
     }
     if (!this.waitFor) {
@@ -486,7 +490,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
               if (lastChild) {
                 const next = lastChild.getAttribute('data-next');
                 if (next && !this._content.querySelector(`[data-root="${next}"]`)) {
-                  console.log('<pb-view> Loading next page: %s', next);
                   this._checkChunks('forward');
                   this._load(next, 'forward');
                 }
@@ -518,7 +521,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         });
       });
     }
-    this.subscribeTo('pb-refresh', this._refresh.bind(this));
+    // Subscribe to pb-refresh events
+    // Application code should specify subscribe="transcription" (or other channel) via HTML attribute
+    // If no subscribe attribute is set, uses defaultChannel (following pb-mixin pattern)
+    // This makes components generic and reusable - applications configure the channel
+    this.subscribeTo('pb-refresh', (ev) => {
+      console.log('[pb-view] pb-refresh event received', JSON.stringify({
+        eventDetail: ev && ev.detail ? {
+          id: ev.detail.id,
+          root: ev.detail.root,
+          position: ev.detail.position
+        } : {},
+        currentNodeId: this.nodeId,
+        currentXmlId: this.xmlId,
+        subscribeAttr: this.subscribe || this.getAttribute('subscribe')
+      }, null, 2));
+      this._refresh(ev);
+    });
   }
 
   /**
@@ -579,59 +598,218 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _refresh(ev) {
-    if (ev && ev.detail) {
-      if (
-        ev.detail.hash &&
-        !this.noScroll &&
-        !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)
-      ) {
-        // if only the scroll target has changed: scroll to the element without reloading
-        this._scrollTarget = ev.detail.hash;
-        const target = this.shadowRoot.getElementById(this._scrollTarget);
-        if (target) {
-          setTimeout(() => target.scrollIntoView({ block: 'nearest' }));
-        }
+    // Store the pending event for debouncing
+    this._pendingRefreshEvent = ev;
+    
+    // Clear existing debounce timer
+    if (this._refreshDebounceTimer) {
+      clearTimeout(this._refreshDebounceTimer);
+    }
+    
+    // Debounce: wait 150ms to batch rapid changes
+    this._refreshDebounceTimer = setTimeout(() => {
+      this._doRefresh(this._pendingRefreshEvent);
+      this._pendingRefreshEvent = null;
+      this._refreshDebounceTimer = null;
+    }, 150);
+  }
+  
+  _doRefresh(ev) {
+    // Merge registry state with event details, prioritizing registry state
+    const registryState = registry.getState(this);
+    const eventDetail = ev && ev.detail ? ev.detail : {};
+    
+    console.log('[pb-view] _doRefresh called', JSON.stringify({ 
+      registryState: {
+        id: registryState.id,
+        root: registryState.root,
+        position: registryState.position
+      }, 
+      eventDetail: {
+        id: eventDetail.id,
+        root: eventDetail.root,
+        position: eventDetail.position
+      },
+      currentNodeId: this.nodeId,
+      currentXmlId: this.xmlId
+    }, null, 2));
+    
+    // Priority: registry state > event detail > current values
+    const mergedState = {
+      ...eventDetail,
+      ...registryState, // Registry state overrides event detail
+    };
+    
+    // Check if this is a metadata panel BEFORE processing any state changes
+    // Check pb-param elements for mode parameter
+    let modeParam = null;
+    const modeParamEl = this.querySelector && this.querySelector('pb-param[name="mode"]');
+    if (modeParamEl) {
+      modeParam = modeParamEl.getAttribute('value');
+    }
+    // Also check _additionalParams (might be set from registry or events)
+    if (!modeParam && this._additionalParams) {
+      modeParam = this._additionalParams.mode || this._additionalParams['user.mode'];
+    }
+    
+    const isMetadataPanel = modeParam === 'metadata-panel' || 
+                           (this.xpath && this.view === 'single' && !this.nodeId);
+    
+    // Skip refresh if this view has xpath (e.g., metadata panel) - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (this.xpath && !mergedState.xpath && this._hasLoadedOnce) {
+      // This view is bound to a specific xpath (like metadata), don't change it after initial load
+      return;
+    }
+    
+    // Skip refresh for metadata panel - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (isMetadataPanel && this._hasLoadedOnce) {
+      // Metadata panel shouldn't react to page navigation events (root/id changes)
+      // Only allow updates if explicitly changing xpath or view mode
+      // Filter out canvas IDs before checking
+      const hasCanvasId = mergedState.id && /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (mergedState.root || (mergedState.id && !hasCanvasId) || mergedState.position) {
+        // This is a page navigation event - skip it for metadata panel
         return;
       }
-      if (ev.detail.path) {
-        const doc = this.getDocument();
-        doc.path = ev.detail.path;
-      }
-    if (ev.detail.id !== undefined) {
-      this.xmlId = ev.detail.id;
     }
-      this.odd = ev.detail.odd || this.odd;
-      if (ev.detail.columnSeparator !== undefined) {
-        this.columnSeparator = ev.detail.columnSeparator;
+    
+    // For metadata panel, filter out canvas IDs from merged state
+    // Canvas IDs (like "A-N-38_004.jpg") should not affect metadata panel content
+    // Create a filtered copy if needed
+    let filteredState = mergedState;
+    if (isMetadataPanel && mergedState.id) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (looksLikeCanvasId) {
+        // Remove canvas ID from merged state for metadata panel
+        filteredState = { ...mergedState };
+        delete filteredState.id;
       }
-      this.view = ev.detail.view || this.getView();
-      this.fill = ev.detail.fill || this.fill;
-      if (ev.detail.xpath) {
-        this.xpath = ev.detail.xpath;
-        this.nodeId = null;
+    }
+    
+    // Use filteredState for the rest of the function (filteredState === mergedState if no filtering was needed)
+    const stateToUse = filteredState;
+    
+    // Handle hash-only changes (scroll without reload)
+    if (stateToUse.hash &&
+        !this.noScroll &&
+        !(stateToUse.id || stateToUse.path || stateToUse.odd || stateToUse.view || stateToUse.position)) {
+      this._scrollTarget = stateToUse.hash;
+      const target = this.shadowRoot.getElementById(this._scrollTarget);
+      if (target) {
+        setTimeout(() => target.scrollIntoView({ block: 'nearest' }));
       }
-      // clear nodeId if set to null
-      if (ev.detail.root === null) {
-        this.nodeId = null;
+      return;
+    }
+    
+    // Apply merged state
+    if (stateToUse.path) {
+      const doc = this.getDocument();
+      if (doc) {
+        doc.path = stateToUse.path;
+      }
+    }
+    
+    // Handle id parameter - distinguish between XML IDs and canvas IDs
+    // Canvas IDs (from pb-tify) have patterns like "A-N-38_004.jpg" or end with ".jpg"
+    // XML IDs are actual xml:id attributes in the TEI document
+    if (stateToUse.id !== undefined) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(stateToUse.id));
+      if (!looksLikeCanvasId) {
+        // It's a real XML ID, use it
+        this.xmlId = stateToUse.id;
       } else {
-        this.nodeId =
-          (ev.detail.position !== undefined ? ev.detail.position : ev.detail.root) || this.nodeId;
+        // If it's a canvas ID, store it in _additionalParams so getParameters can use it
+        // This ensures the request includes the correct canvas ID even though we don't set xmlId
+        this._additionalParams = this._additionalParams || {};
+        this._additionalParams.id = stateToUse.id;
       }
-
-      // check if the URL template needs any other parameters
-      // and set them on this._additionalParams
-      registry.pathParams.forEach(key => {
-        this._additionalParams[key] = ev.detail[key];
-      });
-
-      if (!this.noScroll) {
-        this._scrollTarget = ev.detail.hash;
-      }
+      // If it's a canvas ID, don't set xmlId - use root/position for navigation instead
     }
+    
+    this.odd = stateToUse.odd || this.odd;
+    
+    if (stateToUse.columnSeparator !== undefined) {
+      this.columnSeparator = stateToUse.columnSeparator;
+    }
+    
+    this.view = stateToUse.view || this.getView();
+    this.fill = stateToUse.fill || this.fill;
+    
+    if (stateToUse.xpath) {
+      this.xpath = stateToUse.xpath;
+      this.nodeId = null;
+    }
+    
+    // Handle root/position (prioritize registry state)
+    console.log('[pb-view] _doRefresh: handling root/position', JSON.stringify({ 
+      root: stateToUse.root, 
+      position: stateToUse.position,
+      currentNodeId: this.nodeId,
+      willUpdate: stateToUse.root !== null || stateToUse.position !== undefined
+    }, null, 2));
+    
+    let newNodeId = this.nodeId;
+    if (stateToUse.root === null) {
+      newNodeId = null;
+    } else {
+      newNodeId = (stateToUse.position !== undefined ? stateToUse.position : stateToUse.root) || this.nodeId;
+    }
+    
+    // Check if nodeId actually changed - if not, skip loading to avoid unnecessary requests
+    const nodeIdChanged = newNodeId !== this.nodeId;
+    console.log('[pb-view] _doRefresh: checking if nodeId changed', JSON.stringify({ 
+      oldNodeId: this.nodeId, 
+      newNodeId, 
+      nodeIdChanged,
+      willLoad: nodeIdChanged
+    }, null, 2));
+    
+    if (!nodeIdChanged && this._hasLoadedOnce) {
+      // NodeId hasn't changed and we've already loaded once - skip loading
+      // This prevents unnecessary /api/parts/ requests when navigation doesn't actually change the content
+      console.log('[pb-view] _doRefresh: skipping _load - nodeId unchanged', { 
+        nodeId: this.nodeId,
+        hasLoadedOnce: this._hasLoadedOnce
+      });
+      
+      // Still update other properties that might have changed
+      registry.pathParams.forEach(key => {
+        if (stateToUse[key] !== undefined) {
+          this._additionalParams[key] = stateToUse[key];
+        }
+      });
+      
+      if (!this.noScroll) {
+        this._scrollTarget = stateToUse.hash;
+      }
+      
+      this._updateStyles();
+      return;
+    }
+    
+    // NodeId changed or first load - update and load
+    this.nodeId = newNodeId;
+
+    // Check if the URL template needs any other parameters
+    // For metadata panel, canvas IDs are already filtered out in filteredState
+    registry.pathParams.forEach(key => {
+      if (stateToUse[key] !== undefined) {
+        this._additionalParams[key] = stateToUse[key];
+      }
+    });
+
+    if (!this.noScroll) {
+      this._scrollTarget = stateToUse.hash;
+    }
+    
     this._updateStyles();
     if (this.infiniteScroll) {
       this._clear();
     }
+    
+    console.log('[pb-view] _doRefresh: calling _load', JSON.stringify({ nodeId: this.nodeId }, null, 2));
     this._load(this.nodeId);
   }
 
@@ -673,12 +851,31 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // De-duplicate identical requests to avoid hammering the backend
     const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
     const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
+    console.log('[pb-view] _doLoad: checking request', JSON.stringify({
+      reqKey,
+      lastRequestKey: this._lastRequestKey,
+      willSkip: this._lastRequestKey === reqKey,
+      params: {
+        root: params.root,
+        nodeId: params.nodeId,
+        id: params.id
+      }
+    }, null, 2));
     if (this._lastRequestKey === reqKey) {
       // nothing changed; unlock and skip
+      console.log('[pb-view] _doLoad: skipping duplicate request', { reqKey });
       this._loading = false;
       return;
     }
     this._lastRequestKey = reqKey;
+    console.log('[pb-view] _doLoad: proceeding with request', JSON.stringify({
+      reqKey,
+      params: {
+        root: params.root,
+        nodeId: params.nodeId,
+        id: params.id
+      }
+    }, null, 2));
 
     this.emitTo('pb-start-update', params);
 
@@ -716,7 +913,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     let url = `${this.getEndpoint()}/${this.url}`;
-    console.log('<pb-view> Base URL:', url);
 
     if (this.minApiVersion('1.0.0')) {
       // Encode the entire path as a single unit for the API
@@ -724,7 +920,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (doc && doc.path) {
         const docPath = encodeURIComponent(doc.path);
         url += `/${docPath}/json`;
-        console.log('<pb-view> Final URL:', url);
       } else {
         console.warn('<pb-view> No document path available for URL construction');
         return;
@@ -733,7 +928,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     loadContent.url = url;
     loadContent.params = params;
+    console.log('[pb-view] _doLoad: making request', JSON.stringify({
+      url,
+      params: {
+        root: params.root,
+        nodeId: params.nodeId,
+        id: params.id
+      }
+    }, null, 2));
     loadContent.generateRequest().catch((error) => {
+      console.error('[pb-view] _doLoad: request failed', error);
       // Error handled by @error event listener
     });
   }
@@ -767,7 +971,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       file = index[url];
     }
 
-    console.log('<pb-view> Static lookup %s: %s', url, file);
     if (!file) {
       console.warn('<pb-view> No static mapping found for %s', url);
       const fallback = Object.values(index)[0];
@@ -793,7 +996,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _handleError() {
-    console.error('<pb-view> _handleError called');
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
@@ -822,6 +1024,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const loader = this.shadowRoot.getElementById('loadContent');
     const resp = loader.lastResponse;
 
+    console.log('[pb-view] _handleContent: received response', JSON.stringify({
+      hasResponse: !!resp,
+      hasError: !!(resp && resp.error),
+      error: resp && resp.error,
+      root: resp && resp.root,
+      params: loader && loader.params ? {
+        root: loader.params.root,
+        nodeId: loader.params.nodeId,
+        id: loader.params.id
+      } : null
+    }, null, 2));
+
     if (!resp) {
       this._loading = false;
       console.error('<pb-view> No response received');
@@ -837,7 +1051,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
 
-    console.log('<pb-view> Processing response content:', resp);
+    console.log('[pb-view] _handleContent: replacing content', JSON.stringify({
+      root: resp.root,
+      hasContent: !!(resp.content || resp.html)
+    }, null, 2));
     this._replaceContent(resp, loader.params._dir);
 
     this.animate();
@@ -885,6 +1102,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.emitTo('pb-end-update', null);
     // allow subsequent loads with new params
     this._loading = false;
+    // Mark that this view has loaded at least once
+    this._hasLoadedOnce = true;
   }
 
   _replaceContent(resp, direction) {
@@ -1005,7 +1224,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
     if (registry.hash) {
       const target = this.shadowRoot.getElementById(registry.hash.substring(1));
-      console.log('hash target: %o', target);
       if (target) {
         window.requestAnimationFrame(() =>
           setTimeout(() => {
@@ -1020,7 +1238,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const target = this.shadowRoot.getElementById(link.hash.substring(1));
     if (target) {
       ev.preventDefault();
-      console.log('<pb-view> Scrolling to element %s', target.id);
       target.scrollIntoView({ block: 'center', inline: 'nearest' });
     }
   }
@@ -1082,15 +1299,50 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   _getParameters() {
     const params = {};  // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
-      params[`user.${param.getAttribute('name')}`] = param.getAttribute('value');
+      const name = param.getAttribute('name');
+      const value = param.getAttribute('value');
+      // For metadata panel, filter out canvas IDs
+      if (name === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            return; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
+      params[`user.${name}`] = value;
     });
     // add parameters for features set with pb-toggle-feature
     for (const [key, value] of Object.entries(this._features)) {
+      // For metadata panel, filter out canvas IDs
+      if (key === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            continue; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
       params[`user.${key}`] = value;
     }
     // add parameters for user-defined parameters supplied via pb-link
     if (this._additionalParams) {
       for (const [key, value] of Object.entries(this._additionalParams)) {
+        // For metadata panel, filter out canvas IDs
+        if (key === 'id' || key === 'user.id') {
+          const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+          if (looksLikeCanvasId) {
+            // Check if this is a metadata panel
+            const modeParamEl = this.querySelector('pb-param[name="mode"]');
+            if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+              continue; // Skip canvas IDs for metadata panel
+            }
+          }
+        }
         params[key] = value;
       }
     }
@@ -1108,16 +1360,49 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       params.doc = doc.path;
     }
     params.odd = `${this.getOdd()}.odd`;
-    params.view = this.getView();
+    // For metadata panel, use 'single' view to ensure teiHeader is returned
+    // and don't set root parameter - it should return teiHeader, not a specific page
+    const modeParamEl = this.querySelector('pb-param[name="mode"]');
+    const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+    if (isMetadataPanel) {
+      params.view = 'single';
+    } else {
+      params.view = this.getView();
+    }
     params.fill = this.fill;
-    if (pos) {
+    if (pos && !isMetadataPanel) {
       params.root = pos;
     }
     if (this.xpath) {
       params.xpath = this.xpath;
     }
-    if (this.xmlId) {
-      params.id = this.xmlId;
+    // Check if we have an id in _additionalParams first (from registry/event, including canvas IDs)
+    // This takes precedence over xmlId because it's the most recent state
+    if (this._additionalParams && this._additionalParams.id) {
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this._additionalParams.id));
+        if (!looksLikeCanvasId) {
+          params.id = this._additionalParams.id;
+        }
+      } else {
+        params.id = this._additionalParams.id;
+      }
+    } else if (this.xmlId) {
+      // Fall back to xmlId if no id in _additionalParams
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this.xmlId));
+        if (!looksLikeCanvasId) {
+          params.id = this.xmlId;
+        }
+      } else {
+        params.id = this.xmlId;
+      }
     }
     if (!this.suppressHighlight && this.highlight) {
       params.highlight = 'yes';
