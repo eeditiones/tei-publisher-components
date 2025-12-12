@@ -1,0 +1,140 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@id": "http://localhost:5173/exist/apps/tei-publisher/api/iiif/test/F-rom.xml",
+  "@type": "sc:Manifest",
+  "label": "Shakespeare's Romeo and Juliet",
+  "description": "Test manifest for F-rom.xml demo",
+  "sequences": [
+    {
+      "@id": "http://localhost:5173/exist/apps/tei-publisher/api/iiif/test/F-rom.xml/sequence/normal",
+      "@type": "sc:Sequence",
+      "canvases": [
+        {
+          "@id": "http://localhost:5173/canvas/1",
+          "@type": "sc:Canvas",
+          "label": "Page 1",
+          "width": 300,
+          "height": 300,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "http://localhost:5173/image1.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 300,
+                "height": 300,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "http://localhost:5173/image1",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "http://localhost:5173/canvas/1"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:5173/exist/apps/tei-publisher/api/parts/test/F-rom.xml/html?root=1"
+            }
+          ]
+        },
+        {
+          "@id": "http://localhost:5173/canvas/2",
+          "@type": "sc:Canvas",
+          "label": "Page 2",
+          "width": 300,
+          "height": 300,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "http://localhost:5173/image2.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 300,
+                "height": 300,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "http://localhost:5173/image2",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "http://localhost:5173/canvas/2"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:5173/exist/apps/tei-publisher/api/parts/test/F-rom.xml/html?root=2"
+            }
+          ]
+        },
+        {
+          "@id": "http://localhost:5173/canvas/3",
+          "@type": "sc:Canvas",
+          "label": "Page 3",
+          "width": 72,
+          "height": 72,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "http://localhost:5173/image3.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 72,
+                "height": 72,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "http://localhost:5173/image3",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "http://localhost:5173/canvas/3"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:5173/exist/apps/tei-publisher/api/parts/test/F-rom.xml/html?root=3"
+            }
+          ]
+        },
+        {
+          "@id": "http://localhost:5173/canvas/4",
+          "@type": "sc:Canvas",
+          "label": "Page 4",
+          "width": 144,
+          "height": 144,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "http://localhost:5173/image4.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 144,
+                "height": 144,
+                "service": {
+                  "@context": "http://iiif.io/api/image/2/context.json",
+                  "@id": "http://localhost:5173/image4",
+                  "profile": "http://iiif.io/api/image/2/level2.json"
+                }
+              },
+              "on": "http://localhost:5173/canvas/4"
+            }
+          ],
+          "rendering": [
+            {
+              "@id": "http://localhost:5173/exist/apps/tei-publisher/api/parts/test/F-rom.xml/html?root=4"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

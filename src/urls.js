@@ -268,8 +268,20 @@ class Registry {
   }
 
   _commit(elem, newState, overwrite, replace) {
+    const oldState = { ...this.state };
     this.state = overwrite ? newState : { ...this.state, ...newState };
     const resolved = this.urlFromState();
+
+    console.log('[registry] _commit: committing state', {
+      oldState,
+      newState,
+      overwrite,
+      replace,
+      mergedState: this.state,
+      resolvedUrl: resolved.toString(),
+      resolvedHash: resolved.hash,
+      resolvedSearch: resolved.search
+    });
 
     const chs = getSubscribedChannels(elem);
     chs.forEach(channel => {
@@ -284,9 +296,11 @@ class Registry {
     if (replace) {
       window.history.replaceState(json, '', resolved);
       log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
+      console.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     } else {
       window.history.pushState(json, '', resolved);
       log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
+      console.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     }
   }
 
@@ -308,20 +322,46 @@ class Registry {
       }
     }
 
+    console.log('[registry] urlFromState: building URL from state', {
+      state: this.state,
+      idHash: this.idHash,
+      usePath: this.usePath,
+      urlPattern: this.urlPattern,
+      urlIgnore: Array.from(this.urlIgnore),
+      pathParams: Array.from(this.pathParams)
+    });
+
     for (const [param, value] of Object.entries(this.state)) {
       if (this.urlPattern) {
         // check if param should be ignored or is required by the URL template
         // fill up missing parameters by stripping potential "user." prefix
         const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
-        if (!(this.pathParams.has(normParam) || this.urlIgnore.has(normParam))) {
+        const shouldIgnore = this.pathParams.has(normParam) || this.urlIgnore.has(normParam);
+        console.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
+        if (!shouldIgnore) {
           setParam(value, normParam);
         }
       } else if (
         (param !== 'path' || !this.usePath) &&
-        (param !== 'id' || !this.idHash) &&
+        // Always include 'id' in query params for shareable URLs (hash is set separately below)
         !this.urlIgnore.has(param)
       ) {
-        setParam(value, param);
+        const willInclude = (param !== 'path' || !this.usePath) && !this.urlIgnore.has(param);
+        // Filter out unwanted default values that shouldn't be in URLs
+        // These are typically set by components during initialization but shouldn't pollute the URL
+        const isUnwantedDefault = (
+          (param === 'view' && value === 'single') ||
+          (param === 'odd' && value === 'teipublisher') ||
+          (param === 'panels' && typeof value === 'string' && value.split('.').length > 10) // Malformed panels (concatenated)
+        );
+        console.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
+        if (willInclude && !isUnwantedDefault) {
+          setParam(value, param);
+        } else if (isUnwantedDefault) {
+          console.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
+        }
+      } else {
+        console.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
       }
     }
 
@@ -345,7 +385,18 @@ class Registry {
 
     if (this.state.id && !this.urlPattern) {
       newUrl.hash = `#${this.state.id}`;
+      console.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
     }
+
+    console.log('[registry] urlFromState: final URL', {
+      url: newUrl.toString(),
+      search: newUrl.search,
+      hash: newUrl.hash,
+      hasIdParam: newUrl.searchParams.has('id'),
+      idParamValue: newUrl.searchParams.get('id'),
+      hasRootParam: newUrl.searchParams.has('root'),
+      rootParamValue: newUrl.searchParams.get('root')
+    });
 
     return newUrl;
   }
