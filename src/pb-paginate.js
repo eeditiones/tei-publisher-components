@@ -142,7 +142,7 @@ export class PbPaginate extends pbMixin(LitElement) {
         background-color: var(--pb-color-primary);
         color: var(--pb-color-inverse);
         border-radius: 50%;
-        min-width: 1em;
+        min-width: fit-content;
         width: 1em;
         line-height: 1em;
         padding: 0.4em;
