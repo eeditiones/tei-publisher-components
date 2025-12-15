@@ -82,6 +82,10 @@ export class PbTify extends pbMixin(LitElement) {
     this._cachedManifest = null; // Cache the fetched manifest
     this._lastSwitchPageTime = 0; // Track when we last called _switchPage to prevent rapid-fire events
     this._lastSwitchPageCanvasId = null; // Track the last canvas we switched to
+    // Simplified state management - single object replaces multiple flags
+    this._navigationState = null; // { source, targetPage, targetId, timestamp, isActive }
+    
+    // Legacy flags - kept for parallel implementation during refactor
     this._isUpdatingFromRegistry = false; // Flag to prevent loops when updating from registry
     this._initialLoadComplete = false; // Flag to prevent page monitoring during initial load
     this._lastCommittedId = null; // Track last committed page ID to prevent duplicates
@@ -160,11 +164,6 @@ export class PbTify extends pbMixin(LitElement) {
           
           // If Tify is already on the target page, ignore the event (no need to navigate)
           if (currentTifyPage === pageOrder) {
-            console.log('[pb-tify] pb-show-annotation: ignoring - Tify already on target page', {
-              pageOrder,
-              currentTifyPage,
-              reason: 'already on correct page'
-            });
             return;
           }
           
@@ -247,14 +246,6 @@ export class PbTify extends pbMixin(LitElement) {
                 // Only ignore if Tify is on the registry page (stale auto-trigger)
                 // If Tify is on a different page, allow navigation (user-initiated)
                 if (currentTifyPage === registryPageOrder) {
-                  console.log('[pb-tify] pb-show-annotation: ignoring - page ID does not match registry state and Tify is on registry page', {
-                    eventPageId: pageId,
-                    registryId: registryState.id,
-                    pageOrder,
-                    currentTifyPage,
-                    registryPageOrder,
-                    reason: 'pb-facs-link auto-triggered in newly loaded content'
-                  });
                   return;
                 }
                 // Otherwise allow it - Tify is on a different page, might be user navigation
@@ -370,6 +361,12 @@ export class PbTify extends pbMixin(LitElement) {
       this._vueStoreWatcherInterval = null;
     }
     
+    // Clean up Tify error watcher if it exists
+    if (this._tifyErrorWatcherInterval) {
+      clearInterval(this._tifyErrorWatcherInterval);
+      this._tifyErrorWatcherInterval = null;
+    }
+    
     // Cleanup is handled by registry automatically
   }
 
@@ -403,6 +400,12 @@ export class PbTify extends pbMixin(LitElement) {
     if (this._vueStoreWatcher && typeof this._vueStoreWatcher === 'function') {
       this._vueStoreWatcher();
       this._vueStoreWatcher = null;
+    }
+    
+    // Clean up Tify error watcher if it exists
+    if (this._tifyErrorWatcherInterval) {
+      clearInterval(this._tifyErrorWatcherInterval);
+      this._tifyErrorWatcherInterval = null;
     }
 
     try {
@@ -486,15 +489,25 @@ export class PbTify extends pbMixin(LitElement) {
           };
           waitForRoot();
         }).catch(error => {
-          console.error('<pb-tify> Error in ready promise:', error);
-          // Still try to proceed
-          this._onTifyFullyReady();
+          // Tify's ready promise rejects when manifest loading fails
+          // This is the proper way to detect manifest errors
+          console.error('<pb-tify> Tify ready promise rejected:', error);
+          this._handleManifestError(error);
         });
       } else {
         // If ready promise not available, proceed anyway after a short delay
         setTimeout(() => {
           this._onTifyFullyReady();
         }, 500);
+      }
+      
+      // Also watch Tify's error store for errors that might not reject the ready promise
+      // This provides additional error detection
+      if (this._tify && this._tify.app) {
+        // Wait a bit for Tify to initialize, then set up error watcher
+        setTimeout(() => {
+          this._setupTifyErrorWatcher();
+        }, 100);
       }
       
       // Mount Tify to the container
@@ -597,16 +610,6 @@ export class PbTify extends pbMixin(LitElement) {
           // Use bubble phase (not capture) so Tify handles the click first
           thumbnailContainer.addEventListener('click', (ev) => {
             const thumbnailIndex = findThumbnailIndex(ev);
-            console.log('[pb-tify] thumbnail click detected', {
-              thumbnailIndex,
-              eventTarget: ev.target,
-              currentFlags: {
-                _thumbnailNavigationInProgress: this._thumbnailNavigationInProgress,
-                _isCommitting: this._isCommitting,
-                _isUpdatingFromRegistry: this._isUpdatingFromRegistry,
-                _programmaticNavigationInProgress: this._programmaticNavigationInProgress
-              }
-            });
             
             if (thumbnailIndex >= 0) {
               // Get the root and canvases
@@ -616,14 +619,6 @@ export class PbTify extends pbMixin(LitElement) {
                 if (thumbnailIndex < canvases.length) {
                   const newPage = thumbnailIndex + 1; // Convert to 1-indexed
                   const canvas = canvases[thumbnailIndex];
-                  
-                  console.log('[pb-tify] thumbnail click: processing navigation', {
-                    thumbnailIndex,
-                    newPage,
-                    hasCanvas: !!canvas,
-                    canvasId: canvas?.['@id'] || canvas?.id,
-                    canvasLabel: canvas?.label
-                  });
                   
                   if (canvas) {
                     // Extract target page ID
@@ -659,19 +654,13 @@ export class PbTify extends pbMixin(LitElement) {
                       }
                     }
                     
-                    // Set flag and target to prevent checkPageChange and _handleUrlChange from interfering
+                    // Set navigation state for thumbnail navigation
+                    this._setNavigationState('thumbnail', newPage, targetId);
+                    
+                    // Legacy flags (kept for parallel implementation)
                     this._thumbnailNavigationInProgress = true;
                     this._targetPageId = targetId;
-                    // Also set _isCommitting to prevent _handleUrlChange from resetting URL
                     this._isCommitting = true;
-                    
-                    console.log('[pb-tify] thumbnail click: set navigation flags', {
-                      newPage,
-                      targetId,
-                      _thumbnailNavigationInProgress: this._thumbnailNavigationInProgress,
-                      _targetPageId: this._targetPageId,
-                      _isCommitting: this._isCommitting
-                    });
                     
                     // Let Tify handle the click first, then wait for it to actually change pages
                     // BEFORE committing to registry. This prevents checkPageChange from seeing a mismatch.
@@ -700,12 +689,6 @@ export class PbTify extends pbMixin(LitElement) {
                       
                       // Only proceed when Tify has actually changed to the target page
                       if (tifyCurrentPage === newPage) {
-                        console.log('[pb-tify] thumbnail click: Tify changed to target page, updating registry', {
-                          tifyCurrentPage,
-                          newPage,
-                          targetId,
-                          attempt: attempts
-                        });
                         // Tify has changed - now it's safe to update registry
                         // Get the current canvas
                         const root = this._getRootFromApp();
@@ -748,15 +731,11 @@ export class PbTify extends pbMixin(LitElement) {
                                   }
                                 }
                               }
-                              // Set _lastCommittedId BEFORE calling _updateUrlFromPage
-                              // This ensures _handleUrlChange can skip this commit when it's called synchronously
+                              // Update navigation state with actual canvas ID
                               if (canvasId) {
+                                this._setNavigationState('thumbnail', tifyCurrentPage, canvasId);
+                                // Legacy flag (kept for parallel implementation)
                                 this._lastCommittedId = canvasId;
-                                console.log('[pb-tify] thumbnail navigation: setting _lastCommittedId before commit', { 
-                                  canvasId, 
-                                  targetPageId: this._targetPageId,
-                                  newPage: tifyCurrentPage
-                                });
                               }
                               // Now update registry - Tify is already on the correct page
                               // This prevents checkPageChange from seeing a mismatch
@@ -772,14 +751,6 @@ export class PbTify extends pbMixin(LitElement) {
                         this._emitPbRefresh(canvas);
                       } else if (attempts < maxAttempts) {
                         // Tify hasn't changed yet, retry after a short delay
-                        if (attempts % 5 === 0) {
-                          console.log('[pb-tify] thumbnail click: waiting for Tify to change page', {
-                            tifyCurrentPage,
-                            newPage,
-                            attempt: attempts,
-                            maxAttempts
-                          });
-                        }
                         setTimeout(waitForTifyThenUpdate, 100);
                       } else {
                         // Give up after max attempts - update anyway
@@ -801,29 +772,28 @@ export class PbTify extends pbMixin(LitElement) {
                     // Do this outside the inner setTimeout so it starts counting immediately
                     // Use a longer delay to ensure everything has settled
                     setTimeout(() => {
+                      // Legacy flags (kept for parallel implementation)
                       this._thumbnailNavigationInProgress = false;
-                      // Set cooldown period to prevent handlePageChange from running immediately after
-                      // thumbnail navigation completes. This prevents bounce-back.
-                      this._thumbnailNavigationCooldown = Date.now() + 1000; // 1 second cooldown
-                      // Keep _targetPageId set a bit longer to prevent checkPageChange from interfering
+                      this._thumbnailNavigationCooldown = Date.now() + 1000;
                       setTimeout(() => {
                         this._targetPageId = null;
-                        // Clear _isCommitting after registry has fully settled
                         setTimeout(() => {
                           this._isCommitting = false;
-                          // Keep _lastCommittedId set longer to prevent _handleUrlChange from resetting Tify
-                          // This is critical for mixed navigation scenarios
-                          // Clear it after a longer delay to ensure all navigation has settled
-                          // Use an even longer delay to prevent bounce-back after mixed navigation
                           setTimeout(() => {
-                            // Clear cooldown after all navigation has settled
                             this._thumbnailNavigationCooldown = null;
                             this._lastCommittedId = null;
-                            console.log('[pb-tify] thumbnail navigation: cleared _lastCommittedId');
-                          }, 3000); // Increased from 2000ms to 3000ms for better protection against bounce-back
+                          }, 3000);
                         }, 500);
                       }, 500);
-                    }, 2000); // Increased to 2000ms to give Tify more time to settle
+                      
+                      // Clear navigation state
+                      if (this._navigationState && this._navigationState.source === 'thumbnail') {
+                        this._navigationState.isActive = false;
+                        setTimeout(() => {
+                          this._clearNavigationState();
+                        }, 500);
+                      }
+                    }, 2000);
                   }
                 }
               }
@@ -845,6 +815,25 @@ export class PbTify extends pbMixin(LitElement) {
             return;
           }
           
+          // CRITICAL: Check _lastCommittedId FIRST - this prevents bounce-back from our own commits
+          // This must be checked before navigation state because navigation state might be cleared
+          // while _lastCommittedId is still protecting against interference
+          if (this._lastCommittedId) {
+            const currentState = registry.getState(this);
+            // If the current state matches what we just committed, skip monitoring
+            // This prevents checkPageChange from seeing Tify is on the wrong page and resetting
+            if (currentState.id === this._lastCommittedId) {
+              return; // We just committed this, don't interfere
+            }
+          }
+          
+          // Use navigation state to check if we should skip
+          // If navigation is active, skip (interception or other source is handling it)
+          if (this._navigationState && this._navigationState.isActive) {
+            return;
+          }
+          
+          // Legacy flag checks (kept for parallel implementation)
           // Don't monitor if we're currently committing (prevents interference)
           if (this._isCommitting) {
             return;
@@ -957,7 +946,50 @@ export class PbTify extends pbMixin(LitElement) {
                                             currentState.id === this._lastCommittedId &&
                                             currentState.id !== null;
                   
-                  if (!urlMatches && !isTargetPage && !justCommitted && !isCommitting && !hasTargetPage && !thumbnailNav && !matchesLastCommit) {
+                  // Also check if we're trying to update to a page that matches what we just committed
+                  // This prevents checkPageChange from resetting when we just committed a page change via interception
+                  let canvasMatchesLastCommit = false;
+                  if (this._lastCommittedId && canvas) {
+                    const { rendering } = canvas;
+                    if (rendering && rendering.length > 0) {
+                      const renderingId = rendering[0]['@id'] || rendering[0].id;
+                      if (renderingId) {
+                        try {
+                          const url = new URL(renderingId, window.location.href);
+                          const canvasId = url.searchParams.get('id');
+                          if (canvasId === this._lastCommittedId) {
+                            canvasMatchesLastCommit = true;
+                          }
+                        } catch (e) {
+                          // Ignore
+                        }
+                      }
+                    }
+                    // Also check by generating pageId from canvas label
+                    if (!canvasMatchesLastCommit && canvas.label) {
+                      const label = canvas.label.none || canvas.label.en || canvas.label;
+                      const labelStr = Array.isArray(label) ? label[0] : label;
+                      if (labelStr) {
+                        const pathParts = window.location.pathname.split('/');
+                        let docId = null;
+                        for (let i = pathParts.length - 1; i >= 0; i--) {
+                          if (pathParts[i] && pathParts[i] !== 'apps' && pathParts[i] !== 'exist') {
+                            docId = pathParts[i];
+                            break;
+                          }
+                        }
+                        if (docId) {
+                          const pageNum = String(labelStr).padStart(3, '0');
+                          const pageId = `${docId}_${pageNum}.jpg`;
+                          if (pageId === this._lastCommittedId) {
+                            canvasMatchesLastCommit = true;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  
+                  if (!urlMatches && !isTargetPage && !justCommitted && !isCommitting && !hasTargetPage && !thumbnailNav && !matchesLastCommit && !canvasMatchesLastCommit) {
                     // Extract target page ID for Tify button clicks
                     const { rendering } = canvas;
                     let targetId = null;
@@ -1205,26 +1237,13 @@ export class PbTify extends pbMixin(LitElement) {
             
             // PRIORITY 1: Check hash first (most reliable - e.g., #A-N-38_004.jpg)
             const hash = window.location.hash;
-            console.log('[pb-tify] _onTifyFullyReady: checking hash for initial page', {
-              hash,
-              canvasCount,
-              stateId: state.id,
-              stateRoot: state.root
-            });
             if (hash) {
               const hashMatch = hash.match(/_(\d{2,3})\./);
               if (hashMatch) {
                 const pageNum = parseInt(hashMatch[1], 10);
-                console.log('[pb-tify] _onTifyFullyReady: hash matched, extracted page number', {
-                  hash,
-                  pageNum,
-                  isValid: pageNum >= 1 && pageNum <= canvasCount
-                });
                 if (pageNum >= 1 && pageNum <= canvasCount) {
                   initialPage = pageNum;
                 }
-              } else {
-                console.log('[pb-tify] _onTifyFullyReady: hash present but no page number match', { hash });
               }
             }
             
@@ -1291,16 +1310,6 @@ export class PbTify extends pbMixin(LitElement) {
             const hasUrlPage = (hash && initialPage === validPage) || (state.id && initialPage === validPage);
             const hasHashOrId = (hash && hash.length > 1) || (state.id && state.id.length > 0);
             
-            console.log('[pb-tify] _onTifyFullyReady: checking if should commit', {
-              hash,
-              stateId: state.id,
-              initialPage,
-              validPage,
-              hasUrlPage,
-              hasHashOrId,
-              canvasCount
-            });
-            
             // Always commit if we have a hash or state.id to normalize the URL
             // This ensures shareable URLs have id in both query params and hash
             // We commit even if initialPage doesn't match validPage, as long as we have a hash/id
@@ -1319,15 +1328,6 @@ export class PbTify extends pbMixin(LitElement) {
                 // Directly commit to ensure id is in query params (registry will also set hash)
                 // This ensures shareable URLs have id in both query params and hash
                 const idToCommit = state.id || (hash ? hash.substring(1) : null);
-                console.log('[pb-tify] _onTifyFullyReady: preparing to commit id for shareable URL', {
-                  stateId: state.id,
-                  hash,
-                  idToCommit,
-                  stateRoot: state.root,
-                  currentUrl: window.location.href,
-                  currentSearch: window.location.search,
-                  currentHash: window.location.hash
-                });
                 
                 if (idToCommit) {
                   // Build commit state - only include root if it exists (don't set to null)
@@ -1336,23 +1336,9 @@ export class PbTify extends pbMixin(LitElement) {
                     commitState.root = state.root;
                   }
                   
-                  console.log('[pb-tify] _onTifyFullyReady: calling registry.replace IMMEDIATELY', {
-                    commitState,
-                    registryStateBefore: { ...registry.state },
-                    registryIdHash: registry.idHash,
-                    registryUrlIgnore: Array.from(registry.urlIgnore)
-                  });
-                  
                   // Use replace to avoid adding to history during initial load
                   // Do this IMMEDIATELY, not in a setTimeout, so the URL is correct right away
                   registry.replace(this, commitState);
-                  
-                  console.log('[pb-tify] _onTifyFullyReady: after registry.replace', {
-                    url: window.location.href,
-                    search: window.location.search,
-                    hash: window.location.hash,
-                    registryStateAfter: { ...registry.state }
-                  });
                 }
               }
               
@@ -1364,12 +1350,28 @@ export class PbTify extends pbMixin(LitElement) {
               // This will update the URL with root if it wasn't available initially
               // Use async IIFE to properly await the async function
               (async () => {
-                console.log('[pb-tify] _onTifyFullyReady: calling _updateUrlFromPage to fetch root');
                 await this._updateUrlFromPage(canvas);
               })();
               
               // Wait for Tify to actually change pages, then emit refresh
               const verifyAndEmit = (attempts = 0) => {
+                // CRITICAL: Check if user has already navigated to a different page
+                // If so, skip emitting pb-refresh to prevent overwriting user navigation
+                const currentRegistryState = registry.getState(this);
+                if (currentRegistryState.id) {
+                  // Try to extract page number from registry state
+                  const registryPageMatch = currentRegistryState.id.match(/_(\d{2,3})\./);
+                  if (registryPageMatch) {
+                    const registryPageNum = parseInt(registryPageMatch[1], 10);
+                    // If registry has a different page than what we're trying to set, user has navigated
+                    if (registryPageNum !== validPage) {
+                      this._isUpdatingFromRegistry = false;
+                      this._initialLoadComplete = true;
+                      return; // Don't emit - user has already navigated
+                    }
+                  }
+                }
+                
                 // Check if Tify is on the correct page
                 let tifyPage = null;
                 if (this._tify && this._tify.viewer) {
@@ -1399,7 +1401,20 @@ export class PbTify extends pbMixin(LitElement) {
                   // Not yet, retry (up to 20 attempts = 6 seconds)
                   setTimeout(() => verifyAndEmit(attempts + 1), 300);
                 } else {
-                  // Give up - emit refresh anyway so transcription updates
+                  // Give up - but check registry again before emitting
+                  const finalRegistryState = registry.getState(this);
+                  if (finalRegistryState.id) {
+                    const finalRegistryPageMatch = finalRegistryState.id.match(/_(\d{2,3})\./);
+                    if (finalRegistryPageMatch) {
+                      const finalRegistryPageNum = parseInt(finalRegistryPageMatch[1], 10);
+                      if (finalRegistryPageNum !== validPage) {
+                        this._isUpdatingFromRegistry = false;
+                        this._initialLoadComplete = true;
+                        return; // Don't emit - user has navigated
+                      }
+                    }
+                  }
+                  // Registry matches or no registry state - emit refresh
                   this._isUpdatingFromRegistry = false;
                   this._initialLoadComplete = true;
                   this._emitPbRefresh(canvases[validPage - 1]);
@@ -1458,11 +1473,6 @@ export class PbTify extends pbMixin(LitElement) {
     // Prevent duplicate setup - check if watcher is already set up
     // This prevents multiple intervals from being created if _setupVueStoreWatcher is called multiple times
     if (this._vueStoreWatcherInterval) {
-      // Already set up, don't set up again
-      console.log('[pb-tify] _setupVueStoreWatcher: already set up, skipping duplicate setup', {
-        isRetry,
-        hasInterval: !!this._vueStoreWatcherInterval
-      });
       return;
     }
 
@@ -1508,9 +1518,6 @@ export class PbTify extends pbMixin(LitElement) {
         
         // Check if watcher was already set up (e.g., by another call to _setupVueStoreWatcher)
         if (this._vueStoreWatcherInterval) {
-          console.log('[pb-tify] Store watcher already set up during retry, cleaning up retry polling', {
-            retryCount
-          });
           clearInterval(retryPolling);
           return;
         }
@@ -1526,11 +1533,6 @@ export class PbTify extends pbMixin(LitElement) {
         }
         
         if (retryStore && retryStore.options) {
-          console.log('[pb-tify] Store found on retry, setting up watcher:', {
-            retryCount,
-            hasOptions: !!retryStore.options,
-            hasPages: !!retryStore.options.pages
-          });
           clearInterval(retryPolling);
           // Recursively call to set up the watcher now that store is available
           // The guard at the top of _setupVueStoreWatcher will prevent duplicate setup
@@ -1544,20 +1546,11 @@ export class PbTify extends pbMixin(LitElement) {
           clearInterval(retryPolling);
           // Set up fallback polling that checks Tify viewer directly
           // This uses the existing checkPageChange mechanism
-          console.log('[pb-tify] Fallback: Using checkPageChange polling (already set up)');
         }
       }, 100);
       
       return;
     }
-
-    console.log('[pb-tify] Vue store found, setting up watcher:', {
-      hasStore: !!store,
-      hasOptions: !!store.options,
-      hasPages: !!store.options.pages,
-      currentPages: store.options.pages,
-      storeType: store.constructor?.name || typeof store
-    });
 
     // Track last known pages to detect changes
     let lastPages = null;
@@ -1566,35 +1559,19 @@ export class PbTify extends pbMixin(LitElement) {
     // This is called when Tify's Vue store detects a page change (Tify buttons/keyboard/thumbnails)
     // This is USER-INITIATED navigation, not programmatic, so we should always update registry
     const handlePageChange = async (newPage) => {
-      console.log('[pb-tify] handlePageChange called for page', newPage, {
-        _isUpdatingFromRegistry: this._isUpdatingFromRegistry,
-        _programmaticNavigationInProgress: this._programmaticNavigationInProgress,
-        _thumbnailNavigationInProgress: this._thumbnailNavigationInProgress,
-        _isCommitting: this._isCommitting
-      });
-
-      // CRITICAL: If we're updating Tify from registry, we MUST skip handlePageChange
-      // This prevents loops where:
-      // 1. _handleUrlChange sets _isUpdatingFromRegistry = true and calls _setPage()
-      // 2. Tify changes pages, triggering handlePageChange
-      // 3. handlePageChange updates registry again
-      // 4. This triggers _handleUrlChange again, creating a loop or bounce-back
-      // 
-      // When _isUpdatingFromRegistry is true, it means WE are controlling Tify's navigation.
-      // Any page changes from Tify during this time are a result of our programmatic navigation,
-      // NOT user-initiated navigation. We should wait until _isUpdatingFromRegistry is cleared
-      // before allowing handlePageChange to update the registry.
-      if (this._isUpdatingFromRegistry) {
-        console.log('[pb-tify] handlePageChange: skipping - updating from registry (preventing loop)', {
-          newPage,
-          registryId: registry.getState(this).id
-        });
+      // Simplified state check: if another source is navigating, skip
+      // Check if navigation is active for sources other than 'user' (button/keyboard clicks)
+      if (this._navigationState && this._navigationState.isActive && 
+          this._navigationState.source !== 'user') {
         return;
       }
 
-      // Don't handle during programmatic navigation (pb-navigate) - but only if it's the target page
+      // Legacy flag checks (kept for parallel implementation during refactor)
+      // These provide additional safety during transition period
+      if (this._isUpdatingFromRegistry) {
+        return;
+      }
       if (this._programmaticNavigationInProgress) {
-        // Check if this is the target page for programmatic navigation
         const root = this._getRootFromApp();
         if (root) {
           const canvases = this._getCanvases(root);
@@ -1614,74 +1591,30 @@ export class PbTify extends pbMixin(LitElement) {
                   }
                 }
               }
-              // If this matches the target page ID, it's the programmatic navigation - skip
               if (canvasId === this._targetPageId) {
-                console.log('[pb-tify] handlePageChange: skipping - programmatic navigation target page');
                 return;
               }
             }
           }
         }
-        // Otherwise, it's a different page - Tify user navigation, allow it
-        console.log('[pb-tify] handlePageChange: programmatic flag set but different page - allowing (Tify user navigation)');
       }
-
-      // Don't handle during thumbnail navigation - skip ALL updates during thumbnail navigation
-      // The thumbnail click handler will handle the registry update itself
-      // This prevents handlePageChange from interfering with thumbnail navigation
       if (this._thumbnailNavigationInProgress) {
-        // Check if this is the target page we're navigating to
         const registryState = registry.getState(this);
         if (this._targetPageId && registryState.id === this._targetPageId) {
-          // This is our target page - thumbnail navigation is completing
-          // But the thumbnail handler will update registry, so skip this
-          console.log('[pb-tify] handlePageChange: skipping - thumbnail navigation target page (handler will update)');
           return;
         }
-        // Check if we just committed to a different page - if so, this might be a bounce-back
         if (this._lastCommittedId && this._lastCommittedId !== registryState.id) {
-          // We just committed to a different page - this might be a bounce-back
-          // Skip this update to prevent interference
-          console.log('[pb-tify] handlePageChange: skipping - thumbnail navigation in progress, different from last commit', {
-            newPage,
-            lastCommittedId: this._lastCommittedId,
-            registryId: registryState.id,
-            targetPageId: this._targetPageId
-          });
           return;
         }
-        // Otherwise, it might be Tify buttons/keyboard - but we're in thumbnail navigation
-        // Skip to prevent interference - the thumbnail handler will complete the navigation
-        console.log('[pb-tify] handlePageChange: skipping - thumbnail navigation in progress');
         return;
       }
-
-      // Don't handle if we just completed thumbnail navigation (cooldown period)
-      // This prevents handlePageChange from being called right after thumbnail navigation completes
-      // and causing a bounce-back. The thumbnail handler already updated the registry.
       if (this._thumbnailNavigationCooldown && Date.now() < this._thumbnailNavigationCooldown) {
         const registryState = registry.getState(this);
-        // Only skip if the registry ID matches what we expect (thumbnail navigation completed successfully)
-        // This prevents skipping legitimate page changes that happen after thumbnail navigation
         if (this._lastCommittedId && registryState.id === this._lastCommittedId) {
-          console.log('[pb-tify] handlePageChange: skipping - thumbnail navigation cooldown period', {
-            newPage,
-            lastCommittedId: this._lastCommittedId,
-            registryId: registryState.id,
-            cooldownUntil: this._thumbnailNavigationCooldown,
-            timeRemaining: this._thumbnailNavigationCooldown - Date.now()
-          });
           return;
         }
       }
-
-      // Don't handle if we're currently committing to registry
-      // During commits, we should wait for the commit to complete before allowing new updates
-      // This prevents race conditions where multiple commits happen simultaneously
-      // Exception: If this is clearly user-initiated navigation (not from our programmatic navigation),
-      // we might want to allow it, but it's safer to wait until commit completes
       if (this._isCommitting) {
-        // Check if this is the page we're committing to - if so, definitely skip
         const state = registry.getState(this);
         const root = this._getRootFromApp();
         if (root) {
@@ -1696,9 +1629,7 @@ export class PbTify extends pbMixin(LitElement) {
                   try {
                     const url = new URL(renderingId);
                     const canvasId = url.searchParams.get('id');
-                    // If this matches the registry state, it's our commit - skip
                     if (canvasId === state.id) {
-                      console.log('[pb-tify] handlePageChange: skipping - currently committing to this page');
                       return;
                     }
                   } catch (e) {
@@ -1709,30 +1640,31 @@ export class PbTify extends pbMixin(LitElement) {
             }
           }
         }
-        // Even if it's a different page, skip during commit to prevent race conditions
-        // The commit will complete soon, and then user navigation can proceed
-        console.log('[pb-tify] handlePageChange: skipping - currently committing (preventing race condition)', {
-          newPage,
-          registryId: state.id
-        });
         return;
       }
 
       // Get canvases
       const root = this._getRootFromApp();
       if (!root) {
+        console.warn('[pb-tify] handlePageChange: no root found for page', newPage);
         return;
       }
 
       const canvases = this._getCanvases(root);
       if (newPage < 1 || newPage > canvases.length) {
+        console.warn('[pb-tify] handlePageChange: invalid page', {
+          newPage,
+          totalCanvases: canvases.length,
+          validRange: `1-${canvases.length}`
+        });
         return;
       }
 
       // Always start with canvas from TEI Publisher manifest - it should have rendering property
       // The TEI Publisher manifest is the source of truth for rendering URLs with root/id parameters
       // This is the same manifest that _handleNavigate uses, which is why pb-navigation works!
-      let canvas = canvases[newPage - 1];
+      const canvasIndex = newPage - 1;
+      let canvas = canvases[canvasIndex];
       
       // If the canvas from the TEI Publisher manifest doesn't have rendering, 
       // it means we're using the wrong manifest (external one). Try to get the TEI Publisher manifest.
@@ -1747,10 +1679,6 @@ export class PbTify extends pbMixin(LitElement) {
             // Check if this canvas has rendering (it should!)
             if (teiCanvas && teiCanvas.rendering && teiCanvas.rendering.length > 0) {
               canvas = teiCanvas;
-              console.log('[pb-tify] handlePageChange: using TEI Publisher manifest canvas with rendering', {
-                page: newPage,
-                hasRendering: true
-              });
             } else {
               // Still no rendering - try to match by label
               const label = canvas?.label?.none || canvas?.label?.en || canvas?.label;
@@ -1761,11 +1689,6 @@ export class PbTify extends pbMixin(LitElement) {
                   const teiLabelStr = Array.isArray(teiLabel) ? teiLabel[0] : teiLabel;
                   if (teiLabelStr === labelStr && teiCanvas.rendering && teiCanvas.rendering.length > 0) {
                     canvas = teiCanvas;
-                    console.log('[pb-tify] handlePageChange: matched TEI Publisher canvas by label', {
-                      page: newPage,
-                      label: labelStr,
-                      hasRendering: true
-                    });
                     break;
                   }
                 }
@@ -1778,48 +1701,248 @@ export class PbTify extends pbMixin(LitElement) {
       if (!canvas) {
         return;
       }
-      
-      // Log canvas structure for debugging
-      console.log('[pb-tify] handlePageChange: canvas structure', {
-        hasCanvas: !!canvas,
-        hasRendering: !!(canvas.rendering),
-        renderingLength: canvas.rendering ? canvas.rendering.length : 0,
-        canvasKeys: Object.keys(canvas || {}),
-        newPage
-      });
 
       // Always update registry when page changes, even if URL appears to match
       // This ensures the root is updated correctly (root can change even if id stays the same)
       // _updateUrlFromPage will check if commit is actually needed
-      console.log('[pb-tify] handlePageChange: updating registry for page', newPage, {
-        canvasLabel: canvas?.label,
-        renderingId: canvas?.rendering?.[0]?.['@id'] || canvas?.rendering?.[0]?.id,
-        currentUrl: window.location.href,
-        currentStateId: registry.getState(this).id,
-        currentStateRoot: registry.getState(this).root
-      });
-      // Set flag to prevent checkPageChange from interfering
+      const renderingId = canvas?.rendering?.[0]?.['@id'] || canvas?.rendering?.[0]?.id;
+      let canvasId = null;
+      if (renderingId) {
+        try {
+          const url = new URL(renderingId, window.location.href);
+          canvasId = url.searchParams.get('id');
+        } catch (e) {
+          // Ignore
+        }
+      }
+      
+      // Verify canvas label matches expected page
+      const canvasLabel = canvas?.label?.none || canvas?.label?.en || canvas?.label;
+      const canvasLabelStr = Array.isArray(canvasLabel) ? canvasLabel[0] : canvasLabel;
+      const expectedPageNum = String(newPage).padStart(3, '0');
+      const canvasPageNum = canvasLabelStr ? String(canvasLabelStr).padStart(3, '0') : null;
+      
+      // If canvas label doesn't match expected page, wait a bit and retry
+      // This handles cases where Vue reactivity hasn't updated the canvas array yet
+      if (canvasPageNum && canvasPageNum !== expectedPageNum) {
+        console.warn('[pb-tify] handlePageChange: canvas label mismatch, waiting for Vue update', {
+          expectedPageNum,
+          canvasPageNum,
+          newPage
+        });
+        setTimeout(() => {
+          // Retry with a fresh lookup
+          const retryRoot = this._getRootFromApp();
+            if (retryRoot) {
+              const retryCanvases = this._getCanvases(retryRoot);
+              if (newPage >= 1 && newPage <= retryCanvases.length) {
+                const retryCanvas = retryCanvases[newPage - 1];
+                if (retryCanvas) {
+                  this._updateUrlFromPage(retryCanvas, true);
+                  this._emitPbRefresh(retryCanvas);
+                }
+              }
+            }
+        }, 50); // Wait 50ms for Vue to update
+        return; // Exit early, retry will handle it
+      }
+      
+      // CRITICAL: Set navigation state and flags BEFORE calling _updateUrlFromPage
+      // This prevents _handleUrlChange from resetting Tify when the URL changes
+      // Extract the ID we're about to commit so _handleUrlChange can skip it
+      
+      // Extract document ID from URL path (same logic as _updateUrlFromPage)
+      let docId = null;
+      const pathParts = window.location.pathname.split('/');
+      for (let i = pathParts.length - 1; i >= 0; i--) {
+        if (pathParts[i] && pathParts[i] !== 'apps' && pathParts[i] !== 'exist') {
+          docId = pathParts[i];
+          break;
+        }
+      }
+      
+      let pageId = null;
+      if (canvasId) {
+        pageId = canvasId;
+      } else if (canvasLabelStr && docId) {
+        // Generate pageId from canvas label (same logic as _updateUrlFromPage)
+        const pageNum = String(canvasLabelStr).padStart(3, '0');
+        pageId = `${docId}_${pageNum}.jpg`;
+      }
+      
+      // Set navigation state for user-initiated navigation
+      // NOTE: Don't set _lastCommittedId here - let _updateUrlFromPage set it after commit
+      // This prevents _updateUrlFromPage from skipping the commit due to matching _lastCommittedId
+      if (pageId) {
+        this._setNavigationState('user', newPage, pageId);
+      }
+      
+      // Legacy flag (kept for parallel implementation)
       this._isCommitting = true;
 
       // Update registry and emit refresh
       // _updateUrlFromPage will check if commit is actually needed (prevents unnecessary updates)
-      // _updateUrlFromPage already emits pb-refresh, so we don't need to emit again here
       await this._updateUrlFromPage(canvas, true);
+      
+      // CRITICAL: Always emit pb-refresh after handlePageChange, even if _updateUrlFromPage skipped the commit
+      // This ensures pb-view gets notified of the page change
+      this._emitPbRefresh(canvas);
 
-      // Clear flag after a delay
+      // Clear navigation state after delay
+      // NOTE: _lastCommittedId is now set in _updateUrlFromPage after commit, not here
+      // Keep navigation state active longer to prevent bounce-back from _handleUrlChange or checkPageChange
+      // IMPORTANT: Keep these protections active for a longer period to prevent bounce-back
       setTimeout(() => {
+        // Legacy flags (kept for parallel implementation)
         this._isCommitting = false;
-      }, 300);
+        
+        // Keep navigation state and _lastCommittedId active longer to prevent interference
+        // Clear them together after a longer delay to ensure all async operations complete
+        setTimeout(() => {
+          // Clear both at the same time to prevent race conditions
+          // Use a longer delay (1500ms) to ensure Tify has fully updated and all callbacks have processed
+          this._lastCommittedId = null;
+          if (this._navigationState && this._navigationState.source === 'user') {
+            this._navigationState.isActive = false;
+            setTimeout(() => {
+              this._clearNavigationState();
+            }, 300); // Small delay to ensure all checks complete
+          }
+        }, 1500); // Increased from 1000ms to 1500ms for better protection
+      }, 500); // Increased from 300ms to 500ms for better protection
     };
 
     // Watch for changes in store.options.pages
-    // Since store is a reactive object (Vue 3), we need to watch it properly
-    // Try using a polling approach on the reactive store, or use Proxy to intercept changes
+    // BEST APPROACH: Intercept both store.setPage and store.updateOptions to catch page changes immediately
+    // This is more reliable than polling, especially in test environments
     
-    // Since Vue 3 reactive objects can be watched, but we don't have direct access to Vue's watch,
-    // we'll use a polling approach that checks the reactive store directly
+    // Validate that store methods exist before intercepting
+    if (typeof store.updateOptions !== 'function') {
+      console.error('[pb-tify] store.updateOptions is not a function, cannot intercept', {
+        storeType: typeof store,
+        storeKeys: Object.keys(store || {}),
+        hasUpdateOptions: 'updateOptions' in store
+      });
+      return; // Can't intercept if methods don't exist
+    }
+    if (typeof store.setPage !== 'function') {
+      console.error('[pb-tify] store.setPage is not a function, cannot intercept', {
+        storeType: typeof store,
+        storeKeys: Object.keys(store || {}),
+        hasSetPage: 'setPage' in store
+      });
+      return; // Can't intercept if methods don't exist
+    }
+    
+    // Store original methods
+    const originalUpdateOptions = store.updateOptions;
+    const originalSetPage = store.setPage;
+    let lastWatchedPages = store.options.pages ? [...store.options.pages] : null;
+    
+    // Verify we can actually replace the methods (they might be read-only or bound)
+    
+    // Wrap store.setPage to intercept page changes (called by goToNextPage, goToPreviousPage, etc.)
+    store.setPage = (pageOrPages) => {
+      // Capture old pages BEFORE calling original method
+      const oldPages = store.options.pages ? [...store.options.pages] : null;
+      const oldPage = oldPages && Array.isArray(oldPages) 
+        ? oldPages.find(page => page > 0) 
+        : null;
+      
+      // Call original method (this calls updateOptions internally)
+      const result = originalSetPage.call(store, pageOrPages);
+      
+      // The actual page change will be caught by updateOptions interception below
+      // But we can also check here if needed
+      return result;
+    };
+    
+    // Wrap store.updateOptions to intercept page changes
+    store.updateOptions = (updatedOptions) => {
+      // Capture old pages BEFORE calling original method (which updates the store)
+      const oldPages = store.options.pages ? [...store.options.pages] : null;
+      const oldPage = oldPages && Array.isArray(oldPages) 
+        ? oldPages.find(page => page > 0) 
+        : null;
+      
+      // Call original method (this updates the store)
+      const result = originalUpdateOptions.call(store, updatedOptions);
+      
+      // Check if pages changed - either from updatedOptions OR from store.options.pages after update
+      // Tify might update pages directly on the reactive store, or call updateOptions multiple times
+      const newPagesFromOptions = updatedOptions && updatedOptions.pages ? updatedOptions.pages : null;
+      const newPagesFromStore = store.options.pages ? [...store.options.pages] : null;
+      const newPages = newPagesFromOptions || newPagesFromStore;
+      
+      if (newPages) {
+        const newPage = Array.isArray(newPages) ? newPages.find(page => page > 0) : null;
+        const lastKnownPage = lastWatchedPages && Array.isArray(lastWatchedPages) 
+          ? lastWatchedPages.find(page => page > 0) 
+          : null;
+        
+        // Only handle if page actually changed from the last known state
+        // Use lastWatchedPages (tracked across all calls) rather than oldPage (just this call)
+        if (newPage && newPage !== lastKnownPage && newPage > 0) {
+          // Update last watched pages immediately
+          lastWatchedPages = Array.isArray(newPages) ? [...newPages] : null;
+          
+          // Wait for Tify's viewer to actually update to the new page before calling handlePageChange
+          // This ensures the canvas lookup gets the correct canvas
+          const waitForTifyUpdate = (attempts = 0) => {
+            const maxAttempts = 20; // Try for up to 200ms (20 * 10ms)
+            
+            if (!this._tify || !this._tify.viewer) {
+              // Viewer not ready yet, wait a bit more
+              if (attempts < maxAttempts) {
+                setTimeout(() => waitForTifyUpdate(attempts + 1), 10);
+              } else {
+                // Give up and call handlePageChange anyway
+                console.warn('[pb-tify] Viewer not ready after waiting, calling handlePageChange anyway');
+                handlePageChange(newPage);
+              }
+              return;
+            }
+            
+            // Check Tify's internal page state
+            let tifyCurrentPage = null;
+            if (typeof this._tify.viewer.currentPage === 'function') {
+              try {
+                const page = this._tify.viewer.currentPage();
+                if (typeof page === 'number') {
+                  tifyCurrentPage = page + 1; // Convert to 1-indexed
+                }
+              } catch (e) {
+                // Ignore
+              }
+            } else if (this._tify.viewer._sequenceIndex !== undefined) {
+              tifyCurrentPage = this._tify.viewer._sequenceIndex + 1;
+            }
+            
+            if (tifyCurrentPage === newPage) {
+              // Tify has updated to the correct page, safe to call handlePageChange
+              handlePageChange(newPage);
+            } else if (attempts < maxAttempts) {
+              // Tify hasn't updated yet, wait a bit more
+              setTimeout(() => waitForTifyUpdate(attempts + 1), 10);
+            } else {
+              // Give up after max attempts - call handlePageChange anyway
+              handlePageChange(newPage);
+            }
+          };
+          
+          // Start waiting for Tify to update
+          waitForTifyUpdate();
+        } else {
+          // Update last watched pages even if page didn't change (for consistency)
+          lastWatchedPages = Array.isArray(newPages) ? [...newPages] : null;
+        }
+      }
+      
+      return result;
+    };
+    
+    // FALLBACK: Also use polling as backup (in case updateOptions isn't called directly)
     // This is more reliable than trying to set up a Vue watcher from outside the component tree
-    let lastWatchedPages = null;
     
       // Poll the reactive store directly (more reliable than trying to set up Vue watcher)
     const watchStorePages = () => {
@@ -1842,36 +1965,10 @@ export class PbTify extends pbMixin(LitElement) {
         ? lastWatchedPages.find(page => page > 0) 
         : null;
 
-      // Log every poll to see if store is accessible (but only log changes to avoid spam)
       if (currentPage && currentPage !== lastPage) {
-        console.log('[pb-tify] Store pages changed (polling):', { 
-          currentPage, 
-          lastPage, 
-          currentPages,
-          lastWatchedPages,
-          storeAccessible: true,
-          hasOptions: !!store.options,
-          hasPages: !!store.options.pages,
-          timestamp: Date.now(),
-          urlBefore: window.location.href,
-          flags: {
-            _thumbnailNavigationInProgress: this._thumbnailNavigationInProgress,
-            _thumbnailNavigationCooldown: this._thumbnailNavigationCooldown,
-            _isCommitting: this._isCommitting,
-            _lastCommittedId: this._lastCommittedId
-          }
-        });
         handlePageChange(currentPage);
         lastWatchedPages = currentPages ? [...currentPages] : null;
       } else if (currentPages && !lastWatchedPages) {
-        // Log initial state
-        console.log('[pb-tify] Store watcher initialized (polling):', {
-          initialPage: currentPage,
-          currentPages,
-          storeAccessible: true,
-          pollingInterval: '100ms',
-          timestamp: Date.now()
-        });
         lastWatchedPages = [...currentPages];
       } else if (currentPages) {
         // Pages haven't changed, but store is accessible - polling is working
@@ -1892,10 +1989,10 @@ export class PbTify extends pbMixin(LitElement) {
       }
     };
 
-    // Poll more frequently than checkPageChange to catch changes quickly
-    // This works because we're directly accessing the reactive store
-    this._vueStoreWatcherInterval = setInterval(watchStorePages, 100);
-    console.log('[pb-tify] Vue store watcher set up successfully via polling on reactive store');
+    // Poll the reactive store as a fallback (in case interception misses something)
+    // Use a reasonable interval - 200ms is fast enough for good UX without excessive CPU usage
+    // The interception of store.updateOptions should catch most changes immediately
+    this._vueStoreWatcherInterval = setInterval(watchStorePages, 200);
     
     // Also try app.$watch as a backup (might work in some Vue setups)
     if (typeof app.$watch === 'function') {
@@ -1903,13 +2000,6 @@ export class PbTify extends pbMixin(LitElement) {
         this._vueStoreWatcher = app.$watch(
           () => store.options.pages,
           (newPages, oldPages) => {
-            console.log('[pb-tify] Vue store watcher fired (app.$watch):', { 
-              newPages, 
-              oldPages, 
-              store: !!store, 
-              options: !!store.options,
-              pages: store?.options?.pages 
-            });
             
             // Only handle if pages actually changed
             if (!oldPages || !newPages || !Array.isArray(newPages) || newPages.length === 0) {
@@ -1927,7 +2017,6 @@ export class PbTify extends pbMixin(LitElement) {
           },
           { deep: true, immediate: false }
         );
-        console.log('[pb-tify] Also set up app.$watch as backup');
       } catch (e) {
         console.warn('[pb-tify] app.$watch failed, using polling only:', e);
       }
@@ -1939,7 +2028,6 @@ export class PbTify extends pbMixin(LitElement) {
       this._vueStoreWatcher = window.Vue.watch(
         () => store.options.pages,
         (newPages, oldPages) => {
-          console.log('[pb-tify] Vue store watcher fired (Vue.watch):', { newPages, oldPages });
           
           if (!oldPages || !newPages || !Array.isArray(newPages) || newPages.length === 0) {
             return;
@@ -1954,19 +2042,10 @@ export class PbTify extends pbMixin(LitElement) {
         },
         { deep: true, immediate: false }
       );
-      console.log('[pb-tify] Vue store watcher set up successfully via Vue.watch');
     }
     // If neither works, fall back to polling (already set up in checkPageChange)
     else {
       console.warn('[pb-tify] Vue store watcher could not be set up - falling back to polling');
-      console.log('[pb-tify] Debug info:', {
-        hasApp: !!app,
-        hasAppWatch: typeof app.$watch === 'function',
-        hasStore: !!store,
-        hasStoreWatch: typeof store?.$watch === 'function',
-        hasVueWatch: !!(typeof window !== 'undefined' && window.Vue && window.Vue.watch),
-        storeType: typeof store
-      });
     }
   }
 
@@ -2043,6 +2122,59 @@ export class PbTify extends pbMixin(LitElement) {
         existingError.remove();
       }
     }
+  }
+
+  /**
+   * Set up watcher for Tify's error store
+   * This allows us to detect errors that Tify handles internally
+   * and display them using our error handling system
+   */
+  _setupTifyErrorWatcher() {
+    if (!this._tify || !this._tify.app) {
+      return;
+    }
+
+    // Try to access Tify's store
+    const store = this._tify.app.config?.globalProperties?.$store || 
+                  this._tify.app.$store ||
+                  (this._tify.app.$root && this._tify.app.$root.$store);
+
+    if (!store || !store.errors) {
+      return;
+    }
+
+    // Watch for errors in Tify's store
+    // Use polling since we can't easily set up Vue watchers from outside
+    let lastErrorCount = store.errors.size;
+    this._tifyErrorWatcherInterval = setInterval(() => {
+      if (!this._tify || !store || !store.errors) {
+        clearInterval(this._tifyErrorWatcherInterval);
+        this._tifyErrorWatcherInterval = null;
+        return;
+      }
+
+      const currentErrorCount = store.errors.size;
+      if (currentErrorCount > lastErrorCount) {
+        // New errors were added
+        const newErrors = Array.from(store.errors).slice(lastErrorCount);
+        for (const errorMessage of newErrors) {
+          // Create error object from Tify's error message
+          const error = new Error(errorMessage);
+          // Try to extract status code from error message
+          if (errorMessage.includes('404') || errorMessage.includes('Not Found')) {
+            error.status = 404;
+          } else if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
+            error.status = 403;
+          }
+          this._handleManifestError(error);
+        }
+        lastErrorCount = currentErrorCount;
+      } else if (currentErrorCount < lastErrorCount) {
+        // Errors were cleared
+        lastErrorCount = currentErrorCount;
+        this._clearError();
+      }
+    }, 200); // Check every 200ms
   }
 
   /**
@@ -2148,6 +2280,42 @@ export class PbTify extends pbMixin(LitElement) {
 
 
   /**
+   * State management helpers for simplified navigation state
+   */
+  _setNavigationState(source, targetPage, targetId) {
+    this._navigationState = {
+      source, // 'user', 'thumbnail', 'programmatic', 'url'
+      targetPage,
+      targetId,
+      timestamp: Date.now(),
+      isActive: true
+    };
+  }
+
+  _clearNavigationState() {
+    this._navigationState = null;
+  }
+
+  _isNavigationActive(source = null) {
+    if (!this._navigationState || !this._navigationState.isActive) {
+      return false;
+    }
+    // If source is specified, only return true if that specific source is active
+    if (source) {
+      return this._navigationState.source === source;
+    }
+    // If no source specified, return true if any navigation is active
+    return true;
+  }
+
+  _matchesNavigationTarget(id) {
+    if (!this._navigationState || !this._navigationState.isActive) {
+      return false;
+    }
+    return this._navigationState.targetId === id;
+  }
+
+  /**
    * Update URL from current canvas/page.
    * Extracts root/id from canvas rendering URL and commits to registry.
    * Also updates hash fragment based on canvas label (e.g., #A-N-38_005.jpg).
@@ -2156,27 +2324,123 @@ export class PbTify extends pbMixin(LitElement) {
    * @returns {Promise<void>} - Resolves when URL update is complete
    */
   async _updateUrlFromPage(canvas, force = false) {
-    console.log('[pb-tify] _updateUrlFromPage: called', {
-      hasCanvas: !!canvas,
-      force,
-      _isUpdatingFromRegistry: this._isUpdatingFromRegistry,
-      _initialLoadComplete: this._initialLoadComplete,
-      _thumbnailNavigationInProgress: this._thumbnailNavigationInProgress,
-      _programmaticNavigationInProgress: this._programmaticNavigationInProgress,
-      _isCommitting: this._isCommitting,
-      canvasId: canvas?.['@id'] || canvas?.id,
-      canvasLabel: canvas?.label
-    });
+    
+    // CRITICAL: If we just committed a page change and we're trying to commit a different page, skip to prevent bounce-back
+    // This prevents checkPageChange or _handleUrlChange from overwriting what we just committed
+    // Check both _lastCommittedId AND current registry state to prevent overwriting recent commits
+    const registryState = registry.getState(this);
+    
+    // Generate the pageId for this canvas to compare
+    let canvasPageId = null;
+    const canvasLabel = canvas?.label?.none || canvas?.label?.en || canvas?.label;
+    const canvasLabelStr = Array.isArray(canvasLabel) ? canvasLabel[0] : canvasLabel;
+    if (canvasLabelStr) {
+      const pathParts = window.location.pathname.split('/');
+      let docId = null;
+      for (let i = pathParts.length - 1; i >= 0; i--) {
+        if (pathParts[i] && pathParts[i] !== 'apps' && pathParts[i] !== 'exist') {
+          docId = pathParts[i];
+          break;
+        }
+      }
+      if (docId) {
+        const pageNum = String(canvasLabelStr).padStart(3, '0');
+        canvasPageId = `${docId}_${pageNum}.jpg`;
+      }
+    }
+    // Also try to extract from rendering URL
+    if (!canvasPageId && canvas?.rendering && canvas.rendering.length > 0) {
+      const renderingId = canvas.rendering[0]['@id'] || canvas.rendering[0].id;
+      if (renderingId) {
+        try {
+          const url = new URL(renderingId, window.location.href);
+          canvasPageId = url.searchParams.get('id');
+        } catch (e) {
+          // Ignore
+        }
+      }
+    }
+    
+    // CRITICAL: Prevent initial load handlers from overwriting user navigation
+    // If initial load is not complete AND registry already has a different page, check if we should skip
+    if (!this._initialLoadComplete && registryState.id) {
+      // Try to extract page numbers from both sources
+      const registryPageNum = registryState.id.match(/_(\d{2,3})\./);
+      let canvasPageNum = null;
+      
+      // Try to get page number from canvasPageId first
+      if (canvasPageId) {
+        const match = canvasPageId.match(/_(\d{2,3})\./);
+        if (match) canvasPageNum = match;
+      }
+      
+      // If canvasPageId extraction failed, try to extract from canvas label directly
+      if (!canvasPageNum && canvasLabelStr) {
+        const labelMatch = String(canvasLabelStr).match(/(\d{2,3})/);
+        if (labelMatch) {
+          canvasPageNum = [null, labelMatch[1]]; // Match format: [fullMatch, pageNum]
+        }
+      }
+      
+      // If we have both page numbers and registry has a newer page, skip and mark as complete
+      if (registryPageNum && canvasPageNum && 
+          parseInt(canvasPageNum[1], 10) < parseInt(registryPageNum[1], 10)) {
+        this._initialLoadComplete = true;
+        return; // Skip entirely - don't even update hash
+      }
+    }
+    
+    // Simplified state check: if another source is navigating to a different target, skip
+    // BUT: If force=true (from handlePageChange), always proceed - it's an intentional navigation
+    if (!force && this._navigationState && this._navigationState.isActive && canvasPageId) {
+      // If navigation is active and this doesn't match the target, skip
+      // Exception: if source is 'user', allow it (user navigation should proceed)
+      if (!this._matchesNavigationTarget(canvasPageId) && 
+          this._navigationState.source !== 'user') {
+        return; // Another source is navigating to a different target
+      }
+    }
+    
+    // Skip if we're trying to commit a page that's different from what's currently in the registry
+    // AND we're not in the middle of our own commit (handlePageChange)
+    // This prevents checkPageChange from overwriting a recent commit
+    // BUT: If force=true (from handlePageChange), always proceed - it's an intentional navigation
+    // Legacy flag check (kept for parallel implementation)
+    if (!force && canvasPageId && !this._isCommitting && registryState.id && canvasPageId !== registryState.id) {
+      // Check if registryState.id is a "newer" page (higher page number) than canvasPageId
+      const registryPageNum = registryState.id.match(/_(\d{2,3})\./);
+      const canvasPageNum = canvasPageId.match(/_(\d{2,3})\./);
+      
+      // If we're trying to commit an older page when registry has a newer page, and this isn't from handlePageChange, skip
+      if (registryPageNum && canvasPageNum && 
+          parseInt(canvasPageNum[1], 10) < parseInt(registryPageNum[1], 10) &&
+          !this._isCommitting) {
+        return; // Skip entirely - don't even update hash
+      }
+    }
+    
+    // Also check _lastCommittedId if it's set (legacy flag check)
+    // BUT: If force=true (from handlePageChange), always proceed - it's an intentional navigation
+    if (!force && this._lastCommittedId && !this._isCommitting && canvasPageId && canvasPageId !== this._lastCommittedId) {
+      return; // Skip entirely - don't even update hash
+    }
+    
+    // CRITICAL: If we're being called from handlePageChange with force=true and the canvas matches the registry,
+    // we should still emit pb-refresh even if we skip the commit (because registry already matches)
+    // This ensures pb-view gets notified when handlePageChange is called
+    if (force && this._isCommitting && canvasPageId && registryState.id === canvasPageId) {
+      // Emit pb-refresh immediately since registry already matches
+      setTimeout(() => {
+        this._emitPbRefresh(canvas);
+      }, 50);
+      return; // Skip commit but pb-refresh was emitted
+    }
     
     // Don't update registry if we're currently updating from registry (prevents loops)
     // BUT: allow updates during initial load if we're not loading from URL
     // OR if force is true (for user-initiated actions)
+    // Legacy flag check (kept for parallel implementation)
     if (!force && this._isUpdatingFromRegistry && this._initialLoadComplete) {
-      console.log('[pb-tify] _updateUrlFromPage: skipping - updating from registry and initial load complete', {
-        force,
-        _isUpdatingFromRegistry: this._isUpdatingFromRegistry,
-        _initialLoadComplete: this._initialLoadComplete
-      });
       return;
     }
     
@@ -2198,13 +2462,6 @@ export class PbTify extends pbMixin(LitElement) {
             if (manifestCanvas['@id'] === canvas['@id']) {
               // Found matching canvas in manifest - use it for rendering
               canvas = manifestCanvas;
-              console.log('[pb-tify] _updateUrlFromPage: using manifest canvas by @id', {
-                id: canvas['@id'],
-                hasRendering: !!(canvas.rendering && canvas.rendering.length > 0),
-                rendering: canvas.rendering,
-                canvasKeys: Object.keys(canvas),
-                fullCanvas: JSON.stringify(canvas, null, 2)
-              });
               break;
             }
           }
@@ -2220,13 +2477,6 @@ export class PbTify extends pbMixin(LitElement) {
               if (manifestLabelStr === labelStr) {
                 // Found matching canvas in manifest - use it for rendering
                 canvas = manifestCanvas;
-                console.log('[pb-tify] _updateUrlFromPage: using manifest canvas by label', {
-                  label: labelStr,
-                  hasRendering: !!(canvas.rendering && canvas.rendering.length > 0),
-                  rendering: canvas.rendering,
-                  canvasKeys: Object.keys(canvas),
-                  fullCanvas: JSON.stringify(canvas, null, 2)
-                });
                 break;
               }
             }
@@ -2271,7 +2521,6 @@ export class PbTify extends pbMixin(LitElement) {
                 type: 'Text',
                 format: 'text/html'
               });
-              console.log('[pb-tify] _updateUrlFromPage: found root from lookup map', { pageNum, root, renderingUrl });
             }
           } else {
             console.warn('[pb-tify] _updateUrlFromPage: root not found in lookup map for page', { pageNum, labelStr });
@@ -2345,7 +2594,6 @@ export class PbTify extends pbMixin(LitElement) {
           }
           root = url.searchParams.get('root');
           id = url.searchParams.get('id');
-          console.log('[pb-tify] _updateUrlFromPage: extracted from rendering URL', { root, id, renderingId });
         } catch (error) {
           console.warn('[pb-tify] _updateUrlFromPage: Error parsing rendering URL:', renderingId, error);
         }
@@ -2370,62 +2618,90 @@ export class PbTify extends pbMixin(LitElement) {
     const urlHasIdParam = urlParams.has('id') && urlParams.get('id') === finalId;
     const needsIdInQuery = finalId && !urlHasIdParam;
     
-    console.log('[pb-tify] _updateUrlFromPage: checking if commit needed', {
-      finalId,
-      root,
-      currentStateId: currentState.id,
-      currentStateRoot: currentState.root,
-      idMatches,
-      rootMatches,
-      rootChanged,
-      alreadyMatches,
-      urlHasIdParam,
-      needsIdInQuery,
-      willCommit: (finalId || root) && (!alreadyMatches || needsIdInQuery || rootChanged)
-    });
-    
     // Commit if different from current state OR if URL is missing id parameter OR if root changed
     // Root changes are critical for transcription sync, so always commit when root changes
-    if ((finalId || root) && (!alreadyMatches || needsIdInQuery || rootChanged)) {
+    // CRITICAL: If force=true (from handlePageChange), always commit even if state appears to match
+    // This ensures user-initiated navigation always updates the URL
+    // Also commit if navigation state is active and matches target (intentional navigation)
+    const isNavigationActive = this._navigationState && this._navigationState.isActive;
+    const matchesNavigationTarget = this._matchesNavigationTarget(finalId);
+    const shouldCommit = (finalId || root) && 
+                        (!alreadyMatches || needsIdInQuery || rootChanged || force || 
+                         (isNavigationActive && matchesNavigationTarget));
+    
+    if (shouldCommit) {
       // Also check if we just committed this same ID (prevent rapid-fire duplicates)
-      // BUT: During thumbnail navigation, we set _lastCommittedId in the handler, so we need to
+      // BUT: During thumbnail/programmatic navigation, we set _lastCommittedId in the handler, so we need to
       // allow the commit to proceed even if it matches (to ensure root is included)
       // ALSO: Always commit if root changed, even if id matches (critical for transcription sync)
+      // Use navigation state to check if we should skip
+      const isNavigationActive = this._navigationState && this._navigationState.isActive;
+      const matchesNavigationTarget = this._matchesNavigationTarget(finalId);
+      // CRITICAL: If navigation state is active and matches target, this is an intentional navigation - don't skip
+      // Also don't skip if force=true (called from handlePageChange) - that's an intentional navigation
       const shouldSkip = finalId === this._lastCommittedId && 
                         !rootChanged && // Don't skip if root changed
-                        !this._thumbnailNavigationInProgress && 
-                        !this._programmaticNavigationInProgress;
+                        !isNavigationActive && // Don't skip if navigation is active (it controls the commit)
+                        !force && // Don't skip if force=true (intentional navigation from handlePageChange)
+                        !this._thumbnailNavigationInProgress && // Legacy flag check
+                        !this._programmaticNavigationInProgress; // Legacy flag check
       
       if (!shouldSkip) {
+        // Update navigation state if not already set (for user-initiated commits)
+        // But only if force=true (from handlePageChange) - don't set it for other calls
+        if (!isNavigationActive && force) {
+          this._setNavigationState('user', null, finalId);
+        }
+        
         // Set flag to prevent _handleUrlChange and checkPageChange from interfering
         // Only set if not already set by thumbnail/programmatic navigation (they control the timing)
+        // Legacy flag (kept for parallel implementation)
         if (!this._thumbnailNavigationInProgress && !this._programmaticNavigationInProgress) {
           this._isCommitting = true;
         }
         
         // Set _lastCommittedId BEFORE committing so _handleUrlChange can check it immediately
         // This is critical - _handleUrlChange is called synchronously by registry.commit
-        // BUT: During thumbnail navigation, _lastCommittedId is already set, so don't overwrite it
-        if (!this._thumbnailNavigationInProgress || !this._lastCommittedId) {
-        this._lastCommittedId = finalId;
+        // Legacy flag (kept for parallel implementation)
+        if (!this._thumbnailNavigationInProgress) {
+          this._lastCommittedId = finalId;
         }
         
-        console.log('[pb-tify] _updateUrlFromPage: committing to registry', JSON.stringify({ id: finalId, root, pageId, thumbnailNav: this._thumbnailNavigationInProgress }, null, 2));
         registry.commit(this, {
           id: finalId || null,  // Prefer id (from rendering URL or generated)
           root: root || null,  // Always include root if available (pb-view needs it for navigation when id is canvas ID)
         });
         
+        // CRITICAL: Verify registry state was actually committed before emitting pb-refresh
+        // This ensures pb-view receives the correct state in the event
+        // Use a small delay to ensure registry.commit has fully processed
+        setTimeout(() => {
+          const committedState = registry.getState(this);
+          // If registry state doesn't match what we committed, something reset it
+          // In that case, don't emit pb-refresh to avoid confusion
+          if (committedState.id !== finalId || committedState.root !== root) {
+            console.warn('[pb-tify] Registry state mismatch after commit - registry may have been reset', {
+              expectedId: finalId,
+              expectedRoot: root,
+              actualId: committedState.id,
+              actualRoot: committedState.root
+            });
+            // Still emit refresh but with the actual registry state
+            // This ensures pb-view gets the correct state even if it was reset
+          }
+        }, 50);
+        
         // Clear flag after a delay to allow Tify to change pages (if needed)
         // This prevents checkPageChange from resetting the URL while Tify is still changing
         // But only if we set it (not if thumbnail/programmatic navigation set it)
+        // Legacy flag (kept for parallel implementation)
         if (!this._thumbnailNavigationInProgress && !this._programmaticNavigationInProgress) {
           setTimeout(() => {
             this._isCommitting = false;
+            // Don't clear _lastCommittedId here - let handlePageChange clear it after 1 second
+            // This ensures _lastCommittedId persists even after _isCommitting is cleared
           }, 1000);
         }
-      } else {
-        console.log('[pb-tify] _updateUrlFromPage: skipping commit - same as last committed ID', { finalId, lastCommittedId: this._lastCommittedId });
       }
     }
     
@@ -2496,7 +2772,10 @@ export class PbTify extends pbMixin(LitElement) {
       
       // If registry state doesn't match yet, wait a bit more
       // This is important because pb-view prioritizes registry state over event detail
+      // NOTE: With readOnlyRegistry enabled on pb-view, this should rarely happen
+      // as pb-view won't reset the registry anymore
       if (canvasId && registryState.id !== canvasId) {
+        // Wait a bit more for registry to stabilize
         setTimeout(() => {
           this._emitPbRefresh(currentCanvas || canvas);
         }, 150);
@@ -2505,7 +2784,7 @@ export class PbTify extends pbMixin(LitElement) {
       
       // Registry state matches - emit refresh immediately
       this._emitPbRefresh(currentCanvas || canvas);
-    }, 100); // Reduced delay since we already waited for Tify to change
+    }, 150); // Increased delay to ensure registry commit has fully processed
   }
 
   /**
@@ -2518,52 +2797,49 @@ export class PbTify extends pbMixin(LitElement) {
       return;
     }
     
+    // CRITICAL: Check _lastCommittedId FIRST - this prevents bounce-back from our own commits
+    // This must be checked before navigation state because navigation state might be cleared
+    // while _lastCommittedId is still protecting against interference
+    if (this._lastCommittedId && state.id === this._lastCommittedId) {
+      return; // This is our own commit, don't reset Tify
+    }
+    
+    // Legacy flag checks (kept for parallel implementation)
     // Don't handle if we're currently committing (prevents interference with our own commits)
     if (this._isCommitting) {
-      console.log('[pb-tify] _handleUrlChange: skipping - currently committing', { stateId: state.id, isCommitting: this._isCommitting });
       return;
     }
     
     // Don't handle if we're currently updating from registry (prevents loops)
     if (this._isUpdatingFromRegistry) {
-      console.log('[pb-tify] _handleUrlChange: skipping - updating from registry', { stateId: state.id });
       return;
     }
     
     // Don't handle during thumbnail navigation (prevents interference)
     if (this._thumbnailNavigationInProgress) {
-      console.log('[pb-tify] _handleUrlChange: skipping - thumbnail navigation in progress', { 
-        stateId: state.id, 
-        targetPageId: this._targetPageId,
-        lastCommittedId: this._lastCommittedId
-      });
       return;
     }
     
     // Don't handle during programmatic navigation (pb-navigate) (prevents interference)
     if (this._programmaticNavigationInProgress) {
-      console.log('[pb-tify] _handleUrlChange: skipping - programmatic navigation in progress', { stateId: state.id });
       return;
     }
     
-    // CRITICAL: Don't handle if this URL change matches what we just committed
+    // Simplified state check: if navigation is active and this matches the target, skip
     // This prevents _handleUrlChange from resetting Tify when we commit during navigation
-    // Check this FIRST before any other logic
-    if (this._lastCommittedId && state.id === this._lastCommittedId) {
-      // We just committed this - it means we're navigating to it, don't reset Tify
-      console.log('[pb-tify] _handleUrlChange: skipping - matches last committed ID', { 
-        stateId: state.id, 
-        lastCommittedId: this._lastCommittedId 
-      });
-      return;
+    if (this._navigationState && this._navigationState.isActive) {
+      // If this URL change matches our navigation target, skip (we're navigating to it)
+      if (this._matchesNavigationTarget(state.id)) {
+        return;
+      }
+      // If another source is navigating (not 'url'), skip (they control navigation)
+      if (this._navigationState.source !== 'url') {
+        return;
+      }
     }
     
     // Don't handle if the URL change is for the target page we're navigating to
     if (this._targetPageId && state.id === this._targetPageId) {
-      console.log('[pb-tify] _handleUrlChange: skipping - matches target page ID', { 
-        stateId: state.id, 
-        targetPageId: this._targetPageId 
-      });
       return;
     }
     
@@ -2573,11 +2849,6 @@ export class PbTify extends pbMixin(LitElement) {
       const hash = window.location.hash;
       // If hash contains the target page ID, we're still navigating - don't reset
       if (hash && hash.includes(this._targetPageId)) {
-        console.log('[pb-tify] _handleUrlChange: skipping - thumbnail navigation in progress, hash matches target', { 
-          stateId: state.id, 
-          targetPageId: this._targetPageId,
-          hash
-        });
         return;
       }
     }
@@ -2587,23 +2858,8 @@ export class PbTify extends pbMixin(LitElement) {
     const currentRegistryState = registry.getState(this);
     if (currentRegistryState.id !== state.id || currentRegistryState.root !== state.root) {
       // State has changed - this callback is stale, ignore it
-      console.log('[pb-tify] _handleUrlChange: skipping - state has changed (stale callback)', {
-        callbackStateId: state.id,
-        currentStateId: currentRegistryState.id,
-        callbackStateRoot: state.root,
-        currentStateRoot: currentRegistryState.root
-      });
       return;
     }
-    
-    console.log('[pb-tify] _handleUrlChange: processing URL change', { 
-      stateId: state.id, 
-      stateRoot: state.root,
-      lastCommittedId: this._lastCommittedId,
-      targetPageId: this._targetPageId,
-      hash: window.location.hash,
-      thumbnailNavInProgress: this._thumbnailNavigationInProgress
-    });
     
     const root = this._getRootFromApp();
     if (!root) {
@@ -2674,16 +2930,8 @@ export class PbTify extends pbMixin(LitElement) {
       return;
     }
     
-    // This should never be reached if _lastCommittedId matches (we return early above)
-    // But add extra safety check for _targetPageId
-    if (this._targetPageId && state.id === this._targetPageId) {
-      // This is our target page - don't interfere, just emit refresh if needed
-      this._emitPbRefresh(canvases[targetPage - 1]);
-      return;
-    }
-    
-    // This is an external URL change (browser back/forward) - update Tify
-    // Check if Tify is already on the correct page
+    // CRITICAL: Check if Tify is already on the correct page BEFORE any other logic
+    // This prevents unnecessary resets that could cause bounce-back
     let tifyCurrentPage = null;
     if (this._tify && this._tify.viewer) {
       if (typeof this._tify.viewer.currentPage === 'function') {
@@ -2703,9 +2951,18 @@ export class PbTify extends pbMixin(LitElement) {
       }
     }
     
-    // If already on correct page, just emit refresh
+    // If already on correct page, just emit refresh and return
+    // This is a critical guardrail - don't reset Tify if it's already correct
     if (tifyCurrentPage === targetPage) {
       this._currentPage = targetPage;
+      this._emitPbRefresh(canvases[targetPage - 1]);
+      return;
+    }
+    
+    // This should never be reached if _lastCommittedId matches (we return early above)
+    // But add extra safety check for _targetPageId
+    if (this._targetPageId && state.id === this._targetPageId) {
+      // This is our target page - don't interfere, just emit refresh if needed
       this._emitPbRefresh(canvases[targetPage - 1]);
       return;
     }
@@ -2751,12 +3008,6 @@ export class PbTify extends pbMixin(LitElement) {
         
         // If current canvas matches the state, don't reset Tify
         if (currentCanvasId && state.id && currentCanvasId === state.id) {
-          console.log('[pb-tify] _handleUrlChange: skipping - Tify already showing correct canvas', {
-            targetPage,
-            tifyCurrentPage,
-            canvasId: currentCanvasId,
-            stateId: state.id
-          });
           this._currentPage = tifyCurrentPage;
           this._emitPbRefresh(currentCanvas);
           return;
@@ -2767,19 +3018,19 @@ export class PbTify extends pbMixin(LitElement) {
     // EXTRA PROTECTION: If we're within the thumbnail navigation window and Tify is on a different page,
     // it might be that Tify is still settling. Don't reset it - just wait.
     // This prevents bounce-back during mixed navigation (thumbnail + button/keyboard)
+    // Use navigation state check first, then legacy flags
+    if (this._navigationState && this._navigationState.isActive && this._navigationState.source !== 'url') {
+      return; // Another source is navigating, don't interfere
+    }
     if (this._thumbnailNavigationInProgress || this._isCommitting) {
-      console.log('[pb-tify] _handleUrlChange: skipping - thumbnail navigation or commit in progress, Tify may be settling', {
-        targetPage,
-        tifyCurrentPage,
-        thumbnailNavInProgress: this._thumbnailNavigationInProgress,
-        isCommitting: this._isCommitting,
-        stateId: state.id
-      });
       return;
     }
     
+    // Set navigation state for URL-based navigation
+    this._setNavigationState('url', targetPage, state.id);
+    
     // Update Tify to match registry, then wait for it to change before emitting refresh
-    this._isUpdatingFromRegistry = true;
+    this._isUpdatingFromRegistry = true; // Legacy flag (kept for parallel implementation)
     // CRITICAL: Don't reset _lastCommittedId if it matches the state we're navigating to
     // This prevents _handleUrlChange from resetting Tify when it's called after our commit
     // Only reset for truly external URL changes (browser back/forward, direct links)
@@ -2787,12 +3038,6 @@ export class PbTify extends pbMixin(LitElement) {
     if (state.id !== this._lastCommittedId) {
       // This is a different state - it's an external navigation, safe to reset
       this._lastCommittedId = null;
-    } else {
-      // This matches what we just committed - keep _lastCommittedId set to prevent reset
-      console.log('[pb-tify] _handleUrlChange: keeping _lastCommittedId set - matches committed state', {
-        stateId: state.id,
-        lastCommittedId: this._lastCommittedId
-      });
     }
     this._setPage([targetPage]);
     this._currentPage = targetPage;
@@ -2820,14 +3065,16 @@ export class PbTify extends pbMixin(LitElement) {
       
       if (tifyPage === targetPage) {
         // Tify is on the correct page - emit refresh
-        this._isUpdatingFromRegistry = false;
+        this._isUpdatingFromRegistry = false; // Legacy flag
+        this._clearNavigationState(); // Clear navigation state
         this._emitPbRefresh(canvases[targetPage - 1]);
       } else if (attempts < 10) {
         // Not yet, retry
         setTimeout(() => verifyAndEmit(attempts + 1), 200);
       } else {
         // Give up - emit refresh anyway
-        this._isUpdatingFromRegistry = false;
+        this._isUpdatingFromRegistry = false; // Legacy flag
+        this._clearNavigationState(); // Clear navigation state
         this._emitPbRefresh(canvases[targetPage - 1]);
       }
     };
@@ -2840,12 +3087,6 @@ export class PbTify extends pbMixin(LitElement) {
    * @param {Object} canvas - The canvas object
    */
   _emitPbRefresh(canvas) {
-    console.log('[pb-tify] _emitPbRefresh called', {
-      hasCanvas: !!canvas,
-      hasRendering: !!(canvas && canvas.rendering),
-      renderingLength: canvas && canvas.rendering ? canvas.rendering.length : 0
-    });
-    
     // Get registry state first (always available and up-to-date)
     const registryState = registry.getState(this);
     
@@ -2854,7 +3095,7 @@ export class PbTify extends pbMixin(LitElement) {
     if (canvas) {
       const { rendering } = canvas;
       if (rendering && rendering.length > 0) {
-    const renderingId = rendering[0]['@id'] || rendering[0].id;
+        const renderingId = rendering[0]['@id'] || rendering[0].id;
         if (renderingId) {
           try {
             // Handle both absolute and relative URLs
@@ -2865,9 +3106,9 @@ export class PbTify extends pbMixin(LitElement) {
               // Relative URL - convert to absolute using current origin
               url = new URL(renderingId, window.location.origin);
             }
-      url.searchParams.forEach((value, key) => {
-        params[key] = value;
-      });
+            url.searchParams.forEach((value, key) => {
+              params[key] = value;
+            });
           } catch (error) {
             console.warn('[pb-tify] _emitPbRefresh: Error parsing rendering URL:', renderingId, error);
           }
@@ -2880,22 +3121,16 @@ export class PbTify extends pbMixin(LitElement) {
     // The registry state is the source of truth after _updateUrlFromPage has committed
     if (registryState.root) {
       params.root = registryState.root;
-      console.log('[pb-tify] _emitPbRefresh: including root from registry state', { 
-        root: registryState.root,
-        hadRootInParams: 'root' in params && params.root !== registryState.root
-      });
     }
     
     // If no params from canvas, also include id from registry state
     // This is a fallback when canvas doesn't have rendering property
     if (!params.id && registryState.id) {
       params.id = registryState.id;
-      console.log('[pb-tify] _emitPbRefresh: Using registry state for id', { params, registryState });
     }
     
     // If we still have no params, we can't emit a meaningful event
     if (Object.keys(params).length === 0) {
-      console.log('[pb-tify] _emitPbRefresh: No params available, returning');
       return;
     }
     
@@ -2914,22 +3149,6 @@ export class PbTify extends pbMixin(LitElement) {
         _source: this
       });
       
-      const currentRegistryState = registry.getState(this);
-      console.log('[pb-tify] _emitPbRefresh: dispatching pb-refresh event', JSON.stringify({
-        detail: {
-          id: eventDetail.id,
-          root: eventDetail.root,
-          position: eventDetail.position
-        },
-        registryState: {
-          id: currentRegistryState.id,
-          root: currentRegistryState.root,
-          position: currentRegistryState.position
-        },
-        channels,
-        emitAttr: this.emit || this.getAttribute('emit')
-      }, null, 2));
-      
       // Use emitTo which properly handles channels and ensures pb-view receives the event
       // emitTo dispatches from the element, but events bubble to document where subscribeTo listens
       // emitTo will set the correct 'key' in the event detail based on the channel
@@ -2946,12 +3165,6 @@ export class PbTify extends pbMixin(LitElement) {
         bubbles: true,
       });
       document.dispatchEvent(directEv);
-      
-      console.log('[pb-tify] _emitPbRefresh: event dispatched successfully', { 
-        channelKey,
-        usingTranscriptionChannel: channelKey === 'transcription',
-        emitAttr: this.emit || this.getAttribute('emit')
-      });
     } catch (error) {
       console.error('<pb-tify> Error emitting pb-refresh:', error);
     }
@@ -3126,10 +3339,11 @@ export class PbTify extends pbMixin(LitElement) {
     }
     
     const endpoint = this.getEndpoint();
+    // In component test environments, endpoint might be undefined
+    // Use window.location.origin as fallback (same as the page's origin)
+    const effectiveEndpoint = endpoint || window.location.origin;
     // Use the new dedicated roots endpoint (Option 2) - much more efficient than parsing full manifest
-    const rootsUrl = `${endpoint}/api/iiif/${encodeURIComponent(docPath)}/roots`;
-    
-    console.log('[pb-tify] _fetchPageToRootMap: fetching roots map from dedicated endpoint', { rootsUrl, docPath });
+    const rootsUrl = `${effectiveEndpoint}/api/iiif/${encodeURIComponent(docPath)}/roots`;
     
     try {
       const response = await fetch(rootsUrl);
@@ -3143,12 +3357,6 @@ export class PbTify extends pbMixin(LitElement) {
       }
       
       const pageToRootMap = await response.json();
-      
-      console.log('[pb-tify] _fetchPageToRootMap: received roots map', { 
-        pageCount: Object.keys(pageToRootMap).length,
-        samplePages: Object.keys(pageToRootMap).slice(0, 5)
-      });
-      
       return pageToRootMap;
     } catch (error) {
       console.warn('[pb-tify] _fetchPageToRootMap: failed to fetch or parse roots map', error);
