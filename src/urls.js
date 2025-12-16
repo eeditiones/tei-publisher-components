@@ -260,10 +260,26 @@ class Registry {
   }
 
   commit(elem, newState, overwrite = false) {
+    // Debug: Log what component is calling registry.commit (only for commits that might reset root)
+    if (newState && ('root' in newState) && newState.root === null) {
+      const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
+      console.warn('[registry] commit called with root=null by:', componentName, {
+        newState,
+        overwrite,
+        stack: new Error().stack
+      });
+    }
     this._commit(elem, newState, overwrite, false);
   }
 
   replace(elem, newState, overwrite = false) {
+    // Debug: Log what component is calling registry.replace
+    const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
+    console.warn('[registry] replace called by:', componentName, {
+      newState,
+      overwrite,
+      stack: new Error().stack
+    });
     this._commit(elem, newState, overwrite, true);
   }
 

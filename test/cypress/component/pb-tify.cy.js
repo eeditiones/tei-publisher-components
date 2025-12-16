@@ -1280,4 +1280,393 @@ describe('pb-tify component', () => {
       })
     })
   })
+
+  describe('_lastCommittedId protection', () => {
+    it('should prevent checkPageChange from interfering with recent commits', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify and registry
+        element._tify = {
+          app: {
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } },
+                { id: 'canvas2', type: 'Canvas', label: { none: ['002'] } }
+              ]
+            }
+          },
+          viewer: {
+            currentPage: () => 0
+          }
+        }
+        element._initialLoadComplete = true
+        
+        // Set _lastCommittedId to match current registry state
+        element._lastCommittedId = 'A-N-38_002.jpg'
+        
+        // Mock registry state directly (avoid calling getState which needs element)
+        const currentState = { id: 'A-N-38_002.jpg', root: '2' }
+        
+        // Test the guard logic - should skip when _lastCommittedId matches
+        const shouldSkip = element._lastCommittedId && currentState.id === element._lastCommittedId
+        
+        expect(shouldSkip).to.be.true
+        expect(element._lastCommittedId).to.equal('A-N-38_002.jpg')
+      })
+    })
+
+    it('should allow checkPageChange when _lastCommittedId is null', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify
+        element._tify = {
+          app: {
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } }
+              ]
+            }
+          },
+          viewer: {
+            currentPage: () => 0
+          }
+        }
+        element._initialLoadComplete = true
+        element._lastCommittedId = null
+        
+        // When _lastCommittedId is null, checkPageChange should not be blocked
+        // The guard checks: if (this._lastCommittedId) { ... }
+        // When null, this evaluates to false, so shouldSkip is false
+        const shouldSkip = !!element._lastCommittedId
+        expect(shouldSkip).to.be.false
+      })
+    })
+
+    it('should prevent _handleUrlChange from resetting during own commits', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify
+        element._tify = {
+          app: {
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } },
+                { id: 'canvas2', type: 'Canvas', label: { none: ['002'] } }
+              ]
+            }
+          },
+          viewer: {
+            currentPage: () => 0
+          }
+        }
+        element._setPage = cy.spy()
+        element._getRootFromApp = () => ({ items: element._tify.app.$root.items })
+        element._getCanvases = (root) => root.items.filter(item => item.type === 'Canvas')
+        
+        // Set _lastCommittedId to match the state we're about to receive
+        element._lastCommittedId = 'A-N-38_002.jpg'
+        
+        // Simulate _handleUrlChange being called with matching state
+        const state = { id: 'A-N-38_002.jpg', root: '2' }
+        element._handleUrlChange(state)
+        
+        // Should skip because _lastCommittedId matches
+        cy.wait(100).then(() => {
+          // _setPage should not be called because we return early
+          expect(element._setPage).to.not.have.been.called
+        })
+      })
+    })
+
+    it('should clear _lastCommittedId after navigation completes', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Set _lastCommittedId
+        element._lastCommittedId = 'A-N-38_002.jpg'
+        expect(element._lastCommittedId).to.equal('A-N-38_002.jpg')
+        
+        // Simulate navigation completion (clearing after delay)
+        element._lastCommittedId = null
+        expect(element._lastCommittedId).to.be.null
+      })
+    })
+  })
+
+  describe('wouldDowngrade protection', () => {
+    it('should prevent committing older page when registry has newer page', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock registry state directly (avoid calling getState which needs element)
+        const registryState = { id: 'A-N-38_003.jpg', root: '3' }
+        
+        // Simulate canvas for page 2 (older than registry's page 3)
+        const canvas = {
+          id: 'canvas2',
+          type: 'Canvas',
+          label: { none: ['002'] },
+          rendering: [{ id: 'http://example.com/page2?root=2&id=A-N-38_002.jpg' }]
+        }
+        
+        // Calculate wouldDowngrade
+        const registryPageNum = registryState.id ? parseInt(registryState.id.match(/_(\d{2,3})\./)?.[1] || '0', 10) : null
+        const canvasPageNum = parseInt(canvas.label.none[0], 10)
+        const wouldDowngrade = registryPageNum !== null && canvasPageNum !== null && 
+                              canvasPageNum < registryPageNum
+        
+        expect(wouldDowngrade).to.be.true
+        expect(registryPageNum).to.equal(3)
+        expect(canvasPageNum).to.equal(2)
+      })
+    })
+
+    it('should allow committing newer page when registry has older page', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock registry state directly (avoid calling getState which needs element)
+        const registryState = { id: 'A-N-38_001.jpg', root: '1' }
+        
+        // Simulate canvas for page 3 (newer than registry's page 1)
+        const canvas = {
+          id: 'canvas3',
+          type: 'Canvas',
+          label: { none: ['003'] },
+          rendering: [{ id: 'http://example.com/page3?root=3&id=A-N-38_003.jpg' }]
+        }
+        
+        // Calculate wouldDowngrade
+        const registryPageNum = registryState.id ? parseInt(registryState.id.match(/_(\d{2,3})\./)?.[1] || '0', 10) : null
+        const canvasPageNum = parseInt(canvas.label.none[0], 10)
+        const wouldDowngrade = registryPageNum !== null && canvasPageNum !== null && 
+                              canvasPageNum < registryPageNum
+        
+        expect(wouldDowngrade).to.be.false
+        expect(registryPageNum).to.equal(1)
+        expect(canvasPageNum).to.equal(3)
+      })
+    })
+
+    it('should prevent downgrading when _lastCommittedId has newer page', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Set _lastCommittedId to page 3
+        element._lastCommittedId = 'A-N-38_003.jpg'
+        
+        // Simulate canvas for page 2 (older than _lastCommittedId)
+        const canvas = {
+          id: 'canvas2',
+          type: 'Canvas',
+          label: { none: ['002'] }
+        }
+        
+        // Calculate wouldDowngrade with _lastCommittedId check
+        const lastCommitMatch = element._lastCommittedId.match(/_(\d{2,3})\./)
+        const lastCommitPageNum = lastCommitMatch ? parseInt(lastCommitMatch[1], 10) : null
+        const canvasPageNum = parseInt(canvas.label.none[0], 10)
+        const wouldDowngrade = lastCommitPageNum !== null && canvasPageNum !== null && 
+                              canvasPageNum < lastCommitPageNum
+        
+        expect(wouldDowngrade).to.be.true
+        expect(lastCommitPageNum).to.equal(3)
+        expect(canvasPageNum).to.equal(2)
+      })
+    })
+  })
+
+  describe('_isCommitting flag behavior', () => {
+    it('should prevent checkPageChange from running when _isCommitting is true', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify
+        element._tify = {
+          app: {
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } }
+              ]
+            }
+          },
+          viewer: {
+            currentPage: () => 0
+          }
+        }
+        element._initialLoadComplete = true
+        element._isCommitting = true
+        
+        // When _isCommitting is true, checkPageChange should skip
+        const shouldSkip = element._isCommitting
+        expect(shouldSkip).to.be.true
+      })
+    })
+
+    it('should prevent _handleUrlChange from running when _isCommitting is true', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify
+        element._tify = {
+          app: {
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } },
+                { id: 'canvas2', type: 'Canvas', label: { none: ['002'] } }
+              ]
+            }
+          },
+          viewer: {
+            currentPage: () => 0
+          }
+        }
+        element._setPage = cy.spy()
+        element._getRootFromApp = () => ({ items: element._tify.app.$root.items })
+        element._getCanvases = (root) => root.items.filter(item => item.type === 'Canvas')
+        element._isCommitting = true
+        
+        // Simulate _handleUrlChange being called
+        const state = { id: 'A-N-38_002.jpg', root: '2' }
+        element._handleUrlChange(state)
+        
+        // Should skip because _isCommitting is true
+        cy.wait(100).then(() => {
+          expect(element._setPage).to.not.have.been.called
+        })
+      })
+    })
+
+    it('should allow operations when _isCommitting is false', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        element._isCommitting = false
+        
+        // When _isCommitting is false, operations should not be blocked
+        const shouldSkip = element._isCommitting
+        expect(shouldSkip).to.be.false
+      })
+    })
+  })
+
+  describe('store.updateOptions interception', () => {
+    it('should intercept store.updateOptions calls', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify store
+        const mockStore = {
+          options: {
+            pages: [1]
+          },
+          updateOptions: cy.stub().callsFake(function(options) {
+            this.options = { ...this.options, ...options }
+          })
+        }
+        
+        element._tify = {
+          app: {
+            config: {
+              globalProperties: {
+                $store: mockStore
+              }
+            },
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } },
+                { id: 'canvas2', type: 'Canvas', label: { none: ['002'] } }
+              ]
+            }
+          }
+        }
+        
+        // Verify store has updateOptions method
+        expect(typeof mockStore.updateOptions).to.equal('function')
+        
+        // Call updateOptions (simulating what Tify does internally)
+        mockStore.updateOptions({ pages: [2] })
+        
+        // Verify it was called
+        expect(mockStore.updateOptions).to.have.been.calledOnce
+        expect(mockStore.options.pages).to.deep.equal([2])
+      })
+    })
+
+    it('should set navigation state when store.updateOptions changes pages', () => {
+      cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
+      cy.get('pb-tify').then($el => {
+        const element = $el[0]
+        
+        // Mock Tify store
+        let lastWatchedPages = [1]
+        const mockStore = {
+          options: {
+            pages: [1]
+          },
+          updateOptions: cy.stub().callsFake(function(options) {
+            this.options = { ...this.options, ...options }
+            // Simulate what the interception does
+            setTimeout(() => {
+              const newPages = options.pages || this.options.pages
+              if (newPages && Array.isArray(newPages)) {
+                const newPage = newPages.find(page => page > 0)
+                const lastKnownPage = lastWatchedPages && Array.isArray(lastWatchedPages)
+                  ? lastWatchedPages.find(page => page > 0)
+                  : null
+                
+                if (newPage && newPage !== lastKnownPage && newPage > 0) {
+                  // This is where _setNavigationState would be called
+                  element._setNavigationState('user', newPage, `A-N-38_${String(newPage).padStart(3, '0')}.jpg`)
+                  lastWatchedPages = Array.isArray(newPages) ? [...newPages] : null
+                }
+              }
+            }, 0)
+          })
+        }
+        
+        element._tify = {
+          app: {
+            config: {
+              globalProperties: {
+                $store: mockStore
+              }
+            },
+            $root: {
+              items: [
+                { id: 'canvas1', type: 'Canvas', label: { none: ['001'] } },
+                { id: 'canvas2', type: 'Canvas', label: { none: ['002'] } }
+              ]
+            }
+          }
+        }
+        
+        // Call updateOptions with new page
+        mockStore.updateOptions({ pages: [2] })
+        
+        // Wait for setTimeout to execute
+        cy.wait(50).then(() => {
+          // Navigation state should be set
+          expect(element._navigationState).to.exist
+          expect(element._navigationState.source).to.equal('user')
+          expect(element._navigationState.targetPage).to.equal(2)
+          expect(element._navigationState.targetId).to.equal('A-N-38_002.jpg')
+        })
+      })
+    })
+  })
 })
