@@ -427,9 +427,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
 
       // Only call registry.replace during initial connection, not during navigation
-      // If readOnlyRegistry is true, never call registry.replace after initial connection
+      // If readOnlyRegistry is true, never call registry.replace (even during initial connection)
       // This prevents pb-view from resetting registry with stale state during navigation
-      if (!this._registryInitialized) {
+      // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this._registryInitialized && !isReadOnly) {
         const _doc = this.getDocument ? this.getDocument() : null;
         const newState = {
           id: this.xmlId,
@@ -443,8 +445,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (this.fill) {
           newState.fill = this.fill;
         }
+        console.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized,
+          newState
+        });
         registry.replace(this, newState);
         this._registryInitialized = true;
+      } else if (isReadOnly) {
+        console.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized
+        });
       }
 
       registry.subscribe(this, state => {
@@ -496,8 +512,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this._scrollObserver.disconnect();
     }
     // Reset registry initialization flag when component is disconnected
-    // This allows the component to re-initialize if it's re-connected
-    this._registryInitialized = false;
+    // BUT: If read-only-registry is set, don't reset - we never want to call registry.replace
+    // This prevents pb-view from resetting registry when pb-grid rebuilds DOM
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
+      this._registryInitialized = false;
+    }
   }
 
   firstUpdated() {
@@ -713,7 +733,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // We'll compare against _lastLoadedId (what was actually loaded) to detect changes.
     const oldXmlId = this.xmlId;
     const oldNodeId = this.nodeId;
-    const oldPath = this.getDocument ? (this.getDocument().path || null) : null;
+    const oldPath = this.getDocument ? (this.getDocument()?.path || null) : null;
     // For _refresh(null) case, also check if _setState set an ID in _features or _additionalParams
     // that's different from what was loaded
     // CRITICAL: Check these BEFORE we process the ID, because processing might update them
@@ -1521,7 +1541,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     if (direction === 'backward') {
       if (this.previous) {
-        if (!this.disableHistory && !this.map && !this.readOnlyRegistry) {
+        const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+        if (!this.disableHistory && !this.map && !isReadOnly) {
           registry.commit(this, {
             id: this.previousId || null,
             root: this.previousId ? null : this.previous,
@@ -1531,7 +1552,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this._load(this.xmlId ? null : this.previous, direction);
       }
     } else if (this.next) {
-      if (!this.disableHistory && !this.map && !this.readOnlyRegistry) {
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this.disableHistory && !this.map && !isReadOnly) {
         registry.commit(this, {
           id: this.nextId || null,
           root: this.nextId ? null : this.next,
@@ -1585,7 +1607,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
     // Only commit to registry if not in read-only mode
     // In read-only mode, pb-view only reads from registry, never writes
-    if (!this.readOnlyRegistry) {
+    // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
       registry.commit(this, properties);
     }
   }

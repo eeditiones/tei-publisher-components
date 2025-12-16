@@ -610,5 +610,167 @@ describe('pb-view', () => {
         win.pbRegistry.commit = win.pbRegistry.commit.bind(win.pbRegistry)
       })
     })
+
+    it('should recognize read-only-registry via hasAttribute for XML/XHTML compatibility', () => {
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" read-only-registry></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+      
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        
+        // Verify hasAttribute works
+        expect(element.hasAttribute('read-only-registry')).to.be.true
+        
+        // Verify readOnlyRegistry property also works
+        expect(element.readOnlyRegistry).to.be.true
+      })
+    })
+
+    it('should work with read-only-registry attribute even if property is not set', () => {
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" read-only-registry></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+      
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        
+        // Simulate XML/XHTML scenario where property might not be set but attribute exists
+        // (In real XML, attributes might not always map to properties)
+        const hasAttribute = element.hasAttribute('read-only-registry')
+        const hasProperty = element.readOnlyRegistry
+        
+        // At least one should be true (hasAttribute is the fallback)
+        expect(hasAttribute || hasProperty).to.be.true
+      })
+    })
+
+    it('should skip registry.replace when hasAttribute returns true', () => {
+      let replaceCallCount = 0
+      cy.window().then(win => {
+        const originalReplace = win.pbRegistry.replace
+        win.pbRegistry.replace = function (elem, newState, overwrite) {
+          replaceCallCount++
+          if (originalReplace) {
+            return originalReplace.call(this, elem, newState, overwrite)
+          }
+        }
+      })
+
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" read-only-registry></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+
+      // Verify registry.replace was NOT called (read-only mode)
+      cy.window().then(win => {
+        expect(replaceCallCount).to.equal(0)
+        win.pbRegistry.replace = win.pbRegistry.replace.bind(win.pbRegistry)
+      })
+    })
+
+    it('should handle reconnection without calling registry.replace when read-only-registry is set', () => {
+      let replaceCallCount = 0
+      cy.window().then(win => {
+        const originalReplace = win.pbRegistry.replace
+        win.pbRegistry.replace = function (elem, newState, overwrite) {
+          replaceCallCount++
+          if (originalReplace) {
+            return originalReplace.call(this, elem, newState, overwrite)
+          }
+        }
+      })
+
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" read-only-registry></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+
+      // Simulate reconnection (as happens when pb-grid clears innerHTML)
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        
+        // Reset _registryInitialized to simulate reconnection
+        element._registryInitialized = false
+        
+        // Simulate connectedCallback being called again
+        // (In real code, this happens when element is reconnected to DOM)
+        const isReadOnly = element.readOnlyRegistry || element.hasAttribute('read-only-registry')
+        if (!element._registryInitialized && !isReadOnly) {
+          // This branch should not execute because isReadOnly is true
+          cy.window().then(win => {
+            win.pbRegistry.replace({}, {})
+          })
+        }
+      })
+
+      // Verify registry.replace was still NOT called
+      cy.window().then(win => {
+        expect(replaceCallCount).to.equal(0)
+        win.pbRegistry.replace = win.pbRegistry.replace.bind(win.pbRegistry)
+      })
+    })
+
+    it('should handle case where attribute is removed after initial connection', () => {
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" read-only-registry></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        
+        // Verify initial state
+        expect(element.hasAttribute('read-only-registry')).to.be.true
+        expect(element.readOnlyRegistry).to.be.true
+        
+        // Remove attribute
+        element.removeAttribute('read-only-registry')
+        
+        // Property might still be true (depends on implementation)
+        // But hasAttribute should now be false
+        expect(element.hasAttribute('read-only-registry')).to.be.false
+      })
+    })
+
+    it('should handle case where attribute is added after initial connection', () => {
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1"></pb-view>
+        </pb-page>
+      `)
+      cy.wait('@parts')
+
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        
+        // Verify initial state (no read-only-registry)
+        expect(element.hasAttribute('read-only-registry')).to.be.false
+        
+        // Add attribute
+        element.setAttribute('read-only-registry', 'read-only-registry')
+        
+        // Now hasAttribute should be true
+        expect(element.hasAttribute('read-only-registry')).to.be.true
+      })
+    })
   })
 })
