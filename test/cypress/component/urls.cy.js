@@ -600,18 +600,14 @@ describe('Registry (urls.js)', () => {
       }
     })
 
-    // NOTE: These tests are skipped because urls.js has a bug: path.contains('.') should be path.includes('.')
-    // The source code uses path.contains which doesn't exist in JavaScript
-    it.skip('should set nested state values using dot notation', () => {
-      // Bug in urls.js line 246: path.contains('.') should be path.includes('.')
+    it('should set nested state values using dot notation', () => {
       registry.set('nested.value', 'test')
       
       expect(registry.state.nested).to.exist
       expect(registry.state.nested.value).to.equal('test')
     })
 
-    it.skip('should create intermediate objects when setting nested paths', () => {
-      // Bug in urls.js line 246: path.contains('.') should be path.includes('.')
+    it('should create intermediate objects when setting nested paths', () => {
       registry.set('level1.level2.level3', 'value')
       
       expect(registry.state.level1).to.exist
@@ -619,8 +615,7 @@ describe('Registry (urls.js)', () => {
       expect(registry.state.level1.level2.level3).to.equal('value')
     })
 
-    it.skip('should set simple paths without dot notation', () => {
-      // Bug in urls.js line 246: path.contains('.') should be path.includes('.')
+    it('should set simple paths without dot notation', () => {
       registry.set('simple', 'value')
       
       expect(registry.state.simple).to.equal('value')
