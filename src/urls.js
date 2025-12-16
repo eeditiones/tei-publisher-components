@@ -243,7 +243,7 @@ class Registry {
   }
 
   set(path, value) {
-    if (!path.contains('.')) {
+    if (!path.includes('.')) {
       this.state[path] = value;
       return;
     }
