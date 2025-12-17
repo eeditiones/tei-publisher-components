@@ -116,7 +116,14 @@ export class PbCustomForm extends PbLoad {
   serializeForm() {
     const form = this.shadowRoot && this.shadowRoot.getElementById('form');
     if (!form) return {};
-    const elements = Array.from(form.elements || []).filter(
+
+    // Get elements from both form.elements AND slotted/light DOM content
+    // form.elements doesn't include slotted content in all browsers
+    const formElements = Array.from(form.elements || []);
+    const slottedElements = Array.from(this.querySelectorAll('input, select, textarea'));
+    const allElements = [...new Set([...formElements, ...slottedElements])];
+
+    const elements = allElements.filter(
       el => el.name && !el.disabled && !el.closest('[disabled]'),
     );
     const initial = {};
@@ -125,16 +132,37 @@ export class PbCustomForm extends PbLoad {
         initial[element.name] = null;
       }
     });
-    const data = new FormData(form);
-    data.forEach((value, key) => {
-      if (initial[key] == null) {
-        initial[key] = value;
-      } else if (Array.isArray(initial[key])) {
-        initial[key].push(value);
+
+    // Build form data manually to include slotted content
+    const data = {};
+    elements.forEach(el => {
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.checked) {
+          if (data[el.name] == null) {
+            data[el.name] = el.value;
+          } else if (Array.isArray(data[el.name])) {
+            data[el.name].push(el.value);
+          } else {
+            data[el.name] = [data[el.name], el.value];
+          }
+        }
+      } else if (el.type === 'select-multiple') {
+        const values = Array.from(el.selectedOptions).map(opt => opt.value);
+        if (values.length > 0) {
+          data[el.name] = values.length === 1 ? values[0] : values;
+        }
       } else {
-        initial[key] = [initial[key], value];
+        data[el.name] = el.value;
       }
     });
+
+    // Merge with initial (to preserve null for unset values)
+    Object.keys(data).forEach(key => {
+      if (data[key] != null) {
+        initial[key] = data[key];
+      }
+    });
+
     return initial;
   }
 
