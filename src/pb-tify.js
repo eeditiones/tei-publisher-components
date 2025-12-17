@@ -85,15 +85,8 @@ export class PbTify extends pbMixin(LitElement) {
     // Simplified state management - single object replaces multiple flags
     this._navigationState = null; // { source, targetPage, targetId, timestamp, isActive }
     
-    // Legacy flags - kept for parallel implementation during refactor
-    this._isUpdatingFromRegistry = false; // Flag to prevent loops when updating from registry
-    this._initialLoadComplete = false; // Flag to prevent page monitoring during initial load
-    this._lastCommittedId = null; // Track last committed page ID to prevent duplicates
-    this._thumbnailNavigationInProgress = false; // Flag to prevent checkPageChange from interfering during thumbnail clicks
-    this._thumbnailNavigationCooldown = null; // Timestamp: cooldown period after thumbnail navigation completes (prevents handlePageChange bounce-back)
-    this._programmaticNavigationInProgress = false; // Flag to prevent checkPageChange from interfering during pb-navigate
-    this._targetPageId = null; // Track the target page ID we're navigating to (prevents resets)
-    this._isCommitting = false; // Flag to track when we're committing to registry (prevents _handleUrlChange interference)
+    // Initial load flag - still needed for initial page load sequence
+    this._initialLoadComplete = false;
     this._lastSetPage = null; // Track last page set to prevent duplicates
     this._lastSetPageTime = 0; // Track when we last set a page
     this._pageToRootMap = null; // Cache: page number (e.g., "011") -> root (e.g., "3.5.6.1")
@@ -657,11 +650,6 @@ export class PbTify extends pbMixin(LitElement) {
                     // Set navigation state for thumbnail navigation
                     this._setNavigationState('thumbnail', newPage, targetId);
                     
-                    // Legacy flags (kept for parallel implementation)
-                    this._thumbnailNavigationInProgress = true;
-                    this._targetPageId = targetId;
-                    this._isCommitting = true;
-                    
                     // Let Tify handle the click first, then wait for it to actually change pages
                     // BEFORE committing to registry. This prevents checkPageChange from seeing a mismatch.
                     let attempts = 0;
@@ -734,8 +722,6 @@ export class PbTify extends pbMixin(LitElement) {
                               // Update navigation state with actual canvas ID
                               if (canvasId) {
                                 this._setNavigationState('thumbnail', tifyCurrentPage, canvasId);
-                                // Legacy flag (kept for parallel implementation)
-                                this._lastCommittedId = canvasId;
                               }
                               // Now update registry - Tify is already on the correct page
                               // This prevents checkPageChange from seeing a mismatch
@@ -769,30 +755,17 @@ export class PbTify extends pbMixin(LitElement) {
                     setTimeout(waitForTifyThenUpdate, 150);
                     
                     // Re-enable page monitoring after a delay to let Tify settle
-                    // Do this outside the inner setTimeout so it starts counting immediately
-                    // Use a longer delay to ensure everything has settled
                     setTimeout(() => {
-                      // Legacy flags (kept for parallel implementation)
-                      this._thumbnailNavigationInProgress = false;
-                      this._thumbnailNavigationCooldown = Date.now() + 1000;
-                      setTimeout(() => {
-                        this._targetPageId = null;
-                        setTimeout(() => {
-                          this._isCommitting = false;
-                          setTimeout(() => {
-                            this._thumbnailNavigationCooldown = null;
-                            this._lastCommittedId = null;
-                          }, 3000);
-                        }, 500);
-                      }, 500);
-                      
-                      // Clear navigation state
-                      if (this._navigationState && this._navigationState.source === 'thumbnail') {
-                        this._navigationState.isActive = false;
-                        setTimeout(() => {
-                          this._clearNavigationState();
-                        }, 500);
+                      // Mark navigation complete for post-navigation protection
+                      const committedId = this._navigationState?.targetId || targetId;
+                      if (committedId) {
+                        this._markNavigationComplete(committedId);
                       }
+                      
+                      // Clear navigation state after a delay
+                      setTimeout(() => {
+                        this._clearNavigationState();
+                      }, 500);
                     }, 2000);
                   }
                 }
@@ -815,48 +788,14 @@ export class PbTify extends pbMixin(LitElement) {
             return;
           }
           
-          // CRITICAL: Check _lastCommittedId FIRST - this prevents bounce-back from our own commits
-          // This must be checked before navigation state because navigation state might be cleared
-          // while _lastCommittedId is still protecting against interference
-          if (this._lastCommittedId) {
-            const currentState = registry.getState(this);
-            // If the current state matches what we just committed, skip monitoring
-            // This prevents checkPageChange from seeing Tify is on the wrong page and resetting
-            if (currentState.id === this._lastCommittedId) {
-              return; // We just committed this, don't interfere
-            }
-            // CRITICAL: If we just committed a different page, don't overwrite it
-            // Even if registry hasn't updated yet or Tify hasn't changed yet, we just committed
-            // Give it time to settle (checkPageChange runs every 200ms, so skip a few cycles)
-            // This prevents checkPageChange from overwriting a recent commit from handlePageChange
-            return; // Skip this check - we just committed, let it settle
+          // Check if navigation is active (any source)
+          if (this._isNavigationActive()) {
+            return; // Navigation in progress, don't interfere
           }
           
-          // Also check if we're currently committing (registry might not have updated yet)
-          // This prevents checkPageChange from overwriting a commit that's in progress
-          if (this._isCommitting) {
-            return; // We're committing, don't interfere
-          }
-          
-          // Use navigation state to check if we should skip
-          // If navigation is active, skip (interception or other source is handling it)
-          if (this._navigationState && this._navigationState.isActive) {
-            return;
-          }
-          
-          // Don't monitor if we're updating from registry
-          if (this._isUpdatingFromRegistry) {
-            return;
-          }
-          
-          // Don't monitor during thumbnail navigation (prevents interference)
-          if (this._thumbnailNavigationInProgress) {
-            return;
-          }
-          
-          // Don't monitor during programmatic navigation (pb-navigate) (prevents interference)
-          if (this._programmaticNavigationInProgress) {
-            return;
+          // Check if we recently committed (post-navigation protection)
+          if (this._hasRecentCommit()) {
+            return; // Recently committed, let it settle
           }
           
           let currentPage = null;
@@ -1044,18 +983,23 @@ export class PbTify extends pbMixin(LitElement) {
                       }
                     }
                     
-                    // Set target to prevent _handleUrlChange from interfering
-                    this._targetPageId = targetId;
+                    // Set navigation state for button/keyboard navigation
+                    this._setNavigationState('user', currentPage, targetId);
                     
                     // Force update to bypass registry update check (Tify buttons are user actions)
                     await this._updateUrlFromPage(canvas, true);
                     // Also emit refresh directly to ensure transcription updates
                     this._emitPbRefresh(canvas);
                     
-                    // Clear target after a delay
+                    // Mark navigation complete and clear after a delay
                     setTimeout(() => {
-                      this._targetPageId = null;
-                    }, 800);
+                      if (targetId) {
+                        this._markNavigationComplete(targetId);
+                      }
+                      setTimeout(() => {
+                        this._clearNavigationState();
+                      }, 500);
+                    }, 300);
                   }
                 }
               }
@@ -1149,31 +1093,14 @@ export class PbTify extends pbMixin(LitElement) {
                 if (canvas) {
                   this._lastCanvasId = canvas.id || canvas['@id'];
                   
-              // If not updating from registry, this is a user-initiated navigation
+              // If not navigation is active for 'url' source, this is a user-initiated navigation
               // (Tify buttons, keyboard, thumbnails, etc.) - always update registry and emit refresh
-              if (!this._isUpdatingFromRegistry && pageChanged) {
-                // Set flag to prevent checkPageChange from interfering
-                // This is a Tify-initiated navigation, not our programmatic navigation
-                const wasCommitting = this._isCommitting;
-                if (!wasCommitting) {
-                  this._isCommitting = true;
-                }
-                
-                // Update registry and emit refresh (force=true bypasses _isUpdatingFromRegistry check)
-                // _updateUrlFromPage will emit pb-refresh event automatically
+              const isUrlNavigation = this._isNavigationActive('url');
+              if (!isUrlNavigation && pageChanged) {
+                // Update registry and emit refresh (force=true ensures commit)
                 await this._updateUrlFromPage(canvas, true);
-                
-                // Clear flag after a delay to allow registry update to complete
-                if (!wasCommitting) {
-                  setTimeout(() => {
-                    this._isCommitting = false;
-                  }, 300);
-                }
-              } else if (this._isUpdatingFromRegistry) {
-                // We're updating from registry (programmatic navigation)
-                // Don't update registry again (would cause loop), but still track the page
-                // The registry update and refresh emission will happen in _handleUrlChange
               }
+              // If URL navigation is active, don't update registry (would cause loop)
             }
           }
           
@@ -1354,7 +1281,8 @@ export class PbTify extends pbMixin(LitElement) {
             // We commit even if initialPage doesn't match validPage, as long as we have a hash/id
             if (hasUrlPage || hasHashOrId) {
               // Loading from URL - set page and wait for Tify to actually change
-              this._isUpdatingFromRegistry = true;
+              // Set navigation state for URL-based initial load
+              this._setNavigationState('url', validPage, state.id);
               
               // Ensure URL has all three components (id, root, hash) for shareable URLs FIRST
               // Do this BEFORE setting the page so the URL is correct immediately
@@ -1404,7 +1332,7 @@ export class PbTify extends pbMixin(LitElement) {
                     const registryPageNum = parseInt(registryPageMatch[1], 10);
                     // If registry has a different page than what we're trying to set, user has navigated
                     if (registryPageNum !== validPage) {
-                      this._isUpdatingFromRegistry = false;
+                      this._clearNavigationState();
                       this._initialLoadComplete = true;
                       return; // Don't emit - user has already navigated
                     }
@@ -1433,7 +1361,7 @@ export class PbTify extends pbMixin(LitElement) {
                 
                 if (tifyPage === validPage) {
                   // Tify is on the correct page
-                  this._isUpdatingFromRegistry = false;
+                  this._clearNavigationState();
                   this._initialLoadComplete = true;
                   this._emitPbRefresh(canvases[validPage - 1]);
                 } else if (attempts < 20) {
@@ -1447,14 +1375,14 @@ export class PbTify extends pbMixin(LitElement) {
                     if (finalRegistryPageMatch) {
                       const finalRegistryPageNum = parseInt(finalRegistryPageMatch[1], 10);
                       if (finalRegistryPageNum !== validPage) {
-                        this._isUpdatingFromRegistry = false;
+                        this._clearNavigationState();
                         this._initialLoadComplete = true;
                         return; // Don't emit - user has navigated
                       }
                     }
                   }
                   // Registry matches or no registry state - emit refresh
-                  this._isUpdatingFromRegistry = false;
+                  this._clearNavigationState();
                   this._initialLoadComplete = true;
                   this._emitPbRefresh(canvases[validPage - 1]);
                 }
@@ -1598,88 +1526,14 @@ export class PbTify extends pbMixin(LitElement) {
     // This is called when Tify's Vue store detects a page change (Tify buttons/keyboard/thumbnails)
     // This is USER-INITIATED navigation, not programmatic, so we should always update registry
     const handlePageChange = async (newPage) => {
-      // Simplified state check: if another source is navigating, skip
-      // Check if navigation is active for sources other than 'user' (button/keyboard clicks)
-      if (this._navigationState && this._navigationState.isActive && 
-          this._navigationState.source !== 'user') {
-        return;
+      // Check if another navigation source is active (not 'user')
+      if (this._isNavigationActive() && this._navigationState.source !== 'user') {
+        return; // Another source is navigating, skip
       }
-
-      // Legacy flag checks (kept for parallel implementation during refactor)
-      // These provide additional safety during transition period
-      if (this._isUpdatingFromRegistry) {
-        return;
-      }
-      if (this._programmaticNavigationInProgress) {
-        const root = this._getRootFromApp();
-        if (root) {
-          const canvases = this._getCanvases(root);
-          if (newPage >= 1 && newPage <= canvases.length) {
-            const canvas = canvases[newPage - 1];
-            if (canvas) {
-              const { rendering } = canvas;
-              let canvasId = null;
-              if (rendering && rendering.length > 0) {
-                const renderingId = rendering[0]['@id'] || rendering[0].id;
-                if (renderingId) {
-                  try {
-                    const url = new URL(renderingId);
-                    canvasId = url.searchParams.get('id');
-                  } catch (e) {
-                    // Ignore
-                  }
-                }
-              }
-              if (canvasId === this._targetPageId) {
-                return;
-              }
-            }
-          }
-        }
-      }
-      if (this._thumbnailNavigationInProgress) {
-        const registryState = registry.getState(this);
-        if (this._targetPageId && registryState.id === this._targetPageId) {
-          return;
-        }
-        if (this._lastCommittedId && this._lastCommittedId !== registryState.id) {
-          return;
-        }
-        return;
-      }
-      if (this._thumbnailNavigationCooldown && Date.now() < this._thumbnailNavigationCooldown) {
-        const registryState = registry.getState(this);
-        if (this._lastCommittedId && registryState.id === this._lastCommittedId) {
-          return;
-        }
-      }
-      if (this._isCommitting) {
-        const state = registry.getState(this);
-        const root = this._getRootFromApp();
-        if (root) {
-          const canvases = this._getCanvases(root);
-          if (newPage >= 1 && newPage <= canvases.length) {
-            const canvas = canvases[newPage - 1];
-            if (canvas) {
-              const { rendering } = canvas;
-              if (rendering && rendering.length > 0 && state.id) {
-                const renderingId = rendering[0]['@id'] || rendering[0].id;
-                if (renderingId) {
-                  try {
-                    const url = new URL(renderingId);
-                    const canvasId = url.searchParams.get('id');
-                    if (canvasId === state.id) {
-                      return;
-                    }
-                  } catch (e) {
-                    // Ignore
-                  }
-                }
-              }
-            }
-          }
-        }
-        return;
+      
+      // Check if we recently committed (post-navigation protection)
+      if (this._hasRecentCommit()) {
+        return; // Recently committed, let it settle
       }
 
       // Get canvases
@@ -1810,46 +1664,27 @@ export class PbTify extends pbMixin(LitElement) {
       }
       
       // Set navigation state for user-initiated navigation
-      // NOTE: Don't set _lastCommittedId here - let _updateUrlFromPage set it after commit
-      // This prevents _updateUrlFromPage from skipping the commit due to matching _lastCommittedId
-      // Only set if not already set by interception (to avoid overwriting)
-      if (pageId && (!this._navigationState || !this._navigationState.isActive)) {
+      if (pageId && !this._isNavigationActive()) {
         this._setNavigationState('user', newPage, pageId);
       }
-      
-      // Legacy flag (kept for parallel implementation)
-      this._isCommitting = true;
 
       // Update registry and emit refresh
-      // _updateUrlFromPage will check if commit is actually needed (prevents unnecessary updates)
       await this._updateUrlFromPage(canvas, true);
       
-      // CRITICAL: Always emit pb-refresh after handlePageChange, even if _updateUrlFromPage skipped the commit
-      // This ensures pb-view gets notified of the page change
+      // Always emit pb-refresh to ensure pb-view gets notified
       this._emitPbRefresh(canvas);
 
-      // Clear navigation state after delay
-      // NOTE: _lastCommittedId is now set in _updateUrlFromPage after commit, not here
-      // Keep navigation state active longer to prevent bounce-back from _handleUrlChange or checkPageChange
-      // IMPORTANT: Keep these protections active for a longer period to prevent bounce-back
+      // Mark navigation complete for post-navigation protection
       setTimeout(() => {
-        // Legacy flags (kept for parallel implementation)
-        this._isCommitting = false;
+        if (pageId) {
+          this._markNavigationComplete(pageId);
+        }
         
-        // Keep navigation state and _lastCommittedId active longer to prevent interference
-        // Clear them together after a longer delay to ensure all async operations complete
+        // Clear navigation state after a delay
         setTimeout(() => {
-          // Clear both at the same time to prevent race conditions
-          // Use a longer delay (1500ms) to ensure Tify has fully updated and all callbacks have processed
-          this._lastCommittedId = null;
-          if (this._navigationState && this._navigationState.source === 'user') {
-            this._navigationState.isActive = false;
-            setTimeout(() => {
-              this._clearNavigationState();
-            }, 300); // Small delay to ensure all checks complete
-          }
-        }, 1500); // Increased from 1000ms to 1500ms for better protection
-      }, 500); // Increased from 300ms to 500ms for better protection
+          this._clearNavigationState();
+        }, 1500);
+      }, 500);
     };
 
     // Watch for changes in store.options.pages
@@ -2250,110 +2085,24 @@ export class PbTify extends pbMixin(LitElement) {
     }, 200); // Check every 200ms
   }
 
-  /**
-   * Extract page number from registry state.
-   * Looks for id parameter and finds the corresponding canvas.
-   * @returns {number|null} Page number (1-indexed) or null if not found
-   */
-  _getPageFromUrl() {
-    // Simple: read from registry state.id
-    const state = registry.getState(this);
-    
-    // If Tify not ready, return marker
-    if (!this._tify || !this._tify.app) {
-      if (state.id) {
-        return -1; // Marker: URL has page but Tify not ready
-      }
-      // Try hash as fallback
-      const hash = window.location.hash;
-      if (hash) {
-        const hashMatch = hash.match(/_(\d{2,3})\./);
-        if (hashMatch) {
-          return parseInt(hashMatch[1], 10);
-        }
-      }
-      return null;
-    }
-    
-    const root = this._getRootFromApp();
-    if (!root) {
-      return null;
-    }
-    
-    const canvases = this._getCanvases(root);
-    if (canvases.length === 0) {
-      return null;
-    }
-    
-    // Find canvas by state.id (registry is single source of truth)
-    if (state.id) {
-      for (let i = 0; i < canvases.length; i++) {
-        const canvas = canvases[i];
-        // Check rendering URL id parameter
-        const { rendering } = canvas;
-        if (rendering && rendering.length > 0) {
-          const renderingId = rendering[0]['@id'] || rendering[0].id;
-          if (renderingId) {
-            try {
-              const url = new URL(renderingId);
-              const canvasId = url.searchParams.get('id');
-              if (canvasId === state.id) {
-                return i + 1;
-              }
-            } catch (e) {
-              // Ignore
-            }
-          }
-        }
-        // Also check canvas label (e.g., A-N-38_002.jpg)
-        // Match if state.id contains label or label contains state.id
-        if (canvas.label) {
-          const label = canvas.label.none || canvas.label.en || canvas.label;
-          const labelStr = Array.isArray(label) ? label[0] : label;
-          if (labelStr) {
-            // Exact match or substring match
-            if (state.id === labelStr || state.id.includes(labelStr) || labelStr.includes(state.id)) {
-              return i + 1;
-            }
-            // Also try extracting page number from both
-            const statePageMatch = state.id.match(/_(\d{2,3})\./);
-            const labelPageMatch = labelStr.match(/(\d{2,3})/);
-            if (statePageMatch && labelPageMatch && statePageMatch[1] === labelPageMatch[1]) {
-              return i + 1;
-            }
-          }
-        }
-      }
-    }
-    
-    // Fallback to hash
-    const hash = window.location.hash;
-    if (hash) {
-      const hashMatch = hash.match(/_(\d{2,3})\./);
-      if (hashMatch) {
-        const pageNum = parseInt(hashMatch[1], 10);
-        // Find canvas with matching label
-        for (let i = 0; i < canvases.length; i++) {
-          const canvas = canvases[i];
-          const label = canvas.label;
-          if (label && label.none && label.none.length > 0) {
-            const labelStr = label.none[0];
-            const labelNum = parseInt(labelStr, 10);
-            if (!isNaN(labelNum) && labelNum === pageNum) {
-              return i + 1;
-            }
-          }
-        }
-        return pageNum; // Return even if not validated
-      }
-    }
-    
-    return null;
-  }
-
 
   /**
-   * State management helpers for simplified navigation state
+   * Navigation State Management
+   * ==========================
+   * 
+   * pb-tify uses a single _navigationState object to track all navigation activities.
+   * This replaces the previous system of 7 separate boolean flags.
+   * 
+   * _navigationState object structure:
+   * {
+   *   source: 'user' | 'thumbnail' | 'programmatic' | 'url',
+   *   targetPage: number,
+   *   targetId: string,
+   *   timestamp: number,
+   *   isActive: boolean,
+   *   recentlyCommittedId: string | null,  // ID of recently committed page
+   *   completedAt: number | null           // When navigation completed
+   * }
    */
   _setNavigationState(source, targetPage, targetId) {
     this._navigationState = {
@@ -2361,8 +2110,22 @@ export class PbTify extends pbMixin(LitElement) {
       targetPage,
       targetId,
       timestamp: Date.now(),
-      isActive: true
+      isActive: true,
+      recentlyCommittedId: null,
+      completedAt: null
     };
+  }
+
+  /**
+   * Mark navigation as complete, storing the committed ID for post-navigation protection
+   * @param {string} committedId - The ID that was committed
+   */
+  _markNavigationComplete(committedId) {
+    if (this._navigationState) {
+      this._navigationState.isActive = false;
+      this._navigationState.recentlyCommittedId = committedId;
+      this._navigationState.completedAt = Date.now();
+    }
   }
 
   _clearNavigationState() {
@@ -2386,6 +2149,52 @@ export class PbTify extends pbMixin(LitElement) {
       return false;
     }
     return this._navigationState.targetId === id;
+  }
+
+  /**
+   * Check if an ID was recently committed (within maxAge ms)
+   * Used for post-navigation protection to prevent bounce-back
+   * @param {string} id - The ID to check
+   * @param {number} maxAge - Maximum age in ms (default 3000ms)
+   * @returns {boolean}
+   */
+  _isRecentlyCommitted(id, maxAge = 3000) {
+    if (!this._navigationState || !this._navigationState.recentlyCommittedId) {
+      return false;
+    }
+    if (this._navigationState.recentlyCommittedId !== id) {
+      return false;
+    }
+    if (!this._navigationState.completedAt) {
+      return false;
+    }
+    return Date.now() - this._navigationState.completedAt < maxAge;
+  }
+
+  /**
+   * Check if we recently committed any page (within maxAge ms)
+   * @param {number} maxAge - Maximum age in ms (default 3000ms)
+   * @returns {boolean}
+   */
+  _hasRecentCommit(maxAge = 3000) {
+    if (!this._navigationState || !this._navigationState.recentlyCommittedId) {
+      return false;
+    }
+    if (!this._navigationState.completedAt) {
+      return false;
+    }
+    return Date.now() - this._navigationState.completedAt < maxAge;
+  }
+
+  /**
+   * Get the recently committed ID (if any)
+   * @returns {string|null}
+   */
+  _getRecentlyCommittedId() {
+    if (!this._navigationState) {
+      return null;
+    }
+    return this._navigationState.recentlyCommittedId;
   }
 
   /**
@@ -2474,47 +2283,33 @@ export class PbTify extends pbMixin(LitElement) {
       }
     }
     
-    // Skip if we're trying to commit a page that's different from what's currently in the registry
-    // AND we're not in the middle of our own commit (handlePageChange)
-    // This prevents checkPageChange from overwriting a recent commit
-    // BUT: If force=true (from handlePageChange), always proceed - it's an intentional navigation
-    // Legacy flag check (kept for parallel implementation)
-    if (!force && canvasPageId && !this._isCommitting && registryState.id && canvasPageId !== registryState.id) {
-      // Check if registryState.id is a "newer" page (higher page number) than canvasPageId
-      const registryPageNum = registryState.id.match(/_(\d{2,3})\./);
-      const canvasPageNum = canvasPageId.match(/_(\d{2,3})\./);
-      
-      // If we're trying to commit an older page when registry has a newer page, and this isn't from handlePageChange, skip
-      if (registryPageNum && canvasPageNum && 
-          parseInt(canvasPageNum[1], 10) < parseInt(registryPageNum[1], 10) &&
-          !this._isCommitting) {
-        return; // Skip entirely - don't even update hash
+    // Skip if we're not in forced mode and another navigation is active (not ours)
+    // This prevents checkPageChange from overwriting intentional navigation
+    if (!force && this._isNavigationActive() && !this._matchesNavigationTarget(canvasPageId)) {
+      return; // Another navigation is active, skip
+    }
+    
+    // Skip if we recently committed and this isn't a forced update
+    if (!force && this._hasRecentCommit()) {
+      const recentId = this._getRecentlyCommittedId();
+      // Only skip if we're trying to commit something different from what we recently committed
+      if (recentId && canvasPageId && canvasPageId !== recentId) {
+        // Check if we're trying to commit an older page (wouldDowngrade check)
+        const recentPageNum = recentId.match(/_(\d{2,3})\./);
+        const canvasPageNum = canvasPageId.match(/_(\d{2,3})\./);
+        if (recentPageNum && canvasPageNum && 
+            parseInt(canvasPageNum[1], 10) < parseInt(recentPageNum[1], 10)) {
+          return; // Skip - would downgrade to older page
+        }
       }
     }
     
-    // Also check _lastCommittedId if it's set (legacy flag check)
-    // BUT: If force=true (from handlePageChange), always proceed - it's an intentional navigation
-    if (!force && this._lastCommittedId && !this._isCommitting && canvasPageId && canvasPageId !== this._lastCommittedId) {
-      return; // Skip entirely - don't even update hash
-    }
-    
-    // CRITICAL: If we're being called from handlePageChange with force=true and the canvas matches the registry,
-    // we should still emit pb-refresh even if we skip the commit (because registry already matches)
-    // This ensures pb-view gets notified when handlePageChange is called
-    if (force && this._isCommitting && canvasPageId && registryState.id === canvasPageId) {
-      // Emit pb-refresh immediately since registry already matches
+    // If force=true (from handlePageChange) and state already matches, emit pb-refresh but skip commit
+    if (force && this._isNavigationActive() && canvasPageId && registryState.id === canvasPageId) {
       setTimeout(() => {
         this._emitPbRefresh(canvas);
       }, 50);
       return; // Skip commit but pb-refresh was emitted
-    }
-    
-    // Don't update registry if we're currently updating from registry (prevents loops)
-    // BUT: allow updates during initial load if we're not loading from URL
-    // OR if force is true (for user-initiated actions)
-    // Legacy flag check (kept for parallel implementation)
-    if (!force && this._isUpdatingFromRegistry && this._initialLoadComplete) {
-      return;
     }
     
     if (!canvas) {
@@ -2703,78 +2498,36 @@ export class PbTify extends pbMixin(LitElement) {
                          (isNavigationActive && matchesNavigationTarget));
     
     if (shouldCommit) {
-      // Also check if we just committed this same ID (prevent rapid-fire duplicates)
-      // BUT: During thumbnail/programmatic navigation, we set _lastCommittedId in the handler, so we need to
-      // allow the commit to proceed even if it matches (to ensure root is included)
-      // ALSO: Always commit if root changed, even if id matches (critical for transcription sync)
-      // Use navigation state to check if we should skip
-      const isNavigationActive = this._navigationState && this._navigationState.isActive;
-      const matchesNavigationTarget = this._matchesNavigationTarget(finalId);
-      // CRITICAL: If navigation state is active and matches target, this is an intentional navigation - don't skip
-      // Also don't skip if force=true (called from handlePageChange) - that's an intentional navigation
-      const shouldSkip = finalId === this._lastCommittedId && 
+      // Check if we should skip (recently committed same ID and not intentional navigation)
+      const recentId = this._getRecentlyCommittedId();
+      const shouldSkip = recentId && finalId === recentId && 
                         !rootChanged && // Don't skip if root changed
-                        !isNavigationActive && // Don't skip if navigation is active (it controls the commit)
-                        !force && // Don't skip if force=true (intentional navigation from handlePageChange)
-                        !this._thumbnailNavigationInProgress && // Legacy flag check
-                        !this._programmaticNavigationInProgress; // Legacy flag check
+                        !isNavigationActive && // Don't skip if navigation is active
+                        !force; // Don't skip if force=true (intentional navigation)
       
       if (!shouldSkip) {
         // Update navigation state if not already set (for user-initiated commits)
-        // But only if force=true (from handlePageChange) - don't set it for other calls
         if (!isNavigationActive && force) {
           this._setNavigationState('user', null, finalId);
         }
         
-        // Set flag to prevent _handleUrlChange and checkPageChange from interfering
-        // Only set if not already set by thumbnail/programmatic navigation (they control the timing)
-        // Legacy flag (kept for parallel implementation)
-        if (!this._thumbnailNavigationInProgress && !this._programmaticNavigationInProgress) {
-          this._isCommitting = true;
-        }
-        
-        // Set _lastCommittedId BEFORE committing so _handleUrlChange can check it immediately
-        // This is critical - _handleUrlChange is called synchronously by registry.commit
-        // Legacy flag (kept for parallel implementation)
-        if (!this._thumbnailNavigationInProgress) {
-          this._lastCommittedId = finalId;
-        }
-        
         registry.commit(this, {
-          id: finalId || null,  // Prefer id (from rendering URL or generated)
-          root: root || null,  // Always include root if available (pb-view needs it for navigation when id is canvas ID)
+          id: finalId || null,
+          root: root || null,
         });
         
-        // CRITICAL: Verify registry state was actually committed before emitting pb-refresh
-        // This ensures pb-view receives the correct state in the event
-        // Use a small delay to ensure registry.commit has fully processed
+        // Verify registry state was actually committed
         setTimeout(() => {
           const committedState = registry.getState(this);
-          // If registry state doesn't match what we committed, something reset it
-          // In that case, don't emit pb-refresh to avoid confusion
           if (committedState.id !== finalId || committedState.root !== root) {
-            console.warn('[pb-tify] Registry state mismatch after commit - registry may have been reset', {
+            console.warn('[pb-tify] Registry state mismatch after commit', {
               expectedId: finalId,
               expectedRoot: root,
               actualId: committedState.id,
               actualRoot: committedState.root
             });
-            // Still emit refresh but with the actual registry state
-            // This ensures pb-view gets the correct state even if it was reset
           }
         }, 50);
-        
-        // Clear flag after a delay to allow Tify to change pages (if needed)
-        // This prevents checkPageChange from resetting the URL while Tify is still changing
-        // But only if we set it (not if thumbnail/programmatic navigation set it)
-        // Legacy flag (kept for parallel implementation)
-        if (!this._thumbnailNavigationInProgress && !this._programmaticNavigationInProgress) {
-          setTimeout(() => {
-            this._isCommitting = false;
-            // Don't clear _lastCommittedId here - let handlePageChange clear it after 1 second
-            // This ensures _lastCommittedId persists even after _isCommitting is cleared
-          }, 1000);
-        }
       }
     }
     
@@ -2870,37 +2623,8 @@ export class PbTify extends pbMixin(LitElement) {
       return;
     }
     
-    // CRITICAL: Check _lastCommittedId FIRST - this prevents bounce-back from our own commits
-    // This must be checked before navigation state because navigation state might be cleared
-    // while _lastCommittedId is still protecting against interference
-    if (this._lastCommittedId && state.id === this._lastCommittedId) {
-      return; // This is our own commit, don't reset Tify
-    }
-    
-    // Legacy flag checks (kept for parallel implementation)
-    // Don't handle if we're currently committing (prevents interference with our own commits)
-    if (this._isCommitting) {
-      return;
-    }
-    
-    // Don't handle if we're currently updating from registry (prevents loops)
-    if (this._isUpdatingFromRegistry) {
-      return;
-    }
-    
-    // Don't handle during thumbnail navigation (prevents interference)
-    if (this._thumbnailNavigationInProgress) {
-      return;
-    }
-    
-    // Don't handle during programmatic navigation (pb-navigate) (prevents interference)
-    if (this._programmaticNavigationInProgress) {
-      return;
-    }
-    
-    // Simplified state check: if navigation is active and this matches the target, skip
-    // This prevents _handleUrlChange from resetting Tify when we commit during navigation
-    if (this._navigationState && this._navigationState.isActive) {
+    // Check if navigation is active (any source except 'url')
+    if (this._isNavigationActive()) {
       // If this URL change matches our navigation target, skip (we're navigating to it)
       if (this._matchesNavigationTarget(state.id)) {
         return;
@@ -2911,19 +2635,9 @@ export class PbTify extends pbMixin(LitElement) {
       }
     }
     
-    // Don't handle if the URL change is for the target page we're navigating to
-    if (this._targetPageId && state.id === this._targetPageId) {
-      return;
-    }
-    
-    // EXTRA PROTECTION: If we're in thumbnail navigation, check if the hash matches the target
-    // This prevents _handleUrlChange from resetting Tify when the hash hasn't updated yet
-    if (this._thumbnailNavigationInProgress && this._targetPageId) {
-      const hash = window.location.hash;
-      // If hash contains the target page ID, we're still navigating - don't reset
-      if (hash && hash.includes(this._targetPageId)) {
-        return;
-      }
+    // Check if we recently committed this page (post-navigation protection)
+    if (this._isRecentlyCommitted(state.id)) {
+      return; // This is our own commit, don't reset Tify
     }
     
     // CRITICAL CHECK: Verify the state hasn't changed since this callback was queued
@@ -3088,30 +2802,15 @@ export class PbTify extends pbMixin(LitElement) {
       }
     }
     
-    // EXTRA PROTECTION: If we're within the thumbnail navigation window and Tify is on a different page,
-    // it might be that Tify is still settling. Don't reset it - just wait.
-    // This prevents bounce-back during mixed navigation (thumbnail + button/keyboard)
-    // Use navigation state check first, then legacy flags
-    if (this._navigationState && this._navigationState.isActive && this._navigationState.source !== 'url') {
+    // Check if another navigation source is active
+    if (this._isNavigationActive() && this._navigationState.source !== 'url') {
       return; // Another source is navigating, don't interfere
-    }
-    if (this._thumbnailNavigationInProgress || this._isCommitting) {
-      return;
     }
     
     // Set navigation state for URL-based navigation
     this._setNavigationState('url', targetPage, state.id);
     
-    // Update Tify to match registry, then wait for it to change before emitting refresh
-    this._isUpdatingFromRegistry = true; // Legacy flag (kept for parallel implementation)
-    // CRITICAL: Don't reset _lastCommittedId if it matches the state we're navigating to
-    // This prevents _handleUrlChange from resetting Tify when it's called after our commit
-    // Only reset for truly external URL changes (browser back/forward, direct links)
-    // If _lastCommittedId is set and matches the state, keep it set to prevent bounce-back
-    if (state.id !== this._lastCommittedId) {
-      // This is a different state - it's an external navigation, safe to reset
-      this._lastCommittedId = null;
-    }
+    // Update Tify to match registry
     this._setPage([targetPage]);
     this._currentPage = targetPage;
     
@@ -3138,16 +2837,14 @@ export class PbTify extends pbMixin(LitElement) {
       
       if (tifyPage === targetPage) {
         // Tify is on the correct page - emit refresh
-        this._isUpdatingFromRegistry = false; // Legacy flag
-        this._clearNavigationState(); // Clear navigation state
+        this._clearNavigationState();
         this._emitPbRefresh(canvases[targetPage - 1]);
       } else if (attempts < 10) {
         // Not yet, retry
         setTimeout(() => verifyAndEmit(attempts + 1), 200);
       } else {
         // Give up - emit refresh anyway
-        this._isUpdatingFromRegistry = false; // Legacy flag
-        this._clearNavigationState(); // Clear navigation state
+        this._clearNavigationState();
         this._emitPbRefresh(canvases[targetPage - 1]);
       }
     };
@@ -3584,34 +3281,37 @@ export class PbTify extends pbMixin(LitElement) {
         }
       }
       
-      // Set flag and target to prevent checkPageChange and _handleUrlChange from interfering
-      this._programmaticNavigationInProgress = true;
-      this._targetPageId = targetId;
+      // Set navigation state for programmatic navigation
+      this._setNavigationState('programmatic', newPage, targetId);
       
       // Update Tify directly first, then update registry
-      // We need to prevent the setPage wrapper from updating registry (we'll do it manually)
-      this._isUpdatingFromRegistry = true;
-      
       if (this._setPage) {
-        // Call setPage - wrapper won't update registry because _isUpdatingFromRegistry is true
         this._setPage([newPage]);
         
         // Wait a bit for Tify to update, then update registry
         setTimeout(async () => {
-          this._isUpdatingFromRegistry = false; // Re-enable registry updates
           await this._updateUrlFromPage(canvas, true);
+          
+          // Mark navigation complete
+          if (targetId) {
+            this._markNavigationComplete(targetId);
+          }
+          setTimeout(() => {
+            this._clearNavigationState();
+          }, 500);
         }, 100);
       } else {
         // Fallback: just update registry
-        this._isUpdatingFromRegistry = false;
         await this._updateUrlFromPage(canvas, true);
+        
+        // Mark navigation complete
+        if (targetId) {
+          this._markNavigationComplete(targetId);
+        }
+        setTimeout(() => {
+          this._clearNavigationState();
+        }, 500);
       }
-      
-      // Re-enable page monitoring after a delay to let Tify settle
-      setTimeout(() => {
-        this._programmaticNavigationInProgress = false;
-        this._targetPageId = null;
-      }, 800);
     }
   }
 

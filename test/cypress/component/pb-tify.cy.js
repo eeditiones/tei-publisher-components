@@ -1207,16 +1207,19 @@ describe('pb-tify component', () => {
   })
 
   describe('handlePageChange logic', () => {
-    it('should have protection flags for navigation', () => {
+    it('should have navigation state helpers for protection', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
         
-        // Verify protection flags exist
-        expect(element._isUpdatingFromRegistry).to.exist
-        expect(element._thumbnailNavigationInProgress).to.exist
-        expect(element._programmaticNavigationInProgress).to.exist
-        expect(element._isCommitting).to.exist
+        // Verify navigation state helpers exist
+        expect(element._setNavigationState).to.be.a('function')
+        expect(element._clearNavigationState).to.be.a('function')
+        expect(element._isNavigationActive).to.be.a('function')
+        expect(element._matchesNavigationTarget).to.be.a('function')
+        expect(element._markNavigationComplete).to.be.a('function')
+        expect(element._isRecentlyCommitted).to.be.a('function')
+        expect(element._hasRecentCommit).to.be.a('function')
       })
     })
 
@@ -1281,7 +1284,7 @@ describe('pb-tify component', () => {
     })
   })
 
-  describe('_lastCommittedId protection', () => {
+  describe('recent commit protection', () => {
     it('should prevent checkPageChange from interfering with recent commits', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
@@ -1303,21 +1306,22 @@ describe('pb-tify component', () => {
         }
         element._initialLoadComplete = true
         
-        // Set _lastCommittedId to match current registry state
-        element._lastCommittedId = 'A-N-38_002.jpg'
+        // Mark a recent commit using navigation state
+        element._setNavigationState('user', 2, 'A-N-38_002.jpg')
+        element._markNavigationComplete('A-N-38_002.jpg')
         
-        // Mock registry state directly (avoid calling getState which needs element)
+        // Mock registry state directly
         const currentState = { id: 'A-N-38_002.jpg', root: '2' }
         
-        // Test the guard logic - should skip when _lastCommittedId matches
-        const shouldSkip = element._lastCommittedId && currentState.id === element._lastCommittedId
+        // Test the guard logic - should skip when recently committed
+        const shouldSkip = element._isRecentlyCommitted(currentState.id)
         
         expect(shouldSkip).to.be.true
-        expect(element._lastCommittedId).to.equal('A-N-38_002.jpg')
+        expect(element._getRecentlyCommittedId()).to.equal('A-N-38_002.jpg')
       })
     })
 
-    it('should allow checkPageChange when _lastCommittedId is null', () => {
+    it('should allow checkPageChange when no recent commit', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
@@ -1336,12 +1340,10 @@ describe('pb-tify component', () => {
           }
         }
         element._initialLoadComplete = true
-        element._lastCommittedId = null
+        element._clearNavigationState()
         
-        // When _lastCommittedId is null, checkPageChange should not be blocked
-        // The guard checks: if (this._lastCommittedId) { ... }
-        // When null, this evaluates to false, so shouldSkip is false
-        const shouldSkip = !!element._lastCommittedId
+        // When no recent commit, checkPageChange should not be blocked
+        const shouldSkip = element._hasRecentCommit()
         expect(shouldSkip).to.be.false
       })
     })
@@ -1369,14 +1371,15 @@ describe('pb-tify component', () => {
         element._getRootFromApp = () => ({ items: element._tify.app.$root.items })
         element._getCanvases = (root) => root.items.filter(item => item.type === 'Canvas')
         
-        // Set _lastCommittedId to match the state we're about to receive
-        element._lastCommittedId = 'A-N-38_002.jpg'
+        // Mark a recent commit
+        element._setNavigationState('user', 2, 'A-N-38_002.jpg')
+        element._markNavigationComplete('A-N-38_002.jpg')
         
         // Simulate _handleUrlChange being called with matching state
         const state = { id: 'A-N-38_002.jpg', root: '2' }
         element._handleUrlChange(state)
         
-        // Should skip because _lastCommittedId matches
+        // Should skip because recently committed
         cy.wait(100).then(() => {
           // _setPage should not be called because we return early
           expect(element._setPage).to.not.have.been.called
@@ -1384,18 +1387,19 @@ describe('pb-tify component', () => {
       })
     })
 
-    it('should clear _lastCommittedId after navigation completes', () => {
+    it('should clear recent commit after navigation completes', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
         
-        // Set _lastCommittedId
-        element._lastCommittedId = 'A-N-38_002.jpg'
-        expect(element._lastCommittedId).to.equal('A-N-38_002.jpg')
+        // Mark a recent commit
+        element._setNavigationState('user', 2, 'A-N-38_002.jpg')
+        element._markNavigationComplete('A-N-38_002.jpg')
+        expect(element._getRecentlyCommittedId()).to.equal('A-N-38_002.jpg')
         
-        // Simulate navigation completion (clearing after delay)
-        element._lastCommittedId = null
-        expect(element._lastCommittedId).to.be.null
+        // Simulate navigation completion (clearing navigation state)
+        element._clearNavigationState()
+        expect(element._getRecentlyCommittedId()).to.be.null
       })
     })
   })
@@ -1457,23 +1461,25 @@ describe('pb-tify component', () => {
       })
     })
 
-    it('should prevent downgrading when _lastCommittedId has newer page', () => {
+    it('should prevent downgrading when recent commit has newer page', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
         
-        // Set _lastCommittedId to page 3
-        element._lastCommittedId = 'A-N-38_003.jpg'
+        // Mark a recent commit to page 3
+        element._setNavigationState('user', 3, 'A-N-38_003.jpg')
+        element._markNavigationComplete('A-N-38_003.jpg')
         
-        // Simulate canvas for page 2 (older than _lastCommittedId)
+        // Simulate canvas for page 2 (older than recent commit)
         const canvas = {
           id: 'canvas2',
           type: 'Canvas',
           label: { none: ['002'] }
         }
         
-        // Calculate wouldDowngrade with _lastCommittedId check
-        const lastCommitMatch = element._lastCommittedId.match(/_(\d{2,3})\./)
+        // Calculate wouldDowngrade with recent commit check
+        const recentId = element._getRecentlyCommittedId()
+        const lastCommitMatch = recentId ? recentId.match(/_(\d{2,3})\./) : null
         const lastCommitPageNum = lastCommitMatch ? parseInt(lastCommitMatch[1], 10) : null
         const canvasPageNum = parseInt(canvas.label.none[0], 10)
         const wouldDowngrade = lastCommitPageNum !== null && canvasPageNum !== null && 
@@ -1486,8 +1492,8 @@ describe('pb-tify component', () => {
     })
   })
 
-  describe('_isCommitting flag behavior', () => {
-    it('should prevent checkPageChange from running when _isCommitting is true', () => {
+  describe('navigation active behavior', () => {
+    it('should prevent checkPageChange from running when navigation is active', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
@@ -1506,15 +1512,15 @@ describe('pb-tify component', () => {
           }
         }
         element._initialLoadComplete = true
-        element._isCommitting = true
+        element._setNavigationState('user', 1, 'A-N-38_001.jpg')
         
-        // When _isCommitting is true, checkPageChange should skip
-        const shouldSkip = element._isCommitting
+        // When navigation is active, checkPageChange should skip
+        const shouldSkip = element._isNavigationActive()
         expect(shouldSkip).to.be.true
       })
     })
 
-    it('should prevent _handleUrlChange from running when _isCommitting is true', () => {
+    it('should prevent _handleUrlChange from running when navigation is active', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
@@ -1536,28 +1542,28 @@ describe('pb-tify component', () => {
         element._setPage = cy.spy()
         element._getRootFromApp = () => ({ items: element._tify.app.$root.items })
         element._getCanvases = (root) => root.items.filter(item => item.type === 'Canvas')
-        element._isCommitting = true
+        element._setNavigationState('thumbnail', 2, 'A-N-38_002.jpg')
         
         // Simulate _handleUrlChange being called
         const state = { id: 'A-N-38_002.jpg', root: '2' }
         element._handleUrlChange(state)
         
-        // Should skip because _isCommitting is true
+        // Should skip because navigation is active
         cy.wait(100).then(() => {
           expect(element._setPage).to.not.have.been.called
         })
       })
     })
 
-    it('should allow operations when _isCommitting is false', () => {
+    it('should allow operations when navigation is not active', () => {
       cy.mount('<pb-tify manifest="https://example.com/manifest.json"></pb-tify>')
       cy.get('pb-tify').then($el => {
         const element = $el[0]
         
-        element._isCommitting = false
+        element._clearNavigationState()
         
-        // When _isCommitting is false, operations should not be blocked
-        const shouldSkip = element._isCommitting
+        // When navigation is not active, operations should not be blocked
+        const shouldSkip = element._isNavigationActive()
         expect(shouldSkip).to.be.false
       })
     })
