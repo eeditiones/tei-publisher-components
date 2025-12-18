@@ -177,6 +177,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
     this.referenceStripSizeRatio = 0.2;
     this.prefixUrl = '../images/openseadragon/';
     this.loaded = false;
+    this._facsimileObserverScheduled = false;
   }
 
   set facsimiles(facs) {
@@ -356,6 +357,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       });
     }
     this._scheduleFacsimileObserver();
+    console.log('facsimile ready');
     this.signalReady();
   }
 
@@ -401,6 +403,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
       };
     });
 
+    // Deduplicate URIs to prevent duplicate network requests
+    // If multiple pb-facs-link elements point to the same image, only request it once
     const deduplicatedUris = [];
     const uriSet = new Set();
     for (const uri of uris) {
