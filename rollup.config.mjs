@@ -108,38 +108,26 @@ export default [
             src: './node_modules/leaflet/dist/images/*',
             dest: './images/leaflet',
           },
-          // {
-          //     src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
-          //     dest: './lib'
-          // },
-          // {
-          //     src: './node_modules/openseadragon/build/openseadragon/images/*',
-          //     dest: './images/openseadragon'
-          // },
-          // { src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map', 
-          //   dest: './lib' },
-          {
-            src: './node_modules/prismjs/themes/*',
-            dest: './css/prismjs',
-          },
-          {
-            src: './node_modules/leaflet/dist/leaflet-src.js',
-            dest: './lib',
-          },
-          { src: './node_modules/leaflet/dist/leaflet-src.js.map', dest: './lib' },
-          {
-            src: './node_modules/leaflet/dist/leaflet.css',
-            dest: './css/leaflet',
-          },
           {
             src: './node_modules/leaflet/dist/images/layers.png',
             dest: './css/leaflet/images',
           },
           {
+            src: './node_modules/leaflet/dist/leaflet-src.js',
+            dest: './lib',
+          },
+          {
+            src: './node_modules/leaflet/dist/leaflet-src.js.map',
+            dest: './lib',
+          },
+          {
             src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js',
             dest: './lib',
           },
-          { src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js.map', dest: './lib' },
+          {
+            src: './node_modules/leaflet.markercluster/dist/leaflet.markercluster-src.js.map',
+            dest: './lib',
+          },
           {
             src: './node_modules/leaflet.markercluster/dist/*.css',
             dest: './css/leaflet',
@@ -151,6 +139,22 @@ export default [
           {
             src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.css',
             dest: './css/leaflet',
+          },
+          {
+            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
+            dest: './dist/lib',
+          },
+          {
+            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map',
+            dest: './dist/lib',
+          },
+          {
+            src: './node_modules/openseadragon/build/openseadragon/images/*',
+            dest: './images/openseadragon',
+          },
+          {
+            src: './node_modules/prismjs/themes/*',
+            dest: './css/prismjs',
           },
           {
             src: './node_modules/tom-select/dist/css/*.min.css',
@@ -166,31 +170,23 @@ export default [
           },
           {
             src: './node_modules/pagedjs/dist/paged.polyfill.js',
-            dest: 'lib',
+            dest: './lib',
           },
           {
             src: './node_modules/airtable/build/airtable.browser.js',
-            dest: 'lib',
+            dest: './lib',
           },
           {
             src: './node_modules/web-midi-player/index.js',
-            dest: 'lib/web-midi-player',
+            dest: './lib/web-midi-player',
           },
           {
             src: './src/assets/components.css',
-            dest: 'css',
+            dest: './css',
           },
           {
             src: './src/assets/design-system.css',
-            dest: 'dist/css',
-          },
-          {
-            src: './lib/openseadragon.min.js',
-            dest: './dist/lib',
-          },
-          {
-            src: './lib/openseadragon.min.js.map',
-            dest: './dist/lib',
+            dest: './dist/css',
           },
         ],
       }),
