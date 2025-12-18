@@ -30,6 +30,17 @@ describe('Smoke: all pb-*.html demos load', () => {
         })
       }
 
+      if (url.includes('pb-tify')) {
+        cy.fixture('iiif/manifest-f-rom.json').as('manifestFRom')
+        cy.then(function () {
+          cy.intercept('GET', '**/api/iiif/test/F-rom.xml', {
+            statusCode: 200,
+            headers: { 'content-type': 'application/json' },
+            body: this.manifestFRom
+          })
+        })
+      }
+
       const failed = []
 
       cy.intercept('**', { hostname: 'localhost' }, (req) => {
