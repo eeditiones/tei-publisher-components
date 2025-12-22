@@ -2,7 +2,8 @@
 <img title="npm (scoped)" src="https://img.shields.io/npm/v/@teipublisher/pb-components">
 <img title="npm" src="https://img.shields.io/npm/dw/@teipublisher/pb-components">
 </a>
-<img title="build" src="https://github.com/eeditiones/tei-publisher-components/workflows/tei-publisher-components%20CI/badge.svg">
+
+[![Build and Test](https://github.com/eeditiones/tei-publisher-components/actions/workflows/node.js.yml/badge.svg)](https://github.com/eeditiones/tei-publisher-components/actions/workflows/node.js.yml)
 
 # Web Components for TEI Publisher
 
