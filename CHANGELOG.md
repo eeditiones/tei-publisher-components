@@ -1,3 +1,60 @@
+# [3.0.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.7...v3.0.0) (2025-12-22)
+
+
+* chore!: release version 3.0.0 ([0b0a750](https://github.com/eeditiones/tei-publisher-components/commit/0b0a75006a22fdaa5bbc24142e659474f1faf1f7))
+
+
+### Bug Fixes
+
+* **pb-ajax:** contained pb-message should initially be display=none to avoid taking space ([84df915](https://github.com/eeditiones/tei-publisher-components/commit/84df9159bf3dad8dcd200f2e5a4e6bbd744cf37e))
+* **pb-authority-lookup:** drop paper-input and paper-icon-button ([47edcd2](https://github.com/eeditiones/tei-publisher-components/commit/47edcd29b52e99a40309c4e8a2d5e394003c8813))
+* **pb-authority-lookup:** fix styling ([6272717](https://github.com/eeditiones/tei-publisher-components/commit/6272717f9ad8c126ce97e220099c45ef6f1923e6))
+* **pb-custom-form:** also handle key up for input[type=search] ([96bd084](https://github.com/eeditiones/tei-publisher-components/commit/96bd08490b79b15ed6a714575bc1f335f4563818))
+* **pb-dialog:** move dialog default CSS to components.css ([ece99c9](https://github.com/eeditiones/tei-publisher-components/commit/ece99c9bdb37cd70c81bbe54691d3263043e19a2))
+* **pb-download:** use pb-dialog instead of paper-dialog ([ddc4879](https://github.com/eeditiones/tei-publisher-components/commit/ddc48793d66c126df3ae023f15a4342c5b6f6661))
+* **pb-facsimile:** component did not initialize if openseadragon was already loaded; this prevented multiple instances on the same page ([16c881b](https://github.com/eeditiones/tei-publisher-components/commit/16c881bdd0e1c7d9d441414d020778050f714f5e))
+* **pb-facsimile:** perform better with many pb-facs-links ([4766df1](https://github.com/eeditiones/tei-publisher-components/commit/4766df1da278b198ef9bdbea9d6ecbe7978753b8))
+* **pb-paginate:** fix width of active page number (closes [#279](https://github.com/eeditiones/tei-publisher-components/issues/279)) ([e85914b](https://github.com/eeditiones/tei-publisher-components/commit/e85914b9249b7b78c5962c562eb0633387bbb4c3))
+* corrects indentation ([99aac66](https://github.com/eeditiones/tei-publisher-components/commit/99aac66183710bee3b3fa05ee5ded93d3c13b7fb))
+* **pb-dialog:** any button with [rel="prev"] should close the dialog ([9c8c7f0](https://github.com/eeditiones/tei-publisher-components/commit/9c8c7f0ac24ffb139fd71dcc5e58922a1488e165))
+* **pb-dialog:** include background svg for close button in default ([98d043d](https://github.com/eeditiones/tei-publisher-components/commit/98d043dae1e0669078cc1adac354b9273b23ed31))
+* **pb-download,pb-edit-xml:** make themable ([85c5834](https://github.com/eeditiones/tei-publisher-components/commit/85c583448ce9778b7cb061f69b259293fffa3b26))
+* **pb-lang:** default value not displayed ([89426bf](https://github.com/eeditiones/tei-publisher-components/commit/89426bf97620976320b321b55d4b5ec0d39ffc1d))
+* **pb-lang:** use details/summary structure instead of select ([cdc2dcd](https://github.com/eeditiones/tei-publisher-components/commit/cdc2dcda188e2feef88fec45a6263569d4be9887))
+* **pb-login:** do not enforce h2 for title, add placeholders ([d888703](https://github.com/eeditiones/tei-publisher-components/commit/d88870319a5c18e02a02b0bbbccf1ea678548916))
+* **pb-login:** login/logout icons were swapped ([7b43326](https://github.com/eeditiones/tei-publisher-components/commit/7b4332604d44768b0c22f08edeba8ea6c4d6acdf))
+* **pb-search:** autocomplete not working ([626fdd8](https://github.com/eeditiones/tei-publisher-components/commit/626fdd8c52510ee7c61a9240c8b94a9e6d0cc10c))
+* **pb-timeline:** remove paper-button; improve styling and tooltip positioning ([c95cb1e](https://github.com/eeditiones/tei-publisher-components/commit/c95cb1e3fe2a39793aebc512cb0487f1139e23be))
+* **pb-view:** add an attribute to set the "fill" parameter on requests. ([e6f3836](https://github.com/eeditiones/tei-publisher-components/commit/e6f3836cbde99133ba861dc71216397997bbb291))
+* **pb-view:** remove unused paper-dialog ([90463df](https://github.com/eeditiones/tei-publisher-components/commit/90463df6f1fe7720d676a5e79dbc9b7586217c82))
+* **pb-view:** start listening to pb-refresh after component is ready; prevents race condition ([6196e03](https://github.com/eeditiones/tei-publisher-components/commit/6196e03e648fad9d37404f4d7d06a5bbcfe317a3))
+* **pb-zoom:** instead of manipulating font-size directly, pb-zoom now sets a scaling factor on :root using --pb-zoom-factor ([23ce0b5](https://github.com/eeditiones/tei-publisher-components/commit/23ce0b59e57dfb65928b956df03a8b635620d88c))
+* corrects indentation ([32dcccb](https://github.com/eeditiones/tei-publisher-components/commit/32dcccb4deb9d66ac94777fa070e59f969d4ec47))
+
+
+### Features
+
+* **demo:** add pb-paginate sample with the prev/next page buttons  (by [@daliboris](https://github.com/daliboris)) ([4fa4e7a](https://github.com/eeditiones/tei-publisher-components/commit/4fa4e7afad81e8b686a119097090c43079c2eedf))
+* **pb-authority-lookup:** add work entity ([b052241](https://github.com/eeditiones/tei-publisher-components/commit/b0522411c6ead850eba9a9e21b05da7e45816e16))
+* **pb-authority-lookup:** add work entity ([9107004](https://github.com/eeditiones/tei-publisher-components/commit/910700440aaaba3d91729ae8da820ef10a7f69a8))
+* **pb-collapse, pb-odd-editor:** remove iron-collapse and use standard ([628f782](https://github.com/eeditiones/tei-publisher-components/commit/628f78278cca122a77ab5f0fadd1bb26a4dc8ed3))
+* **pb-dialog:** add pb-dialog component to replace paper-dialog ([c05b760](https://github.com/eeditiones/tei-publisher-components/commit/c05b760ce6b63fc8d4893c354ad4731a1b619fff))
+* **pb-grid:** drop polymer components ([8014c9c](https://github.com/eeditiones/tei-publisher-components/commit/8014c9cdd1bd79834e4fcd7c2f0d6d5d16349f2c))
+* **pb-lang:** switch to standard select ([9a4a01a](https://github.com/eeditiones/tei-publisher-components/commit/9a4a01abcb87dbe0cde5e4a4deeb5ba0a94c0a61))
+* **pb-login:** drop polymer, use pb-dialog ([ffee19f](https://github.com/eeditiones/tei-publisher-components/commit/ffee19fa27f1e8520c8c3e9a877100b981e38ddf))
+* **pb-managed-odds:** drop paper elements, use plain styling ([0f5c820](https://github.com/eeditiones/tei-publisher-components/commit/0f5c820923529b68bd264bfd1acb8ee95ef16830))
+* **pb-message:** replace paper-dialog with pb-dialog ([e60c401](https://github.com/eeditiones/tei-publisher-components/commit/e60c401153bd2756c0d081a09e70f2be31ab2526))
+* **pb-paginate:** add buttons to navigate the prev/next page (by [@daliboris](https://github.com/daliboris)) ([e8c3fdc](https://github.com/eeditiones/tei-publisher-components/commit/e8c3fdc766234f782c0ab8733835bcf09c612cbd))
+* **pb-progress:** replace paper-progress with native progres ([5ce49f1](https://github.com/eeditiones/tei-publisher-components/commit/5ce49f19abda1f37f884d977a0cc5204d690f290))
+* **pb-search:** replace paper with native elements ([03679ea](https://github.com/eeditiones/tei-publisher-components/commit/03679ea0b52c547b7b55f5fb04bd34894c833d90))
+* **pb-toggle-feature:** replace paper with native checkbox ([b1da06c](https://github.com/eeditiones/tei-publisher-components/commit/b1da06c70745646effb082e67556f7f6691c46e7))
+* **pb-zoom:** replace paper button ([cddb36f](https://github.com/eeditiones/tei-publisher-components/commit/cddb36fddd35e4e31b6bbd1a98af1f3c9275a92e))
+
+
+### BREAKING CHANGES
+
+* Major version release 3.0.0
+
 # [2.26.0-next-3.21](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.20...v2.26.0-next-3.21) (2025-12-22)
 
 
