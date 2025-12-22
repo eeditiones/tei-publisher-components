@@ -1,0 +1,320 @@
+{
+  "language": "語言",
+  "menu": {
+    "documentation": "文檔",
+    "admin": {
+      "title": "管理員",
+      "recompile": "重新編譯ODD",
+      "appGenerator": "應用程序生成器",
+      "edit-odd": "編輯ODD"
+    },
+    "news": "新聞",
+    "download": {
+      "title": "下載",
+      "pdf-latex": "PDF (LaTeX版本)",
+      "pdf-fo": "PDF (FO版本)",
+      "pdf-title": "下載為PDF",
+      "fo-source": "FO源碼",
+      "latex-source": "TeX源碼",
+      "single-page": "單頁",
+      "epub-download": "下載為epub電子書",
+      "view-tei": "查看TEI XML文檔"
+    }
+  },
+  "dialogs": {
+    "error": "出錯了！",
+    "close": "關閉",
+    "yes": "確認",
+    "no": "取消",
+    "serverError": "請求服務器失敗。",
+    "generatingFile": "正在生成文件⋯",
+    "downloadMessage": "生成要下載的文件可能需要幾分鐘時間，請稍候。此對話框將在下載完成後自動關閉。",
+    "loading": "加載中..."
+  },
+  "document": {
+    "contents": "內容",
+    "selectODD": "選擇ODD",
+    "selectTemplate": "選擇模板",
+    "selectFeature": "選擇功能",
+    "normalized": "標準視圖",
+    "plain": "閲讀視圖",
+    "view-type": "頁面瀏覽",
+    "add-panel": "添加視圖",
+    "caveat-heading": "注意事項",
+    "settings": "設置",
+    "caveat": "只需在此處更改這些選項，就可以試驗不同的頁面模板和ODD。請注意，並非每個設置組合都適用於所有文檔。例如，沒有明確編碼和處理的坐標無法生成地圖；而頁面視圖也需要預先標記分頁符。如果您看到“服務器沒有返回任何內容”的消息，通常即表明編碼數據、ODD和頁面模板相互不匹配。"
+  },
+  "browse": {
+    "description": "使用此應用來實驗和嘗試各種包含處理模型指令的ODD。您可以上傳個人文件並創建自定義的ODD。",
+    "login": "上傳文件或查看管理功能（默認用戶：“tei-demo”，密碼：“demo”）。",
+    "login-1": "登錄爲",
+    "login-2": "使用密碼",
+    "login-3": "試用您自己的文件和ODD",
+    "sort": "排序方式",
+    "filter": "篩選條件",
+    "filterPlaceholder": "篩選器",
+    "items": "搜索結果: {{count}}文件",
+    "items_plural": "找到{{count}}項",
+    "title": "標題",
+    "author": "作者",
+    "modificationDate": "修改日期",
+    "file": "文件名",
+    "delete": "刪除",
+    "confirmDeletion": "是否要刪除文件?",
+    "confirmDeletion_plural": "是否要刪除{{count}}文件?",
+    "documents": "文檔",
+    "documents-removed": "已刪除文檔",
+    "document-not-found": "文檔未找到",
+    "document-remove-failed": "無法刪除文檔",
+    "collections": "本地收藏",
+    "dts": "分佈式文本服務(試驗版)",
+    "test": {
+      "title": "TEI Publisher演示合集",
+      "description": "展示各種功能的文檔。展示并不全面，只展示了一部分功能。歡迎您使用個人案例對它加以補充。"
+    },
+    "playground": {
+      "title": "測試環境",
+      "description": "可輸入的集合，便於上傳個人檔案進行測試。"
+    },
+    "doc": {
+      "title": "文檔",
+      "description": "文檔(Docbook XML格式)"
+    },
+    "markdown": {
+      "title": "Markdown示例",
+      "description": "一個使用Markdown作為靜態內容的例子。"
+    },
+    "annotate": {
+      "title": "注釋示例",
+      "description": "另一個用於注釋文檔的測試環境"
+    },
+    "up": "返回上層"
+  },
+  "upload": {
+    "upload": "上傳",
+    "drop": "是否要刪除{{count}}文件?"
+  },
+  "demo": {
+    "showCode": {
+      "show": "顯示代碼",
+      "hide": "隱藏代碼"
+    },
+    "editCode": {
+      "show": "編輯代碼",
+      "hide": "關閉編輯器"
+    }
+  },
+  "clipboard": {
+    "copy": "點擊圖標複製到剪貼板",
+    "paste": "粘貼到要測試的輸入域"
+  },
+  "login": {
+    "login": "登錄",
+    "as": "以{{user}}身份登錄",
+    "user": "用戶",
+    "password": "密碼",
+    "invalid": "密碼錯誤或無效用戶",
+    "requiredGroup": "必須屬於{{group}}"
+  },
+  "search": {
+    "search": "搜索",
+    "reset": "重置",
+    "placeholder": "輸入關鍵字",
+    "sections": "查找版塊",
+    "headings": "查找頁眉",
+    "title": "查找標題",
+    "content": "查找内容",
+    "scope": "搜索範圍"
+  },
+  "dts": {
+    "endpoint": "選擇端點",
+    "note": "試驗版：通過DTS API訪問其他版本",
+    "requires-login": "需要登錄"
+  },
+  "odd": {
+    "files": "ODD文件",
+    "manage": {
+      "filename": "ODD文件名(無後綴)",
+      "title": "顯示標題",
+      "create": "創建",
+      "create-from-example": "從示例創建",
+      "delete": "是否要刪除ODD文件{{file}}?",
+      "regenerate-all": "重新生成所有ODD（慢）",
+      "filename-error": "必填。使用字母、數字、- 和 _",
+      "title-error": "請輸入標題"
+    },
+    "editor": {
+      "delete-spec": "是否要刪除元素規格 '{{ident}}'?",
+      "save": "保存",
+      "saving": "正在保存⋯",
+      "saved": "已保存",
+      "unsaved": "有尚未保存的更改，將被包含在導出中！是否仍要繼續？",
+      "download": "下載ODD",
+      "save-as": "保存ODD到目錄",
+      "denied": "無權限",
+      "denied-message": "您沒有權限保存 {{odd}}",
+      "reload": "重新加載",
+      "reload-confirm": "未保存的更改會丟失。是否繼續？",
+      "add-element": "添加元素",
+      "odd-source": "ODD源碼",
+      "specs": "元素規格",
+      "jump-to": "跳轉至元素...",
+      "title-short": "短標題",
+      "title-short-placeholder": "顯示的短標題",
+      "description-label": "描述",
+      "description-placeholder": "ODD的描述",
+      "source-label": "基礎ODD",
+      "source-placeholder": "ODD擴展自...",
+      "use-namespace": "檢查是否使用與TEI不同的命名空間",
+      "namespace-placeholder": "默認的命名空間URI(若非TEI)",
+      "title": "標題",
+      "title-placeholder": "ODD的標題",
+      "model": {
+        "delete-model-label": "刪除模型？",
+        "delete-model-message": "是否確定刪除選定的模型？",
+        "description-placeholder": "[記錄模型]",
+        "predicate-placeholder": "[（在xquery中）定義必須滿足的其他條件]",
+        "link-with-or": "或",
+        "css-class-placeholder": "[定義CSS類名 (用於外部CSS名稱)]",
+        "custom-behaviour-placeholder": "[自定義行為]",
+        "template-placeholder": "[定義適用於内容的程式碼模板]",
+        "param-name-placeholder": "[參數名]",
+        "empty": "[空白]",
+        "mode-placeholder": "[處理模式-應用到其他模型]",
+        "set-param": "設定"
+      },
+      "css-source": "打開CSS文件"
+    }
+  },
+  "facets": {
+    "show": "顯示前50",
+    "genre": "流派",
+    "language": "語言",
+    "feature": "特性",
+    "form": "表單",
+    "period": "時間段"
+  },
+  "appgen": {
+    "account": {
+      "user": "管理任務的用戶賬戶。若用戶不存在，將創建該用戶。",
+      "owner": "擁有此應用程序的用戶賬戶。",
+      "password": "擁有此應用程序的用戶密碼。"
+    },
+    "submit": "保存/生成",
+    "index": {
+      "help": "定義創建全文索引的最小文本單位。對於有多個段落的文檔，最好選擇“按分區創建”。若沒有分段，則選擇“按文本創建”。",
+      "label": "默認全文索引",
+      "index-div": "按分區創建",
+      "index-text": "按文本創建"
+    },
+    "view": {
+      "help": "選擇瀏覽文本時默認顯示的内容：單頁或整段。按頁顯示需要先用 &lt;tei:pb&gt; 標籤正確標記TEI。",
+      "div": "按段落(章/節)",
+      "page": "按頁"
+    },
+    "label": "默認視圖",
+    "template": {
+      "help": "選擇默認使用的HTML模板",
+      "label": "HTML模板"
+    },
+    "title": {
+      "help": "應用程序的標題（比如將在操作面板中顯示）",
+      "label": "應用程序的標題"
+    },
+    "collection": "持有TEI文檔子集的名稱",
+    "abbrev": {
+      "label": "在URL和文件名中使用的短名稱",
+      "placeholder": "短名稱"
+    },
+    "uri": "唯一識別應用程序的URL",
+    "dialog": {
+      "title": "應用程序已生成"
+    },
+    "open": "打開",
+    "success": "您的應用程式已成功生成"
+  },
+  "annotations": {
+    "edit": "編輯注釋",
+    "delete": "刪除注釋",
+    "save": "合并并保存注釋到TEI",
+    "no-properties": "屬性未定義。",
+    "person": "用戶",
+    "organisation": "組織",
+    "place": "位置",
+    "term": "術語",
+    "date": "日期",
+    "reg": "規範化",
+    "app": "考證條目",
+    "hi": "高亮",
+    "ref": "鏈接（ref）",
+    "pb": "分頁（pb）",
+    "pagenum": "頁碼（@n）",
+    "facs": "圖像URL（@facts）",
+    "abbreviation": "縮寫",
+    "occurrences": "在文本中的出現情況",
+    "correction": "校正",
+    "expansion": "擴展",
+    "reference": "參考",
+    "lookup": "搜索實體",
+    "apply": "應用注釋",
+    "apply-all": "選擇并應用全部",
+    "search-other": "搜索在其他文檔中的出現情況",
+    "save-other": "搜索在其他文檔中的出現情況并立即應用注釋",
+    "changes": "更改",
+    "undo": "撤銷上次更改",
+    "download": "將合并的TEI保存到本地文件",
+    "reload": "重新加載源TEI",
+    "preview": "刷新預覽",
+    "confirm-restore-title": "確認恢復",
+    "restore": "在先前的會話中為此文件所做的註釋已被找到。是否重新加載？",
+    "confirm-reload-title": "確認重新加載",
+    "confirm-reload": "放棄當前注釋并重新加載源？",
+    "modify": "將編輯應用到基礎文本",
+    "modify-info": "注意：這不是註釋，在合併時會修改基礎文本",
+    "permission": "權限不足：無權保存注釋。",
+    "ner": {
+      "title": "命名實體提取",
+      "description": "嘗試自動在文本中尋找命名實體，並將其標記為註釋。",
+      "run": "運行",
+      "model": "選擇一個模型",
+      "denied": "發現未保存的更改：請先存儲或放棄更改。"
+    },
+    "confirm-discard-title": "放棄",
+    "confirm-discard": "是否丟棄事件列表？",
+    "doc-count": "{{count}} / {{total}}",
+    "toggle": "顯示/隱藏預覽/控制面板",
+    "add-entity": "創建實體",
+    "edit-entity": "編輯實體",
+    "edit-reference": "搜索/編輯參考",
+    "hints": {
+      "modify": "標記為相同類型但不同鍵的實體",
+      "incomplete": "標記為相同類型但沒有鍵",
+      "unmarked": "文本中未標記的事件",
+      "open-in-tab": "在新標簽中打開文檔進行審閲"
+    }
+  },
+  "ner": {
+    "title": "訓練命名實體識別模型",
+    "not-found": "此功能需要運行TEI Publisher NER服務！無法聯係服務！",
+    "found": "發現帶有spaCy版本的TEI Publisher NER",
+    "name-placeholder": "要創建的模型名稱",
+    "name": "名稱",
+    "path": "路徑",
+    "path-placeholder": "文檔或集合的相對路徑",
+    "path-info": "輸入文件或集合的路徑以用作訓練輸入。路徑應相對於TEI Publisher的數據根目錄。",
+    "lang-info": "您可以為某種語言訓練一個新模型，或者選擇下面的一個現有模型進行擴展。如果不擴展現有模型，您必須指定一種語言。否則請保持空白。",
+    "language-placeholder": "用於創建模型的語言",
+    "language": "語言",
+    "language-error": "需要一個語言或基礎模型",
+    "model": "基礎模型",
+    "model-placeholder": "要擴展或複製的模型",
+    "vectors": "僅從基礎模型複製向量",
+    "output": "訓練輸出",
+    "prepare": "準備訓練數據",
+    "start": "運行"
+  },
+  "timeline": {
+    "unknown": "未注明日期",
+    "clear": "清除日期選擇"
+  }
+}
