@@ -513,6 +513,10 @@ class PbViewAnnotate extends PbView {
       );
     }
     this._rangesMap.set(span, teiRange);
+    // pass annotation to event for processing by foreign component
+    const data = JSON.parse(span.dataset.annotation);
+    const text = span.textContent;
+    this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
 
     if (!batch) {
       this.refreshMarkers();
@@ -934,7 +938,16 @@ class PbViewAnnotate extends PbView {
       }
     }
 
+    if(this.showPopup){
     this._createTooltip(span);
+    }else{
+        const data = JSON.parse(span.dataset.annotation);
+        const text = span.textContent;
+        span.addEventListener('click', (ev) =>{
+            this.emitTo('pb-annotation-edit', Object.assign({}, { target: span, type: span.dataset.type, properties: data, text }));
+        });
+    }
+
   }
 
   _clearMarkers() {
