@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - next*
-      - '**consolidate-lit**'
   workflow_dispatch:
 
 jobs:
