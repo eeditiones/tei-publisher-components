@@ -3,16 +3,15 @@ name: Release npm package
 on:
   workflow_run:
     workflows: ["Build and Test"]
-  push:
+    types:
+      - completed
     branches:
       - master
       - next-4
-    types:
-      - completed
 
 jobs:
   release:
-    # check Test success
+    # Only release if Build and Test workflow succeeded
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Release
     runs-on: ubuntu-latest
