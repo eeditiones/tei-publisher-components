@@ -2,7 +2,7 @@
     "branches": [
         "master",
         {
-            "name": "next-3",
+            "name": "next-4",
             "prerelease": true,
             "channel": "next"
         }
