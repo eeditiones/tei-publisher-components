@@ -6,9 +6,8 @@ on:
 
   push:
     branches:
-      - next*
-      - '**consolidate-lit**'
-
+      - master
+      - next-4
   workflow_dispatch:
 
 jobs:
@@ -45,3 +44,27 @@ jobs:
         run: npm run build:production
       - name: Run Cypress E2E Tests
         run: npm run cy:run:e2e
+  release:
+    name: Release
+    needs: [test-fast, e2e]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/next-4')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: npm install
+        run: npm ci
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
