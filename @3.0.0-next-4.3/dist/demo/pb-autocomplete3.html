@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>Using pb-autocomplete</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+            select {
+                margin-right: 10px;
+            }
+        </style>
+        <script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+    <body>
+        <h1>Using pb-autocomplete</h1>
+
+        <pb-demo-snippet>
+            <template>
+                <pb-page>
+                    <form action="" id="form">
+                        <h2>Static remote suggestion list loaded once upon initialization</h2>
+                        <pb-autocomplete name="autocomplete3" placeholder="language" source="select.json" preload substring></pb-autocomplete>
+                        <p>Selected: <span id="selected"></span></p>
+                    </form>
+                    </pb-page>
+            </template>
+        </pb-demo-snippet>
+        <script type="module">
+          import { ready, stampIfNeeded, firePageReady } from '../src/docs/demo-utils.js'
+          async function hydrate () {
+            await ready(['pb-demo-snippet','pb-autocomplete'])
+            const snippet = document.querySelector('pb-demo-snippet')
+            stampIfNeeded(snippet)
+            const selected = document.getElementById('selected')
+            document.addEventListener('pb-autocomplete-selected', ev => {
+              const { value, text } = ev.detail || {}
+              selected.textContent = `${value} = ${text}`
+            })
+            firePageReady()
+          }
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate)
+          else hydrate()
+        </script>
+    </body>
+</html>
