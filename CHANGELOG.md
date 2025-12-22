@@ -1,3 +1,20 @@
+# [3.0.0-next-4.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.1...v3.0.0-next-4.2) (2025-12-22)
+
+
+### Bug Fixes
+
+* **workflows:** reliably deploy GitHub Pages deploy on release ([89b1cc8](https://github.com/eeditiones/tei-publisher-components/commit/89b1cc806a85a44c96771df12de9382f9628bb79))
+
+
+### chore
+
+* update Node.js version requirement to 24 ([76dc908](https://github.com/eeditiones/tei-publisher-components/commit/76dc9084fca2dd064a71311e12a71deb95700f97))
+
+
+### BREAKING CHANGES
+
+* - `"node": ">=24"`
+
 # [3.0.0-next-4.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.7...v3.0.0-next-4.1) (2025-12-22)
 
 
