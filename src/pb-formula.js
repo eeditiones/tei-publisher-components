@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { translate } from './pb-i18n.js';
 

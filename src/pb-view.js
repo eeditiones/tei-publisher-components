@@ -1,10 +1,10 @@
-import { LitElement, html, css } from 'lit-element';
-import anime from 'animejs';
+import { LitElement, html, css } from 'lit';
+import { animate } from 'animejs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
-import '@polymer/iron-ajax';
+import './pb-fetch.js';
 
 /**
  * This is the main component for viewing text which has been transformed via an ODD.
@@ -285,6 +285,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         attribute: 'disable-history',
       },
       /**
+       * If set to true, pb-view will only read from the registry and never write to it.
+       * This is useful when pb-view is used as a simple receiver of navigation updates
+       * from other components (e.g., pb-tify). When enabled, pb-view will:
+       * - Still subscribe to registry changes
+       * - Still read from registry to determine what to display
+       * - Never call registry.replace or registry.commit after initial connection
+       * 
+       * This prevents pb-view from resetting the registry with stale state during navigation,
+       * which can cause bounce-back issues when used with components like pb-tify.
+       * 
+       * Default is false (pb-view can write to registry as before).
+       */
+      readOnlyRegistry: {
+        type: Boolean,
+        attribute: 'read-only-registry',
+      },
+      /**
        * If set to the name of an event, the content of the pb-view will not be replaced
        * immediately upon updates. Instead, an event is emitted, which contains the new content
        * in property `root`. An event handler intercepting the event can thus modify the content.
@@ -337,6 +354,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     super();
     this.src = null;
     this.url = null;
+    this.readOnlyRegistry = false; // Default: pb-view can write to registry
+    this._registryInitialized = false; // Track if registry has been initialized
     this.onUpdate = false;
     this.appendFootnotes = false;
     this.notFound = null;
@@ -353,7 +372,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._selector = {};
     this._chunks = [];
     this._scrollTarget = null;
+    this._loading = false;
+    this._lastRequestKey = null;
     this.static = null;
+    // Debouncing for refresh calls (Option 6: Hybrid approach)
+    this._refreshDebounceTimer = null;
+    this._pendingRefreshEvent = null;
+    this._hasLoadedOnce = false; // Track if view has loaded at least once
+    this._lastLoadedId = null; // Track the last id that was actually loaded (for detecting navigation)
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -371,7 +397,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.loadCss) {
       waitOnce('pb-page-ready', () => {
         loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
-          this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          if (theme) {
+            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          }
         });
       });
     }
@@ -398,24 +426,47 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.nodeId = registry.state.root;
       }
 
-      const newState = {
-        id: this.xmlId,
-        view: this.getView(),
-        odd: this.getOdd(),
-        path: this.getDocument().path,
-      };
-      if (this.view !== 'single') {
-        newState.root = this.nodeId;
+      // Only call registry.replace during initial connection, not during navigation
+      // If readOnlyRegistry is true, never call registry.replace (even during initial connection)
+      // This prevents pb-view from resetting registry with stale state during navigation
+      // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this._registryInitialized && !isReadOnly) {
+        const _doc = this.getDocument ? this.getDocument() : null;
+        const newState = {
+          id: this.xmlId,
+          view: this.getView(),
+          odd: this.getOdd(),
+          path: _doc ? _doc.path : undefined,
+        };
+        if (this.view !== 'single') {
+          newState.root = this.nodeId;
+        }
+        if (this.fill) {
+          newState.fill = this.fill;
+        }
+        console.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized,
+          newState
+        });
+        registry.replace(this, newState);
+        this._registryInitialized = true;
+      } else if (isReadOnly) {
+        console.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized
+        });
       }
-      if (this.fill) {
-        newState.fill = this.fill;
-      }
-      console.log('id: %s; state: %o', this.id, newState);
-      registry.replace(this, newState);
 
       registry.subscribe(this, state => {
         this._setState(state);
-        this._refresh();
+        // Use debounced refresh to batch rapid registry changes
+        this._refresh(null); // Pass null as event, registry state will be used
       });
     }
     if (!this.waitFor) {
@@ -428,7 +479,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       this.navigate(ev.detail.direction);
     });
-    
+
     this.subscribeTo('pb-toggle', ev => {
       this.toggleFeature(ev);
     });
@@ -460,6 +511,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this._scrollObserver) {
       this._scrollObserver.disconnect();
     }
+    // Reset registry initialization flag when component is disconnected
+    // BUT: If read-only-registry is set, don't reset - we never want to call registry.replace
+    // This prevents pb-view from resetting registry when pb-grid rebuilds DOM
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
+      this._registryInitialized = false;
+    }
   }
 
   firstUpdated() {
@@ -481,7 +539,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
               if (lastChild) {
                 const next = lastChild.getAttribute('data-next');
                 if (next && !this._content.querySelector(`[data-root="${next}"]`)) {
-                  console.log('<pb-view> Loading next page: %s', next);
                   this._checkChunks('forward');
                   this._load(next, 'forward');
                 }
@@ -513,7 +570,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         });
       });
     }
-    this.subscribeTo('pb-refresh', this._refresh.bind(this));
+    // Subscribe to pb-refresh events
+    // Application code should specify subscribe="transcription" (or other channel) via HTML attribute
+    // If no subscribe attribute is set, uses defaultChannel (following pb-mixin pattern)
+    // This makes components generic and reusable - applications configure the channel
+    this.subscribeTo('pb-refresh', (ev) => {
+      this._refresh(ev);
+    });
   }
 
   /**
@@ -522,11 +585,19 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    * @returns the ODD being used
    */
   getOdd() {
-    return this.odd || this.getDocument().odd || 'teipublisher';
+    try {
+      return this.odd || this.getDocument().odd || 'teipublisher';
+    } catch {
+      return this.odd || 'teipublisher';
+    }
   }
 
   getView() {
-    return this.view || this.getDocument().view || 'single';
+    try {
+      return this.view || this.getDocument().view || 'single';
+    } catch {
+      return this.view || 'single';
+    }
   }
 
   /**
@@ -540,20 +611,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // animate new element if 'animation' property is 'true'
     if (this.animation) {
       if (this.lastDirection === 'forward') {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        animate(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       } else {
-        anime({
-          targets: this.shadowRoot.getElementById('view'),
+        animate(this.shadowRoot.getElementById('view'), {
           opacity: [0, 1],
           translateX: [-1000, 0],
           duration: 300,
-          easing: 'linear',
+          ease: 'linear',
         });
       }
     }
@@ -568,89 +637,341 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _refresh(ev) {
-    if (ev && ev.detail) {
-      if (
-        ev.detail.hash &&
-        !this.noScroll &&
-        !(ev.detail.id || ev.detail.path || ev.detail.odd || ev.detail.view || ev.detail.position)
-      ) {
-        // if only the scroll target has changed: scroll to the element without reloading
-        this._scrollTarget = ev.detail.hash;
-        const target = this.shadowRoot.getElementById(this._scrollTarget);
-        if (target) {
-          setTimeout(() => target.scrollIntoView({ block: 'nearest' }));
-        }
+    // Store the pending event for debouncing
+    this._pendingRefreshEvent = ev;
+    
+    // Clear existing debounce timer
+    if (this._refreshDebounceTimer) {
+      clearTimeout(this._refreshDebounceTimer);
+    }
+    
+    // Debounce: wait 150ms to batch rapid changes
+    this._refreshDebounceTimer = setTimeout(() => {
+      this._doRefresh(this._pendingRefreshEvent);
+      this._pendingRefreshEvent = null;
+      this._refreshDebounceTimer = null;
+    }, 150);
+  }
+  
+  _doRefresh(ev) {
+    // Merge registry state with event details, prioritizing registry state
+    const registryState = registry.getState(this);
+    const eventDetail = ev && ev.detail ? ev.detail : {};
+    
+    // Priority: registry state > event detail > current values
+    const mergedState = {
+      ...eventDetail,
+      ...registryState, // Registry state overrides event detail
+    };
+    
+    // Check if this is a metadata panel BEFORE processing any state changes
+    // Check pb-param elements for mode parameter
+    let modeParam = null;
+    const modeParamEl = this.querySelector && this.querySelector('pb-param[name="mode"]');
+    if (modeParamEl) {
+      modeParam = modeParamEl.getAttribute('value');
+    }
+    // Also check _additionalParams (might be set from registry or events)
+    if (!modeParam && this._additionalParams) {
+      modeParam = this._additionalParams.mode || this._additionalParams['user.mode'];
+    }
+    
+    const isMetadataPanel = modeParam === 'metadata-panel' || 
+                           (this.xpath && this.view === 'single' && !this.nodeId);
+    
+    // Skip refresh if this view has xpath (e.g., metadata panel) - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (this.xpath && !mergedState.xpath && this._hasLoadedOnce) {
+      // This view is bound to a specific xpath (like metadata), don't change it after initial load
+      return;
+    }
+    
+    // Skip refresh for metadata panel - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (isMetadataPanel && this._hasLoadedOnce) {
+      // Metadata panel shouldn't react to page navigation events (root/id changes)
+      // Only allow updates if explicitly changing xpath or view mode
+      // Filter out canvas IDs before checking
+      const hasCanvasId = mergedState.id && /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (mergedState.root || (mergedState.id && !hasCanvasId) || mergedState.position) {
+        // This is a page navigation event - skip it for metadata panel
         return;
       }
-      if (ev.detail.path) {
-        const doc = this.getDocument();
-        doc.path = ev.detail.path;
-      }
-      if (ev.detail.id) {
-        this.xmlId = ev.detail.id;
-      } else if (ev.detail.id == null) {
-        this.xmlId = null;
-      }
-      this.odd = ev.detail.odd || this.odd;
-      if (ev.detail.columnSeparator !== undefined) {
-        this.columnSeparator = ev.detail.columnSeparator;
-      }
-      this.view = ev.detail.view || this.getView();
-      this.fill = ev.detail.fill || this.fill;
-      if (ev.detail.xpath) {
-        this.xpath = ev.detail.xpath;
-        this.nodeId = null;
-      }
-      // clear nodeId if set to null
-      if (ev.detail.root === null) {
-        this.nodeId = null;
-      } else {
-        this.nodeId =
-          (ev.detail.position !== undefined ? ev.detail.position : ev.detail.root) || this.nodeId;
-      }
-
-      // check if the URL template needs any other parameters
-      // and set them on this._additionalParams
-      registry.pathParams.forEach(key => {
-        this._additionalParams[key] = ev.detail[key];
-      });
-
-      if (!this.noScroll) {
-        this._scrollTarget = ev.detail.hash;
+    }
+    
+    // For metadata panel, filter out canvas IDs from merged state
+    // Canvas IDs (like "A-N-38_004.jpg") should not affect metadata panel content
+    // Create a filtered copy if needed
+    let filteredState = mergedState;
+    if (isMetadataPanel && mergedState.id) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (looksLikeCanvasId) {
+        // Remove canvas ID from merged state for metadata panel
+        filteredState = { ...mergedState };
+        delete filteredState.id;
       }
     }
+    
+    // Use filteredState for the rest of the function (filteredState === mergedState if no filtering was needed)
+    const stateToUse = filteredState;
+    
+    // Handle hash-only changes (scroll without reload)
+    if (stateToUse.hash &&
+        !this.noScroll &&
+        !(stateToUse.id || stateToUse.path || stateToUse.odd || stateToUse.view || stateToUse.position)) {
+      this._scrollTarget = stateToUse.hash;
+      const target = this.shadowRoot.getElementById(this._scrollTarget);
+      if (target) {
+        setTimeout(() => target.scrollIntoView({ block: 'nearest' }));
+      }
+      return;
+    }
+    
+    // Store old values BEFORE updating - critical for change detection
+    // IMPORTANT: For _refresh(null) case where _setState was called first,
+    // _setState may have already updated this.xmlId, so oldXmlId might be the new value.
+    // We'll compare against _lastLoadedId (what was actually loaded) to detect changes.
+    const oldXmlId = this.xmlId;
+    const oldNodeId = this.nodeId;
+    const oldPath = this.getDocument ? (this.getDocument()?.path || null) : null;
+    // For _refresh(null) case, also check if _setState set an ID in _features or _additionalParams
+    // that's different from what was loaded
+    // CRITICAL: Check these BEFORE we process the ID, because processing might update them
+    const additionalParamsIdBefore = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresIdBefore = this._features && this._features.id ? this._features.id : null;
+    const lastLoadedIdForComparison = this._lastLoadedId; // What was actually loaded via API
+    
+    // For _refresh(null) case: if _setState set an ID that's different from what was loaded,
+    // we should reload even if oldXmlId === newId (because _setState already updated this.xmlId)
+    const setIdChanged = (additionalParamsIdBefore && additionalParamsIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
+                         (featuresIdBefore && featuresIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null);
+    
+    // Apply merged state
+    // CRITICAL: Event detail takes precedence over registry state for path/odd changes
+    // This is important because events explicitly request path/odd changes, while registry might have old values
+    const eventPath = ev && ev.detail && ev.detail.path ? ev.detail.path : null;
+    const eventOdd = ev && ev.detail && ev.detail.odd ? ev.detail.odd : null;
+    // Use event path/odd if present, otherwise use stateToUse (registry state)
+    const pathToApply = eventPath || stateToUse.path;
+    const oddToApply = eventOdd || stateToUse.odd;
+    
+    if (pathToApply) {
+      const doc = this.getDocument();
+      if (doc) {
+        doc.path = pathToApply;
+      }
+    }
+    
+    // Store for later use in pathChanged/oddChanged checks
+    const newPath = pathToApply;
+    const newOdd = oddToApply;
+    
+    // Handle id parameter - distinguish between XML IDs and canvas IDs
+    // Canvas IDs (from pb-tify) have patterns like "A-N-38_004.jpg" or end with ".jpg"
+    // XML IDs are actual xml:id attributes in the TEI document
+    // CRITICAL: Use ev.detail.id directly to avoid issues with filtered/overridden state
+    // Also check _additionalParams and _features for ID (set via _setState when ev is null)
+    const eventId = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
+    const additionalParamsId = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresId = this._features && this._features.id ? this._features.id : null;
+    // For _refresh(null) case, also check if _setState was called with id
+    // _setState stores id in _features if not in pathParams, or _additionalParams if in pathParams
+    const idToProcess = eventId || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsId || featuresId;
+    
+    if (idToProcess) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(idToProcess));
+      if (!looksLikeCanvasId) {
+        // It's a real XML ID, use it
+        this.xmlId = idToProcess;
+      } else {
+        // If it's a canvas ID, store it in _additionalParams so getParameters can use it
+        // This ensures the request includes the correct canvas ID even though we don't set xmlId
+        this._additionalParams = this._additionalParams || {};
+        this._additionalParams.id = idToProcess;
+      }
+      // If it's a canvas ID, don't set xmlId - use root/position for navigation instead
+    }
+    
+    // Use event odd if present, otherwise use stateToUse.odd, otherwise keep current
+    this.odd = oddToApply || this.odd;
+    
+    if (stateToUse.columnSeparator !== undefined) {
+      this.columnSeparator = stateToUse.columnSeparator;
+    }
+    
+    this.view = stateToUse.view || this.getView();
+    this.fill = stateToUse.fill || this.fill;
+    
+    if (stateToUse.xpath) {
+      this.xpath = stateToUse.xpath;
+      this.nodeId = null;
+    }
+    
+    // Handle root/position (prioritize registry state)
+    
+    let newNodeId = this.nodeId;
+    if (stateToUse.root === null) {
+      newNodeId = null;
+    } else {
+      newNodeId = (stateToUse.position !== undefined ? stateToUse.position : stateToUse.root) || this.nodeId;
+    }
+    
+    // Check if nodeId actually changed - if not, skip loading to avoid unnecessary requests
+    const nodeIdChanged = newNodeId !== oldNodeId;
+    
+    // Also check if id changed - even if nodeId (root) is the same, id change means different page
+    // Use ev.detail.id directly (from the event) to avoid issues with filtered/overridden state
+    // Fall back to stateToUse.id, _additionalParams.id, _features.id, or this.xmlId if event doesn't have id
+    // CRITICAL: For _refresh(null) case, check if _setState set an ID that's different from oldXmlId
+    const eventIdForChangeCheck = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
+    const additionalParamsIdForCheck = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresIdForCheck = this._features && this._features.id ? this._features.id : null;
+    const newId = eventIdForChangeCheck || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsIdForCheck || featuresIdForCheck || this.xmlId;
+    // Check if ID changed: compare against oldXmlId OR lastLoadedIdForComparison (what was actually loaded)
+    // For _refresh(null) case where _setState was called first, _setState already updated this.xmlId,
+    // so oldXmlId might be the new value. Compare against lastLoadedIdForComparison to detect changes.
+    // Also check if _setState set an ID in _features/_additionalParams that's different from what was loaded
+    // Check if ID changed: compare against oldXmlId OR lastLoadedIdForComparison (what was actually loaded)
+    // For _refresh(null) case where _setState was called first, _setState already updated this.xmlId,
+    // so oldXmlId might be the new value. Compare against lastLoadedIdForComparison to detect changes.
+    // Also check if _setState set an ID in _features/_additionalParams that's different from what was loaded
+    // CRITICAL: If _setState set a new ID (setIdChanged is true), always reload regardless of other conditions
+    // Also reload if we have a new ID but _lastLoadedId is null (first load or ID was set externally)
+    const idChanged = newId && (
+      newId !== oldXmlId || 
+      (newId !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
+      setIdChanged ||  // _setState set a new ID - always reload
+      (lastLoadedIdForComparison === null && newId)  // First load with ID, or ID set externally
+    );
+    
+    // Check if path changed - path change means different document, should always reload
+    // oldPath was calculated above before updating doc.path
+    // newPath was calculated above (event path takes precedence over registry state)
+    const pathChanged = newPath && newPath !== oldPath;
+    
+    // Check if odd changed - odd change means different document format, should reload
+    // newOdd was calculated above (event odd takes precedence over registry state)
+    const oldOdd = this.odd;
+    const oddChanged = newOdd && newOdd !== oldOdd;
+    
+    // CRITICAL: If we received a pb-refresh event, check if it's for a different page
+    // This ensures we reload when navigation occurs, even if registry already updated our state
+    const eventHasId = ev && ev.detail && ev.detail.id;
+    // _lastLoadedId tracks what we actually loaded via API, not what registry set
+    // If null, we haven't loaded anything yet, so we should load
+    const lastLoadedId = this._lastLoadedId;
+    // If we received an event with an id different from what we last loaded, reload
+    // OR if we haven't loaded anything yet (_lastLoadedId is null), reload
+    // Also check against oldXmlId as fallback (in case _lastLoadedId wasn't set)
+    const shouldReloadFromEvent = eventHasId && (
+      lastLoadedId === null || 
+      ev.detail.id !== lastLoadedId ||
+      (oldXmlId && ev.detail.id !== oldXmlId)
+    );
+    
+    const willSkip = !nodeIdChanged && !idChanged && !pathChanged && !oddChanged && !shouldReloadFromEvent && this._hasLoadedOnce;
+    
+    if (willSkip) {
+      // Neither nodeId nor id changed and event id hasn't changed - skip loading
+      // This prevents unnecessary /api/parts/ requests when navigation doesn't actually change the content
+      
+      // Still update other properties that might have changed
+      registry.pathParams.forEach(key => {
+        if (stateToUse[key] !== undefined) {
+          this._additionalParams[key] = stateToUse[key];
+        }
+      });
+      
+      // Update xmlId if it changed (even if we're not reloading)
+      // this.xmlId was already updated above if stateToUse.id was set
+      
+      if (!this.noScroll) {
+        this._scrollTarget = stateToUse.hash;
+      }
+      
+      this._updateStyles();
+      return;
+    }
+    
+    // NodeId changed or id changed or first load - update and load
+    this.nodeId = newNodeId;
+    
+    // xmlId was already updated above if stateToUse.id was set and not a canvas ID
+    
+    // Track the id we're about to load so we can detect if a pb-refresh event
+    // is for a different page than what we last loaded
+    const idToLoad = mergedState.id || this.xmlId;
+
+    // Check if the URL template needs any other parameters
+    // For metadata panel, canvas IDs are already filtered out in filteredState
+    registry.pathParams.forEach(key => {
+      if (stateToUse[key] !== undefined) {
+        this._additionalParams[key] = stateToUse[key];
+      }
+    });
+
+    if (!this.noScroll) {
+      this._scrollTarget = stateToUse.hash;
+    }
+    
     this._updateStyles();
     if (this.infiniteScroll) {
       this._clear();
     }
+    
     this._load(this.nodeId);
+    
+    // Don't update _lastLoadedId here - only update it in _handleContent after content is actually loaded
+    // This ensures _lastLoadedId only tracks what was actually loaded, not what we're trying to load
   }
 
   _load(pos, direction) {
-    const doc = this.getDocument();
+    const doc = this.getDocument ? this.getDocument() : null;
 
-    if (!doc.path) {
-      console.log('No path');
+    // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
+    if (!doc || !doc.path) {
+      console.warn('<pb-view> No path');
       return;
     }
 
-    if (this._loading) {
-      return;
+    if (this._loading && this._lastRequestKey) {
+      const testParams = this.getParameters(pos);
+      const testReqKey = JSON.stringify({ url: this.url || '', doc: doc.path, params: testParams });
+      if (this._lastRequestKey === testReqKey) {
+        return;
+      }
+      // Cancel the pending request
+      const loader = this.shadowRoot.getElementById('loadContent');
+      if (loader) {
+        loader.abort();
+      }
+      // Clear the old request key so new requests aren't blocked
+      this._lastRequestKey = null;
+      this._loading = false;
     }
     this._loading = true;
+
     const params = this.getParameters(pos);
     if (direction) {
       params._dir = direction;
     }
-    // this.$.view.style.opacity=0;
 
     this._doLoad(params);
   }
 
   _doLoad(params) {
+    // De-duplicate identical requests to avoid hammering the backend
+    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
+    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
+    if (this._lastRequestKey === reqKey) {
+      // nothing changed; unlock and skip
+      this._loading = false;
+      return;
+    }
+    this._lastRequestKey = reqKey;
+
     this.emitTo('pb-start-update', params);
 
-    console.log('<pb-view> Loading view with params %o', params);
     if (!this.infiniteScroll) {
       this._clear();
     }
@@ -669,7 +990,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.static !== null) {
       this._staticUrl(params).then(url => {
         loadContent.url = url;
-        loadContent.generateRequest();
+        loadContent.generateRequest().catch(() => {
+          // Error handled by @error event listener
+        });
       });
       return;
     }
@@ -685,12 +1008,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     let url = `${this.getEndpoint()}/${this.url}`;
 
     if (this.minApiVersion('1.0.0')) {
-      url += `/${encodeURIComponent(this.getDocument().path)}/json`;
+      // Encode the entire path as a single unit for the API
+      const doc = this.getDocument();
+      if (doc && doc.path) {
+        const docPath = encodeURIComponent(doc.path);
+        url += `/${docPath}/json`;
+      } else {
+        console.warn('<pb-view> No document path available for URL construction');
+        return;
+      }
     }
 
     loadContent.url = url;
     loadContent.params = params;
-    loadContent.generateRequest();
+    loadContent.generateRequest().catch((error) => {
+      console.error('[pb-view] _doLoad: request failed', error);
+      // Error handled by @error event listener
+    });
   }
 
   /**
@@ -707,7 +1041,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return urlComponents.join('&');
     }
 
-    const index = await fetch(`index.json`).then(response => response.json());
+    const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
+    const baseUrl = new URL(`${baseDir}/`, window.location.href);
+    const indexUrl = new URL('index.json', baseUrl).href;
+    const index = await fetch(indexUrl).then(response => response.json());
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),
@@ -719,8 +1056,15 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       file = index[url];
     }
 
-    console.log('<pb-view> Static lookup %s: %s', url, file);
-    return `${file}`;
+    if (!file) {
+      console.warn('<pb-view> No static mapping found for %s', url);
+      const fallback = Object.values(index)[0];
+      if (!fallback) {
+        return baseUrl.href;
+      }
+      file = fallback;
+    }
+    return new URL(file, baseUrl).href;
   }
 
   _clear() {
@@ -738,7 +1082,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _handleError() {
     this._clear();
+    this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
+    console.error('<pb-view> Error details:', loader.lastError);
     let message;
     const { response } = loader.lastError;
 
@@ -763,15 +1109,19 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const loader = this.shadowRoot.getElementById('loadContent');
     const resp = loader.lastResponse;
 
+
     if (!resp) {
+      this._loading = false;
       console.error('<pb-view> No response received');
       return;
     }
     if (resp.error) {
+      console.error('<pb-view> Response has error:', resp.error);
       if (this.notFound != null) {
         this._content = this.notFound;
       }
       this.emitTo('pb-end-update', null);
+      this._loading = false;
       return;
     }
 
@@ -820,6 +1170,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     });
 
     this.emitTo('pb-end-update', null);
+    // allow subsequent loads with new params
+    this._loading = false;
+    // Mark that this view has loaded at least once
+    this._hasLoadedOnce = true;
+    // Track the id that was actually loaded (for detecting navigation events)
+    // This is critical - we only update _lastLoadedId when content is actually loaded,
+    // not when registry just updates our state
+    if (this.xmlId) {
+      this._lastLoadedId = this.xmlId;
+    }
   }
 
   _replaceContent(resp, direction) {
@@ -845,6 +1205,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _doReplaceContent(elem, resp, direction) {
+    
     if (this.columnSeparator) {
       this._replaceColumns(elem);
       this._loading = false;
@@ -939,7 +1300,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
     if (registry.hash) {
       const target = this.shadowRoot.getElementById(registry.hash.substring(1));
-      console.log('hash target: %o', target);
       if (target) {
         window.requestAnimationFrame(() =>
           setTimeout(() => {
@@ -954,7 +1314,6 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const target = this.shadowRoot.getElementById(link.hash.substring(1));
     if (target) {
       ev.preventDefault();
-      console.log('<pb-view> Scrolling to element %s', target.id);
       target.scrollIntoView({ block: 'center', inline: 'nearest' });
     }
   }
@@ -973,12 +1332,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
   _fixLinks(content) {
     if (this.fixLinks) {
-      const doc = this.getDocument();
-      const base = this.toAbsoluteURL(doc.path);
+      const doc = this.getDocument ? this.getDocument() : null;
+      const base = this.toAbsoluteURL(doc && doc.path ? doc.path : '');
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
         const src = new URL(oldSrc, base);
-        image.src = src;
+        image.src = src.href;
       });
       content.querySelectorAll('a').forEach(link => {
         const oldHref = link.getAttribute('href');
@@ -986,7 +1345,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           link.addEventListener('click', ev => this._scrollToElement(ev, link));
         } else {
           const href = new URL(oldHref, base);
-          link.href = href;
+          link.href = href.href;
         }
       });
     } else {
@@ -1014,17 +1373,52 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _getParameters() {
-    const params = [];
+    const params = {};  // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
-      params[`user.${param.getAttribute('name')}`] = param.getAttribute('value');
+      const name = param.getAttribute('name');
+      const value = param.getAttribute('value');
+      // For metadata panel, filter out canvas IDs
+      if (name === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            return; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
+      params[`user.${name}`] = value;
     });
     // add parameters for features set with pb-toggle-feature
     for (const [key, value] of Object.entries(this._features)) {
+      // For metadata panel, filter out canvas IDs
+      if (key === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            continue; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
       params[`user.${key}`] = value;
     }
     // add parameters for user-defined parameters supplied via pb-link
     if (this._additionalParams) {
       for (const [key, value] of Object.entries(this._additionalParams)) {
+        // For metadata panel, filter out canvas IDs
+        if (key === 'id' || key === 'user.id') {
+          const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+          if (looksLikeCanvasId) {
+            // Check if this is a metadata panel
+            const modeParamEl = this.querySelector('pb-param[name="mode"]');
+            if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+              continue; // Skip canvas IDs for metadata panel
+            }
+          }
+        }
         params[key] = value;
       }
     }
@@ -1036,22 +1430,55 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    */
   getParameters(pos) {
     pos = pos || this.nodeId;
-    const doc = this.getDocument();
+    const doc = this.getDocument ? this.getDocument() : null;
     const params = this._getParameters();
-    if (!this.minApiVersion('1.0.0')) {
+    if (!this.minApiVersion('1.0.0') && doc && doc.path) {
       params.doc = doc.path;
     }
     params.odd = `${this.getOdd()}.odd`;
-    params.view = this.getView();
+    // For metadata panel, use 'single' view to ensure teiHeader is returned
+    // and don't set root parameter - it should return teiHeader, not a specific page
+    const modeParamEl = this.querySelector('pb-param[name="mode"]');
+    const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+    if (isMetadataPanel) {
+      params.view = 'single';
+    } else {
+      params.view = this.getView();
+    }
     params.fill = this.fill;
-    if (pos) {
+    if (pos && !isMetadataPanel) {
       params.root = pos;
     }
     if (this.xpath) {
       params.xpath = this.xpath;
     }
-    if (this.xmlId) {
-      params.id = this.xmlId;
+    // Check if we have an id in _additionalParams first (from registry/event, including canvas IDs)
+    // This takes precedence over xmlId because it's the most recent state
+    if (this._additionalParams && this._additionalParams.id) {
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this._additionalParams.id));
+        if (!looksLikeCanvasId) {
+          params.id = this._additionalParams.id;
+        }
+      } else {
+        params.id = this._additionalParams.id;
+      }
+    } else if (this.xmlId) {
+      // Fall back to xmlId if no id in _additionalParams
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this.xmlId));
+        if (!looksLikeCanvasId) {
+          params.id = this.xmlId;
+        }
+      } else {
+        params.id = this.xmlId;
+      }
     }
     if (!this.suppressHighlight && this.highlight) {
       params.highlight = 'yes';
@@ -1114,7 +1541,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     if (direction === 'backward') {
       if (this.previous) {
-        if (!this.disableHistory && !this.map) {
+        const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+        if (!this.disableHistory && !this.map && !isReadOnly) {
           registry.commit(this, {
             id: this.previousId || null,
             root: this.previousId ? null : this.previous,
@@ -1124,7 +1552,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this._load(this.xmlId ? null : this.previous, direction);
       }
     } else if (this.next) {
-      if (!this.disableHistory && !this.map) {
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this.disableHistory && !this.map && !isReadOnly) {
         registry.commit(this, {
           id: this.nextId || null,
           root: this.nextId ? null : this.next,
@@ -1176,7 +1605,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       const view = this.shadowRoot.getElementById('view');
       this._applyToggles(view);
     }
-    registry.commit(this, properties);
+    // Only commit to registry if not in read-only mode
+    // In read-only mode, pb-view only reads from registry, never writes
+    // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
+      registry.commit(this, properties);
+    }
   }
 
   _setState(properties) {
@@ -1227,7 +1662,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
 
     if (properties.path) {
-      this.getDocument().path = properties.path;
+      const doc = this.getDocument ? this.getDocument() : null;
+      if (doc) doc.path = properties.path;
     }
 
     if (properties.selectors) {
@@ -1289,9 +1725,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       #view {
         position: relative;
         font-size: clamp(
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)), 
-          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3.0))
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3))
         );
         line-height: calc(var(--pb-content-line-height, 1.5) * var(--pb-zoom-factor));
       }
@@ -1331,7 +1767,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
 
       a[rel='footnote'] {
-        font-size: calc(var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1));
+        font-size: calc(
+          var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1)
+        );
         font-family: var(--pb-footnote-font-family, --pb-content-font-family);
         vertical-align: super;
         color: var(--pb-footnote-color, var(--pb-color-primary, #333333));
@@ -1412,7 +1850,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           ${this.infiniteScroll ? html`<div id="bottom-observer" class="observer"></div>` : null}
           <div id="footnotes" part="footnotes">${this._footnotes}</div>
         </div>
-        <iron-ajax
+        <pb-fetch
           id="loadContent"
           verbose
           handle-as="json"
@@ -1420,7 +1858,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           with-credentials
           @response="${this._handleContent}"
           @error="${this._handleError}"
-        ></iron-ajax>
+        ></pb-fetch>
       `,
     ];
   }

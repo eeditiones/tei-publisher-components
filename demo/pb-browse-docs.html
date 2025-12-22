@@ -8,13 +8,9 @@
     <title>pb-browse-docs Demo</title>
     <link rel="stylesheet" href="demo.css">
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
-    <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js" defer></script>
-    <script type="module" src="../node_modules/@polymer/paper-item/paper-item.js"></script>
+    
+    
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-fab/paper-fab.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-lang.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
@@ -86,32 +82,32 @@
                     border-bottom: 1px solid #a0a0a0;
                 }
             </style>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" 
+            <pb-page endpoint="." 
                 url-doc="path|query" url-skip="lang," url-id="query|hash">
                 <div class="toolbar">
                     <pb-login id="login" group="tei"></pb-login>
                     <pb-lang label="language" selected="en">
-                        <paper-item value="bg">Български</paper-item>
-                        <paper-item value="cs">český</paper-item>
-                        <paper-item value="zh_CN">简体中文</paper-item>
-                        <paper-item value="zh_TW">繁體中文</paper-item>
-                        <paper-item value="de">Deutsch</paper-item>
-                        <paper-item value="en">English</paper-item>
-                        <paper-item value="es">Español</paper-item>
-                        <paper-item value="el">ελληνικά</paper-item>
-                        <paper-item value="fr">Français</paper-item>
-                        <paper-item value="it">Italiano</paper-item>
-                        <paper-item value="ka">ქართული</paper-item>
-                        <paper-item value="nl">Nederlands</paper-item>
-                        <paper-item value="no">Norsk</paper-item>
-                        <paper-item value="pl">Polski</paper-item>
-                        <paper-item value="pt">Português</paper-item>
-                        <paper-item value="ro">Română</paper-item>
-                        <paper-item value="ru">русский</paper-item>
-                        <paper-item value="sl">Slovenščina</paper-item>
-                        <paper-item value="sv">Svenska</paper-item>
-                        <paper-item value="tr">Türkçe</paper-item>
-                        <paper-item value="uk">Українська</paper-item>
+                        <option value="bg">Български</option>
+                        <option value="cs">český</option>
+                        <option value="zh_CN">简体中文</option>
+                        <option value="zh_TW">繁體中文</option>
+                        <option value="de">Deutsch</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="el">ελληνικά</option>
+                        <option value="fr">Français</option>
+                        <option value="it">Italiano</option>
+                        <option value="ka">ქართული</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="no">Norsk</option>
+                        <option value="pl">Polski</option>
+                        <option value="pt">Português</option>
+                        <option value="ro">Română</option>
+                        <option value="ru">русский</option>
+                        <option value="sl">Slovenščina</option>
+                        <option value="sv">Svenska</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="uk">Українська</option>
                     </pb-lang>
                 </div>
                 <pb-progress subscribe="docs"></pb-progress>
@@ -120,7 +116,7 @@
                         <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
                     </pb-restricted>
                     <!-- use just `collection/` for new API @url-->
-                    <pb-browse-docs id="document-list" fix-links
+                    <pb-browse-docs id="document-list" url="collection/" fix-links
                         sort-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.modificationDate", "value": "default"}]'
                         sort-by="title"
                         filter-options='[{"label": "browse.title", "value": "title"},{"label": "browse.author", "value": "author"},{"label": "browse.file", "value": "file"}]'

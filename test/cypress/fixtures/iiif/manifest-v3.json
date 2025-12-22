@@ -1,0 +1,95 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "https://example.com/manifest-v3.json",
+  "type": "Manifest",
+  "label": {
+    "none": ["Test Manifest v3"]
+  },
+  "items": [
+    {
+      "id": "https://example.com/canvas/1",
+      "type": "Canvas",
+      "label": {
+        "none": ["Page 1"]
+      },
+      "width": 2000,
+      "height": 3000,
+      "items": [
+        {
+          "id": "https://example.com/canvas/1/annotation/p0",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/canvas/1/annotation/p0/a0",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://example.com/image1.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "width": 2000,
+                "height": 3000,
+                "service": [
+                  {
+                    "id": "https://example.com/image1",
+                    "type": "ImageService3",
+                    "profile": "level2"
+                  }
+                ]
+              },
+              "target": "https://example.com/canvas/1"
+            }
+          ]
+        }
+      ],
+      "rendering": [
+        {
+          "id": "http://localhost:8080/page1?root=1"
+        }
+      ]
+    },
+    {
+      "id": "https://example.com/canvas/2",
+      "type": "Canvas",
+      "label": {
+        "none": ["Page 2"]
+      },
+      "width": 2000,
+      "height": 3000,
+      "items": [
+        {
+          "id": "https://example.com/canvas/2/annotation/p0",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/canvas/2/annotation/p0/a0",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://example.com/image2.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "width": 2000,
+                "height": 3000,
+                "service": [
+                  {
+                    "id": "https://example.com/image2",
+                    "type": "ImageService3",
+                    "profile": "level2"
+                  }
+                ]
+              },
+              "target": "https://example.com/canvas/2"
+            }
+          ]
+        }
+      ],
+      "rendering": [
+        {
+          "id": "http://localhost:8080/page2?root=2"
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 import '@jinntec/jinn-codemirror/dist/src/xml-editor';
 import '@jinntec/jinn-codemirror/dist/src/epidoc-editor';

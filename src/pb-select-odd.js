@@ -1,12 +1,7 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import '@polymer/paper-listbox';
-import '@polymer/paper-item';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/iron-ajax';
-import 'web-animations-js';
-import '@polymer/neon-animation';
 import { registry } from './urls.js';
 
 /**
@@ -49,6 +44,8 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
     this.label = 'document.selectODD';
     this.odds = [];
+    PbSelectOdd.__counter = (PbSelectOdd.__counter || 0) + 1;
+    this._selectId = `pb-select-odd-${PbSelectOdd.__counter}`;
   }
 
   connectedCallback() {
@@ -66,29 +63,18 @@ export class PbSelectOdd extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <paper-dropdown-menu id="menu" label="${translate(this.label)}" name="${this.name}">
-        <paper-listbox
-          id="odds"
-          slot="dropdown-content"
-          class="dropdown-content"
-          selected="${this.odd}"
-          attr-for-selected="value"
-          @selected-item-changed="${this._selected}"
+      <label class="pb-select-odd__label" for="${this._selectId}"> ${translate(this.label)} </label>
+      <div class="pb-select-odd__control">
+        <select
+          id="${this._selectId}"
+          class="pb-select-odd__select"
+          name=${ifDefined(this.name || undefined)}
+          .value=${this.odd ?? ''}
+          @change=${this._handleChange}
         >
-          ${this.odds.map(
-            item => html`<paper-item value="${item.name}">${item.label}</paper-item>`,
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu>
-
-      <iron-ajax
-        id="load"
-        verbose
-        handle-as="json"
-        method="get"
-        with-credentials
-        @response="${this._update}"
-      ></iron-ajax>
+          ${this.odds.map(item => html`<option value="${item.name}">${item.label}</option>`)}
+        </select>
+      </div>
     `;
   }
 
@@ -98,15 +84,59 @@ export class PbSelectOdd extends pbMixin(LitElement) {
         display: block;
       }
 
-      paper-dropdown-menu {
-        --paper-listbox-background-color: white;
+      .pb-select-odd__label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .pb-select-odd__control {
+        position: relative;
+        display: flex;
+      }
+
+      .pb-select-odd__select {
         width: 100%;
+        min-width: 220px;
+        padding: 0.45rem 2.25rem 0.45rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.5) 50%),
+          linear-gradient(135deg, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
+          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+        background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px),
+          calc(100% - 2.5rem) 0.5em;
+        background-size: 5px 5px, 5px 5px, 1px 2.25em;
+        background-repeat: no-repeat;
+        font: inherit;
+        color: inherit;
+        line-height: 1.2;
+      }
+
+      .pb-select-odd__select:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
       }
     `;
   }
 
-  _selected() {
-    const newOdd = this.shadowRoot.getElementById('odds').selected;
+  updated(changed) {
+    if (changed.has('odds') && (!this.odd || !this.odds.find(item => item.name === this.odd))) {
+      const first = this.odds[0];
+      if (first) {
+        this.odd = first.name;
+      }
+    }
+  }
+
+  _handleChange(ev) {
+    const select = ev.target;
+    const newOdd = select.value;
     if (newOdd === this.odd) {
       return;
     }
@@ -124,19 +154,47 @@ export class PbSelectOdd extends pbMixin(LitElement) {
   }
 
   _refresh() {
-    const load = this.shadowRoot.getElementById('load');
+    let url;
     if (this.minApiVersion('1.0.0')) {
-      load.url = `${this.getEndpoint()}/api/odd`;
+      url = `${this.getEndpoint()}/api/odd`;
     } else {
-      load.url = `${this.getEndpoint()}/modules/lib/components-list-odds.xql`;
+      url = `${this.getEndpoint()}/modules/lib/components-list-odds.xql`;
     }
-    load.params = { odd: this.odd };
-    load.generateRequest();
+    const absoluteUrl = this.toAbsoluteURL(url);
+    let requestUrl;
+    try {
+      requestUrl = new URL(absoluteUrl);
+    } catch (_) {
+      requestUrl = new URL(absoluteUrl, window.location.href);
+    }
+    if (this.odd) {
+      requestUrl.searchParams.set('odd', this.odd);
+    }
+    fetch(requestUrl.href, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load ODDs (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        this._updateOdds(Array.isArray(data) ? data : []);
+      })
+      .catch(err => {
+        console.error('<pb-select-odd> request failed', err);
+        this._updateOdds([]);
+      });
   }
 
-  _update() {
-    const load = this.shadowRoot.getElementById('load');
-    this.odds = load.lastResponse;
+  _updateOdds(list) {
+    this.odds = list;
+    if (list.length && (!this.odd || !list.find(item => item.name === this.odd))) {
+      this.odd = list[0].name;
+    }
   }
 
   _onTargetUpdate(ev) {

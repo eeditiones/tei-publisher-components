@@ -1,0 +1,24 @@
+{
+  "@context": "http://iiif.io/api/image/2/context.json",
+  "@id": "http://localhost:5173/image1",
+  "width": 300,
+  "height": 300,
+  "profile": ["http://iiif.io/api/image/2/level2.json"],
+  "sizes": [
+    {
+      "width": 300,
+      "height": 300
+    },
+    {
+      "width": 150,
+      "height": 150
+    }
+  ],
+  "tiles": [
+    {
+      "width": 256,
+      "scaleFactors": [1, 2, 4, 8, 16, 32]
+    }
+  ]
+}
+

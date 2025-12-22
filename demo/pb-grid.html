@@ -16,12 +16,9 @@
         }
     </style>
     <!--scripts-->
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
+    <script type="module" src="../src/pb-icon-button.js"></script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icons/iron-icons.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-button/paper-button.js"></script>
-    <script type="module" src="../node_modules/@polymer/iron-icon/iron-icon.js"></script>
-    <script type="module" src="../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
     <script type="module" src="../src/pb-view.js"></script>
@@ -37,7 +34,7 @@
 <body>
     <pb-demo-snippet>
         <template>
-            <pb-page endpoint="http://localhost:8080/exist/apps/tei-publisher" url-path="query">
+            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
                 <pb-document id="document1" path="test/orlik_to_serafin.xml" odd="serafin" view="single"></pb-document>
 
                 <pb-grid-action action="add" class="grid-add" grid="#grid" initial="1">
@@ -52,7 +49,8 @@
                             <li slot="toolbar">
                                 <pb-grid-action grid="#grid" action="remove">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                            stroke-linejoin="round" stroke-width="32"
                                             d="M368 368L144 144M368 144L144 368" />
                                     </svg>
                                 </pb-grid-action>

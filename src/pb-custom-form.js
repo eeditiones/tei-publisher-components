@@ -1,6 +1,5 @@
-import { html, css } from 'lit-element';
-import '@polymer/iron-form';
-import '@polymer/iron-ajax';
+import { html, css } from 'lit';
+import './pb-fetch.js';
 import { PbLoad } from './pb-load.js';
 import './pb-dialog.js';
 
@@ -18,11 +17,19 @@ import './pb-dialog.js';
  * @fires pb-submit - Fired when the form is submitted
  */
 export class PbCustomForm extends PbLoad {
+  constructor() {
+    super();
+    this._autoSubmitTargets = new WeakSet();
+  }
+
   firstUpdated() {
-    this.shadowRoot.getElementById('ironform').addEventListener('iron-form-presubmit', ev => {
-      ev.preventDefault();
-      this._submit();
-    });
+    const form = this.shadowRoot && this.shadowRoot.getElementById('form');
+    if (form) {
+      form.addEventListener('submit', ev => {
+        ev.preventDefault();
+        this._submit();
+      });
+    }
     this.addEventListener('click', e => {
       if (e.target.slot === 'searchButtonTop') {
         this.submit();
@@ -40,16 +47,14 @@ export class PbCustomForm extends PbLoad {
 
   render() {
     return html`
-      <iron-form id="ironform">
-        <form action="" accept="text/html" method="GET">
-          <slot name="searchButtonTop"></slot>
-          <slot></slot>
-          <slot name="searchButtonBottom"></slot>
-          <slot name="resetButton"></slot>
-        </form>
-      </iron-form>
+      <form id="form" action="" accept="text/html" method="GET" novalidate>
+        <slot name="searchButtonTop"></slot>
+        <slot></slot>
+        <slot name="searchButtonBottom"></slot>
+        <slot name="resetButton"></slot>
+      </form>
 
-      <iron-ajax
+      <pb-fetch
         id="loadContent"
         verbose
         handle-as="text"
@@ -57,11 +62,11 @@ export class PbCustomForm extends PbLoad {
         with-credentials
         @response="${this._handleContent}"
         @error="${this._handleError}"
-      ></iron-ajax>
+      ></pb-fetch>
       <pb-dialog id="errorDialog" title="Error">
         <p id="errorMessage"></p>
         <div slot="footer">
-          <button rel="prev">Close</button>
+          <button rel="prev" type="button">Close</button>
         </div>
       </pb-dialog>
     `;
@@ -76,7 +81,15 @@ export class PbCustomForm extends PbLoad {
   }
 
   submit() {
-    this.shadowRoot.getElementById('ironform').submit();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('form');
+    if (!form) {
+      return;
+    }
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else if (typeof form.submit === 'function') {
+      form.submit();
+    }
   }
 
   _submit() {
@@ -86,7 +99,10 @@ export class PbCustomForm extends PbLoad {
   }
 
   _reset() {
-    this.shadowRoot.getElementById('ironform').reset();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('form');
+    if (form && typeof form.reset === 'function') {
+      form.reset();
+    }
   }
 
   /**
@@ -98,12 +114,56 @@ export class PbCustomForm extends PbLoad {
    * @returns {Object} name value pairs
    */
   serializeForm() {
-    const elements = this.shadowRoot.getElementById('ironform')._getSubmittableElements();
+    const form = this.shadowRoot && this.shadowRoot.getElementById('form');
+    if (!form) return {};
+
+    // Get elements from both form.elements AND slotted/light DOM content
+    // form.elements doesn't include slotted content in all browsers
+    const formElements = Array.from(form.elements || []);
+    const slottedElements = Array.from(this.querySelectorAll('input, select, textarea'));
+    const allElements = [...new Set([...formElements, ...slottedElements])];
+
+    const elements = allElements.filter(
+      el => el.name && !el.disabled && !el.closest('[disabled]'),
+    );
     const initial = {};
-    for (const element of elements) {
-      initial[element.name] = null;
-    }
-    return Object.assign(initial, this.shadowRoot.getElementById('ironform').serializeForm());
+    elements.forEach(element => {
+      if (!(element.name in initial)) {
+        initial[element.name] = null;
+      }
+    });
+
+    // Build form data manually to include slotted content
+    const data = {};
+    elements.forEach(el => {
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.checked) {
+          if (data[el.name] == null) {
+            data[el.name] = el.value;
+          } else if (Array.isArray(data[el.name])) {
+            data[el.name].push(el.value);
+          } else {
+            data[el.name] = [data[el.name], el.value];
+          }
+        }
+      } else if (el.type === 'select-multiple') {
+        const values = Array.from(el.selectedOptions).map(opt => opt.value);
+        if (values.length > 0) {
+          data[el.name] = values.length === 1 ? values[0] : values;
+        }
+      } else {
+        data[el.name] = el.value;
+      }
+    });
+
+    // Merge with initial (to preserve null for unset values)
+    Object.keys(data).forEach(key => {
+      if (data[key] != null) {
+        initial[key] = data[key];
+      }
+    });
+
+    return initial;
   }
 
   _parseHeaders(xhr) {
@@ -114,6 +174,7 @@ export class PbCustomForm extends PbLoad {
     super._onLoad(content);
 
     this.dispatchEvent(new CustomEvent('pb-custom-form-loaded', { detail: content }));
+    this._submissionHandlers();
   }
 
   _handleError() {
@@ -141,12 +202,17 @@ export class PbCustomForm extends PbLoad {
       return;
     }
     this.querySelectorAll(this.autoSubmit).forEach(control => {
-      const name = control.nodeName.toLowerCase();
+      if (this._autoSubmitTargets.has(control)) {
+        return;
+      }
+      this._autoSubmitTargets.add(control);
+      const name = (control.nodeName || '').toLowerCase();
       let event = 'change';
       if (
         control instanceof HTMLButtonElement ||
-        name === 'paper-icon-button' ||
+        name === 'pb-icon-button' ||
         name === 'paper-button' ||
+        name === 'button' ||
         (name === 'input' &&
           (control.type === 'button' || control.type === 'submit' || control.type === 'reset'))
       ) {
@@ -159,6 +225,9 @@ export class PbCustomForm extends PbLoad {
         event = 'keyup';
       } else if (name === 'paper-dropdown-menu') {
         event = 'value-changed';
+      }
+      if (control instanceof HTMLSelectElement) {
+        event = 'change';
       }
       control.addEventListener(event, this._submit.bind(this));
     });

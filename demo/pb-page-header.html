@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <title>pb-page with app-header (no _notifyLayoutChanged)</title>
+    <!-- Minimal scripts for local dev demos -->
+    <script type="module" src="../src/pb-page.js"></script>
+    <style>
+      body { font-family: sans-serif; }
+      app-header { display: block; height: 48px; background: #eee; }
+      main { padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <!-- app-header is a plain element without private methods; pb-page must not crash -->
+    <pb-page endpoint=".">
+      <app-header-layout>
+        <app-header slot="header" fixed></app-header>
+        <main>
+          <h2>pb-page guard demo</h2>
+          <p>This page should load without errors even though <code>app-header</code> does not implement <code>_notifyLayoutChanged</code>.</p>
+        </main>
+      </app-header-layout>
+    </pb-page>
+  </body>
+  </html>
+
