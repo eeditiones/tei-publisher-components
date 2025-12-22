@@ -1,0 +1,47 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-search Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <pb-progress></pb-progress>
+                <main>
+                    <h2>without buttons</h2>
+
+                    <pb-search id="search-form">
+                    </pb-search>
+
+                    <h2>paper buttons for search + reset</h2>
+
+                    <pb-search id="search-form">
+                        <button slot="searchButton">submit</button>
+                        <button slot="resetButton">reset</button>
+                    </pb-search>
+
+                    <h2>native buttons for search + reset</h2>
+                    <pb-search id="search-form2">
+                        <button slot="searchButton">submit</button>
+                        <button slot="resetButton">reset</button>
+                    </pb-search>
+
+
+                    <pb-paginate per-page="10" range="5"></pb-paginate>
+                    <pb-load url="templates/search-results.html"></pb-load>
+
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

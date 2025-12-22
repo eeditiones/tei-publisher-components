@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-code-editor Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <script type="module" src="../pb-components-bundle.js"></script><script type="module" src="../pb-code-editor.js"></script>
+    </head>
+
+    <body>
+            <pb-demo-snippet>
+                <template>
+                    <style>
+                    pb-code-editor { margin-bottom: 32px; }
+                    </style>
+                    <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom" api-version="1.0.0">
+                        <pb-lang label="language" selected="en">
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
+                        </pb-lang>
+                        <!-- using old API endpoint for linter; old API is due for deprecation with Publisher 8
+                            <pb-code-editor label="XQuery code, ambiance theme" code="for $i in (1, 2) return $i * 6" mode="xquery"
+                            theme="ambiance"
+                            linter="/exist/apps/tei-publisher/modules/editor.xql"></pb-code-editor> -->
+                        <pb-code-editor label="XQuery code" code="for $i in (1, 2) return $i * 6" mode="xquery"
+                            linter="/exist/apps/tei-publisher/api/lint"></pb-code-editor>
+                        <pb-code-editor label="CSS" code="color: blue;
+font-decoration: underline;" mode="css"></pb-code-editor>
+                        <pb-code-editor label="XML" code='&lt;elementSpec ident="correspDesc" mode="add"&gt;
+    &lt;model behaviour="block"&gt;
+        &lt;param name="content" value="correspAction[@type=&apos;sent&apos;]"/&gt;
+    &lt;/model&gt;
+&lt;/elementSpec&gt;' mode="xml"></pb-code-editor>
+                        <pb-code-editor label="LaTeX" code="\documentclass[10pt,a4paper,fromalign=right]{scrlttr2}" mode="stex"></pb-code-editor>
+                        <pb-code-editor label="Empty editor" placeholder="[Enter text]"></pb-code-editor>
+                    </pb-page>
+                </template>
+            </pb-demo-snippet>
+    </body>
+</html>
