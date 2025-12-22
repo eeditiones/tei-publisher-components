@@ -8,7 +8,7 @@
         }
     ],
     "repositoryUrl": "https://github.com/eeditiones/tei-publisher-components",
-    "debug": "true",
+    "debug": true,
     "plugins": [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
