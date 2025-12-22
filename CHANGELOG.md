@@ -1,3 +1,10 @@
+# [3.0.0-next-4.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.2...v3.0.0-next-4.3) (2025-12-22)
+
+
+### Bug Fixes
+
+* **README:** update build badge to GitHub Actions format ([5713734](https://github.com/eeditiones/tei-publisher-components/commit/5713734ebb481ac4878bddd19d64078b02f2e3c8))
+
 # [3.0.0-next-4.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.1...v3.0.0-next-4.2) (2025-12-22)
 
 
