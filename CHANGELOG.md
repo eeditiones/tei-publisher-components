@@ -1,3 +1,16 @@
+# [2.26.0-next-3.21](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.20...v2.26.0-next-3.21) (2025-12-22)
+
+
+### Bug Fixes
+
+* **pb-paginate:** fix width of active page number (closes [#279](https://github.com/eeditiones/tei-publisher-components/issues/279)) ([e85914b](https://github.com/eeditiones/tei-publisher-components/commit/e85914b9249b7b78c5962c562eb0633387bbb4c3))
+
+
+### Features
+
+* **demo:** add pb-paginate sample with the prev/next page buttons  (by [@daliboris](https://github.com/daliboris)) ([4fa4e7a](https://github.com/eeditiones/tei-publisher-components/commit/4fa4e7afad81e8b686a119097090c43079c2eedf))
+* **pb-paginate:** add buttons to navigate the prev/next page (by [@daliboris](https://github.com/daliboris)) ([e8c3fdc](https://github.com/eeditiones/tei-publisher-components/commit/e8c3fdc766234f782c0ab8733835bcf09c612cbd))
+
 # [2.26.0-next-3.20](https://github.com/eeditiones/tei-publisher-components/compare/v2.26.0-next-3.19...v2.26.0-next-3.20) (2025-12-11)
 
 
