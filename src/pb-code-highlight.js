@@ -1,5 +1,8 @@
 import { LitElement, html, css } from 'lit';
 import 'prismjs/prism';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
