@@ -19,12 +19,16 @@ copy('lib', path.join(dir, 'lib'));
 copy('css', path.join(dir, 'css'));
 copy('src', path.join(dir, 'src'));
 
-try {
-  fs.unlinkSync(latest);
-} catch (e) {
-  /* */
+// Only link stable versions as latest, not pre-release versions (e.g., v.*-next.*)
+const isStableVersion = !json.version.includes('-next');
+if (isStableVersion) {
+  try {
+    fs.unlinkSync(latest);
+  } catch (e) {
+    /* */
+  }
+  fs.symlinkSync(path.resolve(dir), latest, 'dir');
 }
-fs.symlinkSync(path.resolve(dir), latest, 'dir');
 
 const redirect = fs.readFileSync(path.join('demo', 'redirect.js'), 'utf-8');
 fs.writeFileSync(path.join('docs', 'redirect.js'), redirect, { encoding: 'utf-8' });
