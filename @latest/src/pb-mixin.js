@@ -101,6 +101,7 @@ export function getSubscribedChannels(elem) {
  * channel *transcription* and another one subscribing to *translation*. By using distinct
  * channels, other components can address only one of the two.
  *
+ * @polymer
  * @mixinFunction
  */
 export const pbMixin = superclass =>
@@ -390,6 +391,7 @@ export const pbMixin = superclass =>
         readyEventsFired.add(key);
       }
 
+      // eslint-disable-next-line prefer-object-spread
       const detail = Object.assign({ key, _source: this }, options);
       const ev = new CustomEvent(type, {
         detail,

@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import Cookies from 'js-cookie';
+import { LitElement, html, css } from 'lit-element';
+import 'js-cookie/src/js.cookie.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 
@@ -44,7 +44,7 @@ export class PbDownload extends themableMixin(pbMixin(LitElement)) {
         type: String,
       },
       /**
-       * id of dialog component to show when downloading. A `pb-dialog` component with this id must
+       * id of dialog component to show when downloading. A paper-dialog component with this id must
        * exist.
        */
       dialog: {

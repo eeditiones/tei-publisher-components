@@ -1,9 +1,9 @@
-import { LitElement, html, css } from 'lit';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { SearchResultService } from './search-result-service.js';
 import { ParseDateService } from './parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
-import './pb-fetch.js';
+import '@polymer/iron-ajax';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
 
@@ -214,8 +214,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         word-wrap: break-word;
         overflow-wrap: break-word;
       }
-      .tooltip a:link,
-      .tooltip a:visited {
+      .tooltip a:link, .tooltip a:visited {
         color: var(--pb-timeline-color-title, #ffffff);
       }
       .tooltip ul {
@@ -237,8 +236,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: transparent transparent var(--pb-timeline-background-color-title, #535353)
-          transparent;
+        border-color: transparent transparent var(--pb-timeline-background-color-title, #535353) transparent;
       }
       .tooltip.chevron-precise::after {
         left: var(--chevron-position, 50%);
@@ -633,24 +631,24 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     ).innerHTML = `<div><strong>${datestr}</strong>: ${value}</div><ul>${
       info ? info.innerHTML : ''
     }</ul>`;
-
+    
     // Force a reflow to get accurate tooltip dimensions
     this.tooltip.style.visibility = 'hidden';
     this.tooltip.style.display = 'block';
     const tooltipWidth = this.tooltip.offsetWidth;
     this.tooltip.style.visibility = '';
     this.tooltip.style.display = '';
-
+    
     const wrapper = this.shadowRoot.querySelector('.wrapper');
     const wrapperRect = wrapper.getBoundingClientRect();
     const wrapperWidth = wrapperRect.width;
-
+    
     let offset;
     const centerPosition = Math.round((interval[0] + interval[1]) / 2);
-
+    
     // Clear any existing chevron positioning classes
     this.tooltip.classList.remove('chevron-precise');
-
+    
     // Check if tooltip would overflow on the right
     if (centerPosition + tooltipWidth / 2 > wrapperWidth) {
       // Position tooltip to the right of the bin, aligned to the right edge
@@ -665,9 +663,9 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
       offset = centerPosition - tooltipWidth / 2;
       this.tooltip.classList.remove('right');
     }
-
+    
     this.tooltip.style.left = `${offset}px`;
-
+    
     // Calculate precise chevron position to point to the bin
     const binCenter = centerPosition;
     const tooltipLeft = offset;
@@ -691,24 +689,24 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     ).innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
     this.tooltip.querySelector('.tooltip-close').classList.remove('hidden');
     this.tooltip.classList.add('draggable');
-
+    
     // Force a reflow to get accurate tooltip dimensions
     this.tooltip.style.visibility = 'hidden';
     this.tooltip.style.display = 'block';
     const tooltipWidth = this.tooltip.offsetWidth;
     this.tooltip.style.visibility = '';
     this.tooltip.style.display = '';
-
+    
     const wrapper = this.shadowRoot.querySelector('.wrapper');
     const wrapperRect = wrapper.getBoundingClientRect();
     const wrapperWidth = wrapperRect.width;
-
+    
     const centerPosition = Math.round((interval[0] + interval[1]) / 2);
     let offset;
-
+    
     // Clear any existing chevron positioning classes
     this.tooltip.classList.remove('chevron-precise');
-
+    
     // Check if tooltip would overflow on the right
     if (centerPosition + tooltipWidth / 2 > wrapperWidth) {
       // Position tooltip to the right of the selection, aligned to the right edge
@@ -723,16 +721,13 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
       offset = centerPosition - tooltipWidth / 2;
       this.tooltip.classList.remove('right');
     }
-
+    
     this.tooltip.style.left = `${offset}px`;
-
+    
     // Calculate precise chevron position to point to the center of the selection
     const selectionCenter = centerPosition;
     const tooltipLeft = offset;
-    const chevronPosition = Math.max(
-      10,
-      Math.min(tooltipWidth - 10, selectionCenter - tooltipLeft),
-    );
+    const chevronPosition = Math.max(10, Math.min(tooltipWidth - 10, selectionCenter - tooltipLeft));
     this.tooltip.style.setProperty('--chevron-position', `${chevronPosition}px`);
     this.tooltip.classList.add('chevron-precise');
   }
@@ -814,12 +809,8 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         <span class="label"><slot name="label"></slot>${this.label}</span>
         ${this.resettable
           ? html`
-              <button
-                id="clear"
-                title="${translate('timeline.clear')}"
-                @click="${this._dispatchPbTimelineResetSelectionEvent}"
-                type="button"
-              ></button>
+              <button id="clear" title="${translate('timeline.clear')}"
+                @click="${this._dispatchPbTimelineResetSelectionEvent}"></button>
             `
           : null}
       </div>
@@ -829,7 +820,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         @mouseleave="${this._hideTooltip}"
       >
         ${this.dataObj ? this.renderBins() : ''} ${this.renderTooltip()}
-        <pb-fetch
+        <iron-ajax
           id="loadData"
           verbose
           handle-as="json"
@@ -838,7 +829,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
           @response="${this._handleResponse}"
           url="${this.url}?start=${this.startDate}&end=${this.endDate}"
           ?auto="${this.auto}"
-        ></pb-fetch>
+        ></iron-ajax>
       </div>
     `;
   }
@@ -847,7 +838,10 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     return html`
       <div class="tooltip hidden" part="tooltip">
         <div class="tooltip-text"></div>
-        <div class="tooltip-close hidden" @click="${this._dispatchPbTimelineResetSelectionEvent}">
+        <div
+          class="tooltip-close hidden"
+          @click="${this._dispatchPbTimelineResetSelectionEvent}"
+        >
           <span class="close rounded black"></span>
         </div>
       </div>

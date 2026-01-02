@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
@@ -135,8 +135,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     this.disableClusteringAt = null;
     this._icons = {};
     this.geoCoding = false;
-    this._mapReady = false;
-    this._markerLayer = null;
   }
 
   connectedCallback() {
@@ -150,7 +148,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
      * @param {{ detail: any[]; }} ev
      */
     this.subscribeTo('pb-update-map', ev => {
-      if (!this._markerLayer) return;
       this._markerLayer.clearLayers();
 
       /**
@@ -180,7 +177,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
      * @param {{ detail: { root: { querySelectorAll: (arg0: string) => any[]; }; }; }} ev
      */
     this.subscribeTo('pb-update', ev => {
-      if (!this._markerLayer) return;
       this._markerLayer.clearLayers();
       const locations = ev.detail.root.querySelectorAll('pb-geolocation');
       /**
@@ -188,8 +184,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
        */
       locations.forEach(loc => {
         const coords = L.latLng(loc.latitude, loc.longitude);
-        const marker = L.marker(coords);
-        this._markerLayer.addLayer(marker);
+        const marker = L.marker(coords).addTo(this._markerLayer);
         if (loc.label) {
           marker.bindTooltip(loc.label);
         }
@@ -213,11 +208,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
       if (ev.detail.coordinates) {
         this.latitude = ev.detail.coordinates.latitude;
         this.longitude = ev.detail.coordinates.longitude;
-        if (
-          ev.detail.clear &&
-          this._markerLayer &&
-          typeof this._markerLayer.clearLayers === 'function'
-        ) {
+        if (ev.detail.clear) {
           this._markerLayer.clearLayers();
         }
 
@@ -233,9 +224,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             marker.bindPopup(ev.detail.popup);
           }
           this.setMarkerIcon(marker);
-          if (this._markerLayer && typeof this._markerLayer.addLayer === 'function') {
-            this._markerLayer.addLayer(marker);
-          }
+          marker.addTo(this._markerLayer);
 
           if (ev.detail.fitBounds) {
             this._fitBounds();
@@ -272,7 +261,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
   }
 
   firstUpdated() {
-    if (!this.toggle) this.disabled = false;
+    if (!this.toggle) {
+      this.disabled = false;
+    }
 
     if (window.L !== undefined) {
       this._initMap();
@@ -283,54 +274,17 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     const leafletPath = resolveURL('../lib/leaflet-src.js');
     const pluginPath = resolveURL('../lib/leaflet.markercluster-src.js');
     const geoCodingPath = resolveURL('../lib/Control.Geocoder.min.js');
-
-    const loadGeocodingOrInit = () => {
-      if (this.geoCoding) {
-        // Check if the geocoding script URL is accessible before trying to load it
-        fetch(geoCodingPath, { method: 'HEAD' })
-          .then(response => {
-            if (response.ok) {
-              return window.ESGlobalBridge.instance.load('geocoding', geoCodingPath);
-            } else {
-              throw new Error(
-                `Geocoding script not available at ${geoCodingPath} (${response.status})`,
-              );
-            }
-          })
-          .then(this._initMap.bind(this))
-          .catch(error => {
-            console.warn(
-              '<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:',
-              error,
-            );
-            this._initMap();
-          });
-      } else {
-        this._initMap();
-      }
-    };
-
-    window.ESGlobalBridge.instance
-      .load('leaflet', leafletPath)
-      .then(() => {
-        if (this.cluster) {
+    window.ESGlobalBridge.instance.load('leaflet', leafletPath).then(() => {
+      window.ESGlobalBridge.instance.load('plugin', pluginPath).then(() => {
+        if (this.geoCoding) {
           window.ESGlobalBridge.instance
-            .load('plugin', pluginPath)
-            .then(loadGeocodingOrInit)
-            .catch(error => {
-              console.warn(
-                '<pb-leaflet-map> Failed to load marker cluster plugin, initializing without clustering:',
-                error,
-              );
-              loadGeocodingOrInit();
-            });
+            .load('geocoding', geoCodingPath)
+            .then(this._initMap.bind(this));
         } else {
-          loadGeocodingOrInit();
+          this._initMap();
         }
-      })
-      .catch(error => {
-        console.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
       });
+    });
   }
 
   render() {
@@ -384,15 +338,16 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     this._configureLayers();
     this._configureMarkers();
 
-    if (this.cluster && typeof L.markerClusterGroup === 'function') {
+    if (this.cluster) {
       const options = {};
-      if (this.disableClusteringAt) options.disableClusteringAtZoom = this.disableClusteringAt;
+      if (this.disableClusteringAt) {
+        options.disableClusteringAtZoom = this.disableClusteringAt;
+      }
       this._markerLayer = L.markerClusterGroup(options);
     } else {
       this._markerLayer = L.layerGroup();
     }
     this._markerLayer.addTo(this._map);
-    this._mapReady = true;
 
     this.signalReady();
 
@@ -426,23 +381,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     if (!this.geoCoding) {
       return;
     }
-
-    // Check if geocoding library is properly loaded
-    if (!L.Control || !L.Control.Geocoder) {
-      console.warn(
-        '<pb-leaflet-map> Geocoding library not properly loaded, skipping geocoding configuration',
-      );
-      return;
-    }
-
-    // Check if nominatim method exists
-    if (!L.Control.Geocoder.nominatim) {
-      console.warn(
-        '<pb-leaflet-map> Nominatim geocoder not available, skipping geocoding configuration',
-      );
-      return;
-    }
-
     const geocoder = L.Control.Geocoder.nominatim({
       geocodingQueryParams: {
         'accept-language': 'en',
@@ -509,7 +447,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}',
         {
           attribution:
-            '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank" rel="noopener">Improve this map</a></strong>',
+            '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
           maxZoom: 18,
           zoomOffset: -1,
           tileSize: 512,
@@ -555,7 +493,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
   }
 
   _fitBounds() {
-    if (!this._markerLayer) return;
     if (!this.fitMarkers) {
       return;
     }
@@ -575,7 +512,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
   }
 
   _locationChanged(lat, long, zoom, setActive) {
-    if (!this._markerLayer) return;
     if (this._map) {
       const coords = L.latLng([lat, long]);
       this._markerLayer.eachLayer(layer => {
@@ -604,7 +540,6 @@ export class PbLeafletMap extends pbMixin(LitElement) {
   }
 
   _hasMarker(lat, long) {
-    if (!this._markerLayer) return null;
     const coords = L.latLng([lat, long]);
     let found = null;
     this._markerLayer.eachLayer(layer => {

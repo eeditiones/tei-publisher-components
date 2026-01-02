@@ -1,26 +1,16 @@
 <html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+        <title>pb-view Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
 
-    <title>pb-view Demo</title>
-    <!--scripts-->
-    
-    <script type="module" src="../src/pb-icon.js"></script>
-    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-    <script type="module" src="../src/pb-page.js"></script>
-    <script type="module" src="../src/pb-document.js"></script>
-    <script type="module" src="../src/pb-view.js"></script>
-    <script type="module" src="../src/pb-popover.js"></script>
-    <script type="module" src="../src/pb-navigation.js"></script>
-    <script type="module" src="../src/pb-progress.js"></script>
-</head>
-
-<body>
-    <pb-demo-snippet>
-        <template>
-            <style type="text/css">
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 pb-page {
                     position: relative;
                 }
@@ -35,9 +25,7 @@
                 }
 
                 @media (min-width: 769px) {
-
-                    #view1,
-                    footer {
+                    #view1, footer {
                         max-width: 60vw;
                     }
                 }
@@ -59,60 +47,34 @@
                 pb-navigation[direction="forward"] {
                     float: right;
                 }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                    <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
 
-                .nav-button {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    border: none;
-                    background: #35424b;
-                    color: #fff;
-                    cursor: pointer;
-                }
-
-                .nav-button pb-icon {
-                    --pb-icon-size: 20px;
-                }
-            </style>
-            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
-                <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
-
-                <pb-progress subscribe="transcription"></pb-progress>
-                <!-- Output the document title -->
-                <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title" subscribe="transcription"
-                    view="single" static="./pb-view-static">
-                    <pb-param name="header" value="short" />
-                </pb-view>
-                <pb-view id="view1" src="document1" view="page" append-footnotes animation subscribe="transcription"
-                    emit="transcription" static="./pb-view-static"></pb-view>
-                <footer>
-                    <!-- Navigate to next page -->
-                    <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-right"></pb-icon>
-                        </span>
-                    </pb-navigation>
-                    <!-- Navigate to previous page -->
-                    <pb-navigation direction="backward" keyboard="left" subscribe="transcription" emit="transcription">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-left"></pb-icon>
-                        </span>
-                    </pb-navigation>
-                </footer>
-            </pb-page>
-        </template>
-    </pb-demo-snippet>
-    <script type="module">
-      import { firePageReady } from '../src/docs/demo-utils.js'
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => firePageReady({ endpoint: '/exist/apps/tei-publisher' }))
-      } else {
-        firePageReady({ endpoint: '/exist/apps/tei-publisher' })
-      }
-    </script>
-</body>
-
+                    <pb-progress subscribe="transcription"></pb-progress>
+                    <!-- Output the document title -->
+                    <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
+                        subscribe="transcription" view="single">
+                        <pb-param name="header" value="short"/>
+                    </pb-view>
+                    <pb-view id="view1" src="document1" view="page" append-footnotes animation
+                        subscribe="transcription" emit="transcription"></pb-view>
+                    <footer>
+                       <!-- Navigate to next page -->
+                       <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">
+                            <paper-button>
+                                <iron-icon icon="icons:chevron-right"></iron-icon>
+                            </paper-button>
+                        </pb-navigation>
+                        <!-- Navigate to previous page -->
+                        <pb-navigation direction="backward" keyboard="left" subscribe="transcription" emit="transcription">
+                            <paper-button>
+                                <iron-icon icon="icons:chevron-left"></iron-icon>
+                            </paper-button>
+                        </pb-navigation>
+                    </footer>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
 </html>

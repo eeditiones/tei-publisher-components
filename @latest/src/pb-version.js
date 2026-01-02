@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html } from 'lit-element';
 import { resolveURL } from './utils.js';
 
 // will be set by rollup when bundling
@@ -21,8 +21,20 @@ export class PbVersion extends LitElement {
 
   constructor() {
     super();
-    // Version is injected at build time; avoid runtime fetches
-    this.version = PB_COMPONENTS_VERSION || null;
+
+    this.version = PB_COMPONENTS_VERSION;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.version) {
+      const pkg = resolveURL('../package.json');
+      fetch(pkg)
+        .then(response => response.json())
+        .then(data => {
+          this.version = data.version;
+        });
+    }
   }
 
   render() {

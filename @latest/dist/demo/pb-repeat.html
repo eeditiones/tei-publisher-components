@@ -3,8 +3,8 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-        <title>pb-repeat Demo</title>
-        <script type="module" src="../pb-components-bundle.js"></script>
+        <title>pb-code-highlight Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
     </head>
 
     <body>
@@ -20,38 +20,40 @@
                     }
                 </style>
                 <pb-page>
-                    <form action="" id="form">
-                        <pb-repeat>
-                            <template>
-                                <label>First name:</label>
-                                <input type="text" name="first">
-                                <label>Surname:</label>
-                                <input type="text" name="surname">
-                                <label>Title:</label>
-                                <select name="title">
-                                    <option></option>
-                                    <option>Dr.</option>
-                                    <option>Prof.</option>
-                                </select>
-                                <label>Vegetarian:</label>
-                                <input type="checkbox" name="veggie" value="yes">
-                            </template>
-                        </pb-repeat>
-                        <button type="submit" class="pb-button pb-button--contained">Save</button>
-                    </form>
+                    <iron-form id="form">
+                        <form action="">
+                            <pb-repeat>
+                                <template>
+                                    <label>First name:</label>
+                                    <input type="text" name="first">
+                                    <label>Surname:</label>
+                                    <input type="text" name="surname">
+                                    <label>Title:</label>
+                                    <select name="title">
+                                        <option></option>
+                                        <option>Dr.</option>
+                                        <option>Prof.</option>
+                                    </select>
+                                    <label>Vegetarian:</label>
+                                    <input type="checkbox" name="veggie">
+                                </template>
+                            </pb-repeat>
+                            <button type="submit">Save</button>
+                        </form>
+                    </iron-form>
                     <pre id="output"></pre>
-                    <script type="module">
-                      const form = document.getElementById('form')
-                      const output = document.getElementById('output')
-                      if (form && output) {
-                        form.addEventListener('submit', (ev) => {
-                          ev.preventDefault()
-                          const data = new URLSearchParams(new FormData(form)).toString()
-                          output.textContent = data
-                        })
-                      }
-                    </script>
                 </pb-page>
+                <script>
+                    window.addEventListener('WebComponentsReady', () => {
+                        const form = document.getElementById('form');
+                        form.addEventListener('iron-form-presubmit', (ev) => {
+                            ev.preventDefault();
+                            const data = form.serializeForm();
+                            const queryString = Object.keys(data).map((key) => `${key  }=${  data[key]}`).join('&');
+                            document.getElementById('output').innerText = queryString;
+                        });
+                    });
+                </script>
             </template>
         </pb-demo-snippet>
     </body>

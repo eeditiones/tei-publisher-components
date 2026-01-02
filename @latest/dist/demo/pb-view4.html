@@ -1,17 +1,16 @@
 <html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+        <title>pb-view Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
 
-    <title>pb-view Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
-</head>
-
-<body>
-    <pb-demo-snippet>
-        <template>
-            <style type="text/css">
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 pb-page {
                     position: relative;
                 }
@@ -45,63 +44,43 @@
                 footer pb-navigation[direction=forward] {
                     float: right;
                 }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
-                .nav-button {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    border: none;
-                    background: #35424b;
-                    color: #fff;
-                    cursor: pointer;
-                }
-
-                .nav-button pb-icon {
-                    --pb-icon-size: 20px;
-                }
-            </style>
-            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
-                <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
-
-                <pb-progress></pb-progress>
-                <main>
-                    <ul>
-                        <li>
-                            <pb-link class="docs" path="doc/documentation.xml" odd="docbook"
-                                view="div">Documentation</pb-link>
-                        </li>
-                        <li>
-                            <pb-link path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page">Kant
-                                chapter</pb-link>
-                        </li>
-                        <li>
-                            <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook"
-                                view="div">Link by xml:id
-                            </pb-link>
-                        </li>
-                    </ul>
-                    <pb-view id="view1" src="document1" append-footnotes fix-links load-css="odd/docbook.css"></pb-view>
-                    <footer>
-                        <!-- Navigate to next page -->
-                        <pb-navigation direction="forward" keyboard="right">
-                            <span class="nav-button">
-                                <pb-icon icon="icons:chevron-right"></pb-icon>
-                            </span>
-                        </pb-navigation>
-                        <!-- Navigate to previous page -->
-                        <pb-navigation direction="backward" keyboard="left">
-                            <span class="nav-button">
-                                <pb-icon icon="icons:chevron-left"></pb-icon>
-                            </span>
-                        </pb-navigation>
-                    </footer>
-                </main>
-            </pb-page>
-        </template>
-    </pb-demo-snippet>
-</body>
-
+                    <pb-progress></pb-progress>
+                    <main>
+                        <ul>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" odd="docbook" view="div">Documentation</pb-link>
+                            </li>
+                            <li>
+                                <pb-link path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page">Kant chapter</pb-link>
+                            </li>
+                            <li>
+                                <pb-link class="docs" path="doc/documentation.xml" xml-id="pi-config" odd="docbook" view="div">Link by xml:id
+                                </pb-link>
+                            </li>
+                        </ul>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links
+                            load-css="odd/docbook.css"></pb-view>
+                        <footer>
+                            <!-- Navigate to next page -->
+                            <pb-navigation direction="forward" keyboard="right">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-right"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                            <!-- Navigate to previous page -->
+                            <pb-navigation direction="backward" keyboard="left">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-left"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                        </footer>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
 </html>

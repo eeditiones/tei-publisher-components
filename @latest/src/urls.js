@@ -2,28 +2,6 @@ import { match, compile, pathToRegexp } from 'path-to-regexp';
 import { PbEvents } from './pb-events.js';
 import { getSubscribedChannels } from './pb-mixin.js';
 
-/**
- * Convert path-to-regexp v6 syntax to v8 syntax
- * - :param? becomes {:param} (optional parameters with braces)
- * - /* becomes /*path (named wildcards)
- *
- * This function is idempotent - it can be called multiple times safely
- * and will not double-convert already converted patterns.
- */
-function convertPathToRegexpSyntax(pattern) {
-  if (!pattern) return pattern;
-
-  // Convert optional parameters :param? to {:param} for v8 compatibility
-  // Only convert if not already in v8 format (avoid double conversion)
-  let converted = pattern.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)\?/g, '{:$1}');
-
-  // Convert unnamed wildcards /* to /*path
-  // Only convert if not already named (avoid double conversion)
-  converted = converted.replace(/\*$/g, '*path');
-
-  return converted;
-}
-
 function log(...args) {
   args[0] = `%c<registry>%c ${args[0]}`;
   args.splice(1, 0, 'font-weight: bold; color: #99FF33;', 'color: inherit; font-weight: normal');
@@ -108,16 +86,13 @@ class Registry {
     }
 
     if (this.urlPattern) {
-      // Convert v6 syntax to v8 syntax
-      const convertedPattern = convertPathToRegexpSyntax(this.urlPattern);
-
       // save a list of parameter names which go into the path
       const pathParams = [];
-      pathToRegexp(convertedPattern, pathParams);
+      pathToRegexp(this.urlPattern, pathParams);
       pathParams.forEach(param => this.pathParams.add(param.name));
       // compile URL pattern into a decode and encode function
-      this._decodePath = match(convertedPattern);
-      this._encodePath = compile(convertedPattern);
+      this._decodePath = match(this.urlPattern);
+      this._encodePath = compile(this.urlPattern);
     }
 
     // determine initial state of the registry by parsing current URL
@@ -243,7 +218,7 @@ class Registry {
   }
 
   set(path, value) {
-    if (!path.includes('.')) {
+    if (!path.contains('.')) {
       this.state[path] = value;
       return;
     }
@@ -252,6 +227,7 @@ class Registry {
     // make sure all intermediate steps are available
     const lastIntermediate = components.reduce((result, nextComponent) => {
       if (!result[nextComponent]) {
+        // eslint-disable-next-line no-param-reassign
         result[nextComponent] = {};
       }
       return result[nextComponent];
@@ -260,44 +236,16 @@ class Registry {
   }
 
   commit(elem, newState, overwrite = false) {
-    // Debug: Log what component is calling registry.commit (only for commits that might reset root)
-    if (newState && ('root' in newState) && newState.root === null) {
-      const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-      console.warn('[registry] commit called with root=null by:', componentName, {
-        newState,
-        overwrite,
-        stack: new Error().stack
-      });
-    }
     this._commit(elem, newState, overwrite, false);
   }
 
   replace(elem, newState, overwrite = false) {
-    // Debug: Log what component is calling registry.replace
-    const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-    console.warn('[registry] replace called by:', componentName, {
-      newState,
-      overwrite,
-      stack: new Error().stack
-    });
     this._commit(elem, newState, overwrite, true);
   }
 
   _commit(elem, newState, overwrite, replace) {
-    const oldState = { ...this.state };
     this.state = overwrite ? newState : { ...this.state, ...newState };
     const resolved = this.urlFromState();
-
-    console.log('[registry] _commit: committing state', {
-      oldState,
-      newState,
-      overwrite,
-      replace,
-      mergedState: this.state,
-      resolvedUrl: resolved.toString(),
-      resolvedHash: resolved.hash,
-      resolvedSearch: resolved.search
-    });
 
     const chs = getSubscribedChannels(elem);
     chs.forEach(channel => {
@@ -312,11 +260,9 @@ class Registry {
     if (replace) {
       window.history.replaceState(json, '', resolved);
       log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     } else {
       window.history.pushState(json, '', resolved);
       log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     }
   }
 
@@ -338,46 +284,20 @@ class Registry {
       }
     }
 
-    console.log('[registry] urlFromState: building URL from state', {
-      state: this.state,
-      idHash: this.idHash,
-      usePath: this.usePath,
-      urlPattern: this.urlPattern,
-      urlIgnore: Array.from(this.urlIgnore),
-      pathParams: Array.from(this.pathParams)
-    });
-
     for (const [param, value] of Object.entries(this.state)) {
       if (this.urlPattern) {
         // check if param should be ignored or is required by the URL template
         // fill up missing parameters by stripping potential "user." prefix
         const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
-        const shouldIgnore = this.pathParams.has(normParam) || this.urlIgnore.has(normParam);
-        console.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
-        if (!shouldIgnore) {
+        if (!(this.pathParams.has(normParam) || this.urlIgnore.has(normParam))) {
           setParam(value, normParam);
         }
       } else if (
         (param !== 'path' || !this.usePath) &&
-        // Always include 'id' in query params for shareable URLs (hash is set separately below)
+        (param !== 'id' || !this.idHash) &&
         !this.urlIgnore.has(param)
       ) {
-        const willInclude = (param !== 'path' || !this.usePath) && !this.urlIgnore.has(param);
-        // Filter out unwanted default values that shouldn't be in URLs
-        // These are typically set by components during initialization but shouldn't pollute the URL
-        const isUnwantedDefault = (
-          (param === 'view' && value === 'single') ||
-          (param === 'odd' && value === 'teipublisher') ||
-          (param === 'panels' && typeof value === 'string' && value.split('.').length > 10) // Malformed panels (concatenated)
-        );
-        console.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
-        if (willInclude && !isUnwantedDefault) {
-          setParam(value, param);
-        } else if (isUnwantedDefault) {
-          console.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
-        }
-      } else {
-        console.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
+        setParam(value, param);
       }
     }
 
@@ -401,18 +321,7 @@ class Registry {
 
     if (this.state.id && !this.urlPattern) {
       newUrl.hash = `#${this.state.id}`;
-      console.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
     }
-
-    console.log('[registry] urlFromState: final URL', {
-      url: newUrl.toString(),
-      search: newUrl.search,
-      hash: newUrl.hash,
-      hasIdParam: newUrl.searchParams.has('id'),
-      idParamValue: newUrl.searchParams.get('id'),
-      hasRootParam: newUrl.searchParams.has('root'),
-      rootParamValue: newUrl.searchParams.get('root')
-    });
 
     return newUrl;
   }
@@ -423,29 +332,6 @@ class Registry {
 }
 
 export const registry = new Registry();
-
-// Expose the registry under both historical names and keep them in sync
-if (typeof window !== 'undefined') {
-  if (!window.pbRegistry) window.pbRegistry = registry;
-  if (!window.PB) window.PB = {};
-
-  // Define PB.pbRegistry as a live alias of window.pbRegistry so reads/writes stay in sync
-  try {
-    const desc = Object.getOwnPropertyDescriptor(window.PB, 'pbRegistry');
-    if (!desc || typeof desc.get !== 'function') {
-      Object.defineProperty(window.PB, 'pbRegistry', {
-        configurable: true,
-        enumerable: true,
-        get() {
-          return window.pbRegistry;
-        },
-        set(val) {
-          window.pbRegistry = val;
-        },
-      });
-    }
-  } catch (e) {
-    // Fallback if defineProperty is blocked or pbRegistry already exists as a data property
-    if (!window.PB.pbRegistry) window.PB.pbRegistry = window.pbRegistry;
-  }
+if (!window.pbRegistry) {
+  window.pbRegistry = registry;
 }

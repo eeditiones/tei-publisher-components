@@ -1,57 +1,13 @@
 import { Registry } from './registry.js';
-// Break circular dep: inline a minimal factory for nested connectors
-import { Metagrid } from './metagrid.js';
-import { GeoNames } from './geonames.js';
-import { Airtable } from './airtable.js';
-import { GND } from './gnd.js';
-import { KBGA } from './kbga.js';
-import { Anton } from './anton.js';
-import { ReconciliationService } from './reconciliation.js';
-
-function createNestedConnectors(endpoint, root) {
-  const authorities = [];
-  root.querySelectorAll(':scope > pb-authority').forEach(configElem => {
-    const connector = configElem.getAttribute('connector');
-    let instance;
-    switch (connector) {
-      case 'GND':
-        instance = new GND(configElem);
-        break;
-      case 'GeoNames':
-        instance = new GeoNames(configElem);
-        break;
-      case 'Airtable':
-        instance = new Airtable(configElem);
-        break;
-      case 'KBGA':
-        instance = new KBGA(configElem);
-        break;
-      case 'Anton':
-      case 'GF':
-        instance = new Anton(configElem);
-        break;
-      case 'ReconciliationService':
-        instance = new ReconciliationService(configElem);
-        break;
-      case 'Custom':
-        // Avoid recursive Custom-in-Custom to break cycles; ignore or warn
-        console.warn('Nested Custom connector ignored to avoid circular dependency');
-        return; // skip push
-      default:
-        instance = new Metagrid(configElem);
-        break;
-    }
-    authorities.push(instance);
-  });
-  return authorities;
-}
+// eslint-disable-next-line import/no-cycle
+import { createConnectors } from './connectors.js';
 
 export class Custom extends Registry {
   constructor(endpoint, configElem) {
     super(configElem);
     this._editable = configElem.hasAttribute('edit');
     this._endpoint = endpoint;
-    this._connectors = createNestedConnectors(endpoint, configElem);
+    this._connectors = createConnectors(endpoint, configElem);
     this._connectors.forEach(connector => {
       connector.name = this.name;
     });
@@ -89,6 +45,7 @@ export class Custom extends Registry {
           let totalItems = json.length;
 
           for (const connector of this._connectors) {
+            // eslint-disable-next-line no-await-in-loop
             const dr = await connector.query(key);
             results = results.concat(dr.items.filter(result => !localResults.has(result.id)));
             totalItems += dr.totalItems;
@@ -122,6 +79,7 @@ export class Custom extends Registry {
           if (response.status === 404) {
             for (const connector of this._connectors) {
               try {
+                // eslint-disable-next-line no-await-in-loop
                 const cr = await connector.info(key, container);
                 if (cr) {
                   resolve(cr);
@@ -145,6 +103,7 @@ export class Custom extends Registry {
   async select(item) {
     let entry;
     for (const connector of this._connectors) {
+      // eslint-disable-next-line no-await-in-loop
       entry = await connector.getRecord(item.id).catch(() => null);
       if (entry) {
         break;

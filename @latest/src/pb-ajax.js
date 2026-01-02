@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import './pb-fetch.js';
+import { LitElement, html, css } from 'lit-element';
+import '@polymer/iron-ajax';
 import { pbMixin } from './pb-mixin.js';
 import { get as i18n } from './pb-i18n.js';
 import './pb-message.js';
@@ -83,10 +83,8 @@ export class PbAjax extends pbMixin(LitElement) {
 
   render() {
     return html`
-      <button id="button" @click="${this._handleClick}" title="${this.title}" type="button">
-        <slot></slot>
-      </button>
-      <pb-fetch
+      <a id="button" @click="${this._handleClick}" title="${this.title}"><slot></slot></a>
+      <iron-ajax
         id="loadContent"
         verbose
         handle-as="text"
@@ -94,7 +92,7 @@ export class PbAjax extends pbMixin(LitElement) {
         with-credentials
         @error="${this._handleError}"
         @response="${this._handleResponse}"
-      ></pb-fetch>
+      ></iron-ajax>
       <pb-message id="confirmDialog"></pb-message>
       <slot name="title" style="display: none"></slot>
     `;
@@ -114,19 +112,6 @@ export class PbAjax extends pbMixin(LitElement) {
     return css`
       :host {
         display: block;
-      }
-      #button {
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-        font: inherit;
-        color: inherit;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      #button:hover {
-        text-decoration: none;
       }
       slot[name='title'] {
         margin: 0;

@@ -1,4 +1,4 @@
-import { LitElement } from 'lit';
+import { LitElement } from 'lit-element';
 import { html } from 'gridjs';
 import './pb-popover.js';
 

@@ -1,19 +1,18 @@
 <html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+        <title>pb-view Demo</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+        <link rel="Stylesheet" href="demo.css">
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
 
-    <title>pb-view Demo</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
-    <link rel="Stylesheet" href="demo.css">
-    <script type="module" src="../pb-components-bundle.js"></script>
-</head>
-
-<body>
-    <pb-demo-snippet>
-        <template>
-            <style type="text/css">
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 pb-page {
                     position: relative;
                 }
@@ -49,23 +48,6 @@
 
                 footer pb-navigation[direction=forward] {
                     float: right;
-                }
-
-                .nav-button {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    border: none;
-                    background: #35424b;
-                    color: #fff;
-                    cursor: pointer;
-                }
-
-                .nav-button pb-icon {
-                    --pb-icon-size: 20px;
                 }
 
                 .toc {
@@ -118,41 +100,36 @@
                 .toc ul ul {
                     margin-left: 14px;
                 }
-            </style>
-            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
-                <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
 
-                <pb-progress></pb-progress>
-                <main>
-                    <aside class="toc">
-                        <pb-load url="api/document/{doc}/contents?target=transcription&icons=false" expand
-                            src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
-                    </aside>
-                    <pb-view class="breadcrumbs" src="document1">
-                        <pb-param name="mode" value="breadcrumbs" />
-                    </pb-view>
-                    <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription"
-                        subscribe="transcription"></pb-view>
-                    <footer>
-                        <!-- Navigate to next page -->
-                        <pb-navigation direction="forward" keyboard="right" emit="transcription"
-                            subscribe="transcription">
-                            <span class="nav-button">
-                                <pb-icon icon="icons:chevron-right"></pb-icon>
-                            </span>
-                        </pb-navigation>
-                        <!-- Navigate to previous page -->
-                        <pb-navigation direction="backward" keyboard="left" emit="transcription"
-                            subscribe="transcription">
-                            <span class="nav-button">
-                                <pb-icon icon="icons:chevron-left"></pb-icon>
-                            </span>
-                        </pb-navigation>
-                    </footer>
-                </main>
-            </pb-page>
-        </template>
-    </pb-demo-snippet>
-</body>
-
+                    <pb-progress></pb-progress>
+                    <main>
+                        <aside class="toc">
+                            <pb-load url="api/document/{doc}/contents?target=transcription&icons=false" expand src="document1" auto="auto"><pb-i18n key="dialogs.loading">Loading</pb-i18n></pb-load>
+                        </aside>
+                        <pb-view class="breadcrumbs" src="document1">
+                            <pb-param name="mode" value="breadcrumbs"/>
+                        </pb-view>
+                        <pb-view id="view1" src="document1" append-footnotes fix-links emit="transcription" subscribe="transcription"></pb-view>
+                        <footer>
+                            <!-- Navigate to next page -->
+                            <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-right"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                            <!-- Navigate to previous page -->
+                            <pb-navigation direction="backward" keyboard="left" emit="transcription" subscribe="transcription">
+                                <paper-button>
+                                    <iron-icon icon="icons:chevron-left"></iron-icon>
+                                </paper-button>
+                            </pb-navigation>
+                        </footer>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
 </html>

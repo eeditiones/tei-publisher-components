@@ -1,4 +1,4 @@
-import { html, css } from 'lit';
+import { html, css } from 'lit-element';
 import { PbHighlight } from './pb-highlight.js';
 
 /**

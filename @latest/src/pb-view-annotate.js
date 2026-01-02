@@ -1,5 +1,5 @@
-import './pb-icon-button.js';
-import { css, html } from 'lit';
+import '@polymer/paper-icon-button';
+import { css, html } from 'lit-element';
 import tippy from 'tippy.js';
 import uniqolor from 'uniqolor/src/index';
 import { PbView } from './pb-view.js';
@@ -52,6 +52,7 @@ function absoluteOffset(container, node, offset) {
   while (walker.previousNode()) {
     const sibling = walker.currentNode;
     if (!(sibling.nodeType === Node.ELEMENT_NODE || isSkippedNode(sibling))) {
+      // eslint-disable-next-line no-param-reassign
       offset += sibling.textContent.length;
     }
   }
@@ -814,7 +815,7 @@ class PbViewAnnotate extends PbView {
     div.appendChild(typeInd);
 
     if (span.dataset.annotation) {
-      const editBtn = document.createElement('pb-icon-button');
+      const editBtn = document.createElement('paper-icon-button');
       editBtn.setAttribute('icon', 'icons:create');
       editBtn.setAttribute('title', i18n('annotations.edit'));
       editBtn.addEventListener('click', () => {
@@ -829,7 +830,7 @@ class PbViewAnnotate extends PbView {
       });
       div.appendChild(editBtn);
     }
-    const delBtn = document.createElement('pb-icon-button');
+    const delBtn = document.createElement('paper-icon-button');
     delBtn.setAttribute('icon', 'icons:delete');
     delBtn.setAttribute('title', i18n('annotations.delete'));
     delBtn.addEventListener('click', () => {

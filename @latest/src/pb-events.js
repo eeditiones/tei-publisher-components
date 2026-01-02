@@ -127,16 +127,4 @@ export class PbEvents {
 
 if (!window.pbEvents) {
   window.pbEvents = PbEvents;
-  // Ensure a classic-script global variable binding for legacy code that references
-  // an undeclared `pbEvents` identifier (e.g., non-module scripts). Adding a
-  // small classic script creates a global var bound to window.pbEvents.
-  try {
-    const s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.text =
-      'if (typeof pbEvents === "undefined") { try { pbEvents = window.pbEvents; } catch(e) {} }';
-    (document.head || document.documentElement).appendChild(s);
-  } catch (e) {
-    // ignore if DOM not ready; legacy code may still read via window.pbEvents
-  }
 }

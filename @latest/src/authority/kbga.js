@@ -1,3 +1,4 @@
+import { internalProperty } from 'lit-element';
 import { Registry } from './registry.js';
 
 export class KBGA extends Registry {

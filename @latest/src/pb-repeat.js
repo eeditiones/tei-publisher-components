@@ -1,5 +1,8 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
+import { registry } from './urls.js';
+import '@polymer/iron-icons';
+import '@polymer/paper-icon-button';
 
 /**
  * Simple component to create repeatable form elements. It expects
@@ -37,9 +40,16 @@ export class PbRepeat extends pbMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    const tpl = this.querySelector('template');
-    if (!tpl) return; // nothing to render yet; safe for smoke tests
-    this._add();
+
+    this.template = this.querySelector('template');
+
+    const params = registry.state;
+    this._computeInitial(params);
+    if (this._instances.length === 0) {
+      for (let i = 0; i < this.initial; i++) {
+        this._add(params);
+      }
+    }
   }
 
   _computeInitial(params) {
@@ -67,10 +77,8 @@ export class PbRepeat extends pbMixin(LitElement) {
   }
 
   _add(params) {
-    const tpl = this.querySelector('template');
-    if (!tpl || !tpl.content) return;
     const idx = this._instances.length + 1;
-    const clone = document.importNode(tpl.content, true);
+    const clone = document.importNode(this.template.content, true);
     const wrapper = document.createElement('div');
     wrapper.appendChild(clone);
     wrapper.querySelectorAll('[name]').forEach(input => {
@@ -112,55 +120,15 @@ export class PbRepeat extends pbMixin(LitElement) {
   render() {
     return html`
       <div class="instances">${this._instances.map(this.renderInstance.bind(this))}</div>
-      <button
-        class="pb-button pb-button--icon"
-        type="button"
-        aria-label="Add instance"
-        title="Add instance"
-        @click="${this.add}"
-      >
-        ${this._renderAddIcon()}
-      </button>
+      <paper-icon-button icon="add" @click="${this.add}"></paper-icon-button>
     `;
   }
 
   renderInstance(instance, idx) {
     return html` <div class="instance">
       ${instance}
-      <button
-        class="pb-button pb-button--icon"
-        type="button"
-        aria-label="Delete instance"
-        title="Delete instance"
-        @click="${() => this.delete(idx)}"
-      >
-        ${this._renderDeleteIcon()}
-      </button>
+      <paper-icon-button icon="delete" @click="${() => this.delete(idx)}"></paper-icon-button>
     </div>`;
-  }
-
-  _renderAddIcon() {
-    return html`<svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M13 11V5h-2v6H5v2h6v6h2v-6h6v-2h-6z"></path>
-    </svg>`;
-  }
-
-  _renderDeleteIcon() {
-    return html`<svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1z"></path>
-    </svg>`;
   }
 
   createRenderRoot() {

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 
 /**
  * Show or hide contents depending on a media query. This is used to toggle the menubar and drawer.

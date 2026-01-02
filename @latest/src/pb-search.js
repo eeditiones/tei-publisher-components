@@ -1,8 +1,8 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { translate } from './pb-i18n.js';
-import './pb-fetch.js';
+import '@polymer/iron-ajax';
 import { themableMixin } from './theming.js';
 
 /**
@@ -167,14 +167,14 @@ export class PbSearch extends themableMixin(pbMixin(LitElement)) {
         </div>
         <slot></slot>
       </form>
-      <pb-fetch
+      <iron-ajax
         id="autocompleteLoader"
         verbose
         handle-as="json"
         method="get"
         with-credentials
         @response="${this._updateSuggestions}"
-      ></pb-fetch>
+      ></iron-ajax>
     `;
   }
 

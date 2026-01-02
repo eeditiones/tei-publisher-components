@@ -1,9 +1,9 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
-import './pb-fetch.js';
+import '@polymer/iron-ajax';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
 
@@ -140,8 +140,6 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     this.language = null;
     this.noCredentials = false;
     this.silent = false;
-    this._retryCount = 0;
-    this._maxRetries = 20; // Maximum retries for document resolution
   }
 
   connectedCallback() {
@@ -170,14 +168,6 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
     this.subscribeTo('pb-toggle', ev => {
       this.toggleFeature(ev);
-    });
-
-    // Subscribe to pb-document events to know when the document is ready
-    this.subscribeTo('pb-document', ev => {
-      if (ev.detail && ev.detail.id === this.src) {
-        console.log(`<pb-load> Document ${this.src} is ready, triggering load`);
-        this.load();
-      }
     });
 
     this.subscribeTo(
@@ -210,11 +200,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         if (data && data.language) {
           this.language = data.language;
         }
-        // Add a longer delay to ensure all components are properly initialized
-        // This includes pb-document elements that need time to set their properties
-        setTimeout(() => {
-          this.wait(() => this.load());
-        }, 200);
+        this.wait(() => this.load());
       });
     } else {
       waitOnce('pb-page-ready', data => {
@@ -247,7 +233,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   render() {
     return html`
       <slot></slot>
-      <pb-fetch
+      <iron-ajax
         id="loadContent"
         verbose
         handle-as="text"
@@ -255,11 +241,11 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         ?with-credentials="${!this.noCredentials}"
         @response="${this._handleContent}"
         @error="${this._handleError}"
-      ></pb-fetch>
+      ></iron-ajax>
       <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
         <p id="errorMessage"></p>
         <div slot="footer">
-          <button rel="prev" type="button">${translate('dialogs.close')}</button>
+          <button rel="prev">${translate('dialogs.close')}</button>
         </div>
       </pb-dialog>
     `;
@@ -322,38 +308,9 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
 
     const doc = this.getDocument();
-    console.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
-    console.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
-    if (doc) {
-      console.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
-    }
     if (!this.plain) {
-      if (doc && doc.path) {
+      if (doc) {
         params.doc = doc.path;
-        console.log(`<pb-load> Setting params.doc to:`, doc.path);
-        this._retryCount = 0; // Reset retry counter when document is found
-      } else if (this.src) {
-        // Document not found but src is specified - wait for it to be available
-        if (this._retryCount < this._maxRetries) {
-          this._retryCount++;
-          const delay = Math.min(100 * this._retryCount, 1000); // Progressive delay up to 1 second
-          console.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
-          setTimeout(() => {
-            this.load(ev);
-          }, delay);
-          return;
-        } else {
-          console.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
-          // Instead of returning, show a loading state and keep trying
-          this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
-          return;
-        }
-      } else {
-        // No document and no src specified - this might be intentional for plain mode
-        // But if we have {doc} in the URL template, we should warn
-        if (this.url && this.url.includes('{doc}')) {
-          console.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
-        }
       }
 
       // set start parameter to start property, but only if not provided otherwise already
@@ -375,16 +332,6 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
 
     const url = this.getURL(params);
-
-    // Check if the URL still contains unresolved parameters
-    if (url.includes('{') && url.includes('}')) {
-      console.warn(`<pb-load> URL still contains unresolved parameters: ${url}`);
-      if (this.src) {
-        // Keep showing loading state and retry later
-        this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
-        return;
-      }
-    }
 
     console.log('<pb-load> Loading %s with parameters %o', url, params);
     const loader = this.shadowRoot.getElementById('loadContent');
@@ -498,25 +445,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     if (this.fixLinks) {
       content.querySelectorAll('img').forEach(image => {
         const oldSrc = image.getAttribute('src');
-        if (!oldSrc) {
-          return;
-        }
-        try {
-          image.src = this.toAbsoluteURL(oldSrc);
-        } catch (err) {
-          console.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
-        }
+        const src = new URL(oldSrc, `${this.getEndpoint()}/`);
+        image.src = src;
       });
       content.querySelectorAll('a').forEach(link => {
         const oldHref = link.getAttribute('href');
-        if (!oldHref) {
-          return;
-        }
-        try {
-          link.href = this.toAbsoluteURL(oldHref);
-        } catch (err) {
-          console.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
-        }
+        const href = new URL(oldHref, `${this.getEndpoint()}/`);
+        link.href = href;
       });
     }
   }

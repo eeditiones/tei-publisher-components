@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import { pbMixin } from './pb-mixin.js';
+import { LitElement, html, css } from 'lit-element';
+import { pbMixin } from './pb-mixin';
 
 /**
  * @slot - unnamed default slot for link text
@@ -37,35 +37,29 @@ export class PbFacsLink extends pbMixin(LitElement) {
       emitOnLoad: {
         type: Boolean,
         attribute: 'emit-on-load',
-        reflect: true,
       },
     };
   }
 
   constructor() {
     super();
-    this.trigger = 'click'; // Changed from 'mouseover' to 'click' to prevent accidental triggering
+    this.trigger = 'mouseover';
     this.label = '';
     this.order = Number.POSITIVE_INFINITY;
     this.waitFor = 'pb-facsimile,pb-image-strip,pb-tify';
     this.default = '';
-    this._loaded = false; // Track if facsimile has been loaded
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    // Only emit pb-load-facsimile if emitOnLoad is explicitly true
-    // Default behavior (undefined) should NOT emit to prevent runaway requests
-    if (this.emitOnLoad === true && this.facs && this.facs.trim() !== '') {
-      this.wait(() => {
-        this.emitTo('pb-load-facsimile', {
-          url: this.getImage(),
-          order: this.getOrder(),
-          element: this,
-        });
+    this.wait(() => {
+      this.emitTo('pb-load-facsimile', {
+        url: this.getImage(),
+        order: this.getOrder(),
+        element: this,
       });
-    }
+    });
   }
 
   getImage() {
@@ -83,7 +77,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
   firstUpdated() {
     const link = this.shadowRoot.querySelector('a');
     link.addEventListener(this.trigger, this._linkListener.bind(this));
-    if (this.emitOnLoad === true) {
+    if (this.emitOnLoad) {
       this.wait(() => {
         this._trigger();
       });
@@ -114,33 +108,12 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
   _trigger() {
     console.log('<facs-link> %s %o', this.facs, this.coordinates);
-    
-    // Validate facs URL before attempting to load
-    if (!this.facs || this.facs.trim() === '') {
-      console.warn('<pb-facs-link> No facs URL provided');
-      return;
-    }
-    
-    // If emitOnLoad was false or undefined (default), load the facsimile now when user interacts
-    if (this.emitOnLoad !== true && !this._loaded) {
-      this._loaded = true;
-      this.emitTo('pb-load-facsimile', {
-        url: this.getImage(),
-        order: this.getOrder(),
-        element: this,
-      });
-    }
-    
-    // Only emit pb-show-annotation if we're actually going to show something
-    // This prevents runaway requests when users interact with the page
-    if (this.emitOnLoad === true) {
-      this.emitTo('pb-show-annotation', {
-        element: this,
-        file: this.facs,
-        order: this.getOrder(),
-        coordinates: this.coordinates,
-      });
-    }
+    this.emitTo('pb-show-annotation', {
+      element: this,
+      file: this.facs,
+      order: this.getOrder(),
+      coordinates: this.coordinates,
+    });
   }
 
   /**

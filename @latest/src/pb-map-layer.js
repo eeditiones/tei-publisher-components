@@ -1,4 +1,4 @@
-import { LitElement } from 'lit';
+import { LitElement } from 'lit-element';
 
 const ignore = ['type', 'url', 'label', 'base', 'show'];
 

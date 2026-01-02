@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
     <title>pb-load Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
 </head>
 
 <body>
     <pb-demo-snippet>
         <template>
             <style type="text/css">
+            body {
+                --paper-fab-background: #35424b;
+            }
+
             main {
                 display: flex;
             }

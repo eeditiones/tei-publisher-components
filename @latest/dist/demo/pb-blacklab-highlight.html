@@ -3,8 +3,8 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-    <title>pb-blacklab-highlight Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
+    <title>pb-view Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
 </head>
 
 <body>
@@ -44,26 +44,9 @@
                 visibility: hidden;
             }
 
-                pb-navigation[direction="forward"] {
-                    float: right;
-                }
-
-                .nav-button {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    border: none;
-                    background: #35424b;
-                    color: #fff;
-                    cursor: pointer;
-                }
-
-                .nav-button pb-icon {
-                    --pb-icon-size: 20px;
-                }
+            pb-navigation[direction="forward"] {
+                float: right;
+            }
         </style>
         <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
             <pb-document id="document1" path="A01775.xml"></pb-document>
@@ -77,15 +60,15 @@
             <footer>
                 <!-- Navigate to next page -->
                 <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-right"></pb-icon>
-                        </span>
+                    <paper-button>
+                        <iron-icon icon="icons:chevron-right"></iron-icon>
+                    </paper-button>
                 </pb-navigation>
                 <!-- Navigate to previous page -->
                 <pb-navigation direction="backward" keyboard="left" subscribe="transcription" emit="transcription">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-left"></pb-icon>
-                        </span>
+                    <paper-button>
+                        <iron-icon icon="icons:chevron-left"></iron-icon>
+                    </paper-button>
                 </pb-navigation>
             </footer>
         </pb-page>

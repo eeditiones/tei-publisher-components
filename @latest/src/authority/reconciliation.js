@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { Registry } from './registry.js';
 
 // Todo:

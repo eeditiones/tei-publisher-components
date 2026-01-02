@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
     <title>pb-search Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
 </head>
 
 <body>
@@ -43,8 +43,8 @@
                 <main>
                     <pb-search id="search-form">
                         <pb-select label="search in" name="tei-target" value="tei-text">
-                            <option value="tei-text">In text</option>
-                            <option value="tei-head">In headings</option>
+                            <paper-item value="tei-text">In text</paper-item>
+                            <paper-item value="tei-head">In headings</paper-item>
                         </pb-select>
                     </pb-search>
                     <pb-paginate per-page="10" range="5"></pb-paginate>

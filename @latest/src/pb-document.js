@@ -1,4 +1,4 @@
-import { LitElement } from 'lit';
+import { LitElement } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
 
@@ -68,9 +68,6 @@ class PbDocument extends pbMixin(LitElement) {
     this.path = null;
     this.rootPath = '';
     this.disableHistory = false;
-    // Internal: coalesce & de-duplicate emitted update events
-    this._emitScheduled = false;
-    this._lastEventKey = null;
   }
 
   connectedCallback() {
@@ -84,39 +81,14 @@ class PbDocument extends pbMixin(LitElement) {
       this.view = registry.state.view || this.view;
       this.odd = registry.state.odd || this.odd;
     }
-
-    // Initialize the event key baseline to prevent unnecessary initial events
-    this._lastEventKey = this._computeEventKey();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
-    // No-op if value did not change (prevents churn)
-    if (oldVal === newVal) return;
-
-    // Coalesce multiple rapid attribute updates into a single emit
-    if (this._emitScheduled) return;
-
-    this._emitScheduled = true;
-    setTimeout(() => {
-      this._emitScheduled = false;
-      const key = this._computeEventKey();
-      if (key !== this._lastEventKey) {
-        this.emitTo('pb-document', this);
-        this._lastEventKey = key;
-      }
-    }, 0);
-  }
-
-  _computeEventKey() {
-    // Build a stable signature of relevant state used by pb-view
-    return JSON.stringify({
-      path: this.path || '',
-      rootPath: this.rootPath || '',
-      odd: this.odd || '',
-      view: this.view || '',
-      sourceView: this.sourceView || '',
-    });
+    if (oldVal) {
+      console.log('<pb-document> Emit update event');
+      this.emitTo('pb-document', this);
+    }
   }
 
   /**

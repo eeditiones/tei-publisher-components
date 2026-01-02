@@ -9,7 +9,7 @@
                 margin-right: 10px;
             }
         </style>
-        <script type="module" src="../pb-components-bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
     </head>
     <body>
         <h1>Using pb-autocomplete</h1>
@@ -23,23 +23,14 @@
                         <p>Selected: <span id="selected"></span></p>
                     </form>
                     </pb-page>
+                    <script>
+                        window.addEventListener('WebComponentsReady', () => {
+                            pbEvents.subscribe('pb-autocomplete-selected', null, (ev) => {
+                                document.getElementById('selected').innerHTML = `${ev.detail.value  } = ${  ev.detail.text}`;
+                            });
+                        });
+                    </script>
             </template>
         </pb-demo-snippet>
-        <script type="module">
-          import { ready, stampIfNeeded, firePageReady } from '../src/docs/demo-utils.js'
-          async function hydrate () {
-            await ready(['pb-demo-snippet','pb-autocomplete'])
-            const snippet = document.querySelector('pb-demo-snippet')
-            stampIfNeeded(snippet)
-            const selected = document.getElementById('selected')
-            document.addEventListener('pb-autocomplete-selected', ev => {
-              const { value, text } = ev.detail || {}
-              selected.textContent = `${value} = ${text}`
-            })
-            firePageReady()
-          }
-          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hydrate)
-          else hydrate()
-        </script>
     </body>
 </html>

@@ -1,15 +1,19 @@
-import { html, css } from 'lit';
+import { html, css } from 'lit-element';
 import { PbLoad } from './pb-load.js';
 import { waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
 import { cmpVersion } from './utils.js';
 import { registry } from './urls.js';
-import './pb-icon.js';
-import './pb-dialog.js';
-import './pb-autocomplete.js';
 
-import './pb-fetch.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox';
+import '@polymer/paper-dialog';
+import '@polymer/paper-dialog-scrollable';
+import '@polymer/iron-ajax';
+import '@cwmr/paper-autocomplete/paper-autocomplete-suggestions.js';
 
 /**
  * Component to browse through a collection of documents with sorting, filtering and facets.
@@ -102,6 +106,9 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
       _allowModification: {
         type: Boolean,
       },
+      _suggestions: {
+        type: Array,
+      },
     };
   }
 
@@ -122,6 +129,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
 
     this.filterBy = 'title';
     this._allowModification = false;
+    this._suggestions = [];
 
     this.static = false;
   }
@@ -178,53 +186,38 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
       },
       [],
     );
-    this.subscribeTo(
-      'pb-i18n-update',
-      () => {
-        this.requestUpdate();
-      },
-      [],
-    );
+    document.addEventListener('pb-i18n-update', () => {
+      // clear paper-listbox selection after language updates
+      const lb = this.shadowRoot.getElementById('sort-list');
+      let old = lb.selected;
+      lb.selected = undefined;
+      lb.selected = old;
+
+      const fl = this.shadowRoot.getElementById('filter-list');
+      old = fl.selected;
+      fl.selected = undefined;
+      fl.selected = old;
+    });
   }
 
   firstUpdated() {
     waitOnce('pb-page-ready', options => {
-      const autocomplete = this.shadowRoot.getElementById('filterString');
-      let autocompleteUrl;
+      const loader = this.shadowRoot.getElementById('autocompleteLoader');
       if (cmpVersion(options.apiVersion, '1.0.0') >= 0) {
-        autocompleteUrl = `${options.endpoint}/api/search/autocomplete`;
+        loader.url = `${options.endpoint}/api/search/autocomplete`;
         if (!this.url) {
           this.url = 'api/collection';
         }
       } else {
-        autocompleteUrl = `${options.endpoint}/modules/autocomplete.xql`;
+        loader.url = `${options.endpoint}/modules/autocomplete.xql`;
         if (!this.url) {
           this.url = 'collection/';
         }
       }
-      if (autocomplete) {
-        autocomplete.source = autocompleteUrl;
-        autocomplete.substring = true;
-        autocomplete.requestParams = { field: this.filterBy };
-      }
     });
-
-    const autocomplete = this.shadowRoot.getElementById('filterString');
-    if (autocomplete) {
-      autocomplete.addEventListener(
-        'pb-autocomplete-selected',
-        this._handleAutocompleteSelected.bind(this),
-      );
-      autocomplete.addEventListener(
-        'pb-autocomplete-input',
-        this._handleAutocompleteInput.bind(this),
-      );
-    }
-
-    const sortSelect = this.shadowRoot.getElementById('sortSelect');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', this._sort.bind(this));
-    }
+    this.shadowRoot
+      .getElementById('autocomplete')
+      .addEventListener('autocomplete-change', this._autocomplete.bind(this));
 
     if (this.login) {
       const login = document.getElementById(this.login);
@@ -241,6 +234,10 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         this._allowModification = login.loggedIn && this._loggedIn(login.user, login.groups);
       }
     }
+
+    this.shadowRoot
+      .getElementById('sort-list')
+      .addEventListener('selected-item-changed', this._sort.bind(this));
     this.shadowRoot
       .getElementById('delete')
       .addEventListener('click', this._handleDelete.bind(this));
@@ -249,76 +246,89 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
 
   render() {
     return html`
+      <custom-style>
+        <style>
+          :host {
+            --suggestions-item: {
+              color: var(--pb-search-suggestions-color, black);
+            }
+            --suggestions-wrapper: {
+              background: var(--pb-search-suggestions-background, white);
+            }
+          }
+        </style>
+      </custom-style>
       <slot name="header"></slot>
-      <div class="toolbar toolbar--primary">
-        <div class="toolbar__group">
-          <label class="field">
-            <span class="field__label">${translate(this.sortLabel)}</span>
-            <select
-              id="sortSelect"
-              class="field__select"
-              @change="${this._sort}"
-              .value=${this.sortBy || ''}
-            >
-              ${this.sortOptions.map(
-                option => html`<option value="${option.value}">${translate(option.label)}</option>`,
-              )}
-            </select>
-          </label>
-        </div>
-        <div class="toolbar__group toolbar__group--filter">
-          <label class="field">
-            <span class="field__label">${translate(this.filterByLabel)}</span>
-            <select
-              id="filterSelect"
-              class="field__select"
-              @change="${this._filterChanged}"
-              .value=${this.filterBy || ''}
+      <div class="toolbar">
+        <paper-dropdown-menu id="sort" label="${translate(this.sortLabel)}" part="sort-dropdown">
+          <paper-listbox
+            id="sort-list"
+            selected="${this.sortBy}"
+            slot="dropdown-content"
+            class="dropdown-content"
+            attr-for-selected="value"
+          >
+            ${this.sortOptions.map(
+              option =>
+                html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`,
+            )}
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <div>
+          <paper-dropdown-menu
+            id="filterSelect"
+            label="${translate(this.filterByLabel)}"
+            part="filter-dropdown"
+          >
+            <paper-listbox
+              id="filter-list"
+              selected="${this.filterBy}"
+              slot="dropdown-content"
+              class="dropdown-content"
+              attr-for-selected="value"
+              @selected-item-changed="${this._filterChanged}"
             >
               ${this.filterOptions.map(
-                option => html`<option value="${option.value}">${translate(option.label)}</option>`,
+                option =>
+                  html`<paper-item value="${option.value}">${translate(option.label)}</paper-item>`,
               )}
-            </select>
-          </label>
-          <div class="filter-control">
-            <pb-autocomplete
-              id="filterString"
-              class="filter-control__input"
-              name="filter"
-              .value=${this.filter || ''}
-              placeholder="${translate(this.filterPlaceholderLabel)}"
-              icon="search"
-              @keydown=${this._handleEnter}
-            ></pb-autocomplete>
-            <button
-              class="pb-button pb-button--icon filter-control__submit"
-              type="button"
-              @click=${this._filter}
-              aria-label="${translate('browse.filter')}"
-              title="${translate('browse.filter')}"
-            >
-              <pb-icon icon="search" decorative></pb-icon>
-            </button>
-          </div>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input
+            id="filterString"
+            type="search"
+            name="filter"
+            label="${translate(this.filterPlaceholderLabel)}"
+            value="${this.filter}"
+            @keyup="${this._handleEnter}"
+            part="filter-input"
+          >
+            <iron-icon icon="search" @click="${this._filter}" slot="prefix"></iron-icon>
+          </paper-input>
+          <paper-autocomplete-suggestions
+            id="autocomplete"
+            for="filterString"
+            source="${this._suggestions}"
+            remote-source
+          ></paper-autocomplete-suggestions>
         </div>
       </div>
-      <div class="toolbar toolbar--secondary">
+      <div class="toolbar">
         <slot name="toolbar"></slot>
-        <button
+        <paper-button
           id="delete"
           part="delete-button"
-          type="button"
-          class="pb-button pb-button--text ${this._canModify(this._allowModification)}"
           title="${translate('browse.delete')}"
+          class="${this._canModify(this._allowModification)}"
         >
-          <pb-icon icon="delete" decorative></pb-icon>
+          <iron-icon icon="delete"></iron-icon>
           <span class="label">${translate('browse.delete')}</span>
-        </button>
+        </paper-button>
       </div>
       <slot></slot>
       <slot name="footer"></slot>
 
-      <pb-fetch
+      <iron-ajax
         id="loadContent"
         verbose
         handle-as="text"
@@ -326,35 +336,41 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         with-credentials
         @response="${this._handleContent}"
         @error="${this._handleError}"
-      ></pb-fetch>
-      <pb-dialog id="deleteDialog" title="${translate('browse.delete')}">
-        <p>
-          ${translate('browse.confirmDeletion', {
-            count: this._selected ? this._selected.length : 0,
-          })}
-        </p>
-        <div slot="footer" class="buttons">
-          <button
-            class="pb-button pb-button--text"
-            type="button"
-            autofocus
-            @click="${this._confirmDelete}"
+      ></iron-ajax>
+      <iron-ajax
+        id="autocompleteLoader"
+        verbose
+        handle-as="json"
+        method="get"
+        with-credentials
+        @response="${this._updateSuggestions}"
+      ></iron-ajax>
+
+      <paper-dialog id="deleteDialog">
+        <h2>${translate('browse.delete')}</h2>
+        <paper-dialog-scrollable>
+          <p>
+            ${translate('browse.confirmDeletion', {
+              count: this._selected ? this._selected.length : 0,
+            })}
+          </p>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <paper-button dialog-confirm="dialog-confirm" autofocus @click="${this._confirmDelete}"
+            >${translate('dialogs.yes')}</paper-button
           >
-            ${translate('dialogs.yes')}
-          </button>
-          <button class="pb-button pb-button--text" type="button" rel="prev">
-            ${translate('dialogs.no')}
-          </button>
+          <paper-button dialog-confirm="dialog-cancel">${translate('dialogs.no')}</paper-button>
         </div>
-      </pb-dialog>
-      <pb-dialog id="errorDialog" title="${translate('dialogs.error')}">
-        <p id="errorMessage"></p>
-        <div slot="footer">
-          <button class="pb-button pb-button--text" type="button" rel="prev">
+      </paper-dialog>
+      <paper-dialog id="errorDialog">
+        <h2>${translate('dialogs.error')}</h2>
+        <paper-dialog-scrollable></paper-dialog-scrollable>
+        <div class="buttons">
+          <paper-button dialog-confirm="dialog-confirm" autofocus="autofocus">
             ${translate('dialogs.close')}
-          </button>
+          </paper-button>
         </div>
-      </pb-dialog>
+      </paper-dialog>
     `;
   }
 
@@ -362,97 +378,38 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     return css`
       :host {
         display: block;
+        --paper-input-container-color: var(--pb-search-label-color, var(--paper-grey-500, #303030));
+        --paper-input-container-input-color: var(
+          --pb-search-input-color,
+          var(--pb-color-primary, #000000)
+        );
+        --paper-input-container-focus-color: var(
+          --pb-search-focus-color,
+          var(--paper-grey-500, #303030)
+        );
       }
 
       .toolbar {
         display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: flex-end;
-        justify-content: var(--pb-browse-toolbar-justify-content, space-between);
-        margin-bottom: 1rem;
-      }
-
-      .toolbar--secondary {
-        align-items: center;
-      }
-
-      .toolbar__group {
-        display: flex;
-        align-items: flex-end;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
-      .toolbar__group--filter {
-        flex: 1 1 320px;
-        justify-content: flex-end;
-      }
-
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-        min-width: 160px;
-      }
-
-      .field__label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      .field__select {
-        appearance: none;
-        min-width: 160px;
-        padding: 0.45rem 2.25rem 0.45rem 0.75rem;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.16);
-        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.5) 50%),
-          linear-gradient(135deg, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
-          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-        background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px),
-          calc(100% - 2.5rem) 0.5em;
-        background-size: 5px 5px, 5px 5px, 1px 2.25em;
-        background-repeat: no-repeat;
-        font: inherit;
-        color: inherit;
-        line-height: 1.2;
-      }
-
-      .field__select:focus {
-        outline: none;
-        border-color: #1976d2;
-        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
-      }
-
-      .filter-control {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex: 1 1 280px;
-      }
-
-      .filter-control__input {
-        flex: 1 1 auto;
-      }
-
-      .filter-control__submit {
-        margin-bottom: 4px;
-      }
-
-      .filter-control__submit pb-icon {
-        --pb-icon-size: 1.25rem;
+        justify-content: var(--pb-browse-toolbar-justify-content);
       }
 
       [name='toolbar'] {
         flex: 1 0;
       }
 
+      #sort {
+        display: block;
+      }
+
+      #filterString {
+        position: relative;
+        display: inline-block;
+        vertical-align: bottom;
+      }
+
       .hidden {
-        display: none !important;
+        display: none;
       }
     `;
   }
@@ -501,14 +458,12 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const selected = [];
     if (this.container) {
       document.querySelectorAll(this.container).forEach(container =>
-        container
-          .querySelectorAll('.document-select input[type="checkbox"]:checked')
-          .forEach(checkbox => {
-            selected.push(checkbox.value);
-          }),
+        container.querySelectorAll('.document-select paper-checkbox[checked]').forEach(checkbox => {
+          selected.push(checkbox.value);
+        }),
       );
     } else {
-      this.querySelectorAll('.document-select input[type="checkbox"]:checked').forEach(checkbox => {
+      this.querySelectorAll('.document-select paper-checkbox[checked]').forEach(checkbox => {
         selected.push(checkbox.value);
       });
     }
@@ -516,10 +471,8 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
   }
 
   _filter() {
-    const filterInput = this.shadowRoot.getElementById('filterString');
-    const filterSelect = this.shadowRoot.getElementById('filterSelect');
-    const filter = filterInput ? filterInput.value : this.filter;
-    const filterBy = filterSelect ? filterSelect.value : this.filterBy;
+    const filter = this.shadowRoot.getElementById('filterString').value;
+    const filterBy = this.shadowRoot.getElementById('filter-list').selected;
     if (typeof filter !== 'undefined') {
       console.log('<pb-browse-docs> Filter by %s', filter);
       this.filter = filter;
@@ -528,22 +481,16 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     }
   }
 
-  _filterChanged(ev) {
-    const filterSelect = ev?.target ?? this.shadowRoot.getElementById('filterSelect');
-    const filterBy = filterSelect ? filterSelect.value : null;
+  _filterChanged() {
+    const filterBy = this.shadowRoot.getElementById('filter-list').selected;
     if (filterBy && filterBy !== this.filterBy) {
       console.log('<pb-browse-docs> Filtering on %s', filterBy);
       this.filterBy = filterBy;
-      const autocomplete = this.shadowRoot.getElementById('filterString');
-      if (autocomplete) {
-        autocomplete.requestParams = { field: this.filterBy };
-      }
     }
   }
 
-  _sort(ev) {
-    const sortSelect = ev?.target ?? this.shadowRoot.getElementById('sortSelect');
-    const sortBy = sortSelect ? sortSelect.value : null;
+  _sort() {
+    const sortBy = this.shadowRoot.getElementById('sort-list').selected;
     if (sortBy && sortBy !== this.sortBy) {
       console.log('<pb-browse-docs> Sorting by %s', sortBy);
       this.sortBy = sortBy;
@@ -592,7 +539,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const selected = this.getSelected();
     if (selected.length > 0) {
       this._selected = selected;
-      deleteDialog.openDialog();
+      deleteDialog.open();
     }
   }
 
@@ -634,22 +581,23 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     return allowModification ? '' : 'hidden';
   }
 
-  _handleAutocompleteInput(ev) {
-    const detail = ev.detail || {};
-    const value = detail.value ?? detail.text ?? '';
-    this.filter = value;
+  _autocomplete(ev) {
+    const autocompleteLoader = this.shadowRoot.getElementById('autocompleteLoader');
+    autocompleteLoader.params = {
+      query: ev.detail.option.text,
+      field: this.filterBy,
+    };
+    autocompleteLoader.generateRequest();
   }
 
-  _handleAutocompleteSelected(ev) {
-    const detail = ev.detail || {};
-    const value = detail.value ?? detail.text ?? '';
-    this.filter = value;
-    this._filter();
+  _updateSuggestions() {
+    const autocomplete = this.shadowRoot.getElementById('autocomplete');
+    const autocompleteLoader = this.shadowRoot.getElementById('autocompleteLoader');
+    autocomplete.suggestions(autocompleteLoader.lastResponse);
   }
 
   _handleEnter(e) {
-    const key = e.key || e.code || e.keyCode;
-    if (key === 'Enter' || key === 'NumpadEnter' || key === 13) {
+    if (e.keyCode === 13) {
       this._filter();
     }
   }

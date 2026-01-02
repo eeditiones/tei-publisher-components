@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
 import { getCSSProperty } from './utils.js';

@@ -4,14 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
 
-    <title>pb-facsimile Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
+    <title>pb-view Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
 </head>
 
 <body>
     <pb-demo-snippet>
         <template>
             <style type="text/css">
+            body {
+                --paper-fab-background: #35424b;
+            }
+
             main {
                 position: relative;
                 height: 70vh;
@@ -23,6 +27,8 @@
             pb-navigation {
                 position: absolute;
                 bottom: 45%;
+                --paper-fab-background: #35424b;
+                color: white;
             }
 
             pb-navigation[direction=backward] {
@@ -38,23 +44,6 @@
                 max-width: 50vw;
                 margin-right: 20px;
             }
-
-            .nav-button {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 56px;
-                height: 56px;
-                border-radius: 50%;
-                border: none;
-                background: #35424b;
-                color: #fff;
-                cursor: pointer;
-            }
-
-            .nav-button pb-icon {
-                --pb-icon-size: 24px;
-            }
             </style>
             <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
@@ -65,17 +54,13 @@
 
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-left"></pb-icon>
-                        </span>
+                        <paper-fab icon="icons:chevron-left"></paper-fab>
                     </pb-navigation>
                     <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']" append-footnotes>
                     </pb-view>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right">
-                        <span class="nav-button">
-                            <pb-icon icon="icons:chevron-right"></pb-icon>
-                        </span>
+                        <paper-fab icon="icons:chevron-right"></paper-fab>
                     </pb-navigation>
                 </main>
             </pb-page>

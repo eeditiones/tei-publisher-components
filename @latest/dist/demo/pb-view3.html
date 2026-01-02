@@ -1,17 +1,16 @@
 <html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+        <title>pb-view Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+    </head>
 
-    <title>pb-view Demo</title>
-    <script type="module" src="../pb-components-bundle.js"></script>
-</head>
-
-<body>
-    <pb-demo-snippet>
-        <template>
-            <style type="text/css">
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
                 pb-page {
                     position: relative;
                 }
@@ -26,9 +25,7 @@
                 }
 
                 @media (min-width: 769px) {
-
-                    #view1,
-                    footer {
+                    #view1, footer {
                         max-width: 60vw;
                     }
                 }
@@ -50,46 +47,44 @@
                 pb-navigation[direction="forward"] {
                     float: right;
                 }
-            </style>
-            <p>Demonstrates how to manipulate pb-view contents via Javascript before they are displayed in a pb-view:
-            </p>
-            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
-                <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>
+                </style>
+                <p>Demonstrates how to manipulate pb-view contents via Javascript before they are displayed in a pb-view:</p>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                    <pb-document id="document1" path="test/graves6.xml" odd="graves"></pb-document>
 
-                <pb-progress subscribe="transcription"></pb-progress>
-                <!-- Output the document title -->
-                <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title" subscribe="transcription">
-                    <pb-param name="header" value="short" />
-                </pb-view>
-                <pb-view id="view1" src="document1" view="single" append-footnotes animation
-                    before-update-event="before-transcription-update" subscribe="transcription"
-                    emit="transcription"></pb-view>
-            </pb-page>
-<script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    pbEvents.subscribe('before-transcription-update', 'transcription', (ev) => {
-                        const { root } = ev.detail;
-                        // walk through all .tei-name elements and insert a node before each
-                        root.querySelectorAll('.tei-name').forEach((name) => {
-                            // create a span with text 'Name' and orange color
-                            const span = document.createElement('span');
-                            span.innerHTML = 'Name';
-                            span.style.backgroundColor = 'orange';
-                            span.style.padding = '0 4px';
-                            span.style.fontSize = '.85em';
-                            // insert the span before the name
-                            name.parentNode.insertBefore(span, name);
+                    <pb-progress subscribe="transcription"></pb-progress>
+                    <!-- Output the document title -->
+                    <pb-view src="document1" xpath="//teiHeader/fileDesc/titleStmt/title"
+                        subscribe="transcription">
+                        <pb-param name="header" value="short"/>
+                    </pb-view>
+                    <pb-view id="view1" src="document1" view="single" append-footnotes animation
+                        before-update-event="before-transcription-update"
+                        subscribe="transcription" emit="transcription"></pb-view>
+                </pb-page>
+                <script>
+                    window.addEventListener('DOMContentLoaded', () => {
+                        pbEvents.subscribe('before-transcription-update', 'transcription', (ev) => {
+                            const {root} = ev.detail;
+                            // walk through all .tei-name elements and insert a node before each
+                            root.querySelectorAll('.tei-name').forEach((name) => {
+                                // create a span with text 'Name' and orange color
+                                const span = document.createElement('span');
+                                span.innerHTML = 'Name';
+                                span.style.backgroundColor = 'orange';
+                                span.style.padding = '0 4px';
+                                span.style.fontSize = '.85em';
+                                // insert the span before the name
+                                name.parentNode.insertBefore(span, name);
+                            });
+
+                            // to actually show the modified content in the pb-view,
+                            // we need to call the render function passed in the event detail:
+                            ev.detail.render(root);
                         });
-
-                        // to actually show the modified content in the pb-view,
-                        // we need to call the render function passed in the event detail:
-                        ev.detail.render(root);
                     });
-                });
-
-</script>
-        </template>
-    </pb-demo-snippet>
-</body>
-
+                </script>
+            </template>
+        </pb-demo-snippet>
+    </body>
 </html>

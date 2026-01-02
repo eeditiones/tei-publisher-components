@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 
 /**
  * Embed a codepen project to show live code. Used for some documentation examples.
@@ -66,8 +66,7 @@ export class PbCodepen extends LitElement {
       <iframe
         height="${this.height}"
         scrolling="no"
-        title="CodePen ${this.hash || ''}"
-        loading="lazy"
+        title="${this.labe}l"
         src="${url}"
         frameborder="no"
         allowtransparency="true"

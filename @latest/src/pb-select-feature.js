@@ -1,7 +1,9 @@
-import { LitElement, html, css } from 'lit';
-import { pbMixin } from './pb-mixin.js';
+import { LitElement, html, css } from 'lit-element';
+import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox';
+import '@polymer/paper-item';
 import { registry } from './urls.js';
 import { addSelector } from './pb-toggle-feature.js';
 
@@ -86,7 +88,7 @@ export class PbSelectFeature extends pbMixin(LitElement) {
       } else {
         this.selected = 0;
       }
-      this.requestUpdate();
+      this.shadowRoot.getElementById('list').selected = this.selected;
     });
 
     const param = registry.state[this.name];
@@ -103,26 +105,17 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     this.signalReady();
   }
 
-  updated(changed) {
-    super.updated(changed);
-    if (changed.has('items')) {
-      if (!Array.isArray(this.items)) {
-        this.items = [];
-      }
-      if (typeof this.selected !== 'number' || this.selected >= this.items.length) {
-        this.selected = this.items.length > 0 ? 0 : null;
-      }
-    }
+  firstUpdated() {
+    super.firstUpdated();
+
+    this.shadowRoot.getElementById('list').selected = this.selected;
+    this.shadowRoot
+      .getElementById('menu')
+      .addEventListener('iron-select', this._selectionChanged.bind(this));
   }
 
-  _selectionChanged(event) {
-    const current = parseInt(event.target.value, 10);
-    if (Number.isNaN(current)) {
-      return;
-    }
-    this.selected = current;
-
-    const refresh = this._saveState(current);
+  _selectionChanged() {
+    const refresh = this._saveState();
     if (this.initializing) {
       this.initializing = false;
     } else {
@@ -130,8 +123,8 @@ export class PbSelectFeature extends pbMixin(LitElement) {
     }
   }
 
-  _saveState(currentIndex) {
-    const current = currentIndex;
+  _saveState() {
+    const current = this.shadowRoot.getElementById('list').selected;
 
     const state = registry.getState(this);
     state[this.name] = current;
@@ -158,55 +151,16 @@ export class PbSelectFeature extends pbMixin(LitElement) {
         }
       });
     }
-    const entry = this.items[current];
-    if (!entry) {
-      return false;
-    }
-    const props = entry.properties || {};
-    Object.assign(state, props);
-    if (entry.selectors) {
-      if (!state.selectors) {
-        state.selectors = [];
-      }
-      entry.selectors.forEach(config => {
-        if (config.global) {
-          registry.commit(this, state);
-          this.dispatchEvent(
-            new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }),
-          );
-        } else {
-          addSelector(
-            {
-              selector: config.selector,
-              state: config.state,
-              command: config.command,
-            },
-            state.selectors,
-          );
-        }
-      });
-    }
-    return props && typeof props === 'object';
+    return this.items[current].properties instanceof Object;
   }
 
   render() {
-    const items = Array.isArray(this.items) ? this.items : [];
     return html`
-      <label class="pb-select-feature__label" for="feature-select">
-        ${translate(this.label)}
-      </label>
-      <select
-        id="feature-select"
-        class="pb-select-feature__select"
-        name=${ifDefined(this.name || undefined)}
-        .value=${this.selected == null ? '' : String(this.selected)}
-        ?disabled=${this.disabled}
-        @change=${this._selectionChanged}
-      >
-        ${items.map(
-          (item, index) => html`<option value="${index}">${translate(item.name)}</option>`,
-        )}
-      </select>
+      <paper-dropdown-menu id="menu" label="${translate(this.label)}" .disabled="${this.disabled}">
+        <paper-listbox id="list" slot="dropdown-content" .selected="${this.selected}">
+          ${this.items.map(item => html`<paper-item>${translate(item.name)}</paper-item>`)}
+        </paper-listbox>
+      </paper-dropdown-menu>
     `;
   }
 
@@ -215,42 +169,11 @@ export class PbSelectFeature extends pbMixin(LitElement) {
       :host {
         display: block;
       }
-      .pb-select-feature__label {
-        display: block;
-        margin-bottom: 0.35rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: rgba(0, 0, 0, 0.6);
-      }
 
-      .pb-select-feature__select {
-        width: 100%;
+      #menu {
+        width: inherit;
         min-width: inherit;
         max-width: inherit;
-        height: var(--pb-input-height, 48px);
-        padding: 0.5rem 0.75rem;
-        border: 1px solid rgba(0, 0, 0, 0.16);
-        border-radius: 8px;
-        background: #fff;
-        font: inherit;
-        color: inherit;
-        appearance: none;
-        background-image: linear-gradient(45deg, transparent 50%, rgba(0, 0, 0, 0.4) 50%),
-          linear-gradient(135deg, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
-          linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
-        background-position: calc(100% - 18px) calc(0.6em + 2px),
-          calc(100% - 13px) calc(0.6em + 2px), calc(100% - 2.5rem) 0.5em;
-        background-size: 5px 5px, 5px 5px, 1px 2.25em;
-        background-repeat: no-repeat;
-        transition: border-color 120ms ease, box-shadow 120ms ease;
-      }
-
-      .pb-select-feature__select:focus {
-        outline: none;
-        border-color: #1976d2;
-        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.16);
       }
     `;
   }

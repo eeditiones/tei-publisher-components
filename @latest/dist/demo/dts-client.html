@@ -5,7 +5,7 @@
 
         <title>dts-client Demo</title>
         <link rel="stylesheet" href="demo.css">
-        <script type="module" src="../pb-components-bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
     </head>
 
     <body>
@@ -30,7 +30,7 @@
                     // configuration for the DTS endpoints
                     const dtsConfig = [
                         {
-                            "url": "/exist/apps/tei-publisher/api/dts",
+                            "url": "http://localhost:8080/exist/apps/tei-publisher/api/dts",
                             "title": "Local TEI Publisher"
                         },
                         {

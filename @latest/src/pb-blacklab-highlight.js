@@ -1,6 +1,5 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import './pb-icon-button.js';
 
 /**
  * This component queries the blacklab API of TEI-Publisher for a list of text matches
@@ -130,18 +129,18 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
     return html`
       ${this.hits.length !== 0
         ? html` <section class="kwic-display">
-            <pb-icon-button
+            <paper-icon-button
               icon="icons:arrow-back"
               @click="${this._handlePrev}"
               ?disabled="${this.current === 1}"
-            ></pb-icon-button>
+            ></paper-icon-button>
             <span class="current">${this.current}</span> /
             <span class="counter">${this.count}</span>
-            <pb-icon-button
+            <paper-icon-button
               icon="icons:arrow-forward"
               @click="${this._handleNext}"
               ?disabled="${this.current === this.hits.length}"
-            ></pb-icon-button>
+            ></paper-icon-button>
           </section>`
         : ''}
     `;

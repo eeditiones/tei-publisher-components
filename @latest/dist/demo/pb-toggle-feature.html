@@ -6,7 +6,7 @@
 
     <title>pb-toggle-feature Demo</title>
     <link rel="stylesheet" href="demo.css">
-    <script type="module" src="../pb-components-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
 </head>
 
 <body>
@@ -33,33 +33,30 @@
     <pb-demo-snippet>
         <template>
             <style>
-                body {
-                    --paper-fab-background: #35424b;
-                }
-
-                main {
-                    display: flex;
-                    justify-content: space-between;
-                }
-
-                .toolbar {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px;
-                    background-color: #E0E0E0;
-                }
-
-                pb-toggle-feature {
-                    display: block;
-                }
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
             </style>
             <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
                 <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
 
                 <div class="toolbar">
-                    <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover" action="disable"
-                        default="off">Plain Reading View</pb-toggle-feature>
+                    <pb-toggle-feature name="plain" selector=".tei-foreign,pb-highlight,pb-popover"
+                        action="disable" default="off">Plain Reading View</pb-toggle-feature>
                     <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter-->
                     <pb-toggle-feature name="mode" on="diplomatic" off="norm">Diplomatic View</pb-toggle-feature>
                     <!-- directly change properties of the pb-view -->
@@ -71,11 +68,11 @@
                     </pb-toggle-feature>
                     <!-- Navigate to previous page -->
                     <pb-navigation direction="backward" keyboard="left">
-                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
+                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
                     </pb-navigation>
                     <!-- Navigate to next page -->
                     <pb-navigation direction="forward" keyboard="right">
-                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
+                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
                     </pb-navigation>
                 </div>
                 <main>

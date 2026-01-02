@@ -1,8 +1,11 @@
 // @ts-nocheck
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from 'lit-element';
 
-import './pb-autocomplete.js';
-import './pb-icon-button.js';
+import '@cwmr/paper-autocomplete/paper-autocomplete.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
 import { cmpVersion } from './utils.js';
@@ -12,6 +15,8 @@ import { get as i18n, translate } from './pb-i18n.js';
  * represents an odd parameter element for editing
  *
  * @customElement
+ *
+ * @polymer
  */
 export class PbOddParameterEditor extends LitElement {
   static get styles() {
@@ -26,49 +31,20 @@ export class PbOddParameterEditor extends LitElement {
         grid-row-gap: 20px;
         margin-bottom: 10px;
       }
-      pb-icon-button {
+      paper-dropdown-menu {
+        align-self: start;
+      }
+      paper-icon-button,
+      paper-checkbox {
         align-self: center;
         margin-top: 16px;
-      }
-
-      .pb-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        align-self: center;
-        margin-top: 16px;
-        font-size: 0.95rem;
-        color: rgba(0, 0, 0, 0.87);
-      }
-
-      .pb-checkbox input {
-        width: 16px;
-        height: 16px;
-      }
-
-      .pb-field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-      }
-
-      .pb-field__label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      pb-autocomplete {
-        width: 100%;
       }
 
       .editor label {
         margin-bottom: 5px;
         font-size: 12px;
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--paper-grey-500);
       }
     `;
   }
@@ -76,19 +52,13 @@ export class PbOddParameterEditor extends LitElement {
   render() {
     return html`
       <div class="wrapper">
-        <div class="pb-field">
-          <span class="pb-field__label"
-            >${translate('odd.editor.model.param-name-placeholder')}</span
-          >
-          <pb-autocomplete
-            id="combo"
-            .suggestions=${this._currentParameters}
-            .value=${this.name || ''}
-            placeholder="${translate('odd.editor.model.param-name-placeholder')}"
-            @pb-autocomplete-input=${this._handleNameInput}
-            @pb-autocomplete-selected=${this._handleNameSelected}
-          ></pb-autocomplete>
-        </div>
+        <paper-autocomplete
+          id="combo"
+          text="${this.name}"
+          placeholder="${translate('odd.editor.model.param-name-placeholder')}"
+          label="Name"
+          .source="${this._currentParameters}"
+        ></paper-autocomplete>
 
         <div class="editor">
           <label>Parameter</label>
@@ -101,21 +71,14 @@ export class PbOddParameterEditor extends LitElement {
               : 'api/lint'}"
           ></jinn-codemirror>
         </div>
-        <label class="pb-checkbox">
-          <input
-            id="set"
-            type="checkbox"
-            ?checked=${this.setParam}
-            @change=${this._handleSetToggle}
-          />
-          <span>${translate('odd.editor.model.set-param')}</span>
-        </label>
-        <pb-icon-button
-          class="icon-button"
+        <paper-checkbox id="set" ?checked="${this.setParam}" @change="${this._handleCodeChange}"
+          >${translate('odd.editor.model.set-param')}</paper-checkbox
+        >
+        <paper-icon-button
+          @click="${this._delete}"
           icon="delete"
           title="delete this parameter"
-          @click="${this._delete}"
-        ></pb-icon-button>
+        ></paper-icon-button>
       </div>
     `;
   }
@@ -196,10 +159,6 @@ export class PbOddParameterEditor extends LitElement {
 
     this.selected = '';
     this.endpoint = '';
-    this._currentParameters = [];
-    if (this.behaviour && this.parameters[this.behaviour]) {
-      this._currentParameters = this.parameters[this.behaviour];
-    }
   }
 
   connectedCallback() {
@@ -217,18 +176,7 @@ export class PbOddParameterEditor extends LitElement {
   attributeChangedCallback(name, old, value) {
     super.attributeChangedCallback(name, old, value);
     if (name === 'behaviour') {
-      this._currentParameters = (this.parameters && this.parameters[value]) || [];
-    }
-  }
-
-  updated(changedProperties) {
-    super.updated(changedProperties);
-    if (changedProperties.has('parameters') || changedProperties.has('behaviour')) {
-      this._currentParameters = (this.parameters && this.parameters[this.behaviour]) || [];
-      const combo = this.shadowRoot?.getElementById('combo');
-      if (combo) {
-        combo.suggestions = this._currentParameters;
-      }
+      this._currentParameters = this.parameters[value];
     }
   }
 
@@ -237,6 +185,9 @@ export class PbOddParameterEditor extends LitElement {
     this.selected = this.parameters[this.behaviour] || [];
     this.requestUpdate();
 
+    this.shadowRoot
+      .getElementById('combo')
+      .addEventListener('focused-changed', this._handleCodeChange.bind(this));
     this.shadowRoot
       .getElementById('editor')
       .addEventListener('update', this._handleCodeChange.bind(this));
@@ -266,39 +217,11 @@ export class PbOddParameterEditor extends LitElement {
     */
 
   _handleCodeChange(e) {
-    this._emitChange();
-  }
-
-  _handleNameInput(ev) {
-    const { text, value } = ev.detail || {};
-    this.name = value ?? text ?? '';
-    this._emitChange();
-  }
-
-  _handleNameSelected(ev) {
-    const { text, value } = ev.detail || {};
-    this.name = value ?? text ?? '';
-    this._emitChange();
-  }
-
-  _handleSetToggle(ev) {
-    this.setParam = ev.target.checked;
-    this._emitChange();
-  }
-
-  _emitChange() {
-    const editor = this.shadowRoot.getElementById('editor');
-    if (editor) {
-      this.value = editor.content || editor.value || '';
-    }
-    const combo = this.shadowRoot.getElementById('combo');
-    if (combo && !this.name) {
-      this.name = combo.value || '';
-    }
-    const checkbox = this.shadowRoot.getElementById('set');
-    if (checkbox) {
-      this.setParam = checkbox.checked;
-    }
+    console.log('_handleCodeChange ', e);
+    this.value = this.shadowRoot.getElementById('editor').content || '';
+    console.log('value %s', this.value);
+    this.name = this.shadowRoot.getElementById('combo').text;
+    this.setParam = this.shadowRoot.getElementById('set').checked;
     this.dispatchEvent(
       new CustomEvent('parameter-changed', {
         composed: true,

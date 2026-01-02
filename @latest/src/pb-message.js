@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { LitElement, html, css } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { translate } from './pb-i18n.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -64,16 +64,12 @@ export class PbMessage extends themableMixin(LitElement) {
 
         <div class="buttons" slot="footer">
           ${this.isMessage()
-            ? html`<button class="close" autofocus="autofocus" type="button">
+            ? html`<button class="close" autofocus="autofocus">
                 ${translate('dialogs.close')}
               </button>`
             : html`
-                <button class="confirm" autofocus="autofocus" type="button">
-                  ${translate('dialogs.yes')}
-                </button>
-                <button class="reject" autofocus="autofocus" type="button">
-                  ${translate('dialogs.no')}
-                </button>
+                <button class="confirm" autofocus="autofocus">${translate('dialogs.yes')}</button>
+                <button class="reject" autofocus="autofocus">${translate('dialogs.no')}</button>
               `}
         </div>
       </pb-dialog>

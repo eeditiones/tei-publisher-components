@@ -32,7 +32,7 @@
         },
         {
           "name": "view",
-          "type": "PbComponentView|null"
+          "type": "PbComponentView"
         }
       ],
       "slots": [
@@ -111,17 +111,7 @@
       "name": "pb-demo-snippet",
       "path": "./src/docs/pb-demo-snippet.js",
       "description": "Viewer for demo code.",
-      "properties": [
-        {
-          "name": "properties",
-          "type": "{ title: { type: StringConstructor; }; code: { type: StringConstructor; }; _showCodeLabel: { type: StringConstructor; }; _requirePbTify: { ...; }; }",
-          "default": "{\"title\":{\"type\":\"String\"},\"code\":{\"type\":\"String\"},\"_showCodeLabel\":{\"type\":\"String\"},\"_requirePbTify\":{\"type\":\"Boolean\"}}"
-        },
-        {
-          "name": "styles",
-          "type": "CSSResult",
-          "default": "\"css`\\n    :host {\\n      display: block;\\n      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 1px 5px rgba(0, 0, 0, 0.12),\\n        0 3px 1px -2px rgba(0, 0, 0, 0.2);\\n      padding: 20px;\\n      background: #fff;\\n    }\\n\\n    pb-code-highlight {\\n      display: none;\\n      margin-top: 30px;\\n    }\\n\\n    pb-code-highlight.open {\\n      display: block;\\n    }\\n\\n    .buttons {\\n      display: flex;\\n      justify-content: space-between;\\n      margin-top: 20px;\\n      padding-top: 10px;\\n      border-top: 1px solid var(--google-grey-400, #999);\\n    }\\n\\n    .pretty-button {\\n      cursor: pointer;\\n      display: inline-block;\\n      box-sizing: border-box;\\n      margin: 12px 0;\\n      padding: 13px 44px;\\n      border: 2px solid #2196f3;\\n      background-color: transparent;\\n      font-size: 14px;\\n      font-weight: 500;\\n      color: #2196f3;\\n      text-align: center;\\n      text-decoration: none;\\n      text-transform: uppercase;\\n      border-radius: 0;\\n      appearance: none;\\n    }\\n\\n    .pretty-button:hover,\\n    .pretty-button:active {\\n      background-color: #2196f3;\\n      color: #fff;\\n    }\\n\\n    .pretty-button:disabled {\\n      background-color: transparent;\\n      border-color: #999;\\n      color: #999;\\n    }\\n  `\""
-        },
+      "attributes": [
         {
           "name": "title",
           "type": "string",
@@ -129,6 +119,20 @@
         },
         {
           "name": "code",
+          "type": "string",
+          "default": "\"Loading ...\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "title",
+          "attribute": "title",
+          "type": "string",
+          "default": "\"TEI Publisher Webcomponents Example\""
+        },
+        {
+          "name": "code",
+          "attribute": "code",
           "type": "string",
           "default": "\"Loading ...\""
         }
@@ -799,60 +803,51 @@
     {
       "name": "pb-autocomplete",
       "path": "./src/pb-autocomplete.js",
+      "description": "Provides an input with attached autocomplete. The autocomplete suggestions can be read\neither from a static list or a remote endpoint to which the current user input is sent.",
       "attributes": [
         {
+          "name": "name",
+          "description": "Name of the form field which will be submitted",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "description": "Value of the form field which will be submitted",
+          "type": "string"
+        },
+        {
           "name": "source",
+          "description": "Optional URL to query for suggestions. If relative, it is interpreted\nrelative to the endpoint defined on a surrounding `pb-page`.\n\nUpon autocomplete, the current input by the user will be sent with a query parameter\n`query`. The name/values of form controls nested within `pb-autocomplete` will also be\nappended to the request as parameters. This allows the server side code to distinguish\ndifferent states.",
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "description": "An icon to display next to the input.",
           "type": "string"
         },
         {
           "name": "placeholder",
+          "description": "Placeholder to display if field is empty",
           "type": "string",
           "default": "\"search.placeholder\""
         },
         {
-          "name": "label",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
           "name": "suggestions",
+          "description": "A static list of suggestions. Use instead of `source`. May either be a flat array of strings,\nor an array containing objects of the form `{\"text\": \"\", \"value\": \"\"}, in which case \"value\" denotes\nthe value to be used when the enclosing form is submitted, and \"text\" is the label to be displayed.",
           "type": "array",
           "default": "[]"
         },
         {
-          "name": "substring",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "preload",
+          "description": "If set, the entire list of possible suggestions will be preloaded upon initialization of the\ncomponent.",
           "type": "boolean",
           "default": "false"
         },
         {
-          "name": "icon",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "helper-text",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "always-float-label",
+          "name": "substring",
+          "description": "By default suggestions are filtered by prefix, i.e. only suggestions starting with the prefix\ntyped by the user are shown. Set this property to true to search for the user-provided string\nanywhere within the suggestion text.",
           "type": "boolean",
           "default": "false"
-        },
-        {
-          "name": "value",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "default": "\"\""
         },
         {
           "name": "subscribe",
@@ -888,77 +883,59 @@
       ],
       "properties": [
         {
+          "name": "name",
+          "attribute": "name",
+          "description": "Name of the form field which will be submitted",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "attribute": "value",
+          "description": "Value of the form field which will be submitted",
+          "type": "string"
+        },
+        {
           "name": "source",
           "attribute": "source",
+          "description": "Optional URL to query for suggestions. If relative, it is interpreted\nrelative to the endpoint defined on a surrounding `pb-page`.\n\nUpon autocomplete, the current input by the user will be sent with a query parameter\n`query`. The name/values of form controls nested within `pb-autocomplete` will also be\nappended to the request as parameters. This allows the server side code to distinguish\ndifferent states.",
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "attribute": "icon",
+          "description": "An icon to display next to the input.",
           "type": "string"
         },
         {
           "name": "placeholder",
           "attribute": "placeholder",
+          "description": "Placeholder to display if field is empty",
           "type": "string",
           "default": "\"search.placeholder\""
         },
         {
-          "name": "label",
-          "attribute": "label",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
           "name": "suggestions",
           "attribute": "suggestions",
+          "description": "A static list of suggestions. Use instead of `source`. May either be a flat array of strings,\nor an array containing objects of the form `{\"text\": \"\", \"value\": \"\"}, in which case \"value\" denotes\nthe value to be used when the enclosing form is submitted, and \"text\" is the label to be displayed.",
           "type": "array",
           "default": "[]"
-        },
-        {
-          "name": "substring",
-          "attribute": "substring",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "preload",
-          "attribute": "preload",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "icon",
-          "attribute": "icon",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "helperText",
-          "attribute": "helper-text",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "alwaysFloatLabel",
-          "attribute": "always-float-label",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "lastSelected"
         },
         {
-          "name": "value",
-          "attribute": "value",
-          "type": "string",
-          "default": "\"\""
+          "name": "preload",
+          "attribute": "preload",
+          "description": "If set, the entire list of possible suggestions will be preloaded upon initialization of the\ncomponent.",
+          "type": "boolean",
+          "default": "false"
         },
         {
-          "name": "name",
-          "attribute": "name",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "requestParams",
-          "type": "object",
-          "default": "{}"
+          "name": "substring",
+          "attribute": "substring",
+          "description": "By default suggestions are filtered by prefix, i.e. only suggestions starting with the prefix\ntyped by the user are shown. Set this property to true to search for the user-provided string\nanywhere within the suggestion text.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "subscribe",
@@ -996,6 +973,34 @@
           "description": "Common property to disable the functionality associated with a component.\n`pb-highlight` and `pb-popover` react to this.",
           "type": "boolean",
           "default": "false"
+        }
+      ],
+      "slots": [
+        {
+          "name": "",
+          "description": "default unnamed slot"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "--pb-search-label-color",
+          "description": "Color of the label and underline"
+        },
+        {
+          "name": "--pb-search-input-color",
+          "description": "Text color for input field"
+        },
+        {
+          "name": "--pb-search-focus-color",
+          "description": "Color for label and underline if input has focus"
+        },
+        {
+          "name": "--pb-search-suggestions-color",
+          "description": "Color for the labels shown in the suggestions dropdown"
+        },
+        {
+          "name": "--pb-search-suggestions-background",
+          "description": "Background for the suggestions dropdown"
         }
       ]
     },
@@ -2583,11 +2588,6 @@
       "description": "A collapsible block: in collapsed state it only shows a header and expands if clicked.\nThe header should go into slot `collapse-trigger`, the content into `collapse-content`.\nExample:\n\n```html\n<pb-collapse>\n  <div slot=\"collapse-trigger\">\n      Metadata\n  </div>\n  <pb-view slot=\"collapse-content\" src=\"document1\" subscribe=\"transcription\" xpath=\"//teiHeader\"></pb-view>\n</pb-collapse>\n```\n\nBy adding a CSS 'icon-right' to a `pb-collapse` the icon can be placed on the right side\n```\n<pb-collapse class='icon-right'>\n```",
       "attributes": [
         {
-          "name": "icon-sprite",
-          "description": "Optional custom sprite source passed to pb-icon.",
-          "type": "string"
-        },
-        {
           "name": "no-animation",
           "description": "Whether to disable animations.",
           "type": "boolean",
@@ -2596,24 +2596,6 @@
         {
           "name": "opened",
           "description": "Whether currently expanded.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "expand-icon",
-          "description": "Icon to show when the collapse is closed.",
-          "type": "string",
-          "default": "\"icons:expand-more\""
-        },
-        {
-          "name": "collapse-icon",
-          "description": "Icon to show when the collapse is open.",
-          "type": "string",
-          "default": "\"icons:expand-less\""
-        },
-        {
-          "name": "no-icons",
-          "description": "Disable icons entirely.",
           "type": "boolean",
           "default": "false"
         },
@@ -2657,12 +2639,6 @@
       ],
       "properties": [
         {
-          "name": "iconSprite",
-          "attribute": "icon-sprite",
-          "description": "Optional custom sprite source passed to pb-icon.",
-          "type": "string"
-        },
-        {
           "name": "horizontal",
           "type": "boolean",
           "default": "false"
@@ -2683,22 +2659,16 @@
         },
         {
           "name": "expandIcon",
-          "attribute": "expand-icon",
-          "description": "Icon to show when the collapse is closed.",
           "type": "string",
           "default": "\"icons:expand-more\""
         },
         {
           "name": "collapseIcon",
-          "attribute": "collapse-icon",
-          "description": "Icon to show when the collapse is open.",
           "type": "string",
           "default": "\"icons:expand-less\""
         },
         {
           "name": "noIcons",
-          "attribute": "no-icons",
-          "description": "Disable icons entirely.",
           "type": "boolean",
           "default": "false"
         },
@@ -3569,7 +3539,7 @@
         },
         {
           "name": "dialog",
-          "description": "id of dialog component to show when downloading. A `pb-dialog` component with this id must\nexist.",
+          "description": "id of dialog component to show when downloading. A paper-dialog component with this id must\nexist.",
           "type": "string"
         },
         {
@@ -3648,7 +3618,7 @@
         {
           "name": "dialog",
           "attribute": "dialog",
-          "description": "id of dialog component to show when downloading. A `pb-dialog` component with this id must\nexist.",
+          "description": "id of dialog component to show when downloading. A paper-dialog component with this id must\nexist.",
           "type": "string"
         },
         {
@@ -4021,9 +3991,6 @@
         {
           "name": "pb-end-update",
           "description": "Fired after the element has finished updating its content"
-        },
-        {
-          "name": "submit"
         }
       ]
     },
@@ -4168,7 +4135,7 @@
           "name": "trigger",
           "description": "Type of event which should trigger the facsimile to display.\nEither 'click' or 'mouseover' (default).",
           "type": "string",
-          "default": "\"click\""
+          "default": "\"mouseover\""
         },
         {
           "name": "label",
@@ -4237,7 +4204,7 @@
           "attribute": "trigger",
           "description": "Type of event which should trigger the facsimile to display.\nEither 'click' or 'mouseover' (default).",
           "type": "string",
-          "default": "\"click\""
+          "default": "\"mouseover\""
         },
         {
           "name": "label",
@@ -4655,84 +4622,6 @@
         {
           "name": "image",
           "description": "exposes the inner div hosting the image viewer"
-        }
-      ]
-    },
-    {
-      "name": "pb-fetch",
-      "path": "./src/pb-fetch.js",
-      "description": "Lightweight replacement for `<iron-ajax>` using the Fetch API.\nProvides a mostly compatible surface for existing components.",
-      "attributes": [
-        {
-          "name": "method",
-          "type": "string"
-        },
-        {
-          "name": "handle-as"
-        },
-        {
-          "name": "with-credentials"
-        },
-        {
-          "name": "content-type"
-        }
-      ],
-      "properties": [
-        {
-          "name": "url",
-          "type": "string"
-        },
-        {
-          "name": "handleAs",
-          "type": "string"
-        },
-        {
-          "name": "withCredentials",
-          "type": "boolean"
-        },
-        {
-          "name": "contentType"
-        },
-        {
-          "name": "method",
-          "attribute": "method",
-          "type": "string"
-        },
-        {
-          "name": "params",
-          "type": "object",
-          "default": "{}"
-        },
-        {
-          "name": "headers",
-          "type": "object",
-          "default": "{}"
-        },
-        {
-          "name": "body",
-          "default": "\"undefined\""
-        },
-        {
-          "name": "loading",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "lastResponse"
-        },
-        {
-          "name": "lastRequest"
-        },
-        {
-          "name": "lastError"
-        }
-      ],
-      "events": [
-        {
-          "name": "error"
-        },
-        {
-          "name": "response"
         }
       ]
     },
@@ -5446,251 +5335,30 @@
       "description": "Insert translated text somewhere on an HTML page. If no translation is found,\ndisplay the contained content.",
       "attributes": [
         {
+          "name": "options",
+          "description": "Optional interpolation parameters to be passed to the\ntranslation function",
+          "type": "object"
+        },
+        {
           "name": "key",
           "description": "The i18n key to use for looking up the translation.",
           "type": "string",
           "default": "\"missing-key\""
-        },
-        {
-          "name": "options",
-          "description": "Optional interpolation parameters to be passed to the\ntranslation function",
-          "type": "object"
         }
       ],
       "properties": [
+        {
+          "name": "options",
+          "attribute": "options",
+          "description": "Optional interpolation parameters to be passed to the\ntranslation function",
+          "type": "object"
+        },
         {
           "name": "key",
           "attribute": "key",
           "description": "The i18n key to use for looking up the translation.",
           "type": "string",
           "default": "\"missing-key\""
-        },
-        {
-          "name": "options",
-          "attribute": "options",
-          "description": "Optional interpolation parameters to be passed to the\ntranslation function",
-          "type": "object"
-        }
-      ]
-    },
-    {
-      "name": "pb-icon-button",
-      "path": "./src/pb-icon-button.js",
-      "properties": [
-        {
-          "name": "properties",
-          "type": "{ icon: { type: StringConstructor; }; disabled: { type: BooleanConstructor; reflect: boolean; }; label: { type: StringConstructor; }; toggles: { ...; }; active: { ...; }; }",
-          "default": "{\"icon\":{\"type\":\"String\"},\"disabled\":{\"type\":\"Boolean\",\"reflect\":true},\"label\":{\"type\":\"String\"},\"toggles\":{\"type\":\"Boolean\"},\"active\":{\"type\":\"Boolean\",\"reflect\":true}}"
-        },
-        {
-          "name": "styles",
-          "type": "CSSResult",
-          "default": "\"css`\\n    :host {\\n      display: inline-flex;\\n      box-sizing: border-box;\\n      --pb-icon-button-size: 40px;\\n    }\\n\\n    button {\\n      width: var(--pb-icon-button-size);\\n      height: var(--pb-icon-button-size);\\n      border-radius: 999px;\\n      border: none;\\n      background: transparent;\\n      color: inherit;\\n      padding: 0;\\n      cursor: pointer;\\n      display: inline-flex;\\n      align-items: center;\\n      justify-content: center;\\n      transition: background 0.2s ease-in-out;\\n    }\\n\\n    button:hover:not(:disabled),\\n    button:focus-visible {\\n      background: var(--pb-icon-button-hover-background, rgba(0, 0, 0, 0.05));\\n      outline: none;\\n    }\\n\\n    button:disabled {\\n      opacity: 0.4;\\n      cursor: not-allowed;\\n    }\\n\\n    :host([active]) button {\\n      background: var(--pb-icon-button-active-background, rgba(0, 0, 0, 0.08));\\n    }\\n  `\""
-        },
-        {
-          "name": "icon",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "disabled",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "label",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "toggles",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "active",
-          "type": "boolean",
-          "default": "false"
-        }
-      ],
-      "events": [
-        {
-          "name": "active-changed"
-        }
-      ]
-    },
-    {
-      "name": "pb-icon",
-      "path": "./src/pb-icon.js",
-      "description": "A versatile icon component that replaces iron-icon and iron-icons.\nSupports both SVG sprite references and inline SVG content.",
-      "attributes": [
-        {
-          "name": "sprite",
-          "description": "Path or URL to the SVG sprite file. Optional.\nIf not specified, defaults to 'dist/images/icons.svg'.\nIf set to a string starting with '#', uses inline sprite.",
-          "type": "string"
-        },
-        {
-          "name": "icon",
-          "description": "Icon name to display from the icon sprite.\nIf not provided, expects SVG content in the default slot.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "size",
-          "description": "Icon size. Can be a preset (xs, sm, md, lg, xl) or a custom size.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "label",
-          "description": "ARIA label for accessibility. Auto-generated from icon name if not provided.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "decorative",
-          "description": "Whether the icon is decorative (hidden from screen readers).",
-          "type": "boolean",
-          "default": "false"
-        }
-      ],
-      "properties": [
-        {
-          "name": "sprite",
-          "attribute": "sprite",
-          "description": "Path or URL to the SVG sprite file. Optional.\nIf not specified, defaults to 'dist/images/icons.svg'.\nIf set to a string starting with '#', uses inline sprite.",
-          "type": "string"
-        },
-        {
-          "name": "icon",
-          "attribute": "icon",
-          "description": "Icon name to display from the icon sprite.\nIf not provided, expects SVG content in the default slot.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "size",
-          "attribute": "size",
-          "description": "Icon size. Can be a preset (xs, sm, md, lg, xl) or a custom size.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "label",
-          "attribute": "label",
-          "description": "ARIA label for accessibility. Auto-generated from icon name if not provided.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "decorative",
-          "attribute": "decorative",
-          "description": "Whether the icon is decorative (hidden from screen readers).",
-          "type": "boolean",
-          "default": "false"
-        }
-      ],
-      "slots": [
-        {
-          "name": "",
-          "description": "Inline SVG content when not using icon name"
-        }
-      ],
-      "cssProperties": [
-        {
-          "name": "--pb-icon-color",
-          "description": "Icon color (defaults to currentColor)"
-        },
-        {
-          "name": "--pb-icon-size",
-          "description": "Icon size (defaults to 1em)"
-        }
-      ]
-    },
-    {
-      "name": "iron-icon",
-      "path": "./src/pb-icon.js",
-      "attributes": [
-        {
-          "name": "sprite",
-          "description": "Path or URL to the SVG sprite file. Optional.\nIf not specified, defaults to 'dist/images/icons.svg'.\nIf set to a string starting with '#', uses inline sprite.",
-          "type": "string"
-        },
-        {
-          "name": "icon",
-          "description": "Icon name to display from the icon sprite.\nIf not provided, expects SVG content in the default slot.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "size",
-          "description": "Icon size. Can be a preset (xs, sm, md, lg, xl) or a custom size.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "label",
-          "description": "ARIA label for accessibility. Auto-generated from icon name if not provided.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "decorative",
-          "description": "Whether the icon is decorative (hidden from screen readers).",
-          "type": "boolean",
-          "default": "false"
-        }
-      ],
-      "properties": [
-        {
-          "name": "sprite",
-          "attribute": "sprite",
-          "description": "Path or URL to the SVG sprite file. Optional.\nIf not specified, defaults to 'dist/images/icons.svg'.\nIf set to a string starting with '#', uses inline sprite.",
-          "type": "string"
-        },
-        {
-          "name": "icon",
-          "attribute": "icon",
-          "description": "Icon name to display from the icon sprite.\nIf not provided, expects SVG content in the default slot.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "size",
-          "attribute": "size",
-          "description": "Icon size. Can be a preset (xs, sm, md, lg, xl) or a custom size.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "label",
-          "attribute": "label",
-          "description": "ARIA label for accessibility. Auto-generated from icon name if not provided.",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
-          "name": "decorative",
-          "attribute": "decorative",
-          "description": "Whether the icon is decorative (hidden from screen readers).",
-          "type": "boolean",
-          "default": "false"
-        }
-      ],
-      "slots": [
-        {
-          "name": "",
-          "description": "Inline SVG content when not using icon name"
-        }
-      ],
-      "cssProperties": [
-        {
-          "name": "--pb-icon-color",
-          "description": "Icon color (defaults to currentColor)"
-        },
-        {
-          "name": "--pb-icon-size",
-          "description": "Icon size (defaults to 1em)"
         }
       ]
     },
@@ -7612,11 +7280,6 @@
           "default": "false"
         }
       ],
-      "events": [
-        {
-          "name": "pb-mei-error"
-        }
-      ],
       "cssProperties": [
         {
           "name": "--pb-mei-min-width",
@@ -7932,10 +7595,6 @@
       "description": "ODD editor component",
       "attributes": [
         {
-          "name": "tabs",
-          "type": "array"
-        },
-        {
           "name": "ident",
           "type": "string",
           "default": "\"\""
@@ -8029,6 +7688,11 @@
           "default": "true"
         },
         {
+          "name": "tabs",
+          "type": "array",
+          "default": "[]"
+        },
+        {
           "name": "tabIndex",
           "type": "number",
           "default": "\"undefined\""
@@ -8071,15 +7735,6 @@
         }
       ],
       "properties": [
-        {
-          "name": "tabs",
-          "attribute": "tabs",
-          "type": "array"
-        },
-        {
-          "name": "safeTabs",
-          "type": "array"
-        },
         {
           "name": "ident",
           "attribute": "ident",
@@ -8192,6 +7847,12 @@
           "default": "true"
         },
         {
+          "name": "tabs",
+          "attribute": "tabs",
+          "type": "array",
+          "default": "[]"
+        },
+        {
           "name": "tabIndex",
           "attribute": "tabIndex",
           "type": "number",
@@ -8292,7 +7953,7 @@
           "type": "string"
         },
         {
-          "name": "apiVersion",
+          "name": "api-version",
           "type": "string"
         },
         {
@@ -8321,7 +7982,7 @@
         },
         {
           "name": "apiVersion",
-          "attribute": "apiVersion",
+          "attribute": "api-version",
           "type": "string"
         },
         {
@@ -8383,7 +8044,7 @@
           "type": "string"
         },
         {
-          "name": "apiVersion",
+          "name": "api-version",
           "type": "string"
         },
         {
@@ -8469,7 +8130,7 @@
           "default": "\"expand-more\""
         },
         {
-          "name": "hasCustomBehaviour",
+          "name": "has-custom-behaviour",
           "type": "boolean",
           "default": "false"
         }
@@ -8492,7 +8153,7 @@
         },
         {
           "name": "apiVersion",
-          "attribute": "apiVersion",
+          "attribute": "api-version",
           "type": "string"
         },
         {
@@ -8600,7 +8261,7 @@
         },
         {
           "name": "hasCustomBehaviour",
-          "attribute": "hasCustomBehaviour",
+          "attribute": "has-custom-behaviour",
           "type": "boolean",
           "default": "false"
         }
@@ -8635,7 +8296,7 @@
       "description": "represents an odd parameter element for editing",
       "attributes": [
         {
-          "name": "apiVersion",
+          "name": "api-version",
           "type": "string"
         },
         {
@@ -8674,7 +8335,7 @@
       "properties": [
         {
           "name": "apiVersion",
-          "attribute": "apiVersion",
+          "attribute": "api-version",
           "type": "string"
         },
         {
@@ -8755,7 +8416,8 @@
         },
         {
           "name": "scope",
-          "type": "string"
+          "type": "string",
+          "default": "\"\""
         },
         {
           "name": "selected",
@@ -8779,7 +8441,8 @@
         {
           "name": "scope",
           "attribute": "scope",
-          "type": "string"
+          "type": "string",
+          "default": "\"\""
         },
         {
           "name": "selected",
@@ -10675,11 +10338,6 @@
           "default": "\"document.selectTemplate\""
         },
         {
-          "name": "name",
-          "type": "string",
-          "default": "\"\""
-        },
-        {
           "name": "subscribe",
           "description": "The name of the channel to subscribe to. Only events on a channel corresponding\nto this property are listened to.",
           "type": "string"
@@ -10724,12 +10382,6 @@
           "description": "The label to show on top of the dropdown menu",
           "type": "string",
           "default": "\"document.selectTemplate\""
-        },
-        {
-          "name": "name",
-          "attribute": "name",
-          "type": "string",
-          "default": "\"\""
         },
         {
           "name": "subscribe",
@@ -11507,23 +11159,6 @@
           "type": "string"
         },
         {
-          "name": "initial-view",
-          "description": "The initial view to display. Can be 'toc' (table of contents),\n'thumbnails', 'text', 'info', 'help', 'export', or null for media only.\nDefaults to null (media view only).",
-          "type": "string"
-        },
-        {
-          "name": "enable-navigation",
-          "description": "If true, pb-tify will respond to pb-navigate events to synchronize\nwith navigation buttons. Defaults to true.",
-          "type": "boolean",
-          "default": "true"
-        },
-        {
-          "name": "disable-history",
-          "description": "If set, do not update browser history when navigating.\nDefaults to false (history is enabled).",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "subscribe",
           "description": "The name of the channel to subscribe to. Only events on a channel corresponding\nto this property are listened to.",
           "type": "string"
@@ -11563,29 +11198,9 @@
           "type": "string"
         },
         {
-          "name": "initialView",
-          "attribute": "initial-view",
-          "description": "The initial view to display. Can be 'toc' (table of contents),\n'thumbnails', 'text', 'info', 'help', 'export', or null for media only.\nDefaults to null (media view only).",
-          "type": "string"
-        },
-        {
           "name": "cssPath",
           "type": "string",
           "default": "\"../css/tify\""
-        },
-        {
-          "name": "enableNavigation",
-          "attribute": "enable-navigation",
-          "description": "If true, pb-tify will respond to pb-navigate events to synchronize\nwith navigation buttons. Defaults to true.",
-          "type": "boolean",
-          "default": "true"
-        },
-        {
-          "name": "disableHistory",
-          "attribute": "disable-history",
-          "description": "If set, do not update browser history when navigating.\nDefaults to false (history is enabled).",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "subscribe",
@@ -12384,12 +11999,6 @@
           "type": "string"
         },
         {
-          "name": "read-only-registry",
-          "description": "If set to true, pb-view will only read from the registry and never write to it.\nThis is useful when pb-view is used as a simple receiver of navigation updates\nfrom other components (e.g., pb-tify). When enabled, pb-view will:\n- Still subscribe to registry changes\n- Still read from registry to determine what to display\n- Never call registry.replace or registry.commit after initial connection\n\nThis prevents pb-view from resetting the registry with stale state during navigation,\nwhich can cause bounce-back issues when used with components like pb-tify.\n\nDefault is false (pb-view can write to registry as before).",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "on-update",
           "description": "If set to true, the component will not load automatically. Instead it will wait until it receives a `pb-update`\nevent. Use this to make one `pb-view` component dependent on another one. Default is 'false'.",
           "type": "boolean",
@@ -12593,13 +12202,6 @@
           "attribute": "url",
           "description": "The relative URL to the script on the server which will be called for loading content.",
           "type": "string"
-        },
-        {
-          "name": "readOnlyRegistry",
-          "attribute": "read-only-registry",
-          "description": "If set to true, pb-view will only read from the registry and never write to it.\nThis is useful when pb-view is used as a simple receiver of navigation updates\nfrom other components (e.g., pb-tify). When enabled, pb-view will:\n- Still subscribe to registry changes\n- Still read from registry to determine what to display\n- Never call registry.replace or registry.commit after initial connection\n\nThis prevents pb-view from resetting the registry with stale state during navigation,\nwhich can cause bounce-back issues when used with components like pb-tify.\n\nDefault is false (pb-view can write to registry as before).",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "onUpdate",
@@ -12901,12 +12503,6 @@
           "type": "string"
         },
         {
-          "name": "read-only-registry",
-          "description": "If set to true, pb-view will only read from the registry and never write to it.\nThis is useful when pb-view is used as a simple receiver of navigation updates\nfrom other components (e.g., pb-tify). When enabled, pb-view will:\n- Still subscribe to registry changes\n- Still read from registry to determine what to display\n- Never call registry.replace or registry.commit after initial connection\n\nThis prevents pb-view from resetting the registry with stale state during navigation,\nwhich can cause bounce-back issues when used with components like pb-tify.\n\nDefault is false (pb-view can write to registry as before).",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "on-update",
           "description": "If set to true, the component will not load automatically. Instead it will wait until it receives a `pb-update`\nevent. Use this to make one `pb-view` component dependent on another one. Default is 'false'.",
           "type": "boolean",
@@ -13085,13 +12681,6 @@
           "attribute": "url",
           "description": "The relative URL to the script on the server which will be called for loading content.",
           "type": "string"
-        },
-        {
-          "name": "readOnlyRegistry",
-          "attribute": "read-only-registry",
-          "description": "If set to true, pb-view will only read from the registry and never write to it.\nThis is useful when pb-view is used as a simple receiver of navigation updates\nfrom other components (e.g., pb-tify). When enabled, pb-view will:\n- Still subscribe to registry changes\n- Still read from registry to determine what to display\n- Never call registry.replace or registry.commit after initial connection\n\nThis prevents pb-view from resetting the registry with stale state during navigation,\nwhich can cause bounce-back issues when used with components like pb-tify.\n\nDefault is false (pb-view can write to registry as before).",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "onUpdate",
