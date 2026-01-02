@@ -1,3 +1,12 @@
+## [3.0.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0...v3.0.1) (2026-01-02)
+
+
+### Bug Fixes
+
+* **pb-code-highlight:** prism needs explicit import to support json ([108f908](https://github.com/eeditiones/tei-publisher-components/commit/108f90803bfa9275c8dfaf76c859b53f96d4557a))
+* **pb-paginate:** make it themable ([39965a1](https://github.com/eeditiones/tei-publisher-components/commit/39965a1a3f80f5671381f8f05fbddc3244a76c95))
+* **pb-zoom:** stop click event ([beb445b](https://github.com/eeditiones/tei-publisher-components/commit/beb445b9a912b7ece9a050085710fead4e04c3ba))
+
 # [3.0.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.7...v3.0.0) (2025-12-22)
 
 
