@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Display a pagination control from which the user can select a page to view
@@ -14,7 +15,7 @@ import { translate } from './pb-i18n.js';
  * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
  * @csspart count - the span displaying the number of items
  */
-export class PbPaginate extends pbMixin(LitElement) {
+export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
@@ -151,7 +152,7 @@ export class PbPaginate extends pbMixin(LitElement) {
       }
 
       .found {
-        padding-left: 20px;
+        padding-left: .5rem;
       }
     `;
   }
