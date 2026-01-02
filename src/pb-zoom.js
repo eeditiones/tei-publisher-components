@@ -44,7 +44,9 @@ export class PbZoom extends themableMixin(pbMixin(LitElement)) {
     this._loadZoomPreference();
   }
 
-  _handleClick() {
+  _handleClick(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
     this.emitTo('pb-zoom', { direction: this.direction });
     this.zoom(this.direction);
   }
