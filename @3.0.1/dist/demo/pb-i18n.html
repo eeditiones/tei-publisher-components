@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-view Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                pb-lang { --pb-lang-input-color: #303030; }
+            </style>
+            <pb-page locales="./i18n/{{ns}}_{{lng}}.json" locale-fallback-ns="app custom">
+                <pb-lang label="language" selected="en">
+                    <option value="bg">Български</option>
+                    <option value="cs">český</option>
+                    <option value="zh_CN">简体中文</option>
+                    <option value="zh_TW">繁體中文</option>
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="el">ελληνικά</option>
+                    <option value="fr">Français</option>
+                    <option value="it">Italiano</option>
+                    <option value="ka">ქართული</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="no">Norsk</option>
+                    <option value="pl">Polski</option>
+                    <option value="pt">Português</option>
+                    <option value="ro">Română</option>
+                    <option value="ru">русский</option>
+                    <option value="sl">Slovenščina</option>
+                    <option value="sv">Svenska</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="uk">Українська</option>
+                </pb-lang>
+                <ul>
+                    <li data-i18n="document.contents">Contents</li>
+                    <li><pb-i18n key="browse.items" options='{"count": 10}'>Items</pb-i18n></li>
+                    <li><pb-i18n key="browse.items" options='{"count": 1}'>Items</pb-i18n></li>
+                    <li><pb-i18n key="undefined">[No translation provided]</pb-i18n></li>
+                    <li><pb-i18n key="dialogs.downloadMessage"></pb-i18n></li>
+                    <li><pb-i18n key="demo.message"></pb-i18n></li>
+                    <li><pb-i18n key="mycomponent.info"></pb-i18n></li>
+                </ul>
+                <paper-card data-i18n="[heading]menu.download.title" heading="">
+                    <div class="card-content">Attributes can be translated as well (card heading above)</div>
+                </paper-card>
+                
+                <h2>without a label</h2>
+                <pb-lang label="language" selected="en" nolabel="nolabel">
+                    <option value="de">German</option>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="it">Italian</option>
+                    <option value="gr">Greek</option>
+                    <option value="pl">Polish</option>
+                    <option value="nl">Dutch</option>
+                </pb-lang>
+
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

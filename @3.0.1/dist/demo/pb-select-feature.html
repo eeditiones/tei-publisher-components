@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-select-feature Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script><script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+   <h1>Using pb-select-feature with pb-view</h1>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+
+                <div class="toolbar">
+                    <pb-select-feature id="select-view1" name="view1" label="View" items='[
+                    {"name": "Diplomatic View", "properties": {"mode": "diplomatic", "view": "page"}}, 
+                    {"name": "Normalized View", "properties": {"mode": "norm", "view": "single", "root": null}}
+                    ]'></pb-select-feature>
+                    <pb-navigation direction="backward" keyboard="left">
+                        <paper-icon-button icon="icons:chevron-left"></paper-icon-button>
+                    </pb-navigation>
+                    <pb-navigation direction="forward" keyboard="right">
+                        <paper-icon-button icon="icons:chevron-right"></paper-icon-button>
+                    </pb-navigation>
+                </div>
+                <main>
+                    <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']"></pb-view>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
