@@ -5,6 +5,8 @@ import analyze from 'rollup-plugin-analyzer';
 import replace from '@rollup/plugin-replace';
 import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 
 const production = process.env.BUILD === 'production';
 
@@ -38,6 +40,9 @@ export default [
       sourcemap: !production,
     },
     plugins: [
+      json(),
+      // Some dependencies (like jinn-codemirror) have dependencies that are in CommonJS (export.defaults). They need to be transformed as commonjs
+      commonjs(),
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
         'const PB_COMPONENTS_VERSION = null': `const PB_COMPONENTS_VERSION = '${pkg.version}'`,
