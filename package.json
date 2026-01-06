@@ -42,7 +42,7 @@
   "author": "Wolfgang Meier",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@jinntec/jinn-codemirror": "^1.18.0",
+    "@jinntec/jinn-codemirror": "^1.18.2",
     "@lrnwebcomponents/es-global-bridge": "^8.0.2",
     "@vaadin/vaadin-tabs": "^23.6.2",
     "@vaadin/vaadin-upload": "^23.6.2",
