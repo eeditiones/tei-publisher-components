@@ -1,3 +1,10 @@
+# [3.0.0-next-4.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.3...v3.0.0-next-4.4) (2026-01-06)
+
+
+### Bug Fixes
+
+* **odd-editor:** update jinn-codemirror to fix a firefox-only bug ([7621ef5](https://github.com/eeditiones/tei-publisher-components/commit/7621ef5dbcc58ca42c78074b6e89999cbfec7595))
+
 # [3.0.0-next-4.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.2...v3.0.0-next-4.3) (2025-12-22)
 
 
