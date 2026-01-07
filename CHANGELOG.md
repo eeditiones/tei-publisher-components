@@ -1,3 +1,11 @@
+## [3.0.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.3...v3.0.4) (2026-01-07)
+
+
+### Bug Fixes
+
+* **build:** transform commonJS in jinn-codemirror dependency ([7c94fe6](https://github.com/eeditiones/tei-publisher-components/commit/7c94fe6f94ece9991471df5f7b80d9eed50c076a))
+* **odd-editor:** update jinn-codemirror to fix an issue in Firefox ([9d40158](https://github.com/eeditiones/tei-publisher-components/commit/9d40158436f39429203bff64b530d5d5e88b2fb9))
+
 ## [3.0.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.2...v3.0.3) (2026-01-06)
 
 
