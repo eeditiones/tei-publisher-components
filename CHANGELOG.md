@@ -1,3 +1,10 @@
+# [3.0.0-next-4.5](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.4...v3.0.0-next-4.5) (2026-01-07)
+
+
+### Bug Fixes
+
+* **npm:** upgrade deprecated vaadin dependencies ([5dfe62c](https://github.com/eeditiones/tei-publisher-components/commit/5dfe62cc6c18aa584227194f88c8148191077579))
+
 # [3.0.0-next-4.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.3...v3.0.0-next-4.4) (2026-01-06)
 
 
