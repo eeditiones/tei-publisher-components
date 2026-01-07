@@ -3,7 +3,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { getCSSProperty } from './utils.js';
 import './pb-icon.js';
-import '@vaadin/vaadin-upload';
+import '@vaadin/upload';
 
 /**
  * Component for uploading resources to TEI Publisher or a generated app.

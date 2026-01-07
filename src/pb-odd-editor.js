@@ -5,8 +5,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
 
-import '@vaadin/vaadin-tabs/vaadin-tabs';
-import '@vaadin/vaadin-tabs/vaadin-tab';
+import '@vaadin/tabs';
 
 import './pb-fetch.js';
 import './pb-edit-xml.js';
