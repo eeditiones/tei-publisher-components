@@ -1,3 +1,13 @@
+# [3.0.0-next-4.7](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.6...v3.0.0-next-4.7) (2026-01-07)
+
+
+### Bug Fixes
+
+* **npm:** upgrade deprecated vaadin dependencies ([3945fff](https://github.com/eeditiones/tei-publisher-components/commit/3945fffc8b8cab349d28e5a7ec4e8e4ed0edbd57))
+* **pb-code-highlight:** prism needs explicit import to support json ([dfad144](https://github.com/eeditiones/tei-publisher-components/commit/dfad144a088d33c233c3e791a8b7f248d6d812e1))
+* **pb-zoom:** stop click event ([a3daba8](https://github.com/eeditiones/tei-publisher-components/commit/a3daba84503c38fa38509351d306e874c28588de))
+* **vaadin:** upgrade vaadin 23 to 25 ([2dbd8e2](https://github.com/eeditiones/tei-publisher-components/commit/2dbd8e27d3e83872bd3eac63132ca9f343e5087a))
+
 # [3.0.0-next-4.6](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.5...v3.0.0-next-4.6) (2026-01-07)
 
 
