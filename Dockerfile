@@ -5,7 +5,7 @@ ARG PUBLISHER_VERSION=master
 # START STAGE 1
 FROM ghcr.io/eeditiones/builder:latest AS builder
 
-ARG ROUTER_VERSION=1.10.0
+ARG ROUTER_VERSION=1.11.0
 ARG PUBLISHER_VERSION
 
 # Build tei-publisher-app
