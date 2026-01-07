@@ -1,0 +1,35 @@
+{
+    "count": 6,
+    "results": [
+        {
+            "name": "Immanuel Kant",
+            "birth": "1724-04-22",
+            "death": "1804-02-12"
+        },
+        {
+            "name": "Friedrich Nietzsche",
+            "birth": "1844-10-15",
+            "death": "1900-08-25"
+        },
+        {
+            "name": "Georg Wilhelm Friedrich Hegel",
+            "birth": "1770-08-27",
+            "death": "1831-11-14"
+        },
+        {
+            "name": "Gottfried Wilhelm Leibniz",
+            "birth": "1646-07-01",
+            "death": "1716-11-14"
+        },
+        {
+            "name": "Søren Kierkegaard",
+            "birth": "1813-05-05",
+            "death": "1855-11-11"
+        },
+        {
+            "name": "Ludwig Feuerbach",
+            "birth": "1804-07-28",
+            "death": "1872-09-13"
+        }
+    ]
+}

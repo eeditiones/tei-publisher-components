@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <title>Using pb-autocomplete</title>
+        <style>
+            pb-autocomplete {
+                margin-bottom: 20px;
+            }
+            select {
+                margin-right: 10px;
+            }
+        </style>
+        <script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+    <body>
+        <h1>Using pb-autocomplete</h1>
+
+        <pb-demo-snippet>
+            <template>
+                <pb-page locales="../i18n/{{ns}}/{{lng}}.json" endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <form action="" id="form">
+                        <h2>Suggestion list passed in a property</h2>
+                        <pb-autocomplete name="autocomplete1" placeholder="Greek letter name" suggestions='["alpha", "beta", "gamma"]' value="alpha"></pb-autocomplete>
+                        <h2>Suggestion list supplied by remote XQuery</h2>
+                        <!--pb-autocomplete name="autocomplete2" placeholder="query" source="modules/autocomplete.xql"></pb-autocomplete-->
+                        <pb-autocomplete name="autocomplete2" placeholder="query" source="api/search/autocomplete"></pb-autocomplete>
+                        <h2>Static remote suggestion list loaded once upon initialization</h2>
+                        <pb-autocomplete name="autocomplete3" placeholder="language" source="demo/select.json" preload></pb-autocomplete>
+                        <h2>Combine with other form fields whose value is passed on</h2>
+                        <!--pb-autocomplete name="autocomplete3" placeholder="query" source="modules/autocomplete.xql"-->
+                        <pb-autocomplete name="autocomplete3" placeholder="query" source="api/search/autocomplete">
+                            <select name="field">
+                                <option value="title">Title</option>
+                                <option value="author">Author</option>
+                            </select>
+                        </pb-autocomplete>
+                        <button type="submit" class="pb-button pb-button--contained">Submit</button> 
+                    </form>
+                    <p>Parameters which would be sent: <code id="output"></code></p>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+        <script type="module">
+            import { ready, stampIfNeeded, wireFormOutput, firePageReady } from '../src/docs/demo-utils.js'
+            async function hydrate() {
+                await ready(['pb-demo-snippet','pb-autocomplete'])
+                const snippet = document.querySelector('pb-demo-snippet')
+                stampIfNeeded(snippet)
+                const form = document.getElementById('form')
+                const output = document.getElementById('output')
+                if (form && output) {
+                    const render = wireFormOutput(form, output)
+                    render()
+                }
+                firePageReady({ endpoint: '/exist/apps/tei-publisher', apiVersion: '1.0.0' })
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', hydrate)
+            } else {
+                hydrate()
+            }
+        </script>
+    </body>
+</html>
