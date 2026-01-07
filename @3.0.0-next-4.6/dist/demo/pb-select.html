@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Using pb-select</title>
+    <link rel="stylesheet" href="demo.css">
+    <script type="module" src="../pb-components-bundle.js"></script>
+  </head>
+  <body>
+    <h1>Using pb-select</h1>
+    <pb-demo-snippet>
+      <template>
+        <style>
+          :host {
+            font-family: var(--pb-font-family, 'Roboto', sans-serif);
+            color: #303030;
+          }
+
+          .demo {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          }
+
+          .demo__section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+
+          .demo__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+
+          .demo__output {
+            font-family: 'Roboto Mono', monospace;
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 1.75rem;
+          }
+
+          pb-select[multi] {
+            max-height: 280px;
+          }
+        </style>
+
+        <pb-page
+          id="pb-select-demo-page"
+          locales="../i18n/{{ns}}/{{lng}}.json"
+          endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0"
+          api-version="1.0.0"
+        >
+          <section class="demo" aria-labelledby="pb-select-demo-title">
+            <header>
+              <h2 id="pb-select-demo-title">Use pb-select in a native form</h2>
+              <p>Select single or multiple options and inspect the serialized form output.</p>
+            </header>
+
+            <form id="select-demo-form" class="demo__section" action="">
+              <section class="demo__section">
+                <h3>Single selection</h3>
+                <pb-select label="Language" name="lang1" value="es">
+                  <span value="bg">Български</span>
+                  <span value="cs">Česky</span>
+                  <span value="de">Deutsch</span>
+                  <span value="en">English</span>
+                  <span value="es">Español</span>
+                  <span value="el">Ελληνικά</span>
+                  <span value="fr">Français</span>
+                  <span value="it">Italiano</span>
+                  <span value="ka">ქართული</span>
+                  <span value="nl">Nederlands</span>
+                  <span value="no">Norsk</span>
+                  <span value="pl">Polski</span>
+                  <span value="pt">Português</span>
+                  <span value="ro">Română</span>
+                  <span value="ru">Русский</span>
+                  <span value="sl">Slovenščina</span>
+                  <span value="sv">Svenska</span>
+                  <span value="tr">Türkçe</span>
+                  <span value="uk">Українська</span>
+                </pb-select>
+              </section>
+
+              <section class="demo__section">
+                <h3>Multiple selection</h3>
+                <p>Select several languages at once. Already selected values stay checked.</p>
+                <pb-select label="Languages" name="lang2" multi values='["fr","de"]'>
+                  <span value="bg">Български</span>
+                  <span value="cs">Česky</span>
+                  <span value="de">Deutsch</span>
+                  <span value="en">English</span>
+                  <span value="es">Español</span>
+                  <span value="el">Ελληνικά</span>
+                  <span value="fr">Français</span>
+                  <span value="it">Italiano</span>
+                  <span value="ka">ქართული</span>
+                  <span value="nl">Nederlands</span>
+                  <span value="no">Norsk</span>
+                  <span value="pl">Polski</span>
+                  <span value="pt">Português</span>
+                  <span value="ro">Română</span>
+                  <span value="ru">Русский</span>
+                  <span value="sl">Slovenščina</span>
+                  <span value="sv">Svenska</span>
+                  <span value="tr">Türkçe</span>
+                  <span value="uk">Українська</span>
+                </pb-select>
+              </section>
+
+              <section class="demo__section">
+                <h3>Options loaded remotely</h3>
+                <p>pb-select can fetch choices from a JSON endpoint. This example loads from <code>select.json</code>.</p>
+                <pb-select label="Remote language" name="lang3" value="en" source="./select.json">
+                  <span value="" hidden>Loading…</span>
+                </pb-select>
+              </section>
+
+              <div class="demo__actions">
+                <button type="submit" class="pb-button pb-button--contained">Submit</button>
+                <button type="button" class="pb-button pb-button--outlined" id="reset-demo">Reset selections</button>
+              </div>
+            </form>
+
+            <section class="demo__section">
+              <h3>Serialized form output</h3>
+              <pre class="demo__output" id="select-demo-output"></pre>
+            </section>
+          </section>
+        </pb-page>
+      </template>
+    </pb-demo-snippet>
+
+    <script type="module">
+      import { ready, stampIfNeeded, firePageReady, syncPbSelect, wireFormOutput } from '../src/docs/demo-utils.js'
+
+      const initialState = Object.freeze({
+        lang1: 'es',
+        lang2: ['fr', 'de'],
+        lang3: 'en'
+      })
+
+      async function hydrateDemo () {
+        await ready(['pb-demo-snippet', 'pb-select'])
+        const snippet = document.querySelector('pb-demo-snippet')
+        stampIfNeeded(snippet)
+
+        const form = snippet.querySelector('#select-demo-form')
+        const output = snippet.querySelector('#select-demo-output')
+        const reset = snippet.querySelector('#reset-demo')
+        if (!form || !output) return
+
+        const single = form.querySelector('pb-select[name="lang1"]')
+        const multi = form.querySelector('pb-select[name="lang2"]')
+        const remote = form.querySelector('pb-select[name="lang3"]')
+
+        if (single) single.value = initialState.lang1
+        if (multi) multi.values = [...initialState.lang2]
+        if (remote) remote.value = initialState.lang3
+
+        await Promise.all([single, multi, remote].filter(Boolean).map(syncPbSelect))
+
+        const render = wireFormOutput(form, output)
+        render()
+
+        reset?.addEventListener('click', async () => {
+          if (single) single.value = initialState.lang1
+          if (multi) multi.values = [...initialState.lang2]
+          if (remote) remote.value = initialState.lang3
+          await Promise.all([single, multi, remote].filter(Boolean).map(syncPbSelect))
+          render()
+        })
+
+        firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hydrateDemo)
+      } else {
+        hydrateDemo()
+      }
+    </script>
+  </body>
+</html>
