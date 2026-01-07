@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>dts-client Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
+                    pb-paginate {
+                        margin-bottom: 10px;
+                    }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <!-- Display two document views side by side -->
+                    <main>
+                        <dts-client>
+                            <dts-select-endpoint slot="toolbar" id="endpoints"></dts-select-endpoint>
+                            <p class="dts-info" slot="toolbar"><pb-i18n key="dts.note"></pb-i18n></p>
+                            <pb-paginate slot="pagination" per-page="10" range="5"></pb-paginate>
+                        </dts-client>
+                    </main>
+                </pb-page>
+                <script>
+                    // configuration for the DTS endpoints
+                    const dtsConfig = [
+                        {
+                            "url": "/exist/apps/tei-publisher/api/dts",
+                            "title": "Local TEI Publisher"
+                        },
+                        {
+                            "url": "http://teipublisher.com/exist/apps/vangogh/api/dts",
+                            "title": "Van Gogh Letters"
+                        },
+                        {
+                            "url": "http://teipublisher.com/exist/apps/shakespeare-pm/api/dts",
+                            "title": "Shakespeare Plays"
+                        },
+                        {
+                            "url": "http://texts.alpheios.net/api/dts",
+                            "title": "Alpheios Project"
+                        }
+                    ];
+                    window.addEventListener('WebComponentsReady', () => {
+                        document.getElementById('endpoints').endpoints = dtsConfig;
+                    });
+                </script>
+            </template>
+        </pb-demo-snippet>        
+    </body>
+</html>

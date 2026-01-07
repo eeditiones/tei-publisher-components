@@ -1,0 +1,1867 @@
+import { LitElement, html, css } from 'lit';
+import { animate } from 'animejs';
+import { pbMixin, waitOnce } from './pb-mixin.js';
+import { registry } from './urls.js';
+import { typesetMath } from './pb-formula.js';
+import { loadStylesheets, themableMixin } from './theming.js';
+import './pb-fetch.js';
+
+/**
+ * This is the main component for viewing text which has been transformed via an ODD.
+ * The document to be viewed is determined by the `pb-document` element the property
+ * `src` points to. If not overwritten, `pb-view` will use the settings defined by
+ * the connected document, like view type, ODD etc.
+ *
+ * `pb-view` can display an entire document or just a fragment of it
+ * as defined by the properties `xpath`, `xmlId` or `nodeId`. The most common use case
+ * is to set `xpath` to point to a specific part of a document.
+ *
+ * Navigating to the next or previous fragment would usually be triggered by a separate
+ * `pb-navigation` element, which sends a `pb-navigate` event to the `pb-view`. However,
+ * `pb-view` also implements automatic loading of next/previous fragments if the user
+ * scrolls the page beyond the current viewport boudaries. To enable this, set property
+ * `infinite-scroll`.
+ *
+ * You may also define optional parameters to be passed to the ODD in nested `pb-param`
+ * tags. These parameters can be accessed within the ODD via the `$parameters` map. For
+ * example, the following snippet is being used to output breadcrumbs above the main text
+ * in the documentation view:
+ *
+ * ```xml
+ * <section class="breadcrumbs">
+ *      <pb-view id="title-view1" src="document1" subscribe="transcription">
+ *          <pb-param name="mode" value="breadcrumbs"/>
+ *      </pb-view>
+ * </section>
+ * ```
+ *
+ * @cssprop [--pb-view-column-gap=10px] - The gap between columns in two-column mode
+ * @cssprop --pb-view-loader-font - Font used in the message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-color=black] - Text color in the message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-background-padding=10px 20px] - Background padding for the  message shown during loading in infinite scroll mode
+ * @cssprop [--pb-view-loader-background-image=linear-gradient(to bottom, #f6a62440, #f6a524)] - Background image the message shown during loading in infinite scroll mode
+ * @cssprop --pb-footnote-color - Text color of footnote marker
+ * @cssprop --pb-footnote-padding - Padding around a footnote marker
+ * @cssprop --pb-footnote-font-size - Font size for the footnote marker
+ * @cssprop --pb-footnote-font-family - Font family for the footnote marker
+ * @cssprop --pb-view-scroll-margin-top - Applied to any element with an id
+ * @csspart content - The root div around the displayed content
+ * @csspart footnotes - div containing the footnotes
+
+ * @fires pb-start-update - Fired before the element updates its content
+ * @fires pb-update - Fired when the component received content from the server
+ * @fires pb-end-update - Fired after the element has finished updating its content
+ * @fires pb-navigate - When received, navigate forward or backward in the document
+ * @fires pb-refresh - When received, refresh the content based on the parameters passed in the event
+ * @fires pb-toggle - When received, toggle content properties
+ */
+export class PbView extends themableMixin(pbMixin(LitElement)) {
+  static get properties() {
+    return {
+      /**
+       * The id of a `pb-document` element this view should display.
+       * Settings like `odd` or `view` will be taken from the `pb-document`
+       * unless overwritten by properties in this component.
+       *
+       * This property is **required** and **must** point to an existing `pb-document` with
+       * the given id.
+       *
+       * Setting the property after initialization will clear the properties xmlId, nodeId and odd.
+       */
+      src: {
+        type: String,
+      },
+      /**
+       * The ODD to use for rendering the document. Overwrites an ODD defined on
+       * `pb-document`. The odd should be specified by its name without path
+       * or the `.odd` suffix.
+       */
+      odd: {
+        type: String,
+      },
+      /**
+       * The view type to use for paginating the document. Either `page`, `div` or `single`.
+       * Overwrites the same property specified on `pb-document`. Values have the following meaning:
+       *
+       * Value | Displayed content
+       * ------|------------------
+       * `page` | content is displayed page by page as determined by tei:pb
+       * `div` | content is displayed by divisions
+       * `single` | do not paginate but display entire content at once
+       */
+      view: {
+        type: String,
+      },
+      /**
+       * Controls the pagination-by-div algorithm: if a page would have less than
+       * `fill` elements, it tries to fill
+       * up the page by pulling following divs in. When set to 0, it will never
+       * attempt to fill up the page. For the annotation editor this should
+       * always be 0.
+       */
+      fill: {
+        type: Number,
+      },
+      /**
+       * An eXist nodeId. If specified, selects the root of the fragment of the document
+       * which should be displayed. Normally this property is set automatically by pagination.
+       */
+      nodeId: {
+        type: String,
+        attribute: 'node-id',
+      },
+      /**
+       * An xml:id to be displayed. If specified, this determines the root of the fragment to be
+       * displayed. Use to directly navigate to a specific section.
+       */
+      xmlId: {
+        type: Array,
+        attribute: 'xml-id',
+      },
+      /**
+       * An optional XPath expression: the root of the fragment to be processed is determined
+       * by evaluating the given XPath expression. The XPath expression should be absolute.
+       * The namespace of the document is declared as default namespace, so no prefixes should
+       * be used.
+       *
+       * If the `map` property is used, it may change scope for the displayed fragment.
+       */
+      xpath: {
+        type: String,
+      },
+      /**
+       * If defined denotes the local name of an XQuery function in `modules/map.xql`, which will be called
+       * with the current root node and should return the node of a mapped fragment. This is helpful if one
+       * wants, for example, to show a translation fragment aligned with the part of the transcription currently
+       * shown. In this case, the properties of the `pb-view` would still point to the transcription, but the function
+       * identified by map would return the corresponding fragment from the translation to be processed.
+       *
+       * Navigation in the document is still determined by the current root as defined through the `root`, `xpath`
+       * and `xmlId` properties.
+       */
+      map: {
+        type: String,
+      },
+      /**
+       * If set to true, the component will not load automatically. Instead it will wait until it receives a `pb-update`
+       * event. Use this to make one `pb-view` component dependent on another one. Default is 'false'.
+       */
+      onUpdate: {
+        type: Boolean,
+        attribute: 'on-update',
+      },
+      /**
+       * Message to display if no content was returned by the server.
+       * Set to empty string to show nothing.
+       */
+      notFound: {
+        type: String,
+        attribute: 'not-found',
+      },
+      /**
+       * The relative URL to the script on the server which will be called for loading content.
+       */
+      url: {
+        type: String,
+      },
+      /**
+       * If set, rewrite URLs to load pages as static HTML files,
+       * so no TEI Publisher instance is required. Use this in combination with
+       * [tei-publisher-static](https://github.com/eeditiones/tei-publisher-static).
+       * The value should point to the HTTP root path under which the static version
+       * will be hosted. This is used to resolve CSS stylesheets.
+       */
+      static: {
+        type: String,
+      },
+      /**
+       * The server returns footnotes separately. Set this property
+       * if you wish to append them to the main text.
+       */
+      appendFootnotes: {
+        type: Boolean,
+        attribute: 'append-footnotes',
+      },
+      /**
+       * Should matches be highlighted if a search has been executed?
+       */
+      suppressHighlight: {
+        type: Boolean,
+        attribute: 'suppress-highlight',
+      },
+      /**
+       * CSS selector to find column breaks in the content returned
+       * from the server. If this property is set and column breaks
+       * are found, the component will display two columns side by side.
+       */
+      columnSeparator: {
+        type: String,
+        attribute: 'column-separator',
+      },
+      /**
+       * The reading direction, i.e. 'ltr' or 'rtl'.
+       *
+       * @type {"ltr"|"rtl"}
+       */
+      direction: {
+        type: String,
+      },
+      /**
+       * If set, points to an external stylesheet which should be applied to
+       * the text *after* the ODD-generated styles.
+       */
+      loadCss: {
+        type: String,
+        attribute: 'load-css',
+      },
+      /**
+       * If set, relative links (img, a) will be made absolute.
+       */
+      fixLinks: {
+        type: Boolean,
+        attribute: 'fix-links',
+      },
+      /**
+       * If set, a refresh will be triggered if a `pb-i18n-update` event is received,
+       * e.g. due to the user selecting a different interface language.
+       *
+       * Also requires `requireLanguage` to be set on the surrounding `pb-page`.
+       * See there for more information.
+       */
+      useLanguage: {
+        type: Boolean,
+        attribute: 'use-language',
+      },
+      /**
+       * wether to animate the view when new page is loaded. Defaults to 'false' meaning that no
+       * animation takes place. If 'true' will apply a translateX transistion in forward/backward direction.
+       */
+      animation: {
+        type: Boolean,
+      },
+      /**
+       * Experimental: if enabled, the view will incrementally load new document fragments if the user tries to scroll
+       * beyond the start or end of the visible text. The feature inserts a small blank section at the top
+       * and bottom. If this section becomes visible, a load operation will be triggered.
+       *
+       * Note: only browsers implementing the `IntersectionObserver` API are supported. Also the feature
+       * does not work in two-column mode or with animations.
+       */
+      infiniteScroll: {
+        type: Boolean,
+        attribute: 'infinite-scroll',
+      },
+      /**
+       * Maximum number of fragments to keep in memory if `infinite-scroll`
+       * is enabled. If the user is scrolling beyond the maximum, fragements
+       * will be removed from the DOM before or after the current reading position.
+       * Default is 10. Set to zero to allow loading the entire document.
+       */
+      infiniteScrollMax: {
+        type: Number,
+        attribute: 'infinite-scroll-max',
+      },
+      /**
+       * A selector pointing to other components this component depends on.
+       * When method `wait` is called, it will wait until all referenced
+       * components signal with a `pb-ready` event that they are ready and listening
+       * to events.
+       *
+       * `pb-view` by default sets this property to select `pb-toggle-feature` and `pb-select-feature`
+       * elements.
+       */
+      waitFor: {
+        type: String,
+        attribute: 'wait-for',
+      },
+      /**
+       * By default, navigating to next/previous page will update browser parameters,
+       * so reloading the page will load the correct position within the document.
+       *
+       * Set this property to disable location tracking for the component altogether.
+       */
+      disableHistory: {
+        type: Boolean,
+        attribute: 'disable-history',
+      },
+      /**
+       * If set to true, pb-view will only read from the registry and never write to it.
+       * This is useful when pb-view is used as a simple receiver of navigation updates
+       * from other components (e.g., pb-tify). When enabled, pb-view will:
+       * - Still subscribe to registry changes
+       * - Still read from registry to determine what to display
+       * - Never call registry.replace or registry.commit after initial connection
+       * 
+       * This prevents pb-view from resetting the registry with stale state during navigation,
+       * which can cause bounce-back issues when used with components like pb-tify.
+       * 
+       * Default is false (pb-view can write to registry as before).
+       */
+      readOnlyRegistry: {
+        type: Boolean,
+        attribute: 'read-only-registry',
+      },
+      /**
+       * If set to the name of an event, the content of the pb-view will not be replaced
+       * immediately upon updates. Instead, an event is emitted, which contains the new content
+       * in property `root`. An event handler intercepting the event can thus modify the content.
+       * Once it is done, it should pass the modified content to the callback function provided
+       * in the event detail under the name `render`. See the demo for an example.
+       */
+      beforeUpdate: {
+        type: String,
+        attribute: 'before-update-event',
+      },
+      /**
+       * If set, do not scroll the view to target node (e.g. given in URL hash)
+       * after content was loaded.
+       */
+      noScroll: {
+        type: Boolean,
+        attribute: 'no-scroll',
+      },
+      _features: {
+        type: Object,
+      },
+      _content: {
+        type: Node,
+        attribute: false,
+      },
+      _column1: {
+        type: Node,
+        attribute: false,
+      },
+      _column2: {
+        type: Node,
+        attribute: false,
+      },
+      _footnotes: {
+        type: Node,
+        attribute: false,
+      },
+      _style: {
+        type: Node,
+        attribute: false,
+      },
+      _additionalParams: {
+        type: Object,
+      },
+      ...super.properties,
+    };
+  }
+
+  constructor() {
+    super();
+    this.src = null;
+    this.url = null;
+    this.readOnlyRegistry = false; // Default: pb-view can write to registry
+    this._registryInitialized = false; // Track if registry has been initialized
+    this.onUpdate = false;
+    this.appendFootnotes = false;
+    this.notFound = null;
+    this.animation = false;
+    this.direction = 'ltr';
+    this.suppressHighlight = false;
+    this.highlight = false;
+    this.infiniteScrollMax = 10;
+    this.disableHistory = false;
+    this.beforeUpdate = null;
+    this.noScroll = false;
+    this._features = {};
+    this._additionalParams = {};
+    this._selector = {};
+    this._chunks = [];
+    this._scrollTarget = null;
+    this._loading = false;
+    this._lastRequestKey = null;
+    this.static = null;
+    // Debouncing for refresh calls (Option 6: Hybrid approach)
+    this._refreshDebounceTimer = null;
+    this._pendingRefreshEvent = null;
+    this._hasLoadedOnce = false; // Track if view has loaded at least once
+    this._lastLoadedId = null; // Track the last id that was actually loaded (for detecting navigation)
+  }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    super.attributeChangedCallback(name, oldVal, newVal);
+    switch (name) {
+      case 'src':
+        this._updateSource(newVal, oldVal);
+        break;
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (this.loadCss) {
+      waitOnce('pb-page-ready', () => {
+        loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
+          if (theme) {
+            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+          }
+        });
+      });
+    }
+
+    if (this.infiniteScroll) {
+      this.columnSeparator = null;
+      this.animation = false;
+      this._content = document.createElement('div');
+      this._content.className = 'infinite-content';
+    }
+
+    if (!this.disableHistory) {
+      if (registry.state.id && !this.xmlId) {
+        this.xmlId = registry.state.id;
+      }
+
+      if (registry.state.action && registry.state.action === 'search') {
+        this.highlight = true;
+      }
+
+      if (this.view === 'single') {
+        this.nodeId = null;
+      } else if (registry.state.root && !this.nodeId) {
+        this.nodeId = registry.state.root;
+      }
+
+      // Only call registry.replace during initial connection, not during navigation
+      // If readOnlyRegistry is true, never call registry.replace (even during initial connection)
+      // This prevents pb-view from resetting registry with stale state during navigation
+      // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this._registryInitialized && !isReadOnly) {
+        const _doc = this.getDocument ? this.getDocument() : null;
+        const newState = {
+          id: this.xmlId,
+          view: this.getView(),
+          odd: this.getOdd(),
+          path: _doc ? _doc.path : undefined,
+        };
+        if (this.view !== 'single') {
+          newState.root = this.nodeId;
+        }
+        if (this.fill) {
+          newState.fill = this.fill;
+        }
+        console.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized,
+          newState
+        });
+        registry.replace(this, newState);
+        this._registryInitialized = true;
+      } else if (isReadOnly) {
+        console.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
+          readOnlyRegistry: this.readOnlyRegistry,
+          hasAttribute: this.hasAttribute('read-only-registry'),
+          isReadOnly,
+          _registryInitialized: this._registryInitialized
+        });
+      }
+
+      registry.subscribe(this, state => {
+        this._setState(state);
+        // Use debounced refresh to batch rapid registry changes
+        this._refresh(null); // Pass null as event, registry state will be used
+      });
+    }
+    if (!this.waitFor) {
+      this.waitFor = 'pb-toggle-feature,pb-select-feature,pb-navigation';
+    }
+
+    this.subscribeTo('pb-navigate', ev => {
+      if (ev.detail.source && ev.detail.source === this) {
+        return;
+      }
+      this.navigate(ev.detail.direction);
+    });
+
+    this.subscribeTo('pb-toggle', ev => {
+      this.toggleFeature(ev);
+    });
+    this.subscribeTo(
+      'pb-i18n-update',
+      ev => {
+        const needsRefresh =
+          this._features.language && this._features.language !== ev.detail.language;
+        this._features.language = ev.detail.language;
+        if (this.useLanguage && needsRefresh) {
+          this._setState(registry.getState(this));
+          this._refresh();
+        }
+      },
+      [],
+    );
+
+    this.signalReady();
+
+    if (this.onUpdate) {
+      this.subscribeTo('pb-update', ev => {
+        this._refresh(ev);
+      });
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._scrollObserver) {
+      this._scrollObserver.disconnect();
+    }
+    // Reset registry initialization flag when component is disconnected
+    // BUT: If read-only-registry is set, don't reset - we never want to call registry.replace
+    // This prevents pb-view from resetting registry when pb-grid rebuilds DOM
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
+      this._registryInitialized = false;
+    }
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+    this.enableScrollbar(true);
+    if (this.infiniteScroll) {
+      this._topObserver = this.shadowRoot.getElementById('top-observer');
+      this._bottomObserver = this.shadowRoot.getElementById('bottom-observer');
+      this._bottomObserver.style.display = 'none';
+      this._topObserver.style.display = 'none';
+      this._scrollObserver = new IntersectionObserver(entries => {
+        if (!this._content) {
+          return;
+        }
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (entry.target.id === 'bottom-observer') {
+              const lastChild = this._content.lastElementChild;
+              if (lastChild) {
+                const next = lastChild.getAttribute('data-next');
+                if (next && !this._content.querySelector(`[data-root="${next}"]`)) {
+                  this._checkChunks('forward');
+                  this._load(next, 'forward');
+                }
+              }
+            } else {
+              const firstChild = this._content.firstElementChild;
+              if (firstChild) {
+                const previous = firstChild.getAttribute('data-previous');
+                if (previous && !this._content.querySelector(`[data-root="${previous}"]`)) {
+                  this._checkChunks('backward');
+                  this._load(previous, 'backward');
+                }
+              }
+            }
+          }
+        });
+      });
+    }
+    if (!this.onUpdate) {
+      waitOnce('pb-page-ready', data => {
+        if (data && data.language) {
+          this._features.language = data.language;
+        }
+        this.wait(() => {
+          if (!this.disableHistory) {
+            this._setState(registry.state);
+          }
+          this._refresh();
+        });
+      });
+    }
+    // Subscribe to pb-refresh events
+    // Application code should specify subscribe="transcription" (or other channel) via HTML attribute
+    // If no subscribe attribute is set, uses defaultChannel (following pb-mixin pattern)
+    // This makes components generic and reusable - applications configure the channel
+    this.subscribeTo('pb-refresh', (ev) => {
+      this._refresh(ev);
+    });
+  }
+
+  /**
+   * Returns the ODD used to render content.
+   *
+   * @returns the ODD being used
+   */
+  getOdd() {
+    try {
+      return this.odd || this.getDocument().odd || 'teipublisher';
+    } catch {
+      return this.odd || 'teipublisher';
+    }
+  }
+
+  getView() {
+    try {
+      return this.view || this.getDocument().view || 'single';
+    } catch {
+      return this.view || 'single';
+    }
+  }
+
+  /**
+   * Trigger an update of this element's content
+   */
+  forceUpdate() {
+    this._load(this.nodeId);
+  }
+
+  animate() {
+    // animate new element if 'animation' property is 'true'
+    if (this.animation) {
+      if (this.lastDirection === 'forward') {
+        animate(this.shadowRoot.getElementById('view'), {
+          opacity: [0, 1],
+          translateX: [1000, 0],
+          duration: 300,
+          ease: 'linear',
+        });
+      } else {
+        animate(this.shadowRoot.getElementById('view'), {
+          opacity: [0, 1],
+          translateX: [-1000, 0],
+          duration: 300,
+          ease: 'linear',
+        });
+      }
+    }
+  }
+
+  enableScrollbar(enable) {
+    if (enable) {
+      this.classList.add('noscroll');
+    } else {
+      this.classList.remove('noscroll');
+    }
+  }
+
+  _refresh(ev) {
+    // Store the pending event for debouncing
+    this._pendingRefreshEvent = ev;
+    
+    // Clear existing debounce timer
+    if (this._refreshDebounceTimer) {
+      clearTimeout(this._refreshDebounceTimer);
+    }
+    
+    // Debounce: wait 150ms to batch rapid changes
+    this._refreshDebounceTimer = setTimeout(() => {
+      this._doRefresh(this._pendingRefreshEvent);
+      this._pendingRefreshEvent = null;
+      this._refreshDebounceTimer = null;
+    }, 150);
+  }
+  
+  _doRefresh(ev) {
+    // Merge registry state with event details, prioritizing registry state
+    const registryState = registry.getState(this);
+    const eventDetail = ev && ev.detail ? ev.detail : {};
+    
+    // Priority: registry state > event detail > current values
+    const mergedState = {
+      ...eventDetail,
+      ...registryState, // Registry state overrides event detail
+    };
+    
+    // Check if this is a metadata panel BEFORE processing any state changes
+    // Check pb-param elements for mode parameter
+    let modeParam = null;
+    const modeParamEl = this.querySelector && this.querySelector('pb-param[name="mode"]');
+    if (modeParamEl) {
+      modeParam = modeParamEl.getAttribute('value');
+    }
+    // Also check _additionalParams (might be set from registry or events)
+    if (!modeParam && this._additionalParams) {
+      modeParam = this._additionalParams.mode || this._additionalParams['user.mode'];
+    }
+    
+    const isMetadataPanel = modeParam === 'metadata-panel' || 
+                           (this.xpath && this.view === 'single' && !this.nodeId);
+    
+    // Skip refresh if this view has xpath (e.g., metadata panel) - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (this.xpath && !mergedState.xpath && this._hasLoadedOnce) {
+      // This view is bound to a specific xpath (like metadata), don't change it after initial load
+      return;
+    }
+    
+    // Skip refresh for metadata panel - it shouldn't react to page navigation
+    // BUT allow initial load (when _hasLoadedOnce is false)
+    if (isMetadataPanel && this._hasLoadedOnce) {
+      // Metadata panel shouldn't react to page navigation events (root/id changes)
+      // Only allow updates if explicitly changing xpath or view mode
+      // Filter out canvas IDs before checking
+      const hasCanvasId = mergedState.id && /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (mergedState.root || (mergedState.id && !hasCanvasId) || mergedState.position) {
+        // This is a page navigation event - skip it for metadata panel
+        return;
+      }
+    }
+    
+    // For metadata panel, filter out canvas IDs from merged state
+    // Canvas IDs (like "A-N-38_004.jpg") should not affect metadata panel content
+    // Create a filtered copy if needed
+    let filteredState = mergedState;
+    if (isMetadataPanel && mergedState.id) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(mergedState.id));
+      if (looksLikeCanvasId) {
+        // Remove canvas ID from merged state for metadata panel
+        filteredState = { ...mergedState };
+        delete filteredState.id;
+      }
+    }
+    
+    // Use filteredState for the rest of the function (filteredState === mergedState if no filtering was needed)
+    const stateToUse = filteredState;
+    
+    // Handle hash-only changes (scroll without reload)
+    if (stateToUse.hash &&
+        !this.noScroll &&
+        !(stateToUse.id || stateToUse.path || stateToUse.odd || stateToUse.view || stateToUse.position)) {
+      this._scrollTarget = stateToUse.hash;
+      const target = this.shadowRoot.getElementById(this._scrollTarget);
+      if (target) {
+        setTimeout(() => target.scrollIntoView({ block: 'nearest' }));
+      }
+      return;
+    }
+    
+    // Store old values BEFORE updating - critical for change detection
+    // IMPORTANT: For _refresh(null) case where _setState was called first,
+    // _setState may have already updated this.xmlId, so oldXmlId might be the new value.
+    // We'll compare against _lastLoadedId (what was actually loaded) to detect changes.
+    const oldXmlId = this.xmlId;
+    const oldNodeId = this.nodeId;
+    const oldPath = this.getDocument ? (this.getDocument()?.path || null) : null;
+    // For _refresh(null) case, also check if _setState set an ID in _features or _additionalParams
+    // that's different from what was loaded
+    // CRITICAL: Check these BEFORE we process the ID, because processing might update them
+    const additionalParamsIdBefore = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresIdBefore = this._features && this._features.id ? this._features.id : null;
+    const lastLoadedIdForComparison = this._lastLoadedId; // What was actually loaded via API
+    
+    // For _refresh(null) case: if _setState set an ID that's different from what was loaded,
+    // we should reload even if oldXmlId === newId (because _setState already updated this.xmlId)
+    const setIdChanged = (additionalParamsIdBefore && additionalParamsIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
+                         (featuresIdBefore && featuresIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null);
+    
+    // Apply merged state
+    // CRITICAL: Event detail takes precedence over registry state for path/odd changes
+    // This is important because events explicitly request path/odd changes, while registry might have old values
+    const eventPath = ev && ev.detail && ev.detail.path ? ev.detail.path : null;
+    const eventOdd = ev && ev.detail && ev.detail.odd ? ev.detail.odd : null;
+    // Use event path/odd if present, otherwise use stateToUse (registry state)
+    const pathToApply = eventPath || stateToUse.path;
+    const oddToApply = eventOdd || stateToUse.odd;
+    
+    if (pathToApply) {
+      const doc = this.getDocument();
+      if (doc) {
+        doc.path = pathToApply;
+      }
+    }
+    
+    // Store for later use in pathChanged/oddChanged checks
+    const newPath = pathToApply;
+    const newOdd = oddToApply;
+    
+    // Handle id parameter - distinguish between XML IDs and canvas IDs
+    // Canvas IDs (from pb-tify) have patterns like "A-N-38_004.jpg" or end with ".jpg"
+    // XML IDs are actual xml:id attributes in the TEI document
+    // CRITICAL: Use ev.detail.id directly to avoid issues with filtered/overridden state
+    // Also check _additionalParams and _features for ID (set via _setState when ev is null)
+    const eventId = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
+    const additionalParamsId = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresId = this._features && this._features.id ? this._features.id : null;
+    // For _refresh(null) case, also check if _setState was called with id
+    // _setState stores id in _features if not in pathParams, or _additionalParams if in pathParams
+    const idToProcess = eventId || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsId || featuresId;
+    
+    if (idToProcess) {
+      const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(idToProcess));
+      if (!looksLikeCanvasId) {
+        // It's a real XML ID, use it
+        this.xmlId = idToProcess;
+      } else {
+        // If it's a canvas ID, store it in _additionalParams so getParameters can use it
+        // This ensures the request includes the correct canvas ID even though we don't set xmlId
+        this._additionalParams = this._additionalParams || {};
+        this._additionalParams.id = idToProcess;
+      }
+      // If it's a canvas ID, don't set xmlId - use root/position for navigation instead
+    }
+    
+    // Use event odd if present, otherwise use stateToUse.odd, otherwise keep current
+    this.odd = oddToApply || this.odd;
+    
+    if (stateToUse.columnSeparator !== undefined) {
+      this.columnSeparator = stateToUse.columnSeparator;
+    }
+    
+    this.view = stateToUse.view || this.getView();
+    this.fill = stateToUse.fill || this.fill;
+    
+    if (stateToUse.xpath) {
+      this.xpath = stateToUse.xpath;
+      this.nodeId = null;
+    }
+    
+    // Handle root/position (prioritize registry state)
+    
+    let newNodeId = this.nodeId;
+    if (stateToUse.root === null) {
+      newNodeId = null;
+    } else {
+      newNodeId = (stateToUse.position !== undefined ? stateToUse.position : stateToUse.root) || this.nodeId;
+    }
+    
+    // Check if nodeId actually changed - if not, skip loading to avoid unnecessary requests
+    const nodeIdChanged = newNodeId !== oldNodeId;
+    
+    // Also check if id changed - even if nodeId (root) is the same, id change means different page
+    // Use ev.detail.id directly (from the event) to avoid issues with filtered/overridden state
+    // Fall back to stateToUse.id, _additionalParams.id, _features.id, or this.xmlId if event doesn't have id
+    // CRITICAL: For _refresh(null) case, check if _setState set an ID that's different from oldXmlId
+    const eventIdForChangeCheck = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
+    const additionalParamsIdForCheck = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const featuresIdForCheck = this._features && this._features.id ? this._features.id : null;
+    const newId = eventIdForChangeCheck || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsIdForCheck || featuresIdForCheck || this.xmlId;
+    // Check if ID changed: compare against oldXmlId OR lastLoadedIdForComparison (what was actually loaded)
+    // For _refresh(null) case where _setState was called first, _setState already updated this.xmlId,
+    // so oldXmlId might be the new value. Compare against lastLoadedIdForComparison to detect changes.
+    // Also check if _setState set an ID in _features/_additionalParams that's different from what was loaded
+    // Check if ID changed: compare against oldXmlId OR lastLoadedIdForComparison (what was actually loaded)
+    // For _refresh(null) case where _setState was called first, _setState already updated this.xmlId,
+    // so oldXmlId might be the new value. Compare against lastLoadedIdForComparison to detect changes.
+    // Also check if _setState set an ID in _features/_additionalParams that's different from what was loaded
+    // CRITICAL: If _setState set a new ID (setIdChanged is true), always reload regardless of other conditions
+    // Also reload if we have a new ID but _lastLoadedId is null (first load or ID was set externally)
+    const idChanged = newId && (
+      newId !== oldXmlId || 
+      (newId !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
+      setIdChanged ||  // _setState set a new ID - always reload
+      (lastLoadedIdForComparison === null && newId)  // First load with ID, or ID set externally
+    );
+    
+    // Check if path changed - path change means different document, should always reload
+    // oldPath was calculated above before updating doc.path
+    // newPath was calculated above (event path takes precedence over registry state)
+    const pathChanged = newPath && newPath !== oldPath;
+    
+    // Check if odd changed - odd change means different document format, should reload
+    // newOdd was calculated above (event odd takes precedence over registry state)
+    const oldOdd = this.odd;
+    const oddChanged = newOdd && newOdd !== oldOdd;
+    
+    // CRITICAL: If we received a pb-refresh event, check if it's for a different page
+    // This ensures we reload when navigation occurs, even if registry already updated our state
+    const eventHasId = ev && ev.detail && ev.detail.id;
+    // _lastLoadedId tracks what we actually loaded via API, not what registry set
+    // If null, we haven't loaded anything yet, so we should load
+    const lastLoadedId = this._lastLoadedId;
+    // If we received an event with an id different from what we last loaded, reload
+    // OR if we haven't loaded anything yet (_lastLoadedId is null), reload
+    // Also check against oldXmlId as fallback (in case _lastLoadedId wasn't set)
+    const shouldReloadFromEvent = eventHasId && (
+      lastLoadedId === null || 
+      ev.detail.id !== lastLoadedId ||
+      (oldXmlId && ev.detail.id !== oldXmlId)
+    );
+    
+    const willSkip = !nodeIdChanged && !idChanged && !pathChanged && !oddChanged && !shouldReloadFromEvent && this._hasLoadedOnce;
+    
+    if (willSkip) {
+      // Neither nodeId nor id changed and event id hasn't changed - skip loading
+      // This prevents unnecessary /api/parts/ requests when navigation doesn't actually change the content
+      
+      // Still update other properties that might have changed
+      registry.pathParams.forEach(key => {
+        if (stateToUse[key] !== undefined) {
+          this._additionalParams[key] = stateToUse[key];
+        }
+      });
+      
+      // Update xmlId if it changed (even if we're not reloading)
+      // this.xmlId was already updated above if stateToUse.id was set
+      
+      if (!this.noScroll) {
+        this._scrollTarget = stateToUse.hash;
+      }
+      
+      this._updateStyles();
+      return;
+    }
+    
+    // NodeId changed or id changed or first load - update and load
+    this.nodeId = newNodeId;
+    
+    // xmlId was already updated above if stateToUse.id was set and not a canvas ID
+    
+    // Track the id we're about to load so we can detect if a pb-refresh event
+    // is for a different page than what we last loaded
+    const idToLoad = mergedState.id || this.xmlId;
+
+    // Check if the URL template needs any other parameters
+    // For metadata panel, canvas IDs are already filtered out in filteredState
+    registry.pathParams.forEach(key => {
+      if (stateToUse[key] !== undefined) {
+        this._additionalParams[key] = stateToUse[key];
+      }
+    });
+
+    if (!this.noScroll) {
+      this._scrollTarget = stateToUse.hash;
+    }
+    
+    this._updateStyles();
+    if (this.infiniteScroll) {
+      this._clear();
+    }
+    
+    this._load(this.nodeId);
+    
+    // Don't update _lastLoadedId here - only update it in _handleContent after content is actually loaded
+    // This ensures _lastLoadedId only tracks what was actually loaded, not what we're trying to load
+  }
+
+  _load(pos, direction) {
+    const doc = this.getDocument ? this.getDocument() : null;
+
+    // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
+    if (!doc || !doc.path) {
+      console.warn('<pb-view> No path');
+      return;
+    }
+
+    if (this._loading && this._lastRequestKey) {
+      const testParams = this.getParameters(pos);
+      const testReqKey = JSON.stringify({ url: this.url || '', doc: doc.path, params: testParams });
+      if (this._lastRequestKey === testReqKey) {
+        return;
+      }
+      // Cancel the pending request
+      const loader = this.shadowRoot.getElementById('loadContent');
+      if (loader) {
+        loader.abort();
+      }
+      // Clear the old request key so new requests aren't blocked
+      this._lastRequestKey = null;
+      this._loading = false;
+    }
+    this._loading = true;
+
+    const params = this.getParameters(pos);
+    if (direction) {
+      params._dir = direction;
+    }
+
+    this._doLoad(params);
+  }
+
+  _doLoad(params) {
+    // De-duplicate identical requests to avoid hammering the backend
+    const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
+    const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
+    if (this._lastRequestKey === reqKey) {
+      // nothing changed; unlock and skip
+      this._loading = false;
+      return;
+    }
+    this._lastRequestKey = reqKey;
+
+    this.emitTo('pb-start-update', params);
+
+    if (!this.infiniteScroll) {
+      this._clear();
+    }
+
+    if (this._scrollObserver) {
+      if (this._bottomObserver) {
+        this._scrollObserver.unobserve(this._bottomObserver);
+      }
+      if (this._topObserver) {
+        this._scrollObserver.unobserve(this._topObserver);
+      }
+    }
+
+    const loadContent = this.shadowRoot.getElementById('loadContent');
+
+    if (this.static !== null) {
+      this._staticUrl(params).then(url => {
+        loadContent.url = url;
+        loadContent.generateRequest().catch(() => {
+          // Error handled by @error event listener
+        });
+      });
+      return;
+    }
+
+    if (!this.url) {
+      if (this.minApiVersion('1.0.0')) {
+        this.url = 'api/parts';
+      } else {
+        this.url = 'modules/lib/components.xql';
+      }
+    }
+
+    let url = `${this.getEndpoint()}/${this.url}`;
+
+    if (this.minApiVersion('1.0.0')) {
+      // Encode the entire path as a single unit for the API
+      const doc = this.getDocument();
+      if (doc && doc.path) {
+        const docPath = encodeURIComponent(doc.path);
+        url += `/${docPath}/json`;
+      } else {
+        console.warn('<pb-view> No document path available for URL construction');
+        return;
+      }
+    }
+
+    loadContent.url = url;
+    loadContent.params = params;
+    loadContent.generateRequest().catch((error) => {
+      console.error('[pb-view] _doLoad: request failed', error);
+      // Error handled by @error event listener
+    });
+  }
+
+  /**
+   * Use a static URL to load pre-generated content.
+   */
+  async _staticUrl(params) {
+    function createKey(paramNames) {
+      const urlComponents = [];
+      paramNames.sort().forEach(key => {
+        if (params.hasOwnProperty(key)) {
+          urlComponents.push(`${key}=${params[key]}`);
+        }
+      });
+      return urlComponents.join('&');
+    }
+
+    const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
+    const baseUrl = new URL(`${baseDir}/`, window.location.href);
+    const indexUrl = new URL('index.json', baseUrl).href;
+    const index = await fetch(indexUrl).then(response => response.json());
+    const paramNames = ['odd', 'view', 'xpath', 'map'];
+    this.querySelectorAll('pb-param').forEach(param =>
+      paramNames.push(`user.${param.getAttribute('name')}`),
+    );
+    let url = params.id ? createKey([...paramNames, 'id']) : createKey([...paramNames, 'root']);
+    let file = index[url];
+    if (!file) {
+      url = createKey(paramNames);
+      file = index[url];
+    }
+
+    if (!file) {
+      console.warn('<pb-view> No static mapping found for %s', url);
+      const fallback = Object.values(index)[0];
+      if (!fallback) {
+        return baseUrl.href;
+      }
+      file = fallback;
+    }
+    return new URL(file, baseUrl).href;
+  }
+
+  _clear() {
+    if (this.infiniteScroll) {
+      this._content = document.createElement('div');
+      this._content.className = 'infinite-content';
+    } else {
+      this._content = null;
+    }
+    this._column1 = null;
+    this._column2 = null;
+    this._footnotes = null;
+    this._chunks = [];
+  }
+
+  _handleError() {
+    this._clear();
+    this._loading = false;
+    const loader = this.shadowRoot.getElementById('loadContent');
+    console.error('<pb-view> Error details:', loader.lastError);
+    let message;
+    const { response } = loader.lastError;
+
+    if (response) {
+      message = response.description;
+    } else {
+      message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
+    }
+
+    let content;
+    if (this.notFound != null) {
+      content = `<p>${this.notFound}</p>`;
+    } else {
+      content = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
+    }
+
+    this._replaceContent({ content });
+    this.emitTo('pb-end-update');
+  }
+
+  _handleContent() {
+    const loader = this.shadowRoot.getElementById('loadContent');
+    const resp = loader.lastResponse;
+
+
+    if (!resp) {
+      this._loading = false;
+      console.error('<pb-view> No response received');
+      return;
+    }
+    if (resp.error) {
+      console.error('<pb-view> Response has error:', resp.error);
+      if (this.notFound != null) {
+        this._content = this.notFound;
+      }
+      this.emitTo('pb-end-update', null);
+      this._loading = false;
+      return;
+    }
+
+    this._replaceContent(resp, loader.params._dir);
+
+    this.animate();
+
+    if (this._scrollTarget) {
+      this.updateComplete.then(() => {
+        const target =
+          this.shadowRoot.getElementById(this._scrollTarget) ||
+          this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
+        if (target) {
+          window.requestAnimationFrame(() =>
+            setTimeout(() => {
+              target.scrollIntoView({ block: 'nearest' });
+            }, 400),
+          );
+        }
+        this._scrollTarget = null;
+      });
+    }
+
+    this.next = resp.next;
+    this.nextId = resp.nextId;
+    this.previous = resp.previous;
+    this.previousId = resp.previousId;
+    this.nodeId = resp.root;
+    this.switchView = resp.switchView;
+
+    this.updateComplete.then(() => {
+      const view = this.shadowRoot.getElementById('view');
+      this._applyToggles(view);
+      this._fixLinks(view);
+      typesetMath(view);
+
+      const eventOptions = {
+        data: resp,
+        root: view,
+        params: loader.params,
+        id: this.xmlId,
+        position: this.nodeId,
+      };
+      this.emitTo('pb-update', eventOptions);
+      this._scroll();
+    });
+
+    this.emitTo('pb-end-update', null);
+    // allow subsequent loads with new params
+    this._loading = false;
+    // Mark that this view has loaded at least once
+    this._hasLoadedOnce = true;
+    // Track the id that was actually loaded (for detecting navigation events)
+    // This is critical - we only update _lastLoadedId when content is actually loaded,
+    // not when registry just updates our state
+    if (this.xmlId) {
+      this._lastLoadedId = this.xmlId;
+    }
+  }
+
+  _replaceContent(resp, direction) {
+    const fragment = document.createDocumentFragment();
+    const elem = document.createElement('div');
+    // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
+    fragment.appendChild(elem);
+    elem.innerHTML = resp.content;
+
+    // if before-update-event is set, we do not replace the content immediately,
+    // but emit an event
+    if (this.beforeUpdate) {
+      this.emitTo(this.beforeUpdate, {
+        data: resp,
+        root: elem,
+        render: content => {
+          this._doReplaceContent(content, resp, direction);
+        },
+      });
+    } else {
+      this._doReplaceContent(elem, resp, direction);
+    }
+  }
+
+  _doReplaceContent(elem, resp, direction) {
+    
+    if (this.columnSeparator) {
+      this._replaceColumns(elem);
+      this._loading = false;
+    } else if (this.infiniteScroll) {
+      elem.className = 'scroll-fragment';
+      elem.setAttribute('data-root', resp.root);
+      if (resp.next) {
+        elem.setAttribute('data-next', resp.next);
+      }
+      if (resp.previous) {
+        elem.setAttribute('data-previous', resp.previous);
+      }
+      let refNode;
+      switch (direction) {
+        case 'backward':
+          refNode = this._content.firstElementChild;
+          this._chunks.unshift(elem);
+          this.updateComplete.then(() => {
+            refNode.scrollIntoView(true);
+            this._loading = false;
+            this._checkVisibility();
+            this._scrollObserver.observe(this._bottomObserver);
+            this._scrollObserver.observe(this._topObserver);
+          });
+          this._content.insertBefore(elem, refNode);
+          break;
+        default:
+          this.updateComplete.then(() => {
+            this._loading = false;
+            this._checkVisibility();
+            this._scrollObserver.observe(this._bottomObserver);
+            this._scrollObserver.observe(this._topObserver);
+          });
+          this._chunks.push(elem);
+          this._content.appendChild(elem);
+          break;
+      }
+    } else {
+      this._content = elem;
+      this._loading = false;
+    }
+
+    if (this.appendFootnotes) {
+      const footnotes = document.createElement('div');
+      if (resp.footnotes) {
+        footnotes.innerHTML = resp.footnotes;
+      }
+      this._footnotes = footnotes;
+    }
+
+    this._initFootnotes(this._footnotes);
+
+    return elem;
+  }
+
+  _checkVisibility() {
+    const bottomActive = this._chunks[this._chunks.length - 1].hasAttribute('data-next');
+    this._bottomObserver.style.display = bottomActive ? '' : 'none';
+
+    const topActive = this._chunks[0].hasAttribute('data-previous');
+    this._topObserver.style.display = topActive ? '' : 'none';
+  }
+
+  _replaceColumns(elem) {
+    let cb;
+    if (this.columnSeparator) {
+      const cbs = elem.querySelectorAll(this.columnSeparator);
+      // use last separator only
+      if (cbs.length > 1) {
+        cb = cbs[cbs.length - 1];
+      }
+    }
+
+    if (!cb) {
+      this._content = elem;
+    } else {
+      const fragmentBefore = this._getFragmentBefore(elem, cb);
+      const fragmentAfter = this._getFragmentAfter(elem, cb);
+      if (this.direction === 'ltr') {
+        this._column1 = fragmentBefore;
+        this._column2 = fragmentAfter;
+      } else {
+        this._column2 = fragmentBefore;
+        this._column1 = fragmentAfter;
+      }
+    }
+  }
+
+  _scroll() {
+    if (this.noScroll) {
+      return;
+    }
+    if (registry.hash) {
+      const target = this.shadowRoot.getElementById(registry.hash.substring(1));
+      if (target) {
+        window.requestAnimationFrame(() =>
+          setTimeout(() => {
+            target.scrollIntoView({ block: 'center', inline: 'nearest' });
+          }, 400),
+        );
+      }
+    }
+  }
+
+  _scrollToElement(ev, link) {
+    const target = this.shadowRoot.getElementById(link.hash.substring(1));
+    if (target) {
+      ev.preventDefault();
+      target.scrollIntoView({ block: 'center', inline: 'nearest' });
+    }
+  }
+
+  _updateStyles() {
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    if (this.static !== null) {
+      link.setAttribute('href', `${this.static}/css/${this.getOdd()}.css`);
+    } else {
+      link.setAttribute('href', `${this.getEndpoint()}/transform/${this.getOdd()}.css`);
+    }
+    this._style = link;
+  }
+
+  _fixLinks(content) {
+    if (this.fixLinks) {
+      const doc = this.getDocument ? this.getDocument() : null;
+      const base = this.toAbsoluteURL(doc && doc.path ? doc.path : '');
+      content.querySelectorAll('img').forEach(image => {
+        const oldSrc = image.getAttribute('src');
+        const src = new URL(oldSrc, base);
+        image.src = src.href;
+      });
+      content.querySelectorAll('a').forEach(link => {
+        const oldHref = link.getAttribute('href');
+        if (oldHref === link.hash) {
+          link.addEventListener('click', ev => this._scrollToElement(ev, link));
+        } else {
+          const href = new URL(oldHref, base);
+          link.href = href.href;
+        }
+      });
+    } else {
+      content.querySelectorAll('a').forEach(link => {
+        const oldHref = link.getAttribute('href');
+        if (oldHref === link.hash) {
+          link.addEventListener('click', ev => this._scrollToElement(ev, link));
+        }
+      });
+    }
+  }
+
+  _initFootnotes(content) {
+    if (content) {
+      content.querySelectorAll('.note, .fn-back').forEach(elem => {
+        elem.addEventListener('click', ev => {
+          ev.preventDefault();
+          const fn = this.shadowRoot.getElementById('content').querySelector(elem.hash);
+          if (fn) {
+            fn.scrollIntoView();
+          }
+        });
+      });
+    }
+  }
+
+  _getParameters() {
+    const params = {};  // Use object, not array
+    this.querySelectorAll('pb-param').forEach(param => {
+      const name = param.getAttribute('name');
+      const value = param.getAttribute('value');
+      // For metadata panel, filter out canvas IDs
+      if (name === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            return; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
+      params[`user.${name}`] = value;
+    });
+    // add parameters for features set with pb-toggle-feature
+    for (const [key, value] of Object.entries(this._features)) {
+      // For metadata panel, filter out canvas IDs
+      if (key === 'id') {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+        if (looksLikeCanvasId) {
+          // Check if this is a metadata panel
+          const modeParamEl = this.querySelector('pb-param[name="mode"]');
+          if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+            continue; // Skip canvas IDs for metadata panel
+          }
+        }
+      }
+      params[`user.${key}`] = value;
+    }
+    // add parameters for user-defined parameters supplied via pb-link
+    if (this._additionalParams) {
+      for (const [key, value] of Object.entries(this._additionalParams)) {
+        // For metadata panel, filter out canvas IDs
+        if (key === 'id' || key === 'user.id') {
+          const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(value));
+          if (looksLikeCanvasId) {
+            // Check if this is a metadata panel
+            const modeParamEl = this.querySelector('pb-param[name="mode"]');
+            if (modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel') {
+              continue; // Skip canvas IDs for metadata panel
+            }
+          }
+        }
+        params[key] = value;
+      }
+    }
+    return params;
+  }
+
+  /**
+   * Return the parameter object which would be passed to the server by this component
+   */
+  getParameters(pos) {
+    pos = pos || this.nodeId;
+    const doc = this.getDocument ? this.getDocument() : null;
+    const params = this._getParameters();
+    if (!this.minApiVersion('1.0.0') && doc && doc.path) {
+      params.doc = doc.path;
+    }
+    params.odd = `${this.getOdd()}.odd`;
+    // For metadata panel, use 'single' view to ensure teiHeader is returned
+    // and don't set root parameter - it should return teiHeader, not a specific page
+    const modeParamEl = this.querySelector('pb-param[name="mode"]');
+    const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+    if (isMetadataPanel) {
+      params.view = 'single';
+    } else {
+      params.view = this.getView();
+    }
+    params.fill = this.fill;
+    if (pos && !isMetadataPanel) {
+      params.root = pos;
+    }
+    if (this.xpath) {
+      params.xpath = this.xpath;
+    }
+    // Check if we have an id in _additionalParams first (from registry/event, including canvas IDs)
+    // This takes precedence over xmlId because it's the most recent state
+    if (this._additionalParams && this._additionalParams.id) {
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this._additionalParams.id));
+        if (!looksLikeCanvasId) {
+          params.id = this._additionalParams.id;
+        }
+      } else {
+        params.id = this._additionalParams.id;
+      }
+    } else if (this.xmlId) {
+      // Fall back to xmlId if no id in _additionalParams
+      // For metadata panel, don't add canvas IDs
+      const modeParamEl = this.querySelector('pb-param[name="mode"]');
+      const isMetadataPanel = modeParamEl && modeParamEl.getAttribute('value') === 'metadata-panel';
+      if (isMetadataPanel) {
+        const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(this.xmlId));
+        if (!looksLikeCanvasId) {
+          params.id = this.xmlId;
+        }
+      } else {
+        params.id = this.xmlId;
+      }
+    }
+    if (!this.suppressHighlight && this.highlight) {
+      params.highlight = 'yes';
+    }
+    if (this.map) {
+      params.map = this.map;
+    }
+
+    return params;
+  }
+
+  _applyToggles(elem) {
+    for (const [selector, setting] of Object.entries(this._selector)) {
+      elem.querySelectorAll(selector).forEach(node => {
+        const command = setting.command || 'toggle';
+        if (node.command) {
+          node.command(command, setting.state);
+        }
+        if (setting.state) {
+          node.classList.add(command);
+        } else {
+          node.classList.remove(command);
+        }
+      });
+    }
+  }
+
+  /**
+   * Load a part of the document identified by the given eXist nodeId
+   *
+   * @param {String} nodeId The eXist nodeId of the root element to load
+   */
+  goto(nodeId) {
+    this._load(nodeId);
+  }
+
+  /**
+   * Load a part of the document identified by the given xml:id
+   *
+   * @param {String} xmlId The xml:id to be loaded
+   */
+  gotoId(xmlId) {
+    this.xmlId = xmlId;
+    this._load();
+  }
+
+  /**
+   * Navigate the document either forward or backward and refresh the view.
+   * The navigation method is determined by property `view`.
+   *
+   * @param {string} direction either `backward` or `forward`
+   */
+  navigate(direction) {
+    // in single view mode there should be no navigation
+    if (this.getView() === 'single') {
+      return;
+    }
+
+    this.lastDirection = direction;
+
+    if (direction === 'backward') {
+      if (this.previous) {
+        const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+        if (!this.disableHistory && !this.map && !isReadOnly) {
+          registry.commit(this, {
+            id: this.previousId || null,
+            root: this.previousId ? null : this.previous,
+          });
+        }
+        this.xmlId = this.previousId;
+        this._load(this.xmlId ? null : this.previous, direction);
+      }
+    } else if (this.next) {
+      const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+      if (!this.disableHistory && !this.map && !isReadOnly) {
+        registry.commit(this, {
+          id: this.nextId || null,
+          root: this.nextId ? null : this.next,
+        });
+      }
+      this.xmlId = this.nextId;
+      this._load(this.xmlId ? null : this.next, direction);
+    }
+  }
+
+  /**
+   * Check the number of fragments which were already loaded in infinite
+   * scroll mode. If they exceed `infiniteScrollMax`, remove either the
+   * first or last fragment from the DOM, depending on the scroll direction.
+   *
+   * @param {string} direction either 'forward' or 'backward'
+   */
+  _checkChunks(direction) {
+    if (!this.infiniteScroll || this.infiniteScrollMax === 0) {
+      return;
+    }
+
+    if (this._chunks.length === this.infiniteScrollMax) {
+      switch (direction) {
+        case 'forward':
+          this._content.removeChild(this._chunks.shift());
+          break;
+        default:
+          this._content.removeChild(this._chunks.pop());
+          break;
+      }
+    }
+    this.emitTo('pb-navigate', {
+      direction,
+      source: this,
+    });
+  }
+
+  toggleFeature(ev) {
+    const properties = registry.getState(this);
+    if (properties) {
+      this._setState(properties);
+    }
+
+    if (ev.detail.refresh) {
+      this._updateStyles();
+      this._load();
+    } else {
+      const view = this.shadowRoot.getElementById('view');
+      this._applyToggles(view);
+    }
+    // Only commit to registry if not in read-only mode
+    // In read-only mode, pb-view only reads from registry, never writes
+    // Check both property (LitElement) and attribute (XML/XHTML compatibility)
+    const isReadOnly = this.readOnlyRegistry || this.hasAttribute('read-only-registry');
+    if (!isReadOnly) {
+      registry.commit(this, properties);
+    }
+  }
+
+  _setState(properties) {
+    for (const [key, value] of Object.entries(properties)) {
+      // check if URL template needs the parameter and if
+      // yes, add it to the additional parameter list
+      if (registry.pathParams.has(key)) {
+        this._additionalParams[key] = value;
+      } else {
+        switch (key) {
+          case 'odd':
+          case 'view':
+          case 'columnSeparator':
+          case 'xpath':
+          case 'nodeId':
+          case 'path':
+          case 'root':
+            break;
+          default:
+            this._features[key] = value;
+            break;
+        }
+      }
+    }
+    if (properties.odd && !this.getAttribute('odd')) {
+      this.odd = properties.odd;
+    }
+    if (properties.view && !this.getAttribute('view')) {
+      this.view = properties.view;
+      if (this.view === 'single') {
+        // when switching to single view, clear current node id
+        this.nodeId = null;
+      } else {
+        // otherwise use value for alternate view returned from server
+        this.nodeId = this.switchView;
+      }
+    }
+    if (properties.fill && !this.getAttribute('fill')) {
+      this.fill = properties.fill;
+    }
+    if (properties.xpath && !this.getAttribute('xpath')) {
+      this.xpath = properties.xpath;
+    }
+    if (properties.hasOwnProperty('columnSeparator')) {
+      this.columnSeparator = properties.columnSeparator;
+    }
+    this.xmlId = (!this.getAttribute('xml-id') && properties.id) || this.xmlId;
+    this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
+
+    if (properties.path) {
+      const doc = this.getDocument ? this.getDocument() : null;
+      if (doc) doc.path = properties.path;
+    }
+
+    if (properties.selectors) {
+      properties.selectors.forEach(sc => {
+        this._selector[sc.selector] = {
+          state: sc.state,
+          command: sc.command || 'toggle',
+        };
+      });
+    }
+  }
+
+  _getFragmentBefore(node, ms) {
+    const range = document.createRange();
+    range.setStartBefore(node);
+    range.setEndBefore(ms);
+
+    return range.cloneContents();
+  }
+
+  _getFragmentAfter(node, ms) {
+    const range = document.createRange();
+    range.setStartBefore(ms);
+    range.setEndAfter(node);
+
+    return range.cloneContents();
+  }
+
+  _updateSource(newVal, oldVal) {
+    if (typeof oldVal !== 'undefined' && newVal !== oldVal) {
+      this.xpath = null;
+      this.odd = null;
+      this.xmlId = null;
+      this.nodeId = null;
+    }
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        background: transparent;
+      }
+
+      :host(.noscroll) {
+        scrollbar-width: none; /* Firefox 64 */
+        -ms-overflow-style: none;
+      }
+
+      :host(.noscroll)::-webkit-scrollbar {
+        width: 0 !important;
+        display: none;
+      }
+
+      [id] {
+        scroll-margin-top: var(--pb-view-scroll-margin-top);
+      }
+
+      #view {
+        position: relative;
+        font-size: clamp(
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-min-zoom, 0.5)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-zoom-factor)),
+          calc(var(--pb-content-font-size, 1rem) * var(--pb-max-zoom, 3))
+        );
+        line-height: calc(var(--pb-content-line-height, 1.5) * var(--pb-zoom-factor));
+      }
+
+      .columns {
+        display: grid;
+        grid-template-columns: calc(50% - var(--pb-view-column-gap, 10px) / 2) calc(
+            50% - var(--pb-view-column-gap, 10px) / 2
+          );
+        grid-column-gap: var(--pb-view-column-gap, 10px);
+      }
+
+      .margin-note {
+        display: none;
+      }
+
+      @media (min-width: 769px) {
+        .content.margin-right {
+          margin-right: 200px;
+        }
+
+        .margin-note {
+          background: rgba(153, 153, 153, 0.2);
+          display: block;
+          font-size: small;
+          margin-right: -200px;
+          margin-bottom: 5px;
+          padding: 5px 0;
+          float: right;
+          clear: both;
+          width: 180px;
+        }
+
+        .margin-note .n {
+          color: #777777;
+        }
+      }
+
+      a[rel='footnote'] {
+        font-size: calc(
+          var(--pb-footnote-font-size, var(--pb-content-font-size, 75%)) * var(--pb-zoom-factor, 1)
+        );
+        font-family: var(--pb-footnote-font-family, --pb-content-font-family);
+        vertical-align: super;
+        color: var(--pb-footnote-color, var(--pb-color-primary, #333333));
+        text-decoration: none;
+        padding: var(--pb-footnote-padding, 0 0 0 0.25em);
+        line-height: 1;
+      }
+
+      .list dt {
+        float: left;
+      }
+
+      .footnote .fn-number {
+        float: left;
+        font-size: var(--pb-footnote-font-size, var(--pb-content-font-size, 75%));
+      }
+
+      .observer {
+        display: block;
+        width: 100%;
+        height: var(--pb-view-loader-height, 16px);
+        font-family: var(--pb-view-loader-font, --pb-base-font);
+        color: var(--pb-view-loader-color, black);
+        background: var(--pb-view-loader-background, #909090);
+        background-image: var(
+          --pb-view-loader-background-image,
+          repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 35px,
+            rgba(255, 255, 255, 0.5) 35px,
+            rgba(255, 255, 255, 0.5) 70px
+          )
+        );
+        animation-name: loader;
+        animation-timing-function: linear;
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes loader {
+        0% {
+          background-position: 3rem 0;
+        }
+
+        100% {
+          background-position: 0 0;
+        }
+      }
+
+      .scroll-fragment {
+        animation: fadeIn ease 500ms;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    `;
+  }
+
+  render() {
+    return [
+      html`
+        <div id="view" part="content">
+          ${this._style}
+          ${this.infiniteScroll ? html`<div id="top-observer" class="observer"></div>` : null}
+          <div class="columns">
+            <div id="column1">${this._column1}</div>
+            <div id="column2">${this._column2}</div>
+          </div>
+          <div id="content">${this._content}</div>
+          ${this.infiniteScroll ? html`<div id="bottom-observer" class="observer"></div>` : null}
+          <div id="footnotes" part="footnotes">${this._footnotes}</div>
+        </div>
+        <pb-fetch
+          id="loadContent"
+          verbose
+          handle-as="json"
+          method="get"
+          with-credentials
+          @response="${this._handleContent}"
+          @error="${this._handleError}"
+        ></pb-fetch>
+      `,
+    ];
+  }
+}
+
+customElements.define('pb-view', PbView);

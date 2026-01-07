@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-drawer Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+                demo-snippet {
+                    position: relative;
+                }
+
+                main {
+                    height: 70vh;
+                    overflow: auto;
+                    display: flex;
+                    justify-content: center;
+                    position: relative;
+                }
+
+                pb-drawer {
+                    background-color: #f0f0f0;
+                    --pb-drawer-width: 33vw;
+                }
+
+                pb-drawer ul {
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                pb-drawer li {
+                    margin-bottom: 10px;
+                }
+
+                pb-drawer pb-link {
+                    display: block;
+                    margin-left: 34px;
+                }
+
+                pb-drawer [slot="collapse-trigger"]>pb-link {
+                    margin-left: 0;
+                }
+
+                pb-drawer ul ul {
+                    padding-left: 20px;
+                }
+
+                .toolbar {
+                    padding: 10px 0;
+                }
+
+                pb-navigation {
+                    position: fixed;
+                    bottom: 45%;
+                }
+
+                pb-navigation[direction=backward] {
+                    left: 20px;
+                }
+
+                pb-navigation[direction=forward] {
+                    right: 20px;
+                }
+
+                pb-load ul {
+                    list-style: none;
+                    margin-left: 0;
+                }
+
+                pb-link a {
+                    text-decoration: none;
+                    color: #222222;
+                }
+
+                .nav-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    border: none;
+                    background: #35424b;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+                .nav-button pb-icon {
+                    --pb-icon-size: 24px;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta"></pb-document>
+                <div class="toolbar">
+                    <pb-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list"></pb-icon-button>
+                </div>
+                <pb-progress></pb-progress>
+                <pb-drawer id="toc" toggle="tocToggle" class="tocDrawer" emit="toc" subscribe="transcription">
+                    <div class="drawer-content">
+                        <h3>
+                            <pb-i18n key="document.contents">Contents</pb-i18n>
+                        </h3>
+                        <pb-load url="api/document/{doc}/contents?target=transcription&icons=true" src="document1"
+                            expand subscribe="toc" load-once>Loading...</pb-load>
+                    </div>
+                </pb-drawer>
+                <main>
+                    <!-- Navigate to previous page -->
+                    <pb-navigation direction="backward" keyboard="left" emit="transcription" subscribe="transcription">
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-left"></pb-icon>
+                        </span>
+                    </pb-navigation>
+                    <pb-view id="view1" src="document1" view="page" append-footnotes emit="transcription"
+                        subscribe="transcription"></pb-view>
+                    <!-- Navigate to next page -->
+                    <pb-navigation direction="forward" keyboard="right" emit="transcription" subscribe="transcription">
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-right"></pb-icon>
+                        </span>
+                    </pb-navigation>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
