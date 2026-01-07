@@ -44,8 +44,8 @@
   "dependencies": {
     "@jinntec/jinn-codemirror": "^1.18.2",
     "@lrnwebcomponents/es-global-bridge": "^8.0.2",
-    "@vaadin/vaadin-tabs": "^23.6.2",
-    "@vaadin/vaadin-upload": "^23.6.2",
+    "@vaadin/tabs": "^23.6.2",
+    "@vaadin/upload": "^23.6.2",
     "airtable": "^0.12.2",
     "animejs": "^4.2.2",
     "browser-fs-access": "^0.38.0",
