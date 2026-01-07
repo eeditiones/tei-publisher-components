@@ -38,7 +38,7 @@
   "dependencies": {
     "@babel/runtime": "7.27.1",
     "@cwmr/paper-autocomplete": "^4.0.0",
-    "@jinntec/jinn-codemirror": "^1.18.2",
+    "@jinntec/jinn-codemirror": "^1.13.5",
     "@lrnwebcomponents/es-global-bridge": "^7.0.4",
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
@@ -103,8 +103,7 @@
     "@open-wc/prettier-config": "^1.1.0",
     "@open-wc/testing": "^2.5.29",
     "@open-wc/testing-karma": "^4.0.8",
-    "@rollup/plugin-commonjs": "^11.1.0",
-    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/plugin-replace": "^2.3.3",
     "@semantic-release/changelog": "^5.0.1",

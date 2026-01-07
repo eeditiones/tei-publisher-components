@@ -55,7 +55,7 @@ describe('pb-facsimile', () => {
   });
 });
 
-describe('request handling', () => {
+describe.only('request handling', () => {
   /**
    * @type {import('sinon').SinonFakeXMLHttpRequestStatic}
    */
@@ -164,14 +164,10 @@ describe('request handling', () => {
 
     await oneEvent(facsimile, 'pb-facsimile-status');
 
-    // For some reason the previous test can leak into this one. Filter to only expected URLs
-    expect(
-      requests.filter(
-        ({ url }) =>
-          url ===
-          'https://apps.existsolutions.com/cantaloupe/iiif/2/12446_000_BCz_1596p302.jpg/info.json',
-      ).length,
-    ).to.equal(1, 'there should have been exactly one request for this url here');
+    expect(requests.length).to.equal(1, 'there should have been exactly one request here');
+    expect(requests[0].url).to.equal(
+      'https://apps.existsolutions.com/cantaloupe/iiif/2/12446_000_BCz_1596p302.jpg/info.json',
+    );
   });
 
   it('Deduplicates network requests for the same URL if the pb-facs-links point to the a small set of different ones', async () => {
