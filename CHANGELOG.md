@@ -1,3 +1,10 @@
+# [3.0.0-next-4.6](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.5...v3.0.0-next-4.6) (2026-01-07)
+
+
+### Bug Fixes
+
+* **vaadin:** upgrade vaadin 23 to 25 ([6713c4b](https://github.com/eeditiones/tei-publisher-components/commit/6713c4bfa3b15e3035dd308c04d05064e4ae0218))
+
 # [3.0.0-next-4.5](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.4...v3.0.0-next-4.5) (2026-01-07)
 
 
