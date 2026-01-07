@@ -61,6 +61,7 @@ describe('pb-upload', () => {
                 vaadinUpload.should('have.attr', 'method', 'post')
                 vaadinUpload.should('have.attr', 'tabindex', '-1')
                 vaadinUpload.should('have.attr', 'form-data-name', 'files[]')
+                vaadinUpload.should('have.attr', 'uploadFormat', 'form')
                 vaadinUpload.should('have.attr', 'with-credentials')
             })
         })

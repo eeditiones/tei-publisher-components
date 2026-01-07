@@ -124,6 +124,7 @@ export class PbUpload extends pbMixin(LitElement) {
         method="post"
         tabindex="-1"
         form-data-name="files[]"
+        uploadFormat="form"
         with-credentials
       >
         ${dropLabelIcon
