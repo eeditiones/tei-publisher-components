@@ -1,0 +1,96 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+    <title>pb-blacklab-highlight Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+<pb-demo-snippet>
+    <template>
+        <style type="text/css">
+            pb-page {
+                position: relative;
+            }
+
+            #view1 {
+                height: 70vh;
+                overflow: auto;
+                display: flex;
+                justify-content: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            @media (min-width: 769px) {
+                #view1, footer {
+                    max-width: 60vw;
+                }
+            }
+
+            footer {
+                position: relative;
+                margin-top: 10px;
+                bottom: 0;
+                background-color: #f2f2f2;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            pb-navigation[disabled] {
+                display: block;
+                visibility: hidden;
+            }
+
+                pb-navigation[direction="forward"] {
+                    float: right;
+                }
+
+                .nav-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    border: none;
+                    background: #35424b;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+                .nav-button pb-icon {
+                    --pb-icon-size: 20px;
+                }
+        </style>
+        <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+            <pb-document id="document1" path="A01775.xml"></pb-document>
+            <pb-blacklab-highlight view="view1"></pb-blacklab-highlight>
+<!--            <pb-progress subscribe="transcription"></pb-progress>-->
+<!--
+            <pb-view id="view1" src="document1" view="page" append-footnotes animation
+                     subscribe="transcription" emit="transcription"></pb-view>
+-->
+            <pb-view id="view1" src="document1" view="page" append-footnotes animation></pb-view>
+            <footer>
+                <!-- Navigate to next page -->
+                <pb-navigation direction="forward" keyboard="right" subscribe="transcription" emit="transcription">
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-right"></pb-icon>
+                        </span>
+                </pb-navigation>
+                <!-- Navigate to previous page -->
+                <pb-navigation direction="backward" keyboard="left" subscribe="transcription" emit="transcription">
+                        <span class="nav-button">
+                            <pb-icon icon="icons:chevron-left"></pb-icon>
+                        </span>
+                </pb-navigation>
+            </footer>
+        </pb-page>
+    </template>
+</pb-demo-snippet>
+
+</body>
+</html>
