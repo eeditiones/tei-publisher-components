@@ -1,3 +1,10 @@
+# [3.0.0-next-4.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.8...v3.0.0-next-4.9) (2026-01-19)
+
+
+### Features
+
+* **pb-page:** enhance language handling and readiness signaling ([610f327](https://github.com/eeditiones/tei-publisher-components/commit/610f327e72f2f0fb5cf7a0ff557e334092d7875d)), closes [#291](https://github.com/eeditiones/tei-publisher-components/issues/291)
+
 # [3.0.0-next-4.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.7...v3.0.0-next-4.8) (2026-01-19)
 
 
