@@ -13,12 +13,16 @@ describe('pb-clipboard', () => {
   })
 
   it('should copy slotted text to clipboard on click', () => {
+    // Stub clipboard API before clicking to prevent permission errors
+    // The component calls navigator.clipboard.writeText() without error handling,
+    // so we need to stub it to avoid unhandled promise rejections
     cy.window().then((win) => {
-      // Provide a clipboard API stub if missing and spy on writeText
+      // Ensure clipboard API exists
       if (!win.navigator.clipboard) {
-        win.navigator.clipboard = { writeText: () => Promise.resolve() }
+        win.navigator.clipboard = {}
       }
-      cy.spy(win.navigator.clipboard, 'writeText').as('writeText')
+      // Stub writeText to resolve successfully and spy on calls
+      cy.stub(win.navigator.clipboard, 'writeText').resolves().as('writeText')
     })
     cy.get('#clip')
       .find('button.pb-button--icon')

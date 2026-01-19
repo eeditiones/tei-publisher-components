@@ -55,7 +55,7 @@
     "i18next": "^25.7.4",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-chained-backend": "^5.0.1",
-    "i18next-xhr-backend": "^3.2.2",
+    "i18next-http-backend": "^3.0.2",
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "leaflet-control-geocoder": "^3.3.1",
