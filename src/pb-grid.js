@@ -381,16 +381,29 @@ export class PbGrid extends pbMixin(LitElement) {
   }
 
   _update() {
-    const widths = Array.from(this.children)
-      .filter(child => !(child instanceof HTMLTemplateElement))
-      .map(child => {
-        const styles = window.getComputedStyle(child);
-        const width = styles.getPropertyValue('max-width');
-        if (width && width !== 'none') {
-          return width;
+    // Get the actual rendered panel elements, not just direct children
+    // Panels are created by cloning from template and have class '_grid_panel'
+    const panels = this.querySelectorAll('._grid_panel');
+    const widths = Array.from(panels).map(panel => {
+      // First try to get max-width from inline style attribute (more reliable across browsers)
+      const inlineStyle = panel.getAttribute('style');
+      if (inlineStyle) {
+        const maxWidthMatch = inlineStyle.match(/max-width\s*:\s*([^;]+)/i);
+        if (maxWidthMatch && maxWidthMatch[1]) {
+          const width = maxWidthMatch[1].trim();
+          if (width && width !== 'none') {
+            return width;
+          }
         }
-        return '1fr';
-      });
+      }
+      // Fallback to computed style (may not be available immediately in some browsers)
+      const styles = window.getComputedStyle(panel);
+      const width = styles.getPropertyValue('max-width');
+      if (width && width !== 'none') {
+        return width;
+      }
+      return '1fr';
+    });
     this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
   }
 

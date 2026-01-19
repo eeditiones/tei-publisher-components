@@ -40,6 +40,7 @@ function listPbComponentsSync () {
 
 module.exports = defineConfig({
   includeShadowDom: true,
+  retries: 1,
   screenshotsFolder: 'test/cypress/screenshots',
   videosFolder: 'test/cypress/videos',
   fixturesFolder: 'test/cypress/fixtures',
@@ -71,6 +72,7 @@ module.exports = defineConfig({
       return config
     },
     baseUrl: process.env.CYPRESS_baseUrl || 'http://localhost:5173',
+    retries: 1,
     specPattern: 'test/cypress/e2e/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/e2e.js',
     env: {

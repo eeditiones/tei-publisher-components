@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import XHR from 'i18next-xhr-backend';
+import HttpBackend from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
@@ -362,7 +362,7 @@ export class PbPage extends pbMixin(LitElement) {
       this.locales,
       this._localeFallbacks,
     );
-    const backends = this.locales ? [XHR, XHR] : [XHR];
+    const backends = this.locales ? [HttpBackend, HttpBackend] : [HttpBackend];
     const backendOptions = [
       {
         loadPath: defaultLocales,
@@ -413,7 +413,7 @@ export class PbPage extends pbMixin(LitElement) {
       this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
       if (this.requireLanguage) {
         // When requireLanguage is true, fire pb-page-ready after init() resolves
-        // Note: init() with xhr-backend should wait for resources to load before resolving
+        // Note: init() with http-backend should wait for resources to load before resolving
         // If resources aren't loaded, it's likely due to a failed request (e.g., intercept not matching)
         // In that case, we still fire pb-page-ready to avoid blocking, and tests can use retry-ability
         this.signalReady('pb-page-ready', {

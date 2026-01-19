@@ -595,7 +595,14 @@ describe('Registry (urls.js)', () => {
         expect(value).to.equal('default')
       } catch (e) {
         // If it throws (which is a bug), we document it
-        expect(e.message).to.include('Cannot read properties of undefined')
+        // Error message format varies by Node.js version:
+        // - Node < 20: "Cannot read properties of undefined"
+        // - Node >= 20: "can't access property \"path\", state is undefined"
+        expect(e.message).to.satisfy((msg) => {
+          return msg.includes('Cannot read properties of undefined') ||
+                 msg.includes("can't access property") ||
+                 msg.includes('state is undefined')
+        })
         cy.log('Known bug: get() throws when intermediate path doesn\'t exist')
       }
     })
