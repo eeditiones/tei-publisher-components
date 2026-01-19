@@ -1,3 +1,10 @@
+# [3.0.0-next-4.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.7...v3.0.0-next-4.8) (2026-01-19)
+
+
+### Bug Fixes
+
+* **airtable:** wait for airtable to be initialized before we query ([#290](https://github.com/eeditiones/tei-publisher-components/issues/290)) ([f62c4cb](https://github.com/eeditiones/tei-publisher-components/commit/f62c4cb9a4427409dc2364eaa43c80a5283d1be1))
+
 # [3.0.0-next-4.7](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.6...v3.0.0-next-4.7) (2026-01-07)
 
 
