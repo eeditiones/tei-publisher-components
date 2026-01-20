@@ -398,12 +398,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     super.connectedCallback();
 
     if (this.loadCss) {
-      waitOnce('pb-page-ready', () => {
-        loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
-          if (theme) {
-            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
-          }
-        });
+      waitOnce('pb-page-ready', async () => {
+        const theme = await loadStylesheets([this.toAbsoluteURL(this.loadCss)]);
+        if (theme) {
+          this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+        }
       });
     }
 
@@ -962,7 +961,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._doLoad(params);
   }
 
-  _doLoad(params) {
+  async _doLoad(params) {
     // De-duplicate identical requests to avoid hammering the backend
     const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
     const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
@@ -991,12 +990,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const loadContent = this.shadowRoot.getElementById('loadContent');
 
     if (this.static !== null) {
-      this._staticUrl(params).then(url => {
+      try {
+        const url = await this._staticUrl(params);
         loadContent.url = url;
         loadContent.generateRequest().catch(() => {
           // Error handled by @error event listener
         });
-      });
+      } catch (error) {
+        logger.error('[pb-view] _doLoad: failed to get static URL', error);
+        // Error handled by @error event listener
+      }
       return;
     }
 
@@ -1047,7 +1050,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
     const baseUrl = new URL(`${baseDir}/`, window.location.href);
     const indexUrl = new URL('index.json', baseUrl).href;
-    const index = await fetch(indexUrl).then(response => response.json());
+    const response = await fetch(indexUrl);
+    const index = await response.json();
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),
@@ -1083,7 +1087,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._chunks = [];
   }
 
-  _handleError() {
+  async _handleError() {
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
@@ -1130,11 +1134,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       content = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
     }
 
-    this._replaceContent({ content });
+    await this._replaceContent({ content });
     this.emitTo('pb-end-update');
   }
 
-  _handleContent() {
+  async _handleContent() {
     const loader = this.shadowRoot.getElementById('loadContent');
     const resp = loader.lastResponse;
 
@@ -1154,24 +1158,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
 
-    this._replaceContent(resp, loader.params._dir);
+    await this._replaceContent(resp, loader.params._dir);
 
     this.animate();
 
     if (this._scrollTarget) {
-      this.updateComplete.then(() => {
-        const target =
-          this.shadowRoot.getElementById(this._scrollTarget) ||
-          this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
-        if (target) {
-          window.requestAnimationFrame(() =>
-            setTimeout(() => {
-              target.scrollIntoView({ block: 'nearest' });
-            }, 400),
-          );
-        }
-        this._scrollTarget = null;
-      });
+      await this.updateComplete;
+      const target =
+        this.shadowRoot.getElementById(this._scrollTarget) ||
+        this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
+      if (target) {
+        window.requestAnimationFrame(() =>
+          setTimeout(() => {
+            target.scrollIntoView({ block: 'nearest' });
+          }, 400),
+        );
+      }
+      this._scrollTarget = null;
     }
 
     this.next = resp.next;
@@ -1181,22 +1184,21 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.nodeId = resp.root;
     this.switchView = resp.switchView;
 
-    this.updateComplete.then(() => {
-      const view = this.shadowRoot.getElementById('view');
-      this._applyToggles(view);
-      this._fixLinks(view);
-      typesetMath(view);
+    await this.updateComplete;
+    const view = this.shadowRoot.getElementById('view');
+    this._applyToggles(view);
+    this._fixLinks(view);
+    typesetMath(view);
 
-      const eventOptions = {
-        data: resp,
-        root: view,
-        params: loader.params,
-        id: this.xmlId,
-        position: this.nodeId,
-      };
-      this.emitTo('pb-update', eventOptions);
-      this._scroll();
-    });
+    const eventOptions = {
+      data: resp,
+      root: view,
+      params: loader.params,
+      id: this.xmlId,
+      position: this.nodeId,
+    };
+    this.emitTo('pb-update', eventOptions);
+    this._scroll();
 
     this.emitTo('pb-end-update', null);
     // allow subsequent loads with new params
@@ -1211,7 +1213,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
-  _replaceContent(resp, direction) {
+  async _replaceContent(resp, direction) {
     const fragment = document.createDocumentFragment();
     const elem = document.createElement('div');
     // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
@@ -1225,16 +1227,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this.emitTo(this.beforeUpdate, {
         data: resp,
         root: elem,
-        render: content => {
-          this._doReplaceContent(content, resp, direction);
+        render: async content => {
+          await this._doReplaceContent(content, resp, direction);
         },
       });
     } else {
-      this._doReplaceContent(elem, resp, direction);
+      await this._doReplaceContent(elem, resp, direction);
     }
   }
 
-  _doReplaceContent(elem, resp, direction) {
+  async _doReplaceContent(elem, resp, direction) {
     
     if (this.columnSeparator) {
       this._replaceColumns(elem);
@@ -1253,24 +1255,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         case 'backward':
           refNode = this._content.firstElementChild;
           this._chunks.unshift(elem);
-          this.updateComplete.then(() => {
-            refNode.scrollIntoView(true);
-            this._loading = false;
-            this._checkVisibility();
-            this._scrollObserver.observe(this._bottomObserver);
-            this._scrollObserver.observe(this._topObserver);
-          });
           this._content.insertBefore(elem, refNode);
+          await this.updateComplete;
+          refNode.scrollIntoView(true);
+          this._loading = false;
+          this._checkVisibility();
+          this._scrollObserver.observe(this._bottomObserver);
+          this._scrollObserver.observe(this._topObserver);
           break;
         default:
-          this.updateComplete.then(() => {
-            this._loading = false;
-            this._checkVisibility();
-            this._scrollObserver.observe(this._bottomObserver);
-            this._scrollObserver.observe(this._topObserver);
-          });
           this._chunks.push(elem);
           this._content.appendChild(elem);
+          await this.updateComplete;
+          this._loading = false;
+          this._checkVisibility();
+          this._scrollObserver.observe(this._bottomObserver);
+          this._scrollObserver.observe(this._topObserver);
           break;
       }
     } else {

@@ -452,15 +452,14 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
-  setData(dataObj) {
+  async setData(dataObj) {
     this.dataObj = dataObj;
     this.maxValue = Math.max(...this.dataObj.data.map(binObj => binObj.value));
     this.requestUpdate();
-    this.updateComplete.then(() => {
-      this.bins = this.shadowRoot.querySelectorAll('.bin-container');
-      this.resetSelection();
-      this._resetTooltip();
-    });
+    await this.updateComplete;
+    this.bins = this.shadowRoot.querySelectorAll('.bin-container');
+    this.resetSelection();
+    this._resetTooltip();
   }
 
   get label() {

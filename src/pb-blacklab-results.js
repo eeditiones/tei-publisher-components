@@ -228,29 +228,28 @@ export class PbBlacklabResults extends pbMixin(LitElement) {
     if (this.sort) {
       url += `&sort=${this.sort}`;
     }
-    await fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.data = data;
-        localStorage.setItem('pb-kwic-results', JSON.stringify(this.data));
-        this.emitTo(
-          'pb-results-received',
-          {
-            count: data.docs ? parseInt(data.docs, 10) : 0,
-            start: data.start,
-            params: data.params,
-            data,
-          },
-          [],
-        );
-      })
-      .catch(error => {
-        alert(`Error retrieving remote content: ${error}`);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'same-origin',
       });
+      const data = await response.json();
+      this.data = data;
+      localStorage.setItem('pb-kwic-results', JSON.stringify(this.data));
+      this.emitTo(
+        'pb-results-received',
+        {
+          count: data.docs ? parseInt(data.docs, 10) : 0,
+          start: data.start,
+          params: data.params,
+          data,
+        },
+        [],
+      );
+    } catch (error) {
+      alert(`Error retrieving remote content: ${error}`);
+    }
   }
 
   _animate() {

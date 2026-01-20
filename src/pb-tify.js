@@ -300,36 +300,41 @@ export class PbTify extends pbMixin(LitElement) {
         if (!root) {
           this._pendingNavigation = direction;
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              // Wait a bit more for root to be available
-              const waitForRoot = () => {
-                const root = this._getRootFromApp();
-                if (root) {
-                  if (this._pendingNavigation) {
-                    const queuedDirection = this._pendingNavigation;
-                    this._pendingNavigation = null;
-                    this._handleNavigate(queuedDirection);
-                  }
-                } else {
-                  // Retry after a short delay (max 10 seconds)
-                  if (!this._navWaitStart) {
-                    this._navWaitStart = Date.now();
-                  }
-                  const elapsed = Date.now() - this._navWaitStart;
-                  if (elapsed < 10000) {
-                    setTimeout(waitForRoot, 50);
-                  } else {
-                    // Try to proceed anyway
+            (async () => {
+              try {
+                await this._tify.ready;
+                // Wait a bit more for root to be available
+                const waitForRoot = () => {
+                  const root = this._getRootFromApp();
+                  if (root) {
                     if (this._pendingNavigation) {
                       const queuedDirection = this._pendingNavigation;
                       this._pendingNavigation = null;
                       this._handleNavigate(queuedDirection);
                     }
+                  } else {
+                    // Retry after a short delay (max 10 seconds)
+                    if (!this._navWaitStart) {
+                      this._navWaitStart = Date.now();
+                    }
+                    const elapsed = Date.now() - this._navWaitStart;
+                    if (elapsed < 10000) {
+                      setTimeout(waitForRoot, 50);
+                    } else {
+                      // Try to proceed anyway
+                      if (this._pendingNavigation) {
+                        const queuedDirection = this._pendingNavigation;
+                        this._pendingNavigation = null;
+                        this._handleNavigate(queuedDirection);
+                      }
+                    }
                   }
-                }
-              };
-              waitForRoot();
-            });
+                };
+                waitForRoot();
+              } catch (error) {
+                logger.error('<pb-tify> Error waiting for Tify ready in navigation:', error);
+              }
+            })();
           }
           return;
         }
@@ -452,43 +457,47 @@ export class PbTify extends pbMixin(LitElement) {
       // Wait for ready, then try to get root, but proceed either way
       // The viewer should display even without root - we only need root for navigation
       if (this._tify && this._tify.ready) {
-        this._tify.ready.then(() => {
-          // Try to get root, but don't wait too long
-          const waitForRoot = () => {
-            if (this._tify && this._tify.app) {
-              // Try different ways to access the manifest/root data
-              const root = this._tify.app.$root || this._tify.app.root || this._tify.app.manifest || (this._tify.app.$data && this._tify.app.$data.root);
-              if (root) {
-                this._onTifyFullyReady();
-                return;
+        (async () => {
+          try {
+            await this._tify.ready;
+            // Try to get root, but don't wait too long
+            const waitForRoot = async () => {
+              if (this._tify && this._tify.app) {
+                // Try different ways to access the manifest/root data
+                const root = this._tify.app.$root || this._tify.app.root || this._tify.app.manifest || (this._tify.app.$data && this._tify.app.$data.root);
+                if (root) {
+                  this._onTifyFullyReady();
+                  return;
+                }
               }
-            }
-            
-            // Retry after a short delay (max 2 seconds - don't wait too long)
-            if (!this._rootWaitStart) {
-              this._rootWaitStart = Date.now();
-            }
-            const elapsed = Date.now() - this._rootWaitStart;
-            if (elapsed < 2000) {
-              setTimeout(waitForRoot, 50);
-            } else {
-              // Try to fetch manifest directly as fallback
-              this._fetchAndCacheManifest().then(() => {
-                // Proceed anyway - Tify should still work, we'll handle navigation differently
-                this._onTifyFullyReady();
-              }).catch(() => {
-                // Proceed even if fetch fails
-                this._onTifyFullyReady();
-              });
-            }
-          };
-          waitForRoot();
-        }).catch(error => {
-          // Tify's ready promise rejects when manifest loading fails
-          // This is the proper way to detect manifest errors
-          logger.error('<pb-tify> Tify ready promise rejected:', error);
-          this._handleManifestError(error);
-        });
+              
+              // Retry after a short delay (max 2 seconds - don't wait too long)
+              if (!this._rootWaitStart) {
+                this._rootWaitStart = Date.now();
+              }
+              const elapsed = Date.now() - this._rootWaitStart;
+              if (elapsed < 2000) {
+                setTimeout(waitForRoot, 50);
+              } else {
+                // Try to fetch manifest directly as fallback
+                try {
+                  await this._fetchAndCacheManifest();
+                  // Proceed anyway - Tify should still work, we'll handle navigation differently
+                  this._onTifyFullyReady();
+                } catch {
+                  // Proceed even if fetch fails
+                  this._onTifyFullyReady();
+                }
+              }
+            };
+            waitForRoot();
+          } catch (error) {
+            // Tify's ready promise rejects when manifest loading fails
+            // This is the proper way to detect manifest errors
+            logger.error('<pb-tify> Tify ready promise rejected:', error);
+            this._handleManifestError(error);
+          }
+        })();
       } else {
         // If ready promise not available, proceed anyway after a short delay
         setTimeout(() => {
@@ -1136,11 +1145,14 @@ export class PbTify extends pbMixin(LitElement) {
         } catch (error) {
           // If Tify isn't ready yet, wait for it
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              this._tify.setPage(pages);
-            }).catch(() => {
-              // Ignore errors
-            });
+            (async () => {
+              try {
+                await this._tify.ready;
+                this._tify.setPage(pages);
+              } catch {
+                // Ignore errors
+              }
+            })();
           }
         }
       };
@@ -1156,14 +1168,17 @@ export class PbTify extends pbMixin(LitElement) {
         // Call setPage directly - if Tify isn't ready, it will handle the error
         try {
           app.setPage(pages);
-              } catch (error) {
+        } catch (error) {
           // If Tify isn't ready yet, wait for it
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              app.setPage(pages);
-            }).catch(() => {
-              // Ignore errors
-            });
+            (async () => {
+              try {
+                await this._tify.ready;
+                app.setPage(pages);
+              } catch {
+                // Ignore errors
+              }
+            })();
           }
         }
       };

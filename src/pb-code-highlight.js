@@ -19,7 +19,7 @@ function loadTheme(theme) {
     return PRISM_THEMES.get(themeName);
   }
 
-  const promise = new Promise(resolve => {
+  const promise = (async () => {
     // Try to determine the correct base URL for CSS themes
     let resource;
     try {
@@ -47,17 +47,16 @@ function loadTheme(theme) {
     }
     
     logger.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
-    fetch(resource)
-      .then(response => response.text())
-      .catch(() => resolve(''))
-      .then(text => {
-        resolve(
-          html`<style>
-            ${text}
-          </style>`,
-        );
-      });
-  });
+    try {
+      const response = await fetch(resource);
+      const text = await response.text();
+      return html`<style>
+        ${text}
+      </style>`;
+    } catch {
+      return html`<style></style>`;
+    }
+  })();
   PRISM_THEMES.set(themeName, promise);
   return promise;
 }
@@ -140,9 +139,10 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
     super.attributeChangedCallback(name, oldValue, newValue);
     switch (name) {
       case 'theme':
-        loadTheme(newValue).then(loadedStyles => {
+        (async () => {
+          const loadedStyles = await loadTheme(newValue);
           this._themeStyles = loadedStyles;
-        });
+        })();
         break;
       default:
         break;

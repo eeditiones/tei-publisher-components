@@ -327,10 +327,14 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       },
     };
     if (connector) {
-      connector
-        .select(item)
-        .then(() => this.emitTo('pb-authority-select', options))
-        .catch(e => this.emitTo('pb-authority-error', { status: e.message }));
+      (async () => {
+        try {
+          await connector.select(item);
+          this.emitTo('pb-authority-select', options);
+        } catch (e) {
+          this.emitTo('pb-authority-error', { status: e.message });
+        }
+      })();
     } else {
       this.emitTo('pb-authority-select', options);
     }
@@ -339,9 +343,14 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
   _editEntity(item) {
     const connector = this._authorities[item.register];
     if (connector) {
-      connector
-        .select(item)
-        .then(() => this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register }));
+      (async () => {
+        try {
+          await connector.select(item);
+          this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
+        } catch (e) {
+          logger.error('<pb-authority-lookup> Failed to select item for edit:', e);
+        }
+      })();
     } else {
       this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
     }
@@ -357,15 +366,18 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this._query();
   }
 
-  _query() {
+  async _query() {
     this.emitTo('pb-start-update');
-    this._authorities[this.type].query(this.query).then(results => {
-      this._occurrences(results.items).then(merged => {
-        this._results = merged;
-      });
+    try {
+      const results = await this._authorities[this.type].query(this.query);
+      const merged = await this._occurrences(results.items);
+      this._results = merged;
       this.emitTo('pb-end-update');
       // this.shadowRoot.getElementById('query').focus();
-    });
+    } catch (error) {
+      logger.error('<pb-authority-lookup> Query failed:', error);
+      this.emitTo('pb-end-update');
+    }
   }
 
   _addEntity() {
@@ -381,40 +393,40 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     items.forEach(item => {
       params.append('id', item.id);
     });
-    return new Promise(resolve => {
-      fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
+    try {
+      const response = await fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
         method: 'POST',
         body: params,
-      })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
+      });
+      if (!response.ok) {
+        return items; // Return items without occurrences if request fails
+      }
+      const json = await response.json();
+      items.forEach(item => {
+        if (json[item.id]) {
+          item.occurrences = json[item.id];
+        } else {
+          item.occurrences = 0;
+        }
+      });
+      items.sort((i1, i2) => {
+        const d = i2.occurrences - i1.occurrences;
+        if (d === 0) {
+          if (i1.provider === 'local' && i2.provider !== 'local') {
+            return -1;
           }
-        })
-        .then(json => {
-          items.forEach(item => {
-            if (json[item.id]) {
-              item.occurrences = json[item.id];
-            } else {
-              item.occurrences = 0;
-            }
-          });
-          items.sort((i1, i2) => {
-            const d = i2.occurrences - i1.occurrences;
-            if (d === 0) {
-              if (i1.provider === 'local' && i2.provider !== 'local') {
-                return -1;
-              }
-              if (i2.provider === 'local' && i1.provider !== 'local') {
-                return 1;
-              }
-              return this.sortByLabel ? i1.label.localeCompare(i2.label) : 0;
-            }
-            return d;
-          });
-          resolve(items);
-        });
-    });
+          if (i2.provider === 'local' && i1.provider !== 'local') {
+            return 1;
+          }
+          return this.sortByLabel ? i1.label.localeCompare(i2.label) : 0;
+        }
+        return d;
+      });
+      return items;
+    } catch (error) {
+      logger.error('<pb-authority-lookup> Failed to fetch occurrences:', error);
+      return items; // Return items without occurrences if request fails
+    }
   }
 }
 customElements.define('pb-authority-lookup', PbAuthorityLookup);
