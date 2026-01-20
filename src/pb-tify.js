@@ -4,6 +4,7 @@ import { pbMixin, waitOnce, defaultChannel, getEmittedChannels } from './pb-mixi
 import { resolveURL } from './utils.js';
 import { registry } from './urls.js';
 import { logger } from './utils/logger.js';
+import { createErrorElement, clearErrorElement, formatErrorMessage } from './utils/error-handling.js';
 
 function _injectStylesheet(path) {
   const style = document.querySelector(`link#pb-tify`);
@@ -1962,55 +1963,44 @@ export class PbTify extends pbMixin(LitElement) {
     // Clear any existing error message
     this._clearError();
 
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'pb-tify-error';
-    errorDiv.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      width: 100%;
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 4px;
-      color: #6c757d;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      text-align: center;
-      padding: 20px;
-    `;
+    // Format error message based on error type
+    // Note: statusMessages keys must match what formatErrorMessage expects
+    const statusMessages = {
+      404: 'IIIF manifest not found',
+      403: 'Access denied to IIIF manifest',
+      network: 'Network error loading IIIF manifest',
+      parse: 'Invalid IIIF manifest format'
+    };
+    
+    // Use formatErrorMessage with status messages and patterns
+    // The function checks status codes first, then patterns, then common patterns
+    const messagePatterns = [
+      { pattern: /Invalid JSON|SyntaxError|Unexpected token|JSON|\$meta/i, message: 'Invalid IIIF manifest format' }
+    ];
+    
+    const errorMessage = formatErrorMessage(
+      error,
+      'Failed to load IIIF manifest',
+      statusMessages,
+      messagePatterns
+    );
 
-    // Determine error message based on error type
-    let errorMessage = 'Failed to load IIIF manifest';
-
-    // Check error message, status, and other properties
-    const errorText = error.message || error.toString() || '';
-    const status = error.status || error.statusCode;
-
-    if (status === 404 || errorText.includes('404') || errorText.includes('Not Found')) {
-      errorMessage = 'IIIF manifest not found';
-    } else if (status === 403 || errorText.includes('403') || errorText.includes('Forbidden')) {
-      errorMessage = 'Access denied to IIIF manifest';
-    } else if (
-      errorText.includes('NetworkError') ||
-      errorText.includes('Failed to fetch') ||
-      errorText.includes('network')
-    ) {
-      errorMessage = 'Network error loading IIIF manifest';
-    } else if (
-      errorText.includes('Invalid JSON') ||
-      errorText.includes('SyntaxError') ||
-      errorText.includes('parse') ||
-      errorText.includes('Unexpected token') ||
-      errorText.includes('JSON') ||
-      errorText.includes('$meta') ||
-      errorText.includes('manifest')
-    ) {
-      errorMessage = 'Invalid IIIF manifest format';
-    }
-
-    errorDiv.textContent = errorMessage;
+    // Create error message element with custom styling for Tify
+    const customStyles = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      width: '100%',
+      backgroundColor: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      color: '#6c757d',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      textAlign: 'center',
+      padding: '20px'
+    };
+    
+    const errorDiv = createErrorElement(errorMessage, 'pb-tify-error', customStyles);
 
     // Add error element to container
     if (this._container) {
@@ -2026,10 +2016,7 @@ export class PbTify extends pbMixin(LitElement) {
 
   _clearError() {
     if (this._container) {
-      const existingError = this._container.querySelector('.pb-tify-error');
-      if (existingError) {
-        existingError.remove();
-      }
+      clearErrorElement(this._container, 'pb-tify-error');
     }
   }
 
