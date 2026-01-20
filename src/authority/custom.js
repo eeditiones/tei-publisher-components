@@ -72,6 +72,9 @@ export class Custom extends Registry {
       const response = await fetch(
         `${this._endpoint}/api/register/search/${this._register}?query=${encodeURIComponent(key)}`,
       );
+      if (!response.ok) {
+        throw new Error(`Custom query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       let results = [];
       const localResults = new Set();

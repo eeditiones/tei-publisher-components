@@ -1,4 +1,5 @@
 import { Registry } from './registry.js';
+import { logger } from '../utils/logger.js';
 
 export class KBGA extends Registry {
   constructor(configElem) {
@@ -18,6 +19,9 @@ export class KBGA extends Registry {
     const label = this.getLabelField();
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`KBGA query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       json.data.forEach(item => {
         if (
@@ -85,6 +89,9 @@ export class KBGA extends Registry {
     const id = key.replace(/^.*-([^-]+)$/, '$1');
     try {
       const response = await fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`);
+      if (!response.ok) {
+        throw new Error(`KBGA getRecord failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       const output = { ...json };
       output.name = json.data[this.getLabelField()];

@@ -773,4 +773,84 @@ describe('pb-view', () => {
       })
     })
   })
+
+  describe('static URL loading error handling', () => {
+    it('should handle index.json fetch failure gracefully', () => {
+      // Intercept index.json to return 404
+      cy.intercept('GET', '**/index.json', { statusCode: 404, body: 'Not found' }).as('index404')
+      
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" static="."></pb-view>
+        </pb-page>
+      `)
+      
+      // Wait for the error to be handled
+      cy.wait('@index404')
+      
+      // Verify error was logged and component handled it gracefully
+      // The component should not crash and should show an error message
+      cy.get('pb-view').should('exist')
+      
+      // Verify that pb-end-update was emitted (error handling completed)
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        // Component should be in a valid state even after error
+        expect(element._loading).to.be.false
+      })
+    })
+
+    it('should handle index.json network error gracefully', () => {
+      // Intercept index.json to simulate network error
+      cy.intercept('GET', '**/index.json', { forceNetworkError: true }).as('indexError')
+      
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" static="."></pb-view>
+        </pb-page>
+      `)
+      
+      // Wait for the error to be handled
+      cy.wait('@indexError')
+      
+      // Verify error was handled gracefully
+      cy.get('pb-view').should('exist')
+      
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        // Component should be in a valid state even after error
+        expect(element._loading).to.be.false
+      })
+    })
+
+    it('should handle invalid JSON in index.json gracefully', () => {
+      // Intercept index.json to return invalid JSON
+      cy.intercept('GET', '**/index.json', { 
+        statusCode: 200, 
+        body: 'invalid json {',
+        headers: { 'Content-Type': 'application/json' }
+      }).as('indexInvalid')
+      
+      cy.mount(`
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+          <pb-view src="document1" static="."></pb-view>
+        </pb-page>
+      `)
+      
+      // Wait for the error to be handled
+      cy.wait('@indexInvalid')
+      
+      // Verify error was handled gracefully
+      cy.get('pb-view').should('exist')
+      
+      cy.get('pb-view').then($el => {
+        const element = $el[0]
+        // Component should be in a valid state even after error
+        expect(element._loading).to.be.false
+      })
+    })
+  })
 })

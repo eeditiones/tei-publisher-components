@@ -1,4 +1,5 @@
 import { Registry } from './registry.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Connector for the corporate archive of Georgfischer AG.
@@ -20,6 +21,9 @@ export class Anton extends Registry {
     const label = this.getLabelField();
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Anton query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       if (!json.data) {
         return {
@@ -93,6 +97,9 @@ export class Anton extends Registry {
     const url = `${this._url}/${this.getRegister()}/${id}`;
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Anton getRecord failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       const output = { ...json };
       output.name = json.data[this.getLabelField()];

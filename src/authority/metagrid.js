@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Registry } from './registry.js';
+import { logger } from '../utils/logger.js';
 
 export class Metagrid extends Registry {
   async query(key) {
@@ -9,6 +10,9 @@ export class Metagrid extends Registry {
 
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Metagrid query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       json.resources.forEach(item => {
         const name = `${item.metadata.last_name}, ${item.metadata.first_name} `;
@@ -68,6 +72,9 @@ export class Metagrid extends Registry {
     const id = key.substring(p + 1);
     try {
       const response = await fetch(`https://api.metagrid.ch/search?slug=${slug}&query=${id}`);
+      if (!response.ok) {
+        throw new Error(`Metagrid getRecord failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       const item = json.resources[0];
       const output = { ...item };
