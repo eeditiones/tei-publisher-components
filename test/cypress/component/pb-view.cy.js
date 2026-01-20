@@ -812,8 +812,9 @@ describe('pb-view', () => {
         </pb-page>
       `)
       
-      // Wait for the error to be handled
+      // Wait for the intercept and then for error handling to complete
       cy.wait('@indexError')
+      cy.waitForEvent('pb-end-update')
       
       // Verify error was handled gracefully
       cy.get('pb-view').should('exist')
