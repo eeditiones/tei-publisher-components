@@ -42,7 +42,7 @@ export class GeoNames extends Registry {
     }
   }
 
-  info(key, container) {
+  async info(key, container) {
     if (!key) {
       return Promise.resolve({});
     }

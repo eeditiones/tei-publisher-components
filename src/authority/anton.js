@@ -59,7 +59,7 @@ export class Anton extends Registry {
     }
   }
 
-  info(key, container) {
+  async info(key, container) {
     if (!key) {
       return Promise.resolve({});
     }
