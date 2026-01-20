@@ -110,7 +110,7 @@ export class ReconciliationService extends Registry {
    * @param {HTMLElement} container reference to an element which should be used as container for displaying the information
    * @returns {Promise} a promise
    */
-  info(id, container) {
+  async info(id, container) {
     if (!id) {
       return Promise.resolve({});
     }

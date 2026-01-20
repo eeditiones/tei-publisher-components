@@ -59,7 +59,8 @@ export function sanitizeHTML(html, options = {}) {
       'class', 'id', 'role', 'aria-label', 'aria-labelledby',
       'viewBox', 'cx', 'cy', 'r', 'x', 'y', 'd', 'fill', 'stroke',
       'style', // Style is sanitized by DOMPurify to remove dangerous content
-      'key', 'loaded', 'display' // Common custom element attributes
+      'key', 'loaded', 'display', // Common custom element attributes
+      'language', 'line-numbers' // Attributes for pb-code-highlight and similar components
     ],
     // Allow data attributes for component integration
     ALLOW_DATA_ATTR: true,

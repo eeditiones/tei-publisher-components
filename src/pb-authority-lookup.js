@@ -472,7 +472,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
    * @returns {Promise<Array<Object>>} Items with occurrence counts added and sorted
    * @private
    */
-  _occurrences(items) {
+  async _occurrences(items) {
     if (this.noOccurrences) {
       return Promise.resolve(items);
     }

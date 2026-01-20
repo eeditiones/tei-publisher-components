@@ -36,7 +36,7 @@ export class Metagrid extends Registry {
     }
   }
 
-  info(key, container) {
+  async info(key, container) {
     const p = key.indexOf('-');
     const slug = key.substring(0, p);
     try {
