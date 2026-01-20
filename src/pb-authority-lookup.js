@@ -91,6 +91,10 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this.group = 'tei';
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes stopwords, sets up event listeners, and loads authority connectors.
+   */
   connectedCallback() {
     super.connectedCallback();
 
@@ -317,6 +321,16 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     `;
   }
 
+  /**
+   * Handles selection of an authority item.
+   * Calls the connector's select method and emits pb-authority-select event.
+   *
+   * @param {Object} item - The authority item that was selected
+   * @param {string} item.register - The authority register name
+   * @param {string} item.id - The item ID
+   * @param {string[]} item.strings - The item strings
+   * @private
+   */
   _select(item) {
     const connector = this._authorities[item.register];
     const options = {
@@ -340,6 +354,15 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Handles editing an authority entity.
+   * Calls the connector's select method and emits pb-authority-edit-entity event.
+   *
+   * @param {Object} item - The authority item to edit
+   * @param {string} item.id - The item ID
+   * @param {string} item.register - The authority register name
+   * @private
+   */
   _editEntity(item) {
     const connector = this._authorities[item.register];
     if (connector) {
@@ -356,6 +379,13 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Handles query input changes.
+   * Updates the query property and triggers a new search.
+   *
+   * @param {Event} e - The input event
+   * @private
+   */
   _queryChanged(e) {
     if (this.query === e.target.value) {
       // Bogus onchange. No need to requery. A requery would only cause a flash of an empty result set
@@ -366,6 +396,12 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this._query();
   }
 
+  /**
+   * Performs an authority lookup query.
+   * Fetches results from the authority connector and merges occurrence counts.
+   *
+   * @private
+   */
   async _query() {
     this.emitTo('pb-start-update');
     try {
@@ -380,10 +416,23 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Emits pb-authority-new-entity event to create a new entity.
+   *
+   * @private
+   */
   _addEntity() {
     this.emitTo('pb-authority-new-entity', { query: this.query, type: this.type });
   }
 
+  /**
+   * Fetches occurrence counts for authority items from the server.
+   * Sorts results by occurrence count, with local items prioritized.
+   *
+   * @param {Array<Object>} items - Array of authority items
+   * @returns {Promise<Array<Object>>} Items with occurrence counts added and sorted
+   * @private
+   */
   _occurrences(items) {
     if (this.noOccurrences) {
       return Promise.resolve(items);

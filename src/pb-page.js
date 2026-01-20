@@ -229,6 +229,11 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  /**
+   * Gets the space-separated list of locale fallback namespaces.
+   *
+   * @returns {string} Space-separated namespace names
+   */
   get localeFallbackNs() {
     // Expose a space-separated view of the current fallback namespaces
     return this._localeFallbacks && this._localeFallbacks.length
@@ -236,6 +241,12 @@ export class PbPage extends pbMixin(LitElement) {
       : '';
   }
 
+  /**
+   * Sets the locale fallback namespaces from a space-separated string.
+   * Deduplicates namespaces while preserving order.
+   *
+   * @param {string} value - Space-separated namespace names
+   */
   set localeFallbackNs(value) {
     // Replace (not append) to avoid uncontrolled growth when attribute re-applies
     const next = (value || '')
@@ -247,6 +258,10 @@ export class PbPage extends pbMixin(LitElement) {
     this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
   }
 
+  /**
+   * Called when the element is removed from the DOM.
+   * Cleans up the i18n instance and clears the global instance reference.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
     this._i18nInstance = null;
@@ -256,6 +271,11 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes the endpoint, configures the registry, loads theme stylesheets,
+   * and detects the API version. Signals 'pb-page-ready' if requireLanguage is false.
+   */
   async connectedCallback() {
     super.connectedCallback();
 
@@ -342,6 +362,11 @@ export class PbPage extends pbMixin(LitElement) {
     // Note: If requireLanguage is true, pb-page-ready will be signaled after i18n initialization in firstUpdated()
   }
 
+  /**
+   * Called after the first update/render cycle.
+   * Initializes i18next, sets up language change listeners, handles feature toggles,
+   * and triggers MathJax typesetting.
+   */
   firstUpdated() {
     super.firstUpdated();
 
@@ -481,6 +506,13 @@ export class PbPage extends pbMixin(LitElement) {
     typesetMath(this);
   }
 
+  /**
+   * Updates all elements with data-i18n attributes with translated content.
+   * Supports both attribute and innerHTML translation targets.
+   *
+   * @param {Function} t - The i18next translation function
+   * @private
+   */
   _updateI18n(t) {
     this.querySelectorAll('[data-i18n]').forEach(elem => {
       const targets = elem.getAttribute('data-i18n');
@@ -500,13 +532,21 @@ export class PbPage extends pbMixin(LitElement) {
     });
   }
 
+  /**
+   * Gets the loaded theme stylesheet.
+   *
+   * @returns {CSSStyleSheet|null} The theme stylesheet or null if not loaded
+   */
   get stylesheet() {
     return this._themeSheet;
   }
 
   /**
-   * Handle the `pb-toggle` event sent by `pb-select-feature` or `pb-toggle-feature`
-   * and dispatch actions to the elements on the page.
+   * Handles the `pb-toggle` event sent by `pb-select-feature` or `pb-toggle-feature`
+   * and dispatches actions to matching elements on the page.
+   *
+   * @param {CustomEvent} ev - The pb-toggle event with detail containing selector, command, and state
+   * @private
    */
   _toggleFeatures(ev) {
     const sc = ev.detail;

@@ -287,6 +287,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Constructs the URL for the load request.
+   * If `expand` is true, replaces placeholders in the URL template (e.g., {doc}) with parameter values.
+   *
+   * @param {Object} params - Parameters object (placeholders will be removed from this object)
+   * @returns {string} The absolute URL to load
+   */
   getURL(params) {
     let { url } = this;
     if (this.expand) {
@@ -302,6 +309,12 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     return this.toAbsoluteURL(url);
   }
 
+  /**
+   * Loads content from the configured URL.
+   * Handles document resolution, parameter preparation, and retry logic.
+   *
+   * @param {Event|Object} [ev] - Optional event or parameter object
+   */
   load(ev) {
     if (!this.url) {
       return;
@@ -401,10 +414,11 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   }
 
   /**
-   * Allow subclasses to set parameters before the request is being sent.
+   * Allows subclasses to modify parameters before the request is sent.
+   * Merges user parameters from registry state if available.
    *
-   * @param params Map of parameters
-   * @return new or modified parameters map
+   * @param {Object} params - Map of parameters to prepare
+   * @returns {Object} New or modified parameters map
    */
   prepareParameters(params) {
     if (this.userParams) {
@@ -413,6 +427,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     return params;
   }
 
+  /**
+   * Handles successful content response from the server.
+   * Sanitizes content, parses headers, fixes links, and triggers load callbacks.
+   *
+   * @param {Event} ev - The response event from pb-fetch
+   * @private
+   */
   _handleContent(ev) {
     const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
     // Sanitize server response to prevent XSS attacks
@@ -503,6 +524,14 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     dialog.openDialog();
   }
 
+  /**
+   * Parses pagination headers from the XHR response or data attributes.
+   * Emits `pb-results-received` event with pagination information.
+   *
+   * @param {XMLHttpRequest} xhr - The XHR object from the request
+   * @param {HTMLElement} content - The content element to search for data attributes
+   * @private
+   */
   _parseHeaders(xhr, content) {
     // Try to determine number of pages and current position
     // Search for data-pagination-* attributes first and if they
@@ -531,6 +560,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     });
   }
 
+  /**
+   * Fixes relative URLs in images and links within the loaded content.
+   * Also triggers MathJax typesetting for formulas.
+   *
+   * @param {HTMLElement} content - The content element containing images and links
+   * @private
+   */
   _fixLinks(content) {
     typesetMath(content);
     if (this.fixLinks) {
@@ -559,6 +595,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Hook method called after content is loaded and processed.
+   * Override in subclasses to perform additional processing.
+   *
+   * @param {HTMLElement} content - The loaded content element
+   * @protected
+   */
   _onLoad(content) {}
 
   /**

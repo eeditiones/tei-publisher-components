@@ -32,6 +32,13 @@ export async function loadStylesheets(urls) {
   return null;
 }
 
+/**
+ * Loads a CSS resource from a URL and returns its text content.
+ *
+ * @param {string} url - The absolute URL of the CSS resource
+ * @returns {Promise<string|null>} The CSS text content, or null if the resource couldn't be loaded
+ * @private
+ */
 async function loadResource(url) {
   try {
     const response = await fetch(url, { headers: { accept: 'text/css' } });
