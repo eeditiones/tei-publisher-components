@@ -8,9 +8,17 @@ import { logger } from '../utils/logger.js';
 // - documentation
 
 async function getServiceManifest(endpoint) {
-  const response = await fetch(endpoint);
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch service manifest: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    logger.error('<authority-reconciliation> Failed to get service manifest:', error);
+    throw error;
+  }
 }
 
 export class ReconciliationService extends Registry {
@@ -54,6 +62,9 @@ export class ReconciliationService extends Registry {
         },
         body: 'queries='.concat(JSON.stringify(paramsObj)),
       });
+      if (!response.ok) {
+        throw new Error(`Query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       json.q1.result.forEach(item => {
         if (this.ORConfig.view) {
@@ -112,6 +123,9 @@ export class ReconciliationService extends Registry {
       const rawid = this._prefix ? id.substring(this._prefix.length + 1) : id;
       const url = this.ORConfig.preview.url.replace('{{id}}', encodeURIComponent(rawid));
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch preview: ${response.status} ${response.statusText}`);
+      }
       const output = await response.text();
       container.innerHTML = output;
       return {

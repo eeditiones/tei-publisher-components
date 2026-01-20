@@ -1054,6 +1054,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    *
    * @param {Object} params - The request parameters
    * @returns {Promise<string>} The static URL to load
+   * @throws {Error} If index.json cannot be fetched or parsed
    * @private
    */
   async _staticUrl(params) {
@@ -1070,8 +1071,29 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
     const baseUrl = new URL(`${baseDir}/`, window.location.href);
     const indexUrl = new URL('index.json', baseUrl).href;
-    const response = await fetch(indexUrl);
-    const index = await response.json();
+    
+    let response;
+    try {
+      response = await fetch(indexUrl);
+    } catch (error) {
+      logger.error('<pb-view> Failed to fetch index.json:', error);
+      throw new Error(`Failed to fetch index.json: ${error.message}`);
+    }
+
+    if (!response.ok) {
+      const errorMsg = `Failed to load index.json: ${response.status} ${response.statusText}`;
+      logger.error(`<pb-view> ${errorMsg}`);
+      throw new Error(errorMsg);
+    }
+
+    let index;
+    try {
+      index = await response.json();
+    } catch (error) {
+      logger.error('<pb-view> Failed to parse index.json:', error);
+      throw new Error(`Failed to parse index.json: ${error.message}`);
+    }
+
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),

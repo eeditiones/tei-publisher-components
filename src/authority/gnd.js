@@ -26,8 +26,10 @@ function _details(item) {
 /**
  * Uses https://lobid.org to query the German GND
  */
+import { logger } from '../utils/logger.js';
+
 export class GND extends Registry {
-  query(key) {
+  async query(key) {
     const results = [];
     let filter;
     switch (this._register) {
@@ -53,6 +55,9 @@ export class GND extends Registry {
           key,
         )}&filter=%2B%28type%3A${filter}%29&format=json&size=100`,
       );
+      if (!response.ok) {
+        throw new Error(`GND query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       json.member.forEach(item => {
         const result = {

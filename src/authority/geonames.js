@@ -1,4 +1,5 @@
 import { Registry } from './registry.js';
+import { logger } from '../utils/logger.js';
 
 export class GeoNames extends Registry {
   constructor(configElem) {
@@ -15,6 +16,9 @@ export class GeoNames extends Registry {
           key,
         )}&maxRows=100&&username=${this.user}&style=full`,
       );
+      if (!response.ok) {
+        throw new Error(`GeoNames query failed: ${response.status} ${response.statusText}`);
+      }
       const json = await response.json();
       json.geonames.forEach(item => {
         const result = {
