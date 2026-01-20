@@ -10,6 +10,7 @@ import './pb-message.js';
 import './pb-odd-model-editor.js';
 
 import { get as i18n, translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 /**
  * A wrapper for the popular codemirror code editor.
@@ -214,7 +215,7 @@ export class PbOddElementspecEditor extends LitElement {
   }
 
   _addModel(e) {
-    console.log('ELEMENTSPEC._addModel ', e);
+    logger.log('ELEMENTSPEC._addModel ', e);
     const addModel = this.shadowRoot.getElementById('addModel');
     const newModel = {
       behaviour: 'inline',
@@ -257,7 +258,7 @@ export class PbOddElementspecEditor extends LitElement {
   }
 
   _paste(ev) {
-    console.log('_paste ', ev);
+    logger.log('_paste ', ev);
     // const editor = document.querySelector('pb-odd-editor');
     this.dispatchEvent(
       new CustomEvent('odd-paste', { composed: true, bubbles: true, detail: { target: this } }),
@@ -286,7 +287,7 @@ export class PbOddElementspecEditor extends LitElement {
   }
 
   _removeModel(ev) {
-    console.log('_removeModel ', ev);
+    logger.log('_removeModel ', ev);
     ev.stopPropagation();
     const { model } = ev.target;
     const index = this.models.indexOf(model);
@@ -315,7 +316,7 @@ export class PbOddElementspecEditor extends LitElement {
   }
 
   _moveModelDown(ev) {
-    console.log('ELEMENTSPEC._moveModelDown ', ev);
+    logger.log('ELEMENTSPEC._moveModelDown ', ev);
     ev.stopPropagation();
     const { model } = ev.target;
     const index = this.models.indexOf(model);

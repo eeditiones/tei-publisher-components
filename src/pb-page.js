@@ -5,6 +5,7 @@ import HttpBackend from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { logger } from './utils/logger.js';
 import { loadStylesheets } from './theming.js';
 import { initTranslation } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
@@ -277,7 +278,6 @@ export class PbPage extends pbMixin(LitElement) {
 
     this.endpoint = this.endpoint.replace(/\/+$/, '');
 
-
     const target = registry.state._target;
     if (target) {
       this.endpoint = target;
@@ -294,7 +294,7 @@ export class PbPage extends pbMixin(LitElement) {
     } else {
       stylesheetURLs.push('components.css');
     }
-    console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
+    logger.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
     this._themeSheet = await loadStylesheets(stylesheetURLs);
 
     // try to figure out what version of TEI Publisher the server is running
@@ -313,11 +313,11 @@ export class PbPage extends pbMixin(LitElement) {
 
       if (json) {
         this.apiVersion = json.api;
-        console.log(
+        logger.log(
           `<pb-page> Server reports API version ${this.apiVersion} with app ${json.app.name}/${json.app.version} running on ${json.engine.name}/${json.engine.version}`,
         );
       } else {
-        console.log('<pb-page> No API version reported by server, assuming 0.9.0');
+        logger.log('<pb-page> No API version reported by server, assuming 0.9.0');
         this.apiVersion = '0.9.0';
       }
     }
@@ -339,7 +339,6 @@ export class PbPage extends pbMixin(LitElement) {
       return;
     }
 
-
     const slot = this.shadowRoot.querySelector('slot');
     slot.addEventListener(
       'slotchange',
@@ -353,10 +352,10 @@ export class PbPage extends pbMixin(LitElement) {
       { once: true },
     );
 
-    const defaultLocales = this.endpoint 
+    const defaultLocales = this.endpoint
       ? `${this.toAbsoluteURL('resources/i18n/', this.endpoint)}{{ns}}/{{lng}}.json`
       : `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
-    console.log(
+    logger.log(
       '<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
       defaultLocales,
       this.locales,
@@ -392,7 +391,7 @@ export class PbPage extends pbMixin(LitElement) {
     if (this.language) {
       options.lng = this.language;
     }
-    console.log('supported langs: %o', this.supportedLanguages);
+    logger.log('supported langs: %o', this.supportedLanguages);
     if (this.supportedLanguages) {
       options.supportedLngs = this.supportedLanguages;
     }
@@ -403,51 +402,56 @@ export class PbPage extends pbMixin(LitElement) {
       options.fallbackNS = fallbacks.slice(1);
       options.ns = fallbacks;
     }
-    console.log('<pb-page> i18next options: %o', options);
+    logger.log('<pb-page> i18next options: %o', options);
     this._i18nInstance = i18next.createInstance();
     this._i18nInstance.use(LanguageDetector).use(Backend);
-    this._i18nInstance.init(options).then(t => {
-      if (!this._i18nInstance) {
-        // We got deconstructed already
-        return;
-      }
-      initTranslation(t);
-      // initialized and ready to go!
-      this._updateI18n(t);
-      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
-      if (this.requireLanguage) {
-        // When requireLanguage is true, fire pb-page-ready after init() resolves
-        // Note: init() with http-backend should wait for resources to load before resolving
-        // If resources aren't loaded, it's likely due to a failed request (e.g., intercept not matching)
-        // In that case, we still fire pb-page-ready to avoid blocking, and tests can use retry-ability
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      } else if (this.requireLanguage) {
-        // Fallback: if instance is null, fire pb-page-ready anyway to avoid blocking
-        console.warn('<pb-page> i18n instance is null, firing pb-page-ready without waiting for resources');
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      }
-    }).catch(err => {
-      // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
-      console.error('<pb-page> i18next init failed:', err);
-      if (this.requireLanguage) {
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      }
-    });
+    this._i18nInstance
+      .init(options)
+      .then(t => {
+        if (!this._i18nInstance) {
+          // We got deconstructed already
+          return;
+        }
+        initTranslation(t);
+        // initialized and ready to go!
+        this._updateI18n(t);
+        this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
+        if (this.requireLanguage) {
+          // When requireLanguage is true, fire pb-page-ready after init() resolves
+          // Note: init() with http-backend should wait for resources to load before resolving
+          // If resources aren't loaded, it's likely due to a failed request (e.g., intercept not matching)
+          // In that case, we still fire pb-page-ready to avoid blocking, and tests can use retry-ability
+          this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint,
+            apiVersion: this.apiVersion,
+            template: this.template,
+            language: this._i18nInstance?.language,
+          });
+        } else if (this.requireLanguage) {
+          // Fallback: if instance is null, fire pb-page-ready anyway to avoid blocking
+          console.warn(
+            '<pb-page> i18n instance is null, firing pb-page-ready without waiting for resources',
+          );
+          this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint,
+            apiVersion: this.apiVersion,
+            template: this.template,
+            language: this._i18nInstance?.language,
+          });
+        }
+      })
+      .catch(err => {
+        // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
+        logger.error('<pb-page> i18next init failed:', err);
+        if (this.requireLanguage) {
+          this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint,
+            apiVersion: this.apiVersion,
+            template: this.template,
+            language: this._i18nInstance?.language,
+          });
+        }
+      });
 
     // React to language change events by updating i18n and notifying listeners
     this.subscribeTo('pb-i18n-language', ev => {
@@ -463,7 +467,7 @@ export class PbPage extends pbMixin(LitElement) {
     // Avoid a Lit reactive update here; just remove the attribute instead.
     this.removeAttribute('unresolved');
 
-    console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
+    logger.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
     // Guard: some app-header implementations may not expose _notifyLayoutChanged
     this.querySelectorAll('app-header').forEach(h => {
       if (typeof h._notifyLayoutChanged === 'function') {
