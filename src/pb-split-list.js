@@ -4,6 +4,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 import { registry } from './urls.js';
 import { logger } from './utils/logger.js';
+import { handleError, formatErrorMessage } from './utils/error-handling.js';
 
 /**
  * Implements a list which is split into different categories
@@ -163,7 +164,23 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
         this.innerHTML = json.items.join('');
         this.emitTo('pb-end-update');
       } catch (error) {
-        logger.error(`<pb-split-list> Error caught: ${error}`);
+        // Use error handling utility for consistent error logging and event emission
+        const statusMessages = {
+          404: 'Resource not found',
+          403: 'Access denied',
+          500: 'Server error',
+          network: 'Network error occurred'
+        };
+        
+        const errorMessage = formatErrorMessage(error, 'Failed to load data', statusMessages);
+        
+        handleError(error, {
+          componentName: 'pb-split-list',
+          emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+          eventName: 'pb-split-list-error',
+          eventDetail: { message: errorMessage }
+        });
+        
         this.emitTo('pb-end-update');
       }
     })();

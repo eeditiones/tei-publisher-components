@@ -6,6 +6,7 @@ import { translate } from './pb-i18n.js';
 import { createConnectors } from './authority/connectors.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
+import { handleError, formatErrorMessage } from './utils/error-handling.js';
 import './pb-restricted.js';
 
 /**
@@ -346,7 +347,23 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
           await connector.select(item);
           this.emitTo('pb-authority-select', options);
         } catch (e) {
-          this.emitTo('pb-authority-error', { status: e.message });
+          // Use error handling utility for consistent error logging and event emission
+          const errorMessage = formatErrorMessage(
+            e,
+            'Failed to select authority item',
+            {
+              network: 'Network error selecting authority item',
+              404: 'Authority item not found',
+              403: 'Access denied'
+            }
+          );
+          
+          handleError(e, {
+            componentName: 'pb-authority-lookup',
+            emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+            eventName: 'pb-authority-error',
+            eventDetail: { message: errorMessage, status: e.status || e.statusCode || e.message }
+          });
         }
       })();
     } else {
@@ -371,7 +388,11 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
           await connector.select(item);
           this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
         } catch (e) {
-          logger.error('<pb-authority-lookup> Failed to select item for edit:', e);
+          // Use error handling utility for consistent error logging
+          handleError(e, {
+            componentName: 'pb-authority-lookup',
+            silent: true
+          });
         }
       })();
     } else {
@@ -411,7 +432,25 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       this.emitTo('pb-end-update');
       // this.shadowRoot.getElementById('query').focus();
     } catch (error) {
-      logger.error('<pb-authority-lookup> Query failed:', error);
+      // Use error handling utility for consistent error logging and event emission
+      const errorMessage = formatErrorMessage(
+        error,
+        'Failed to query authority',
+        {
+          404: 'Authority service not found',
+          403: 'Access denied to authority service',
+          500: 'Authority service error',
+          network: 'Network error connecting to authority service'
+        }
+      );
+      
+      handleError(error, {
+        componentName: 'pb-authority-lookup',
+        emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+        eventName: 'pb-authority-error',
+        eventDetail: { message: errorMessage, status: error.status || error.statusCode }
+      });
+      
       this.emitTo('pb-end-update');
     }
   }
@@ -473,7 +512,12 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       });
       return items;
     } catch (error) {
-      logger.error('<pb-authority-lookup> Failed to fetch occurrences:', error);
+      // Use error handling utility for consistent error logging
+      // Don't emit event here as this is a non-critical failure (occurrences are optional)
+      handleError(error, {
+        componentName: 'pb-authority-lookup',
+        silent: true
+      });
       return items; // Return items without occurrences if request fails
     }
   }
