@@ -4,6 +4,7 @@ import { supported as fsSupported, fileSave } from 'browser-fs-access';
 import { repeat } from 'lit/directives/repeat.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
+import { logger } from './utils/logger.js';
 
 import '@vaadin/tabs';
 
@@ -685,7 +686,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     
     // Handle case where generateRequest returns null (invalid URL)
     if (!request) {
-      console.warn('pb-odd-editor: Failed to generate request - invalid URL');
+      logger.warn('pb-odd-editor: Failed to generate request - invalid URL');
       this.loading = false;
       document.dispatchEvent(new CustomEvent('pb-end-update'));
       return;
@@ -694,7 +695,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     request
       .then(data => this.handleOdd({ response: data }))
       .catch(error => {
-        console.warn('pb-odd-editor: Failed to load ODD data:', error);
+        logger.warn('pb-odd-editor: Failed to load ODD data:', error);
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
       });
@@ -705,7 +706,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     // Handle case where data is null (request failed)
     if (!data) {
-      console.warn('pb-odd-editor: Failed to load ODD data');
+      logger.warn('pb-odd-editor: Failed to load ODD data');
       return;
     }
 
@@ -727,7 +728,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     if (data.elementSpecs && Array.isArray(data.elementSpecs)) {
       this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
     } else {
-      console.warn('pb-odd-editor: elementSpecs data is missing or invalid');
+      logger.warn('pb-odd-editor: elementSpecs data is missing or invalid');
       this.elementSpecs = [];
     }
 
@@ -778,7 +779,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _openElementSpec(ev, index) {
-    console.log('_openElementSpec ', ev, index);
+    logger.log('_openElementSpec ', ev, index);
 
     const spec = this.elementSpecs[index]; // get target elementspec
     this._updateElementspec(spec);
@@ -823,7 +824,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _closeTabHandler(ev, index) {
-    console.log('_closeTabHandler ', index);
+    logger.log('_closeTabHandler ', index);
     ev.preventDefault();
     ev.stopPropagation();
 
@@ -915,8 +916,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _paste(e) {
-    console.log('_paste ', e);
-    console.log('_paste clipboard', this.clipboard);
+    logger.log('_paste ', e);
+    logger.log('_paste clipboard', this.clipboard);
 
     if (this.clipboard == {} || this.clipboard == undefined) {
       return;
@@ -963,7 +964,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
     const existingSpec = this.elementSpecs.find(spec => spec.ident === ident);
     if (existingSpec) {
-      console.log('<pb-odd-editor> element spec to be added already exists: %s', ident);
+      logger.log('<pb-odd-editor> element spec to be added already exists: %s', ident);
       const id = `#es_${ident}`;
       const target = this.shadowRoot.querySelector(id);
       if (!target) {
@@ -1238,8 +1239,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
         fileName: this.odd,
         extensions: ['.odd'],
       }).then(
-        () => console.log(`<pb-odd-editor> ${this.odd} exported`),
-        () => console.log('<pb-odd-editor> export aborted'),
+        () => logger.log(`<pb-odd-editor> ${this.odd} exported`),
+        () => logger.log('<pb-odd-editor> export aborted'),
       );
     }
   }
@@ -1310,11 +1311,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _handleLoadError(e) {
-    console.log('loading error occurred: ', e);
+    logger.log('loading error occurred: ', e);
     const msg = this.shadowRoot.getElementById('errorMsg');
     msg.style.background = 'red';
     const { url } = this.shadowRoot.getElementById('loadContent');
-    console.log('url ', url);
+    logger.log('url ', url);
     msg.show('Error: ', `ODD file could not be loaded from ${url}`);
   }
 

@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Implements a list which is split into different categories
@@ -109,7 +110,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
       this.selected = registry.state.category || this.selected;
 
       registry.subscribe(this, state => {
-        console.log('<pb-split-list> popstate: %o', state);
+        logger.log('<pb-split-list> popstate: %o', state);
         this.selected = state.category;
         this.submit(false);
       });
@@ -147,7 +148,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     const params = new URLSearchParams(formParams);
 
     const url = `${this.toAbsoluteURL(this.url)}?${params.toString()}`;
-    console.log(`<pb-split-list> Fetching from URL: ${url}`);
+    logger.log(`<pb-split-list> Fetching from URL: ${url}`);
 
     this.emitTo('pb-start-update');
 
@@ -164,7 +165,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
         this.emitTo('pb-end-update');
       })
       .catch(error => {
-        console.error(`<pb-split-list> Error caught: ${error}`);
+        logger.error(`<pb-split-list> Error caught: ${error}`);
         this.emitTo('pb-end-update');
       });
   }

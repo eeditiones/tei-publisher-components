@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 
 /**
@@ -198,7 +199,7 @@ export class PbPaginate extends pbMixin(LitElement) {
     let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1);
     const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount);
     lowerBound = Math.max(upperBound - this.range + 1, 1);
-    console.log(
+    logger.log(
       '<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d, range: %d, show-previous-next: %s',
       start,
       total,

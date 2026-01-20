@@ -4,6 +4,7 @@ import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
 import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
 import './pb-fetch.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -176,7 +177,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     // Subscribe to pb-document events to know when the document is ready
     this.subscribeTo('pb-document', ev => {
       if (ev.detail && ev.detail.id === this.src) {
-        console.log(`<pb-load> Document ${this.src} is ready, triggering load`);
+        logger.log(`<pb-load> Document ${this.src} is ready, triggering load`);
         this.load();
       }
     });
@@ -276,7 +277,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
   toggleFeature(ev) {
     this.userParams = registry.getState(this);
-    console.log('<pb-load> toggle feature %o', this.userParams);
+    logger.log('<pb-load> toggle feature %o', this.userParams);
     if (ev.detail.refresh) {
       if (this.history) {
         registry.commit(this, this.userParams);
@@ -323,28 +324,28 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
 
     const doc = this.getDocument();
-    console.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
-    console.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
+    logger.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
+    logger.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
     if (doc) {
-      console.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
+      logger.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
     }
     if (!this.plain) {
       if (doc && doc.path) {
         params.doc = doc.path;
-        console.log(`<pb-load> Setting params.doc to:`, doc.path);
+        logger.log(`<pb-load> Setting params.doc to:`, doc.path);
         this._retryCount = 0; // Reset retry counter when document is found
       } else if (this.src) {
         // Document not found but src is specified - wait for it to be available
         if (this._retryCount < this._maxRetries) {
           this._retryCount++;
           const delay = Math.min(100 * this._retryCount, 1000); // Progressive delay up to 1 second
-          console.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
+          logger.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
           setTimeout(() => {
             this.load(ev);
           }, delay);
           return;
         } else {
-          console.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
+          logger.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
           // Instead of returning, show a loading state and keep trying
           this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
           return;
@@ -353,7 +354,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         // No document and no src specified - this might be intentional for plain mode
         // But if we have {doc} in the URL template, we should warn
         if (this.url && this.url.includes('{doc}')) {
-          console.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
+          logger.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
         }
       }
 
@@ -379,7 +380,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
     // Check if the URL still contains unresolved parameters
     if (url.includes('{') && url.includes('}')) {
-      console.warn(`<pb-load> URL still contains unresolved parameters: ${url}`);
+      logger.warn(`<pb-load> URL still contains unresolved parameters: ${url}`);
       if (this.src) {
         // Keep showing loading state and retry later
         this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
@@ -387,7 +388,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
       }
     }
 
-    console.log('<pb-load> Loading %s with parameters %o', url, params);
+    logger.log('<pb-load> Loading %s with parameters %o', url, params);
     const loader = this.shadowRoot.getElementById('loadContent');
     loader.params = params;
     loader.url = url;
@@ -453,7 +454,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     const loader = this.shadowRoot.getElementById('loadContent');
     const { response } = loader.lastError;
     if (this.silent) {
-      console.error('Request failed: %s', response ? response.description : '');
+      logger.error('Request failed: %s', response ? response.description : '');
       return;
     }
     let message;
@@ -509,7 +510,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         try {
           image.src = this.toAbsoluteURL(oldSrc);
         } catch (err) {
-          console.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
+          logger.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
         }
       });
       content.querySelectorAll('a').forEach(link => {
@@ -520,7 +521,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         try {
           link.href = this.toAbsoluteURL(oldHref);
         } catch (err) {
-          console.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
+          logger.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
         }
       });
     }

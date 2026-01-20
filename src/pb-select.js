@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { translate } from './pb-i18n.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 let elementIdCounter = 0;
 
@@ -152,7 +153,7 @@ export class PbSelect extends pbMixin(LitElement) {
     url += url.includes('?') ? '&' : '?';
     url += this._getParameters();
 
-    console.log('<pb-select> loading items from %s', url);
+    logger.log('<pb-select> loading items from %s', url);
 
     fetch(url, {
       method: 'GET',
@@ -163,10 +164,10 @@ export class PbSelect extends pbMixin(LitElement) {
       .then(json => {
         this._clear('slot:not([name])');
         const items = json.map(PbSelect.jsonEntry2item);
-        console.log('<pb-select> loaded %d items', items.length);
+        logger.log('<pb-select> loaded %d items', items.length);
         this._items = items;
       })
-      .catch(() => console.error('<pb-select> request to %s failed', url));
+      .catch(() => logger.error('<pb-select> request to %s failed', url));
   }
 
   static jsonEntry2item(item) {

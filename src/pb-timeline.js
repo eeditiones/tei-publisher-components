@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { SearchResultService } from './search-result-service.js';
 import { ParseDateService } from './parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 import './pb-fetch.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
@@ -417,7 +418,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
       const { endDateStr } = event.detail;
       if (this._fullRangeSelected(startDateStr, endDateStr)) {
         // do not mark the whole histogram, reset selection instead
-        console.log('_fullRangeSelected() is true');
+        logger.log('_fullRangeSelected() is true');
         this.resetSelection();
         return;
       }
@@ -444,7 +445,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         if (this.scopes.includes(this.scope)) {
           this.setData(this.searchResult.export(this.scope));
         } else {
-          console.error('unknown scope ', this.scope);
+          logger.error('unknown scope ', this.scope);
         }
       }
     }

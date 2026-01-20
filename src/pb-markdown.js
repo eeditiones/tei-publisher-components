@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
 import './pb-code-highlight.js';
 
 // Configure marked with custom renderer
@@ -100,7 +101,7 @@ export class PbMarkdown extends pbMixin(LitElement) {
     fetch(url, { credentials: 'same-origin' })
       .then(response => response.text())
       .catch(() => {
-        console.error('<pb-markdown> failed to load content from %s', url.toString());
+        logger.error('<pb-markdown> failed to load content from %s', url.toString());
         return Promise.resolve(this.content);
       })
       .then(text => {
