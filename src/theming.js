@@ -32,20 +32,18 @@ export async function loadStylesheets(urls) {
   return null;
 }
 
-function loadResource(url) {
-  return fetch(url, { headers: { accept: 'text/css' } })
-    .then(response => {
-      if (response.ok) {
-        return response.text();
-      }
-      logger.warn('<theming> Component stylesheet not found: %s', url);
-      return null;
-    })
-    .then(text => text)
-    .catch(error => {
-      logger.error('<theming> Error loading stylesheet %s: %o', url, error);
-      return null;
-    });
+async function loadResource(url) {
+  try {
+    const response = await fetch(url, { headers: { accept: 'text/css' } });
+    if (response.ok) {
+      return await response.text();
+    }
+    logger.warn('<theming> Component stylesheet not found: %s', url);
+    return null;
+  } catch (error) {
+    logger.error('<theming> Error loading stylesheet %s: %o', url, error);
+    return null;
+  }
 }
 
 /**
