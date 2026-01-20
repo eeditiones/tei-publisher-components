@@ -6,6 +6,7 @@ import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
+import { formatErrorMessage, handleError } from './utils/error-handling.js';
 import './pb-fetch.js';
 
 /**
@@ -1086,12 +1087,38 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
-    logger.error('<pb-view> Error details:', loader.lastError);
+    const error = loader.lastError;
+    const { response } = error;
+    
+    // Use error handling utility for consistent error logging
+    handleError(error, {
+      componentName: 'pb-view',
+      emitEvent: null,
+      eventName: null,
+      eventDetail: {},
+      silent: false
+    });
+    
+    // Format error message using utility
+    const statusMessages = {
+      404: 'Resource not found',
+      403: 'Access denied',
+      500: 'Server error',
+      network: 'Network error occurred'
+    };
+    
     let message;
-    const { response } = loader.lastError;
-
-    if (response) {
-      message = response.description;
+    if (response && response.description) {
+      // Use formatErrorMessage to standardize error messages
+      const errorObj = {
+        message: response.description,
+        status: response.status || error.status
+      };
+      message = formatErrorMessage(
+        errorObj,
+        response.description,
+        statusMessages
+      );
     } else {
       message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
     }

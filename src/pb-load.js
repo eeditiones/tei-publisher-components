@@ -5,6 +5,7 @@ import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
+import { formatErrorMessage, handleError } from './utils/error-handling.js';
 import './pb-fetch.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -452,17 +453,48 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   _handleError() {
     this.emitTo('pb-end-update');
     const loader = this.shadowRoot.getElementById('loadContent');
-    const { response } = loader.lastError;
+    const error = loader.lastError;
+    const { response } = error;
+    
+    // Use error handling utility for consistent error logging
     if (this.silent) {
-      logger.error('Request failed: %s', response ? response.description : '');
+      handleError(error, {
+        componentName: 'pb-load',
+        silent: true
+      });
       return;
     }
+    
+    // Format error message using utility
+    const statusMessages = {
+      404: 'Resource not found',
+      403: 'Access denied',
+      500: 'Server error',
+      network: 'Network error occurred'
+    };
+    
     let message;
-    if (response) {
-      message = response.description;
+    if (response && response.description) {
+      // Use formatErrorMessage to standardize error messages
+      const errorObj = {
+        message: response.description,
+        status: response.status || error.status
+      };
+      message = formatErrorMessage(
+        errorObj,
+        response.description,
+        statusMessages
+      );
     } else {
       message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
     }
+    
+    // Log error using utility
+    handleError(error, {
+      componentName: 'pb-load',
+      silent: false
+    });
+    
     const dialog = this.shadowRoot.getElementById('errorDialog');
     const messageElement = this.shadowRoot.getElementById('errorMessage');
     // Sanitize error message to prevent XSS attacks

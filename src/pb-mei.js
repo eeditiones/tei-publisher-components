@@ -9,6 +9,7 @@ import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
+import { createErrorElement, clearErrorElement, formatErrorMessage } from './utils/error-handling.js';
 
 let _verovio = null;
 
@@ -236,35 +237,22 @@ export class PbMei extends pbMixin(LitElement) {
     // Clear any existing error
     this._clearError();
 
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'pb-mei-error';
-    errorDiv.style.cssText = `
-      padding: 1rem;
-      margin: 1rem;
-      background-color: #fee;
-      border: 1px solid #fcc;
-      border-radius: 4px;
-      color: #c33;
-      font-family: sans-serif;
-      font-size: 14px;
-    `;
+    // Format error message based on error type
+    const messagePatterns = [
+      { pattern: /function.*signature|null function/i, message: 'Invalid MEI data format' },
+      { pattern: /parse|XML/i, message: 'Invalid XML/MEI syntax' },
+      { pattern: /WASM|module/i, message: 'MEI rendering engine error' }
+    ];
+    
+    const errorMessage = formatErrorMessage(
+      error,
+      'Failed to load MEI data',
+      {},
+      messagePatterns
+    );
 
-    let errorMessage = 'Failed to load MEI data';
-    const errorText = error.message || error.toString() || '';
-
-    if (
-      errorText.includes('function or function signature mismatch') ||
-      errorText.includes('null function')
-    ) {
-      errorMessage = 'Invalid MEI data format';
-    } else if (errorText.includes('parse') || errorText.includes('XML')) {
-      errorMessage = 'Invalid XML/MEI syntax';
-    } else if (errorText.includes('WASM') || errorText.includes('module')) {
-      errorMessage = 'MEI rendering engine error';
-    }
-
-    errorDiv.textContent = errorMessage;
+    // Create error message element using utility
+    const errorDiv = createErrorElement(errorMessage, 'pb-mei-error');
 
     // Insert error message into the component
     if (this.shadowRoot) {
@@ -290,10 +278,7 @@ export class PbMei extends pbMixin(LitElement) {
     if (this.shadowRoot) {
       const output = this.shadowRoot.querySelector('#output');
       if (output) {
-        const existingError = output.querySelector('.pb-mei-error');
-        if (existingError) {
-          existingError.remove();
-        }
+        clearErrorElement(output, 'pb-mei-error');
       }
     }
   }
