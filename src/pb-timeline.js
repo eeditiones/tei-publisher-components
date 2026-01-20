@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { SearchResultService } from './search-result-service.js';
 import { ParseDateService } from './parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-fetch.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
@@ -628,11 +629,12 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
     const info = event.currentTarget.querySelector('.info');
-    this.tooltip.querySelector(
-      '.tooltip-text',
-    ).innerHTML = `<div><strong>${datestr}</strong>: ${value}</div><ul>${
-      info ? info.innerHTML : ''
-    }</ul>`;
+    // Sanitize tooltip content to prevent XSS attacks
+    const infoHTML = info ? sanitizeHTML(info.innerHTML) : '';
+    const tooltipContent = `<div><strong>${sanitizeHTML(
+      datestr || '',
+    )}</strong>: ${value}</div><ul>${infoHTML}</ul>`;
+    this.tooltip.querySelector('.tooltip-text').innerHTML = tooltipContent;
 
     // Force a reflow to get accurate tooltip dimensions
     this.tooltip.style.visibility = 'hidden';
@@ -686,9 +688,9 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     }`;
     const value = selectedBins.map(bin => Number(bin.dataset.value)).reduce((a, b) => a + b);
     const valueFormatted = this._numberWithCommas(value);
-    this.tooltip.querySelector(
-      '.tooltip-text',
-    ).innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
+    // Sanitize tooltip content to prevent XSS attacks
+    const tooltipContent = `<strong>${sanitizeHTML(label)}</strong>: ${valueFormatted}`;
+    this.tooltip.querySelector('.tooltip-text').innerHTML = tooltipContent;
     this.tooltip.querySelector('.tooltip-close').classList.remove('hidden');
     this.tooltip.classList.add('draggable');
 
@@ -894,7 +896,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     if (binObj.info && binObj.info.length > 0 && binObj.info.length <= 10) {
       return html`
         <ul class="info">
-          ${binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`)}
+          ${binObj.info.map(info => html`<li>${unsafeHTML(sanitizeHTML(info))}</li>`)}
         </ul>
       `;
     }
