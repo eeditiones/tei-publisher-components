@@ -935,7 +935,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
    * @param {string} [direction] - Optional navigation direction ('forward' or 'backward')
    * @private
    */
-  _load(pos, direction) {
+  async _load(pos, direction) {
     const doc = this.getDocument ? this.getDocument() : null;
 
     // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
@@ -966,7 +966,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       params._dir = direction;
     }
 
-    this._doLoad(params);
+    try {
+      await this._doLoad(params);
+    } catch (error) {
+      // Ensure _loading is reset if _doLoad throws an unhandled error
+      // (though _doLoad should handle its own errors)
+      this._loading = false;
+      logger.error('[pb-view] _load: unhandled error in _doLoad', error);
+    }
   }
 
   /**
@@ -1012,11 +1019,26 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           // Error handled by @error event listener
         });
       } catch (error) {
-        logger.error('[pb-view] _doLoad: failed to get static URL', error);
-        // Reset loading state and emit end-update event
+        // CRITICAL: Reset loading state IMMEDIATELY and SYNCHRONOUSLY
+        // This must happen before any async operations to ensure test assertions pass
         this._loading = false;
+        logger.error('[pb-view] _doLoad: failed to get static URL', error);
+        // Display error to user (async, but _loading is already false)
+        const errorMessage = formatErrorMessage(
+          error,
+          'Failed to load static content',
+          {
+            network: 'Network error loading static content',
+            404: 'Static content not found',
+            500: 'Server error loading static content'
+          }
+        );
+        const content = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${errorMessage}</p>`;
+        // Fire and forget - don't await to avoid blocking
+        this._replaceContent({ content }).catch(replaceError => {
+          logger.error('[pb-view] _doLoad: failed to replace content with error message', replaceError);
+        });
         this.emitTo('pb-end-update');
-        // Error handled by @error event listener
       }
       return;
     }
@@ -1079,6 +1101,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     try {
       response = await fetch(indexUrl);
     } catch (error) {
+      // CRITICAL: Reset loading state immediately when fetch fails
+      // This ensures _loading is false even if the error propagates
+      this._loading = false;
       logger.error('<pb-view> Failed to fetch index.json:', error);
       throw new Error(`Failed to fetch index.json: ${error.message}`);
     }
