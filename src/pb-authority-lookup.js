@@ -4,6 +4,7 @@ import { themableMixin } from './theming.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { createConnectors } from './authority/connectors.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-restricted.js';
 
 /**
@@ -200,8 +201,8 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             </svg>
           </button>
           ${item.link
-            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
-            : html`${unsafeHTML(item.label)}`}
+            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(sanitizeHTML(item.label))}</a>`
+            : html`${unsafeHTML(sanitizeHTML(item.label))}`}
           <div class="badges">
             ${item.occurrences > 0
               ? html`<span class="occurrences badge" part="occurrences">${item.occurrences}</span>`
