@@ -1,4 +1,5 @@
 import { LitElement } from 'lit';
+import { logger } from './utils/logger.js';
 
 const ignore = ['type', 'url', 'label', 'base', 'show'];
 
@@ -83,7 +84,7 @@ export class PbMapLayer extends LitElement {
         options[key] = this[key];
       }
     });
-    console.log('<pb-leaflet-map-layer> Options: %o', options);
+    logger.log('<pb-leaflet-map-layer> Options: %o', options);
     return options;
   }
 

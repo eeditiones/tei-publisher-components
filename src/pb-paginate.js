@@ -1,4 +1,7 @@
-import { LitElement, css, html, nothing } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
+import { pbMixin } from './pb-mixin.js';
+import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
@@ -351,13 +354,60 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
     `;
   }
 
-  render() {
-    const overflowPart = html`<li
-      class="pb-paginate__overflow"
-      aria-label="${translate('pagination.ellipsislabel')}"
-    >
-      <span>…</span>
-    </li>`;
+  _update(start, total) {
+    if (!total || !start) {
+      return;
+    }
+    this.pageCount = Math.ceil(total / this.perPage);
+    this.page = Math.ceil(start / this.perPage);
+    let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1);
+    const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount);
+    lowerBound = Math.max(upperBound - this.range + 1, 1);
+    logger.log(
+      '<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d, range: %d, show-previous-next: %s',
+      start,
+      total,
+      this.perPage,
+      this.pageCount,
+      this.page,
+      lowerBound,
+      upperBound,
+      this.range, 
+      this.showPreviousNext
+    );
+    const pages = [];
+    const prevNextPages = []; //first item for previous control, second/last item for next control
+    for (let i = lowerBound; i <= upperBound; i++) {
+      pages.push({
+        label: i,
+        class: i === this.page ? 'active' : '',
+      });
+      if(!this.showPreviousNext) continue;
+      //previous page if it's first page
+      if(lowerBound === 1 && i === 1 && this.page === i) {
+        prevNextPages.push({
+          label: i,
+          index: 0
+        });
+      }
+      //previous page
+      if(i + 1 === this.page) {
+        prevNextPages.push({
+          label: i,
+          index: pages.length - 1
+        });
+      }
+      //next page
+      if(i - 1 === this.page) {
+        prevNextPages.push({
+          label: i,
+          index: pages.length - 1
+        });
+      }
+    }
+    this.pages = pages;
+    this.prevNextPages = prevNextPages;
+  }
 
     return html`
       <nav aria-label="${translate('pagination.pagination')}">

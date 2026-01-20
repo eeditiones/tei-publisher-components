@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import './pb-fetch.js';
 import { pbMixin } from './pb-mixin.js';
 import { get as i18n } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-message.js';
 
 /**
@@ -151,7 +152,7 @@ export class PbAjax extends pbMixin(LitElement) {
       dialog
         .confirm(this._dialogTitle, i18n(this.confirm))
         .then(() => this.trigger())
-        .catch(() => console.log('<pb-ajax> Action cancelled'));
+        .catch(() => logger.log('<pb-ajax> Action cancelled'));
     } else {
       this.trigger();
     }

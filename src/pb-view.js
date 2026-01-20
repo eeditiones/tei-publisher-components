@@ -5,6 +5,7 @@ import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
 import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
 import './pb-fetch.js';
 
 /**
@@ -446,7 +447,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (this.fill) {
           newState.fill = this.fill;
         }
-        console.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
+        logger.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
           readOnlyRegistry: this.readOnlyRegistry,
           hasAttribute: this.hasAttribute('read-only-registry'),
           isReadOnly,
@@ -456,7 +457,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         registry.replace(this, newState);
         this._registryInitialized = true;
       } else if (isReadOnly) {
-        console.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
+        logger.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
           readOnlyRegistry: this.readOnlyRegistry,
           hasAttribute: this.hasAttribute('read-only-registry'),
           isReadOnly,
@@ -931,7 +932,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     // In smoke/CT, pb-view may be mounted without a pb-document; bail safely
     if (!doc || !doc.path) {
-      console.warn('<pb-view> No path');
+      logger.warn('<pb-view> No path');
       return;
     }
 
@@ -1015,7 +1016,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         const docPath = encodeURIComponent(doc.path);
         url += `/${docPath}/json`;
       } else {
-        console.warn('<pb-view> No document path available for URL construction');
+        logger.warn('<pb-view> No document path available for URL construction');
         return;
       }
     }
@@ -1023,7 +1024,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     loadContent.url = url;
     loadContent.params = params;
     loadContent.generateRequest().catch((error) => {
-      console.error('[pb-view] _doLoad: request failed', error);
+      logger.error('[pb-view] _doLoad: request failed', error);
       // Error handled by @error event listener
     });
   }
@@ -1058,7 +1059,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     if (!file) {
-      console.warn('<pb-view> No static mapping found for %s', url);
+      logger.warn('<pb-view> No static mapping found for %s', url);
       const fallback = Object.values(index)[0];
       if (!fallback) {
         return baseUrl.href;
@@ -1085,7 +1086,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
-    console.error('<pb-view> Error details:', loader.lastError);
+    logger.error('<pb-view> Error details:', loader.lastError);
     let message;
     const { response } = loader.lastError;
 
@@ -1113,11 +1114,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     if (!resp) {
       this._loading = false;
-      console.error('<pb-view> No response received');
+      logger.error('<pb-view> No response received');
       return;
     }
     if (resp.error) {
-      console.error('<pb-view> Response has error:', resp.error);
+      logger.error('<pb-view> Response has error:', resp.error);
       if (this.notFound != null) {
         this._content = this.notFound;
       }
