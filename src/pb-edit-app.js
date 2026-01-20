@@ -70,33 +70,39 @@ export class PbEditApp extends pbMixin(LitElement) {
         form.action = action;
       }
 
-      fetch(templatesUrl, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'same-origin',
-      })
-        .then(response => response.json())
-        .then(json => {
+      (async () => {
+        try {
+          const response = await fetch(templatesUrl, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin',
+          });
+          const json = await response.json();
           const list = Array.isArray(json) ? json : [];
           this.templates = list;
           if (!list.find(item => item.name === this._templateValue)) {
             this._templateValue = list.length ? list[0].name : '';
           }
           this.requestUpdate();
-        })
-        .catch(error => logger.error('<pb-edit-app> Failed to load templates', error));
+        } catch (error) {
+          logger.error('<pb-edit-app> Failed to load templates', error);
+        }
+      })();
 
-      fetch(oddsUrl, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'same-origin',
-      })
-        .then(response => response.json())
-        .then(json => {
+      (async () => {
+        try {
+          const response = await fetch(oddsUrl, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin',
+          });
+          const json = await response.json();
           this.odds = Array.isArray(json) ? json : [];
           this.requestUpdate();
-        })
-        .catch(error => logger.error('<pb-edit-app> Failed to load odds list', error));
+        } catch (error) {
+          logger.error('<pb-edit-app> Failed to load odds list', error);
+        }
+      })();
     });
 
     if (form) {

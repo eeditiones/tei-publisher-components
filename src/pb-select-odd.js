@@ -171,24 +171,23 @@ export class PbSelectOdd extends pbMixin(LitElement) {
     if (this.odd) {
       requestUrl.searchParams.set('odd', this.odd);
     }
-    fetch(requestUrl.href, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { Accept: 'application/json' },
-    })
-      .then(response => {
+    (async () => {
+      try {
+        const response = await fetch(requestUrl.href, {
+          method: 'GET',
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
         if (!response.ok) {
           throw new Error(`Failed to load ODDs (${response.status})`);
         }
-        return response.json();
-      })
-      .then(data => {
+        const data = await response.json();
         this._updateOdds(Array.isArray(data) ? data : []);
-      })
-      .catch(err => {
+      } catch (err) {
         logger.error('<pb-select-odd> request failed', err);
         this._updateOdds([]);
-      });
+      }
+    })();
   }
 
   _updateOdds(list) {

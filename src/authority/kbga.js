@@ -16,34 +16,35 @@ export class KBGA extends Registry {
       key,
     )}&perPage=${this._limit}`;
     const label = this.getLabelField();
-    return new Promise(resolve => {
-      fetch(url)
-        .then(response => response.json())
-        .then(json => {
-          json.data.forEach(item => {
-            if (
-              (this._register === 'organization' && item.authority_type !== 'organisation') ||
-              (this._register === 'person' && item.authority_type !== 'person')
-            ) {
-              return;
-            }
-            const result = {
-              register: this._register,
-              id: this._prefix ? `${this._prefix}:${item['full-id']}` : item['full-id'],
-              label: typeof label === 'string' ? item[label] : label(item),
-              details: `${item['full-id']}`,
-              link: `https://meta.karl-barth.ch/${register}/${item.id}`,
-              strings: [typeof label === 'string' ? item[label] : label(item)],
-              provider: 'KBGA',
-            };
-            results.push(result);
-          });
-          resolve({
-            totalItems: json.meta.total,
-            items: results,
-          });
-        });
-    });
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      json.data.forEach(item => {
+        if (
+          (this._register === 'organization' && item.authority_type !== 'organisation') ||
+          (this._register === 'person' && item.authority_type !== 'person')
+        ) {
+          return;
+        }
+        const result = {
+          register: this._register,
+          id: this._prefix ? `${this._prefix}:${item['full-id']}` : item['full-id'],
+          label: typeof label === 'string' ? item[label] : label(item),
+          details: `${item['full-id']}`,
+          link: `https://meta.karl-barth.ch/${register}/${item.id}`,
+          strings: [typeof label === 'string' ? item[label] : label(item)],
+          provider: 'KBGA',
+        };
+        results.push(result);
+      });
+      return {
+        totalItems: json.meta.total,
+        items: results,
+      };
+    } catch (error) {
+      logger.error('<authority-kbga> Query failed:', error);
+      return { totalItems: 0, items: [] };
+    }
   }
 
   info(key, container) {
@@ -51,25 +52,27 @@ export class KBGA extends Registry {
       return Promise.resolve({});
     }
     const label = this.getLabelField();
-    return new Promise(resolve => {
-      this.getRecord(key).then(json => {
-        const died = json.data.death ? `† ${json.data.death}` : '';
-        const dates = json.data.birth ? `<p>* ${json.data.birth} ${died}</p>` : '';
-        const note = json.data.note_bio ? `<p>${json.data.note_bio}</p>` : '';
-        const output = `
+    try {
+      const json = await this.getRecord(key);
+      const died = json.data.death ? `† ${json.data.death}` : '';
+      const dates = json.data.birth ? `<p>* ${json.data.birth} ${died}</p>` : '';
+      const note = json.data.note_bio ? `<p>${json.data.note_bio}</p>` : '';
+      const output = `
             <h3 class="label"><a href="https://${json.wikipediaURL}" target="_blank">${
-          typeof label === 'string' ? json.data[label] : label(json.data)
-        }</a></h3>
+        typeof label === 'string' ? json.data[label] : label(json.data)
+      }</a></h3>
               ${dates}
               ${note}
           `;
-        container.innerHTML = output;
-        resolve({
-          id: json.data['full-id'],
-          strings: [typeof label === 'string' ? json.data[label] : label(json.data)],
-        });
-      });
-    });
+      container.innerHTML = output;
+      return {
+        id: json.data['full-id'],
+        strings: [typeof label === 'string' ? json.data[label] : label(json.data)],
+      };
+    } catch (error) {
+      logger.error('<authority-kbga> Info failed:', error);
+      throw error;
+    }
   }
 
   /**
@@ -80,29 +83,31 @@ export class KBGA extends Registry {
    */
   async getRecord(key) {
     const id = key.replace(/^.*-([^-]+)$/, '$1');
-    return fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`)
-      .then(response => response.json())
-      .then(json => {
-        const output = { ...json };
-        output.name = json.data[this.getLabelField()];
-        switch (this._register) {
-          case 'place':
-            output.country = json.data.country;
-            output.location = json.data.location.coordinates;
-            output.links = json.data.links.map(link => link.url);
-            break;
-          case 'person':
-            output.birth = json.data.birth;
-            output.death = json.data.death;
-            output.note = json.data.note_bio;
-            output.links = [`https://${json.wikipediaURL}`];
-            break;
-          default:
-            break;
-        }
-        return output;
-      })
-      .catch(reason => Promise.reject(reason));
+    try {
+      const response = await fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`);
+      const json = await response.json();
+      const output = { ...json };
+      output.name = json.data[this.getLabelField()];
+      switch (this._register) {
+        case 'place':
+          output.country = json.data.country;
+          output.location = json.data.location.coordinates;
+          output.links = json.data.links.map(link => link.url);
+          break;
+        case 'person':
+          output.birth = json.data.birth;
+          output.death = json.data.death;
+          output.note = json.data.note_bio;
+          output.links = [`https://${json.wikipediaURL}`];
+          break;
+        default:
+          break;
+      }
+      return output;
+    } catch (error) {
+      logger.error('<authority-kbga> getRecord failed:', error);
+      throw error;
+    }
   }
 
   getLabelField() {

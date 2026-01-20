@@ -152,22 +152,21 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
 
     this.emitTo('pb-start-update');
 
-    fetch(url)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
+    (async () => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
         }
-        return Promise.reject(response.status);
-      })
-      .then(json => {
+        const json = await response.json();
         this._categories = json.categories;
         this.innerHTML = json.items.join('');
         this.emitTo('pb-end-update');
-      })
-      .catch(error => {
+      } catch (error) {
         logger.error(`<pb-split-list> Error caught: ${error}`);
         this.emitTo('pb-end-update');
-      });
+      }
+    })();
   }
 
   _selectCategory(ev, category) {

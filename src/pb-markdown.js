@@ -96,17 +96,16 @@ export class PbMarkdown extends pbMixin(LitElement) {
     });
   }
 
-  _load(server) {
+  async _load(server) {
     const url = this.toAbsoluteURL(this._url, server);
-    fetch(url, { credentials: 'same-origin' })
-      .then(response => response.text())
-      .catch(() => {
-        logger.error('<pb-markdown> failed to load content from %s', url.toString());
-        return Promise.resolve(this.content);
-      })
-      .then(text => {
-        this.content = text;
-      });
+    try {
+      const response = await fetch(url, { credentials: 'same-origin' });
+      const text = await response.text();
+      this.content = text;
+    } catch {
+      logger.error('<pb-markdown> failed to load content from %s', url.toString());
+      // Keep existing content on error
+    }
   }
 
   createRenderRoot() {

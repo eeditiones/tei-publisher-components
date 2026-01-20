@@ -155,19 +155,22 @@ export class PbSelect extends pbMixin(LitElement) {
 
     logger.log('<pb-select> loading items from %s', url);
 
-    fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.json())
-      .then(json => {
+    (async () => {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'same-origin',
+        });
+        const json = await response.json();
         this._clear('slot:not([name])');
         const items = json.map(PbSelect.jsonEntry2item);
         logger.log('<pb-select> loaded %d items', items.length);
         this._items = items;
-      })
-      .catch(() => logger.error('<pb-select> request to %s failed', url));
+      } catch {
+        logger.error('<pb-select> request to %s failed', url);
+      }
+    })();
   }
 
   static jsonEntry2item(item) {

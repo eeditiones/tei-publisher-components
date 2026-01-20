@@ -363,20 +363,19 @@ export class PbPopover extends pbMixin(LitElement) {
     }
   }
 
-  _loadRemoteContent() {
+  async _loadRemoteContent() {
     const url = this.toAbsoluteURL(this.remote);
-    fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.text())
-      .then(data => {
-        this.alternate = data;
-      })
-      .catch(error => {
-        logger.error('<pb-popover> Error retrieving remote content: %o', error);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'same-origin',
       });
+      const data = await response.text();
+      this.alternate = data;
+    } catch (error) {
+      logger.error('<pb-popover> Error retrieving remote content: %o', error);
+    }
   }
 
   static get styles() {
