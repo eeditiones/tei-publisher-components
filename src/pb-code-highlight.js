@@ -18,19 +18,19 @@ function loadTheme(theme) {
     return PRISM_THEMES.get(themeName);
   }
 
-  const promise = new Promise(resolve => {
+  const promise = (async () => {
     // Try to determine the correct base URL for CSS themes
     let resource;
     try {
       const isDev =
         (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ||
         (typeof location !== 'undefined' && /localhost|127\.0\.0\.1/.test(location.hostname));
-      
+
       if (isDev) {
         // In dev mode, check if we're running in TEI Publisher context
         const currentHost = window.location.hostname;
         const currentPort = window.location.port;
-        
+
         // If we're on the TEI Publisher port (8080), use the app's resources path
         if (currentPort === '8080' || currentHost.includes('tei-publisher')) {
           resource = '/exist/apps/tei-publisher/resources/css/prismjs/' + themeName;
@@ -44,19 +44,18 @@ function loadTheme(theme) {
     } catch (_) {
       resource = resolveURL('../css/prismjs/') + themeName;
     }
-    
+
     console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
-    fetch(resource)
-      .then(response => response.text())
-      .catch(() => resolve(''))
-      .then(text => {
-        resolve(
-          html`<style>
-            ${text}
-          </style>`,
-        );
-      });
-  });
+    try {
+      const response = await fetch(resource);
+      const text = await response.text();
+      return html`<style>
+        ${text}
+      </style>`;
+    } catch {
+      return html`<style></style>`;
+    }
+  })();
   PRISM_THEMES.set(themeName, promise);
   return promise;
 }
@@ -139,9 +138,10 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
     super.attributeChangedCallback(name, oldValue, newValue);
     switch (name) {
       case 'theme':
-        loadTheme(newValue).then(loadedStyles => {
+        (async () => {
+          const loadedStyles = await loadTheme(newValue);
           this._themeStyles = loadedStyles;
-        });
+        })();
         break;
       default:
         break;

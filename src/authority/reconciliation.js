@@ -17,7 +17,8 @@ export class ReconciliationService extends Registry {
     super(configElem);
     this.endpoint = configElem.getAttribute('endpoint');
     this.debug = configElem.getAttribute('debug');
-    getServiceManifest(this.endpoint).then(result => {
+    (async () => {
+      const result = await getServiceManifest(this.endpoint);
       this.ORConfig = result;
       if (this.debug) {
         console.log(
@@ -27,7 +28,7 @@ export class ReconciliationService extends Registry {
           this.ORConfig,
         );
       }
-    });
+    })();
   }
 
   /**
@@ -43,49 +44,50 @@ export class ReconciliationService extends Registry {
       },
     };
 
-    return new Promise(resolve => {
-      fetch(this.endpoint, {
+    try {
+      const response = await fetch(this.endpoint, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'queries='.concat(JSON.stringify(paramsObj)),
-      })
-        .then(response => response.json())
-        .then(json => {
-          json.q1.result.forEach(item => {
-            if (this.ORConfig.view) {
-              this.view = this.ORConfig.view.url.replace('{{id}}', item.id);
-            } else {
-              this.view = item.id;
-            }
-            if (item.description) {
-              this.description = item.description;
-            } else if (item.type) {
-              this.description = item.type.map(t => t.name.toString()).join(', ');
-            } else {
-              this.description = '';
-            }
-            const result = {
-              register: this._register,
-              id: this._prefix ? `${this._prefix}-${item.id}` : item.id,
-              label: item.name,
-              link: this.view,
-              details: this.description,
-              provider: 'OpenReconcile',
-            };
-            results.push(result);
-          });
-          if (this.debug) {
-            console.log('OpenReconcile results: %o', results);
-          }
-          resolve({
-            totalItems: json.q1.result.length,
-            items: results,
-          });
-        });
-    });
+      });
+      const json = await response.json();
+      json.q1.result.forEach(item => {
+        if (this.ORConfig.view) {
+          this.view = this.ORConfig.view.url.replace('{{id}}', item.id);
+        } else {
+          this.view = item.id;
+        }
+        if (item.description) {
+          this.description = item.description;
+        } else if (item.type) {
+          this.description = item.type.map(t => t.name.toString()).join(', ');
+        } else {
+          this.description = '';
+        }
+        const result = {
+          register: this._register,
+          id: this._prefix ? `${this._prefix}-${item.id}` : item.id,
+          label: item.name,
+          link: this.view,
+          details: this.description,
+          provider: 'OpenReconcile',
+        };
+        results.push(result);
+      });
+      if (this.debug) {
+        console.log('OpenReconcile results: %o', results);
+      }
+      return {
+        totalItems: json.q1.result.length,
+        items: results,
+      };
+    } catch (error) {
+      console.error('<authority-reconciliation> Query failed:', error);
+      return { totalItems: 0, items: [] };
+    }
   }
 
   /**
@@ -96,7 +98,7 @@ export class ReconciliationService extends Registry {
    * @param {HTMLElement} container reference to an element which should be used as container for displaying the information
    * @returns {Promise} a promise
    */
-  info(id, container) {
+  async info(id, container) {
     if (!id) {
       return Promise.resolve({});
     }
@@ -105,18 +107,18 @@ export class ReconciliationService extends Registry {
       return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
+    try {
       const rawid = this._prefix ? id.substring(this._prefix.length + 1) : id;
       const url = this.ORConfig.preview.url.replace('{{id}}', encodeURIComponent(rawid));
-      fetch(url)
-        .then(response => response.text())
-        .then(output => {
-          container.innerHTML = output;
-          resolve({
-            id: this._prefix ? `${this._prefix}-${rawid}` : rawid,
-          });
-        })
-        .catch(() => reject());
-    });
+      const response = await fetch(url);
+      const output = await response.text();
+      container.innerHTML = output;
+      return {
+        id: this._prefix ? `${this._prefix}-${rawid}` : rawid,
+      };
+    } catch (error) {
+      console.error('<authority-reconciliation> Info failed:', error);
+      throw error;
+    }
   }
 }

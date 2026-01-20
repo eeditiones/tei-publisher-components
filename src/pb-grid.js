@@ -256,15 +256,20 @@ export class PbGrid extends pbMixin(LitElement) {
 
         // Check if animation has a finished promise
         if (animation && animation.finished) {
-          animation.finished.then(() => {
-            // Second phase: fade to full opacity
-            animate(element, {
-              opacity: [0.6, 1],
-              duration: 200,
-              delay: index * 50,
-              ease: 'linear',
-            });
-          });
+          (async () => {
+            try {
+              await animation.finished;
+              // Second phase: fade to full opacity
+              animate(element, {
+                opacity: [0.6, 1],
+                duration: 200,
+                delay: index * 50,
+                ease: 'linear',
+              });
+            } catch (error) {
+              // Animation was cancelled or failed, ignore
+            }
+          })();
         } else {
           // Fallback: use setTimeout if no promise available
           setTimeout(() => {

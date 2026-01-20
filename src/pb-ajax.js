@@ -148,10 +148,14 @@ export class PbAjax extends pbMixin(LitElement) {
     this._running = true;
     if (this.confirm) {
       const dialog = this.shadowRoot.getElementById('confirmDialog');
-      dialog
-        .confirm(this._dialogTitle, i18n(this.confirm))
-        .then(() => this.trigger())
-        .catch(() => console.log('<pb-ajax> Action cancelled'));
+      (async () => {
+        try {
+          await dialog.confirm(this._dialogTitle, i18n(this.confirm));
+          await this.trigger();
+        } catch {
+          console.log('<pb-ajax> Action cancelled');
+        }
+      })();
     } else {
       this.trigger();
     }

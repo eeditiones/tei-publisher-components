@@ -67,74 +67,76 @@ export class Custom extends Registry {
   }
 
   async query(key) {
-    return new Promise(resolve => {
-      fetch(
+    try {
+      const response = await fetch(
         `${this._endpoint}/api/register/search/${this._register}?query=${encodeURIComponent(key)}`,
-      )
-        .then(response => response.json())
-        .then(async json => {
-          let results = [];
-          const localResults = new Set();
-          json.forEach(item => {
-            results.push({
-              register: this._register,
-              id: item.id,
-              label: item.label,
-              link: item.link,
-              details: item.details,
-              provider: 'local',
-            });
-            localResults.add(item.id);
-          });
-          let totalItems = json.length;
-
-          for (const connector of this._connectors) {
-            const dr = await connector.query(key);
-            results = results.concat(dr.items.filter(result => !localResults.has(result.id)));
-            totalItems += dr.totalItems;
-          }
-          resolve({
-            totalItems,
-            items: results,
-          });
+      );
+      const json = await response.json();
+      let results = [];
+      const localResults = new Set();
+      json.forEach(item => {
+        results.push({
+          register: this._register,
+          id: item.id,
+          label: item.label,
+          link: item.link,
+          details: item.details,
+          provider: 'local',
         });
-    });
+        localResults.add(item.id);
+      });
+      let totalItems = json.length;
+
+      for (const connector of this._connectors) {
+        const dr = await connector.query(key);
+        results = results.concat(dr.items.filter(result => !localResults.has(result.id)));
+        totalItems += dr.totalItems;
+      }
+      return {
+        totalItems,
+        items: results,
+      };
+    } catch (error) {
+      console.error('<authority-custom> Query failed:', error);
+      return { totalItems: 0, items: [] };
+    }
   }
 
-  info(key, container) {
+  async info(key, container) {
     if (!key) {
-      return Promise.resolve({});
+      return {};
     }
     const id = key;
-    return new Promise((resolve, reject) => {
-      fetch(`${this._endpoint}/api/register/${this._register}/${encodeURIComponent(id)}`).then(
-        async response => {
-          if (response.ok) {
-            const json = await response.json();
-            container.innerHTML = json.details;
-            resolve({
-              id: json.id,
-              strings: json.strings,
-              editable: this._editable,
-            });
-            return;
-          }
-          if (response.status === 404) {
-            for (const connector of this._connectors) {
-              try {
-                const cr = await connector.info(key, container);
-                if (cr) {
-                  resolve(cr);
-                }
-              } catch (e) {
-                // not found: continue
-              }
-            }
-          }
-          reject();
-        },
+    try {
+      const response = await fetch(
+        `${this._endpoint}/api/register/${this._register}/${encodeURIComponent(id)}`,
       );
-    });
+      if (response.ok) {
+        const json = await response.json();
+        container.innerHTML = json.details;
+        return {
+          id: json.id,
+          strings: json.strings,
+          editable: this._editable,
+        };
+      }
+      if (response.status === 404) {
+        for (const connector of this._connectors) {
+          try {
+            const cr = await connector.info(key, container);
+            if (cr) {
+              return cr;
+            }
+          } catch (e) {
+            // not found: continue
+          }
+        }
+      }
+      throw new Error(`Failed to fetch info: ${response.status}`);
+    } catch (error) {
+      console.error('<authority-custom> Info failed:', error);
+      throw error;
+    }
   }
 
   /**
@@ -153,22 +155,26 @@ export class Custom extends Registry {
     if (!entry) {
       return Promise.resolve(item);
     }
-    return fetch(
-      `${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`,
-      {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await fetch(
+        `${this._endpoint}/api/register/${this._register}/${encodeURIComponent(item.id)}`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(entry),
         },
-        body: JSON.stringify(entry),
-      },
-    ).then(response => {
+      );
       if (response.ok) {
-        return response.json();
+        return await response.json();
       }
-      return Promise.reject(Error(response.status.toString()));
-    });
+      throw new Error(response.status.toString());
+    } catch (error) {
+      console.error('<authority-custom> Select failed:', error);
+      throw error;
+    }
   }
 }

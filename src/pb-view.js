@@ -291,10 +291,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
        * - Still subscribe to registry changes
        * - Still read from registry to determine what to display
        * - Never call registry.replace or registry.commit after initial connection
-       * 
+       *
        * This prevents pb-view from resetting the registry with stale state during navigation,
        * which can cause bounce-back issues when used with components like pb-tify.
-       * 
+       *
        * Default is false (pb-view can write to registry as before).
        */
       readOnlyRegistry: {
@@ -395,12 +395,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     super.connectedCallback();
 
     if (this.loadCss) {
-      waitOnce('pb-page-ready', () => {
-        loadStylesheets([this.toAbsoluteURL(this.loadCss)]).then(theme => {
-          if (theme) {
-            this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
-          }
-        });
+      waitOnce('pb-page-ready', async () => {
+        const theme = await loadStylesheets([this.toAbsoluteURL(this.loadCss)]);
+        if (theme) {
+          this.shadowRoot.adoptedStyleSheets = [...this.shadowRoot.adoptedStyleSheets, theme];
+        }
       });
     }
 
@@ -445,22 +444,28 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         if (this.fill) {
           newState.fill = this.fill;
         }
-        console.warn('[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)', {
-          readOnlyRegistry: this.readOnlyRegistry,
-          hasAttribute: this.hasAttribute('read-only-registry'),
-          isReadOnly,
-          _registryInitialized: this._registryInitialized,
-          newState
-        });
+        console.warn(
+          '[pb-view] connectedCallback: Calling registry.replace (read-only-registry not set)',
+          {
+            readOnlyRegistry: this.readOnlyRegistry,
+            hasAttribute: this.hasAttribute('read-only-registry'),
+            isReadOnly,
+            _registryInitialized: this._registryInitialized,
+            newState,
+          },
+        );
         registry.replace(this, newState);
         this._registryInitialized = true;
       } else if (isReadOnly) {
-        console.log('[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)', {
-          readOnlyRegistry: this.readOnlyRegistry,
-          hasAttribute: this.hasAttribute('read-only-registry'),
-          isReadOnly,
-          _registryInitialized: this._registryInitialized
-        });
+        console.log(
+          '[pb-view] connectedCallback: Skipping registry.replace (read-only-registry is set)',
+          {
+            readOnlyRegistry: this.readOnlyRegistry,
+            hasAttribute: this.hasAttribute('read-only-registry'),
+            isReadOnly,
+            _registryInitialized: this._registryInitialized,
+          },
+        );
       }
 
       registry.subscribe(this, state => {
@@ -574,7 +579,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // Application code should specify subscribe="transcription" (or other channel) via HTML attribute
     // If no subscribe attribute is set, uses defaultChannel (following pb-mixin pattern)
     // This makes components generic and reusable - applications configure the channel
-    this.subscribeTo('pb-refresh', (ev) => {
+    this.subscribeTo('pb-refresh', ev => {
       this._refresh(ev);
     });
   }
@@ -639,12 +644,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   _refresh(ev) {
     // Store the pending event for debouncing
     this._pendingRefreshEvent = ev;
-    
+
     // Clear existing debounce timer
     if (this._refreshDebounceTimer) {
       clearTimeout(this._refreshDebounceTimer);
     }
-    
+
     // Debounce: wait 150ms to batch rapid changes
     this._refreshDebounceTimer = setTimeout(() => {
       this._doRefresh(this._pendingRefreshEvent);
@@ -652,18 +657,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this._refreshDebounceTimer = null;
     }, 150);
   }
-  
+
   _doRefresh(ev) {
     // Merge registry state with event details, prioritizing registry state
     const registryState = registry.getState(this);
     const eventDetail = ev && ev.detail ? ev.detail : {};
-    
+
     // Priority: registry state > event detail > current values
     const mergedState = {
       ...eventDetail,
       ...registryState, // Registry state overrides event detail
     };
-    
+
     // Check if this is a metadata panel BEFORE processing any state changes
     // Check pb-param elements for mode parameter
     let modeParam = null;
@@ -675,17 +680,17 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (!modeParam && this._additionalParams) {
       modeParam = this._additionalParams.mode || this._additionalParams['user.mode'];
     }
-    
-    const isMetadataPanel = modeParam === 'metadata-panel' || 
-                           (this.xpath && this.view === 'single' && !this.nodeId);
-    
+
+    const isMetadataPanel =
+      modeParam === 'metadata-panel' || (this.xpath && this.view === 'single' && !this.nodeId);
+
     // Skip refresh if this view has xpath (e.g., metadata panel) - it shouldn't react to page navigation
     // BUT allow initial load (when _hasLoadedOnce is false)
     if (this.xpath && !mergedState.xpath && this._hasLoadedOnce) {
       // This view is bound to a specific xpath (like metadata), don't change it after initial load
       return;
     }
-    
+
     // Skip refresh for metadata panel - it shouldn't react to page navigation
     // BUT allow initial load (when _hasLoadedOnce is false)
     if (isMetadataPanel && this._hasLoadedOnce) {
@@ -698,7 +703,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         return;
       }
     }
-    
+
     // For metadata panel, filter out canvas IDs from merged state
     // Canvas IDs (like "A-N-38_004.jpg") should not affect metadata panel content
     // Create a filtered copy if needed
@@ -711,14 +716,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         delete filteredState.id;
       }
     }
-    
+
     // Use filteredState for the rest of the function (filteredState === mergedState if no filtering was needed)
     const stateToUse = filteredState;
-    
+
     // Handle hash-only changes (scroll without reload)
-    if (stateToUse.hash &&
-        !this.noScroll &&
-        !(stateToUse.id || stateToUse.path || stateToUse.odd || stateToUse.view || stateToUse.position)) {
+    if (
+      stateToUse.hash &&
+      !this.noScroll &&
+      !(
+        stateToUse.id ||
+        stateToUse.path ||
+        stateToUse.odd ||
+        stateToUse.view ||
+        stateToUse.position
+      )
+    ) {
       this._scrollTarget = stateToUse.hash;
       const target = this.shadowRoot.getElementById(this._scrollTarget);
       if (target) {
@@ -726,26 +739,32 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       return;
     }
-    
+
     // Store old values BEFORE updating - critical for change detection
     // IMPORTANT: For _refresh(null) case where _setState was called first,
     // _setState may have already updated this.xmlId, so oldXmlId might be the new value.
     // We'll compare against _lastLoadedId (what was actually loaded) to detect changes.
     const oldXmlId = this.xmlId;
     const oldNodeId = this.nodeId;
-    const oldPath = this.getDocument ? (this.getDocument()?.path || null) : null;
+    const oldPath = this.getDocument ? this.getDocument()?.path || null : null;
     // For _refresh(null) case, also check if _setState set an ID in _features or _additionalParams
     // that's different from what was loaded
     // CRITICAL: Check these BEFORE we process the ID, because processing might update them
-    const additionalParamsIdBefore = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const additionalParamsIdBefore =
+      this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
     const featuresIdBefore = this._features && this._features.id ? this._features.id : null;
     const lastLoadedIdForComparison = this._lastLoadedId; // What was actually loaded via API
-    
+
     // For _refresh(null) case: if _setState set an ID that's different from what was loaded,
     // we should reload even if oldXmlId === newId (because _setState already updated this.xmlId)
-    const setIdChanged = (additionalParamsIdBefore && additionalParamsIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
-                         (featuresIdBefore && featuresIdBefore !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null);
-    
+    const setIdChanged =
+      (additionalParamsIdBefore &&
+        additionalParamsIdBefore !== lastLoadedIdForComparison &&
+        lastLoadedIdForComparison !== null) ||
+      (featuresIdBefore &&
+        featuresIdBefore !== lastLoadedIdForComparison &&
+        lastLoadedIdForComparison !== null);
+
     // Apply merged state
     // CRITICAL: Event detail takes precedence over registry state for path/odd changes
     // This is important because events explicitly request path/odd changes, while registry might have old values
@@ -754,30 +773,35 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // Use event path/odd if present, otherwise use stateToUse (registry state)
     const pathToApply = eventPath || stateToUse.path;
     const oddToApply = eventOdd || stateToUse.odd;
-    
+
     if (pathToApply) {
       const doc = this.getDocument();
       if (doc) {
         doc.path = pathToApply;
       }
     }
-    
+
     // Store for later use in pathChanged/oddChanged checks
     const newPath = pathToApply;
     const newOdd = oddToApply;
-    
+
     // Handle id parameter - distinguish between XML IDs and canvas IDs
     // Canvas IDs (from pb-tify) have patterns like "A-N-38_004.jpg" or end with ".jpg"
     // XML IDs are actual xml:id attributes in the TEI document
     // CRITICAL: Use ev.detail.id directly to avoid issues with filtered/overridden state
     // Also check _additionalParams and _features for ID (set via _setState when ev is null)
     const eventId = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
-    const additionalParamsId = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const additionalParamsId =
+      this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
     const featuresId = this._features && this._features.id ? this._features.id : null;
     // For _refresh(null) case, also check if _setState was called with id
     // _setState stores id in _features if not in pathParams, or _additionalParams if in pathParams
-    const idToProcess = eventId || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsId || featuresId;
-    
+    const idToProcess =
+      eventId ||
+      (stateToUse.id !== undefined ? stateToUse.id : null) ||
+      additionalParamsId ||
+      featuresId;
+
     if (idToProcess) {
       const looksLikeCanvasId = /\.jpg$|_\d{2,3}\.jpg/.test(String(idToProcess));
       if (!looksLikeCanvasId) {
@@ -791,42 +815,49 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       // If it's a canvas ID, don't set xmlId - use root/position for navigation instead
     }
-    
+
     // Use event odd if present, otherwise use stateToUse.odd, otherwise keep current
     this.odd = oddToApply || this.odd;
-    
+
     if (stateToUse.columnSeparator !== undefined) {
       this.columnSeparator = stateToUse.columnSeparator;
     }
-    
+
     this.view = stateToUse.view || this.getView();
     this.fill = stateToUse.fill || this.fill;
-    
+
     if (stateToUse.xpath) {
       this.xpath = stateToUse.xpath;
       this.nodeId = null;
     }
-    
+
     // Handle root/position (prioritize registry state)
-    
+
     let newNodeId = this.nodeId;
     if (stateToUse.root === null) {
       newNodeId = null;
     } else {
-      newNodeId = (stateToUse.position !== undefined ? stateToUse.position : stateToUse.root) || this.nodeId;
+      newNodeId =
+        (stateToUse.position !== undefined ? stateToUse.position : stateToUse.root) || this.nodeId;
     }
-    
+
     // Check if nodeId actually changed - if not, skip loading to avoid unnecessary requests
     const nodeIdChanged = newNodeId !== oldNodeId;
-    
+
     // Also check if id changed - even if nodeId (root) is the same, id change means different page
     // Use ev.detail.id directly (from the event) to avoid issues with filtered/overridden state
     // Fall back to stateToUse.id, _additionalParams.id, _features.id, or this.xmlId if event doesn't have id
     // CRITICAL: For _refresh(null) case, check if _setState set an ID that's different from oldXmlId
     const eventIdForChangeCheck = ev && ev.detail && ev.detail.id ? ev.detail.id : null;
-    const additionalParamsIdForCheck = this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
+    const additionalParamsIdForCheck =
+      this._additionalParams && this._additionalParams.id ? this._additionalParams.id : null;
     const featuresIdForCheck = this._features && this._features.id ? this._features.id : null;
-    const newId = eventIdForChangeCheck || (stateToUse.id !== undefined ? stateToUse.id : null) || additionalParamsIdForCheck || featuresIdForCheck || this.xmlId;
+    const newId =
+      eventIdForChangeCheck ||
+      (stateToUse.id !== undefined ? stateToUse.id : null) ||
+      additionalParamsIdForCheck ||
+      featuresIdForCheck ||
+      this.xmlId;
     // Check if ID changed: compare against oldXmlId OR lastLoadedIdForComparison (what was actually loaded)
     // For _refresh(null) case where _setState was called first, _setState already updated this.xmlId,
     // so oldXmlId might be the new value. Compare against lastLoadedIdForComparison to detect changes.
@@ -837,23 +868,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // Also check if _setState set an ID in _features/_additionalParams that's different from what was loaded
     // CRITICAL: If _setState set a new ID (setIdChanged is true), always reload regardless of other conditions
     // Also reload if we have a new ID but _lastLoadedId is null (first load or ID was set externally)
-    const idChanged = newId && (
-      newId !== oldXmlId || 
-      (newId !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
-      setIdChanged ||  // _setState set a new ID - always reload
-      (lastLoadedIdForComparison === null && newId)  // First load with ID, or ID set externally
-    );
-    
+    const idChanged =
+      newId &&
+      (newId !== oldXmlId ||
+        (newId !== lastLoadedIdForComparison && lastLoadedIdForComparison !== null) ||
+        setIdChanged || // _setState set a new ID - always reload
+        (lastLoadedIdForComparison === null && newId)); // First load with ID, or ID set externally
+
     // Check if path changed - path change means different document, should always reload
     // oldPath was calculated above before updating doc.path
     // newPath was calculated above (event path takes precedence over registry state)
     const pathChanged = newPath && newPath !== oldPath;
-    
+
     // Check if odd changed - odd change means different document format, should reload
     // newOdd was calculated above (event odd takes precedence over registry state)
     const oldOdd = this.odd;
     const oddChanged = newOdd && newOdd !== oldOdd;
-    
+
     // CRITICAL: If we received a pb-refresh event, check if it's for a different page
     // This ensures we reload when navigation occurs, even if registry already updated our state
     const eventHasId = ev && ev.detail && ev.detail.id;
@@ -863,41 +894,47 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // If we received an event with an id different from what we last loaded, reload
     // OR if we haven't loaded anything yet (_lastLoadedId is null), reload
     // Also check against oldXmlId as fallback (in case _lastLoadedId wasn't set)
-    const shouldReloadFromEvent = eventHasId && (
-      lastLoadedId === null || 
-      ev.detail.id !== lastLoadedId ||
-      (oldXmlId && ev.detail.id !== oldXmlId)
-    );
-    
-    const willSkip = !nodeIdChanged && !idChanged && !pathChanged && !oddChanged && !shouldReloadFromEvent && this._hasLoadedOnce;
-    
+    const shouldReloadFromEvent =
+      eventHasId &&
+      (lastLoadedId === null ||
+        ev.detail.id !== lastLoadedId ||
+        (oldXmlId && ev.detail.id !== oldXmlId));
+
+    const willSkip =
+      !nodeIdChanged &&
+      !idChanged &&
+      !pathChanged &&
+      !oddChanged &&
+      !shouldReloadFromEvent &&
+      this._hasLoadedOnce;
+
     if (willSkip) {
       // Neither nodeId nor id changed and event id hasn't changed - skip loading
       // This prevents unnecessary /api/parts/ requests when navigation doesn't actually change the content
-      
+
       // Still update other properties that might have changed
       registry.pathParams.forEach(key => {
         if (stateToUse[key] !== undefined) {
           this._additionalParams[key] = stateToUse[key];
         }
       });
-      
+
       // Update xmlId if it changed (even if we're not reloading)
       // this.xmlId was already updated above if stateToUse.id was set
-      
+
       if (!this.noScroll) {
         this._scrollTarget = stateToUse.hash;
       }
-      
+
       this._updateStyles();
       return;
     }
-    
+
     // NodeId changed or id changed or first load - update and load
     this.nodeId = newNodeId;
-    
+
     // xmlId was already updated above if stateToUse.id was set and not a canvas ID
-    
+
     // Track the id we're about to load so we can detect if a pb-refresh event
     // is for a different page than what we last loaded
     const idToLoad = mergedState.id || this.xmlId;
@@ -913,14 +950,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (!this.noScroll) {
       this._scrollTarget = stateToUse.hash;
     }
-    
+
     this._updateStyles();
     if (this.infiniteScroll) {
       this._clear();
     }
-    
+
     this._load(this.nodeId);
-    
+
     // Don't update _lastLoadedId here - only update it in _handleContent after content is actually loaded
     // This ensures _lastLoadedId only tracks what was actually loaded, not what we're trying to load
   }
@@ -959,7 +996,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._doLoad(params);
   }
 
-  _doLoad(params) {
+  async _doLoad(params) {
     // De-duplicate identical requests to avoid hammering the backend
     const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
     const reqKey = JSON.stringify({ url: this.url || '', doc: docPath, params });
@@ -988,12 +1025,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const loadContent = this.shadowRoot.getElementById('loadContent');
 
     if (this.static !== null) {
-      this._staticUrl(params).then(url => {
+      try {
+        const url = await this._staticUrl(params);
         loadContent.url = url;
         loadContent.generateRequest().catch(() => {
           // Error handled by @error event listener
         });
-      });
+      } catch (error) {
+        console.error('[pb-view] _doLoad: failed to get static URL', error);
+        // Error handled by @error event listener
+      }
       return;
     }
 
@@ -1021,7 +1062,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     loadContent.url = url;
     loadContent.params = params;
-    loadContent.generateRequest().catch((error) => {
+    loadContent.generateRequest().catch(error => {
       console.error('[pb-view] _doLoad: request failed', error);
       // Error handled by @error event listener
     });
@@ -1044,7 +1085,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const baseDir = this.static ? this.static.replace(/\/$/, '') : '.';
     const baseUrl = new URL(`${baseDir}/`, window.location.href);
     const indexUrl = new URL('index.json', baseUrl).href;
-    const index = await fetch(indexUrl).then(response => response.json());
+    const response = await fetch(indexUrl);
+    const index = await response.json();
     const paramNames = ['odd', 'view', 'xpath', 'map'];
     this.querySelectorAll('pb-param').forEach(param =>
       paramNames.push(`user.${param.getAttribute('name')}`),
@@ -1080,7 +1122,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._chunks = [];
   }
 
-  _handleError() {
+  async _handleError() {
     this._clear();
     this._loading = false;
     const loader = this.shadowRoot.getElementById('loadContent');
@@ -1101,14 +1143,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       content = `<p><pb-i18n key="dialogs.serverError"></pb-i18n>: ${message} </p>`;
     }
 
-    this._replaceContent({ content });
+    await this._replaceContent({ content });
     this.emitTo('pb-end-update');
   }
 
-  _handleContent() {
+  async _handleContent() {
     const loader = this.shadowRoot.getElementById('loadContent');
     const resp = loader.lastResponse;
-
 
     if (!resp) {
       this._loading = false;
@@ -1125,24 +1166,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       return;
     }
 
-    this._replaceContent(resp, loader.params._dir);
+    await this._replaceContent(resp, loader.params._dir);
 
     this.animate();
 
     if (this._scrollTarget) {
-      this.updateComplete.then(() => {
-        const target =
-          this.shadowRoot.getElementById(this._scrollTarget) ||
-          this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
-        if (target) {
-          window.requestAnimationFrame(() =>
-            setTimeout(() => {
-              target.scrollIntoView({ block: 'nearest' });
-            }, 400),
-          );
-        }
-        this._scrollTarget = null;
-      });
+      await this.updateComplete;
+      const target =
+        this.shadowRoot.getElementById(this._scrollTarget) ||
+        this.shadowRoot.querySelector(`[node-id="${this._scrollTarget}"]`);
+      if (target) {
+        window.requestAnimationFrame(() =>
+          setTimeout(() => {
+            target.scrollIntoView({ block: 'nearest' });
+          }, 400),
+        );
+      }
+      this._scrollTarget = null;
     }
 
     this.next = resp.next;
@@ -1152,22 +1192,21 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.nodeId = resp.root;
     this.switchView = resp.switchView;
 
-    this.updateComplete.then(() => {
-      const view = this.shadowRoot.getElementById('view');
-      this._applyToggles(view);
-      this._fixLinks(view);
-      typesetMath(view);
+    await this.updateComplete;
+    const view = this.shadowRoot.getElementById('view');
+    this._applyToggles(view);
+    this._fixLinks(view);
+    typesetMath(view);
 
-      const eventOptions = {
-        data: resp,
-        root: view,
-        params: loader.params,
-        id: this.xmlId,
-        position: this.nodeId,
-      };
-      this.emitTo('pb-update', eventOptions);
-      this._scroll();
-    });
+    const eventOptions = {
+      data: resp,
+      root: view,
+      params: loader.params,
+      id: this.xmlId,
+      position: this.nodeId,
+    };
+    this.emitTo('pb-update', eventOptions);
+    this._scroll();
 
     this.emitTo('pb-end-update', null);
     // allow subsequent loads with new params
@@ -1182,7 +1221,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
-  _replaceContent(resp, direction) {
+  async _replaceContent(resp, direction) {
     const fragment = document.createDocumentFragment();
     const elem = document.createElement('div');
     // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
@@ -1195,17 +1234,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this.emitTo(this.beforeUpdate, {
         data: resp,
         root: elem,
-        render: content => {
-          this._doReplaceContent(content, resp, direction);
+        render: async content => {
+          await this._doReplaceContent(content, resp, direction);
         },
       });
     } else {
-      this._doReplaceContent(elem, resp, direction);
+      await this._doReplaceContent(elem, resp, direction);
     }
   }
 
-  _doReplaceContent(elem, resp, direction) {
-    
+  async _doReplaceContent(elem, resp, direction) {
     if (this.columnSeparator) {
       this._replaceColumns(elem);
       this._loading = false;
@@ -1223,24 +1261,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         case 'backward':
           refNode = this._content.firstElementChild;
           this._chunks.unshift(elem);
-          this.updateComplete.then(() => {
-            refNode.scrollIntoView(true);
-            this._loading = false;
-            this._checkVisibility();
-            this._scrollObserver.observe(this._bottomObserver);
-            this._scrollObserver.observe(this._topObserver);
-          });
           this._content.insertBefore(elem, refNode);
+          await this.updateComplete;
+          refNode.scrollIntoView(true);
+          this._loading = false;
+          this._checkVisibility();
+          this._scrollObserver.observe(this._bottomObserver);
+          this._scrollObserver.observe(this._topObserver);
           break;
         default:
-          this.updateComplete.then(() => {
-            this._loading = false;
-            this._checkVisibility();
-            this._scrollObserver.observe(this._bottomObserver);
-            this._scrollObserver.observe(this._topObserver);
-          });
           this._chunks.push(elem);
           this._content.appendChild(elem);
+          await this.updateComplete;
+          this._loading = false;
+          this._checkVisibility();
+          this._scrollObserver.observe(this._bottomObserver);
+          this._scrollObserver.observe(this._topObserver);
           break;
       }
     } else {
@@ -1373,7 +1409,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _getParameters() {
-    const params = {};  // Use object, not array
+    const params = {}; // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
       const name = param.getAttribute('name');
       const value = param.getAttribute('value');
@@ -1446,7 +1482,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       params.view = this.getView();
     }
     if (this.fill) {
-        params.fill = this.fill;
+      params.fill = this.fill;
     }
     if (pos && !isMetadataPanel) {
       params.root = pos;

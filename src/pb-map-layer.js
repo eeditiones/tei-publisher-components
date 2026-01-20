@@ -88,11 +88,8 @@ export class PbMapLayer extends LitElement {
   }
 
   async data() {
-    return new Promise(resolve => {
-      fetch(this.url)
-        .then(response => response.json())
-        .then(json => resolve(json));
-    });
+    const response = await fetch(this.url);
+    return await response.json();
   }
 }
 customElements.define('pb-map-layer', PbMapLayer);

@@ -673,16 +673,16 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.loadContent.url = `${this.getEndpoint()}/${
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
-    
+
     // Set Accept header to request JSON response
     this.loadContent.headers = {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     };
-    
+
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    
+
     // Handle case where generateRequest returns null (invalid URL)
     if (!request) {
       console.warn('pb-odd-editor: Failed to generate request - invalid URL');
@@ -690,14 +690,17 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       document.dispatchEvent(new CustomEvent('pb-end-update'));
       return;
     }
-    
-    request
-      .then(data => this.handleOdd({ response: data }))
-      .catch(error => {
+
+    (async () => {
+      try {
+        const data = await request;
+        this.handleOdd({ response: data });
+      } catch (error) {
         console.warn('pb-odd-editor: Failed to load ODD data:', error);
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
-      });
+      }
+    })();
   }
 
   handleOdd(req) {
@@ -991,7 +994,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
     const request = this.loadContent.generateRequest();
-    request.then(data => this._handleElementSpecResponse({ response: data }));
+    (async () => {
+      try {
+        const data = await request;
+        this._handleElementSpecResponse({ response: data });
+      } catch (error) {
+        console.error('<pb-odd-editor> Failed to load element spec:', error);
+      }
+    })();
   }
 
   _handleElementSpecResponse(req) {
@@ -1017,7 +1027,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
-    this.requestUpdate().then(() => {
+    (async () => {
+      await this.requestUpdate();
       const elem = this.shadowRoot.querySelectorAll('.nav-item');
       const idx = this.elementSpecs.indexOf(newSpec);
 
@@ -1025,27 +1036,28 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
       elem[idx].click();
       elem[idx].focus();
-    });
+    })();
   }
 
   removeElementSpec(ev) {
     const { ident } = ev.detail.target;
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }))
-      .then(
-        () => {
-          const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
-          this.elementSpecs.splice(targetIndex, 1);
-          this.requestUpdate();
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }));
+        const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
+        this.elementSpecs.splice(targetIndex, 1);
+        this.requestUpdate();
 
-          const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
-          const tabName = selectedTab.getAttribute('name');
-          const idx = this.tabs.indexOf(tabName);
-          this._closeTab(idx);
-        },
-        () => null,
-      );
+        const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
+        const tabName = selectedTab.getAttribute('name');
+        const idx = this.tabs.indexOf(tabName);
+        this._closeTab(idx);
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   serializeOdd() {
@@ -1181,11 +1193,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     const request = saveOdd.generateRequest();
-    request
-      .then(data => {
+    (async () => {
+      try {
+        const data = await request;
         this.handleSaveComplete({ response: data }, download);
-      })
-      .catch(this.handleSaveError.bind(this));
+      } catch (error) {
+        this.handleSaveError(error);
+      }
+    })();
   }
 
   // to be deprecated: only used for old api
@@ -1234,13 +1249,17 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     if (download) {
       const blob = new Blob([data.source], { type: 'application/xml' });
-      fileSave(blob, {
-        fileName: this.odd,
-        extensions: ['.odd'],
-      }).then(
-        () => console.log(`<pb-odd-editor> ${this.odd} exported`),
-        () => console.log('<pb-odd-editor> export aborted'),
-      );
+      (async () => {
+        try {
+          await fileSave(blob, {
+            fileName: this.odd,
+            extensions: ['.odd'],
+          });
+          console.log(`<pb-odd-editor> ${this.odd} exported`);
+        } catch {
+          console.log('<pb-odd-editor> export aborted');
+        }
+      })();
     }
   }
 
@@ -1251,18 +1270,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _reload() {
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'))
-      .then(
-        () => {
-          this.load();
-          this.tabs = [];
-          this.tabIndex = 0;
-          this.shadowRoot.getElementById('currentElement').innerHTML = '';
-        },
-        () => null,
-      );
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'));
+        this.load();
+        this.tabs = [];
+        this.tabIndex = 0;
+        this.shadowRoot.getElementById('currentElement').innerHTML = '';
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   _setCurrentSelection(e) {
