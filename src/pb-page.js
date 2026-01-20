@@ -5,6 +5,7 @@ import HttpBackend from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import { loadStylesheets } from './theming.js';
 import { initTranslation } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
@@ -473,9 +474,11 @@ export class PbPage extends pbMixin(LitElement) {
       while (m) {
         const translated = t(m[2]);
         if (m[1]) {
+          // For attributes, use translated value directly (attributes are escaped by browser)
           elem.setAttribute(m[1], translated);
         } else {
-          elem.innerHTML = translated;
+          // Sanitize translated HTML content to prevent XSS attacks
+          elem.innerHTML = sanitizeHTML(translated);
         }
         m = regex.exec(targets);
       }

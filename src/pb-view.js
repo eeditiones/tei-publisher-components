@@ -4,6 +4,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { registry } from './urls.js';
 import { typesetMath } from './pb-formula.js';
 import { loadStylesheets, themableMixin } from './theming.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-fetch.js';
 
 /**
@@ -1187,7 +1188,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const elem = document.createElement('div');
     // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
     fragment.appendChild(elem);
-    elem.innerHTML = resp.content;
+    // Sanitize server content to prevent XSS attacks
+    elem.innerHTML = sanitizeHTML(resp.content);
 
     // if before-update-event is set, we do not replace the content immediately,
     // but emit an event
@@ -1251,7 +1253,8 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.appendFootnotes) {
       const footnotes = document.createElement('div');
       if (resp.footnotes) {
-        footnotes.innerHTML = resp.footnotes;
+        // Sanitize footnotes to prevent XSS attacks
+        footnotes.innerHTML = sanitizeHTML(resp.footnotes);
       }
       this._footnotes = footnotes;
     }
