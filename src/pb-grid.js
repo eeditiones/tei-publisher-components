@@ -388,7 +388,7 @@ export class PbGrid extends pbMixin(LitElement) {
       // First try to get max-width from inline style attribute (more reliable across browsers)
       const inlineStyle = panel.getAttribute('style');
       if (inlineStyle) {
-        const maxWidthMatch = inlineStyle.match(/max-width\s*:\s*([^;]+)/i);
+        const maxWidthMatch = inlineStyle.match(/max-width\s*:\s*([^;]+?)(?:\s*;|\s*$)/i);
         if (maxWidthMatch && maxWidthMatch[1]) {
           const width = maxWidthMatch[1].trim();
           if (width && width !== 'none') {

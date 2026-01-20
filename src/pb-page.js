@@ -426,15 +426,6 @@ export class PbPage extends pbMixin(LitElement) {
           template: this.template,
           language: this._i18nInstance?.language,
         });
-      } else if (this.requireLanguage) {
-        // Fallback: if instance is null, fire pb-page-ready anyway to avoid blocking
-        console.warn('<pb-page> i18n instance is null, firing pb-page-ready without waiting for resources');
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
       }
     }).catch(err => {
       // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
