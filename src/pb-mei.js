@@ -9,7 +9,7 @@ import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
-import { createErrorElement, clearErrorElement, formatErrorMessage } from './utils/error-handling.js';
+import { createErrorElement, clearErrorElement, formatErrorMessage, handleError } from './utils/error-handling.js';
 
 let _verovio = null;
 
@@ -270,15 +270,16 @@ export class PbMei extends pbMixin(LitElement) {
       }
     }
 
-    // Emit error event
-    this.dispatchEvent(
-      new CustomEvent('pb-mei-error', {
-        detail: {
-          error: error.message || 'Unknown error',
-          data: this._data,
-        },
-      }),
-    );
+    // Use error handling utility for consistent event emission
+    handleError(error, {
+      componentName: 'pb-mei',
+      emitEvent: (eventName, detail) => this.dispatchEvent(new CustomEvent(eventName, { detail })),
+      eventName: 'pb-mei-error',
+      eventDetail: {
+        error: error.message || 'Unknown error',
+        data: this._data,
+      }
+    });
   }
 
   _clearError() {

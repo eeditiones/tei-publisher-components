@@ -7,6 +7,7 @@ import { pbMixin, clearPageEvents } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { sanitizeHTML } from './utils/sanitize.js';
 import { logger } from './utils/logger.js';
+import { handleError } from './utils/error-handling.js';
 import { loadStylesheets } from './theming.js';
 import { initTranslation } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
@@ -486,7 +487,11 @@ export class PbPage extends pbMixin(LitElement) {
         this._updateI18n(t);
         this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
       } catch (error) {
-        logger.error('<pb-page> Failed to change language:', error);
+        // Use error handling utility for consistent error logging
+        handleError(error, {
+          componentName: 'pb-page',
+          silent: true
+        });
       }
     });
 
