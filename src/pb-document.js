@@ -73,6 +73,10 @@ class PbDocument extends pbMixin(LitElement) {
     this._lastEventKey = null;
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes path, view, and odd from registry state if not disabled.
+   */
   connectedCallback() {
     super.connectedCallback();
 
@@ -89,6 +93,14 @@ class PbDocument extends pbMixin(LitElement) {
     this._lastEventKey = this._computeEventKey();
   }
 
+  /**
+   * Called when an observed attribute changes.
+   * Coalesces rapid attribute updates and emits pb-document event if state changed.
+   *
+   * @param {string} name - The name of the attribute that changed
+   * @param {string|null} oldVal - The old value
+   * @param {string|null} newVal - The new value
+   */
   attributeChangedCallback(name, oldVal, newVal) {
     super.attributeChangedCallback(name, oldVal, newVal);
     // No-op if value did not change (prevents churn)
@@ -108,6 +120,13 @@ class PbDocument extends pbMixin(LitElement) {
     }, 0);
   }
 
+  /**
+   * Computes a stable signature of relevant state for change detection.
+   * Used to prevent unnecessary pb-document events when state hasn't actually changed.
+   *
+   * @returns {string} JSON string representing the current state
+   * @private
+   */
   _computeEventKey() {
     // Build a stable signature of relevant state used by pb-view
     return JSON.stringify({
@@ -128,6 +147,11 @@ class PbDocument extends pbMixin(LitElement) {
     return this.path.replace(/^.*?([^\/]+)$/, '$1');
   }
 
+  /**
+   * Returns the collection path (directory) containing the document.
+   *
+   * @returns {string} The collection path
+   */
   getCollection() {
     return this.path.replace(/^(.*?)\/[^\/]+$/, '$1');
   }

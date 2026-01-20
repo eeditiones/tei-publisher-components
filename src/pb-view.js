@@ -927,6 +927,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     // This ensures _lastLoadedId only tracks what was actually loaded, not what we're trying to load
   }
 
+  /**
+   * Loads content for the view at the specified position.
+   * Handles request deduplication and cancellation of pending requests.
+   *
+   * @param {string} [pos] - Optional node ID or position to load
+   * @param {string} [direction] - Optional navigation direction ('forward' or 'backward')
+   * @private
+   */
   _load(pos, direction) {
     const doc = this.getDocument ? this.getDocument() : null;
 
@@ -961,6 +969,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._doLoad(params);
   }
 
+  /**
+   * Performs the actual load request with the given parameters.
+   * Handles request deduplication, static URL loading, and API endpoint construction.
+   *
+   * @param {Object} params - The request parameters
+   * @private
+   */
   async _doLoad(params) {
     // De-duplicate identical requests to avoid hammering the backend
     const docPath = this.getDocument && this.getDocument() ? this.getDocument().path : '';
@@ -1034,7 +1049,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   /**
-   * Use a static URL to load pre-generated content.
+   * Constructs a static URL to load pre-generated content.
+   * Loads an index.json file to map parameters to static file paths.
+   *
+   * @param {Object} params - The request parameters
+   * @returns {Promise<string>} The static URL to load
+   * @private
    */
   async _staticUrl(params) {
     function createKey(paramNames) {
@@ -1074,6 +1094,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     return new URL(file, baseUrl).href;
   }
 
+  /**
+   * Clears the current content, columns, footnotes, and chunks.
+   * Used when resetting the view or switching to infinite scroll mode.
+   *
+   * @private
+   */
   _clear() {
     if (this.infiniteScroll) {
       this._content = document.createElement('div');
@@ -1087,6 +1113,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._chunks = [];
   }
 
+  /**
+   * Handles errors from the content loading request.
+   * Uses the error handling utility to log and format error messages.
+   *
+   * @private
+   */
   async _handleError() {
     this._clear();
     this._loading = false;
@@ -1138,6 +1170,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.emitTo('pb-end-update');
   }
 
+  /**
+   * Handles successful content response from the server.
+   * Processes the response, updates navigation state, applies toggles, fixes links,
+   * typesets math, and emits update events.
+   *
+   * @private
+   */
   async _handleContent() {
     const loader = this.shadowRoot.getElementById('loadContent');
     const resp = loader.lastResponse;
@@ -1213,6 +1252,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Replaces the current content with new content from the server response.
+   * Sanitizes the content and optionally emits a before-update event.
+   *
+   * @param {Object} resp - The server response object
+   * @param {string} [direction] - Optional navigation direction
+   * @private
+   */
   async _replaceContent(resp, direction) {
     const fragment = document.createDocumentFragment();
     const elem = document.createElement('div');
@@ -1236,6 +1283,16 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Performs the actual content replacement based on view mode.
+   * Handles column separation, infinite scroll, and footnote appending.
+   *
+   * @param {HTMLElement} elem - The element containing the new content
+   * @param {Object} resp - The server response object
+   * @param {string} [direction] - Optional navigation direction
+   * @returns {HTMLElement} The replaced content element
+   * @private
+   */
   async _doReplaceContent(elem, resp, direction) {
     
     if (this.columnSeparator) {
@@ -1292,6 +1349,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     return elem;
   }
 
+  /**
+   * Checks and updates the visibility of infinite scroll observers.
+   * Shows/hides top and bottom observers based on available chunks.
+   *
+   * @private
+   */
   _checkVisibility() {
     const bottomActive = this._chunks[this._chunks.length - 1].hasAttribute('data-next');
     this._bottomObserver.style.display = bottomActive ? '' : 'none';
@@ -1300,6 +1363,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._topObserver.style.display = topActive ? '' : 'none';
   }
 
+  /**
+   * Replaces content by splitting it into two columns at the column separator.
+   * Uses document fragments to split content before and after the separator.
+   *
+   * @param {HTMLElement} elem - The element containing content to split
+   * @private
+   */
   _replaceColumns(elem) {
     let cb;
     if (this.columnSeparator) {
@@ -1325,6 +1395,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Scrolls to the target element specified in the registry hash.
+   * Uses requestAnimationFrame for smooth scrolling.
+   *
+   * @private
+   */
   _scroll() {
     if (this.noScroll) {
       return;
@@ -1341,6 +1417,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Scrolls to an element referenced by a link's hash.
+   * Prevents default link behavior and scrolls to the target element.
+   *
+   * @param {Event} ev - The click event
+   * @param {HTMLElement} link - The link element containing the hash
+   * @private
+   */
   _scrollToElement(ev, link) {
     const target = this.shadowRoot.getElementById(link.hash.substring(1));
     if (target) {
@@ -1349,6 +1433,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Updates the stylesheet link for the current ODD.
+   * Creates a link element pointing to the appropriate CSS file.
+   *
+   * @private
+   */
   _updateStyles() {
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
@@ -1361,6 +1451,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this._style = link;
   }
 
+  /**
+   * Fixes relative URLs in images and links within the content.
+   * Converts relative URLs to absolute URLs based on the document path.
+   *
+   * @param {HTMLElement} content - The content element containing links and images
+   * @private
+   */
   _fixLinks(content) {
     if (this.fixLinks) {
       const doc = this.getDocument ? this.getDocument() : null;
@@ -1389,6 +1486,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Initializes footnote navigation by adding click handlers.
+   * Enables scrolling to footnote references and back links.
+   *
+   * @param {HTMLElement} content - The content element containing footnotes
+   * @private
+   */
   _initFootnotes(content) {
     if (content) {
       content.querySelectorAll('.note, .fn-back').forEach(elem => {
@@ -1403,6 +1507,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Collects parameters from pb-param elements, features, and additional params.
+   * Filters out canvas IDs for metadata panel mode.
+   *
+   * @returns {Object} The collected parameters object
+   * @private
+   */
   _getParameters() {
     const params = {};  // Use object, not array
     this.querySelectorAll('pb-param').forEach(param => {
@@ -1457,7 +1568,11 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   /**
-   * Return the parameter object which would be passed to the server by this component
+   * Returns the parameter object that would be passed to the server by this component.
+   * Includes ODD, view, fill, root, xpath, id, highlight, and map parameters.
+   *
+   * @param {string} [pos] - Optional node ID or position (defaults to this.nodeId)
+   * @returns {Object} The parameters object
    */
   getParameters(pos) {
     pos = pos || this.nodeId;
@@ -1523,6 +1638,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     return params;
   }
 
+  /**
+   * Applies toggle states to elements matching selectors.
+   *
+   * @param {HTMLElement} elem - The root element to search for selectors
+   * @private
+   */
   _applyToggles(elem) {
     for (const [selector, setting] of Object.entries(this._selector)) {
       elem.querySelectorAll(selector).forEach(node => {
@@ -1625,6 +1746,12 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     });
   }
 
+  /**
+   * Handles feature toggle events from pb-toggle-feature or pb-select-feature.
+   * Updates component state and optionally refreshes the view.
+   *
+   * @param {Event} ev - The toggle feature event
+   */
   toggleFeature(ev) {
     const properties = registry.getState(this);
     if (properties) {
@@ -1647,6 +1774,13 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Updates component state from a properties object.
+   * Handles ODD, view, fill, xpath, columnSeparator, xmlId, nodeId, path, and selectors.
+   *
+   * @param {Object} properties - Object containing state properties to set
+   * @private
+   */
   _setState(properties) {
     for (const [key, value] of Object.entries(properties)) {
       // check if URL template needs the parameter and if
@@ -1709,6 +1843,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Gets a document fragment containing content before a milestone.
+   *
+   * @param {Node} node - The end node
+   * @param {Node} ms - The milestone node
+   * @returns {DocumentFragment} The fragment containing content before the milestone
+   * @private
+   */
   _getFragmentBefore(node, ms) {
     const range = document.createRange();
     range.setStartBefore(node);
@@ -1717,6 +1859,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     return range.cloneContents();
   }
 
+  /**
+   * Gets a document fragment containing content after a milestone.
+   *
+   * @param {Node} node - The end node
+   * @param {Node} ms - The milestone node
+   * @returns {DocumentFragment} The fragment containing content after the milestone
+   * @private
+   */
   _getFragmentAfter(node, ms) {
     const range = document.createRange();
     range.setStartBefore(ms);
@@ -1725,6 +1875,14 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     return range.cloneContents();
   }
 
+  /**
+   * Updates component when the src property changes.
+   * Resets xpath, odd, xmlId, and nodeId when source changes.
+   *
+   * @param {string} newVal - The new source value
+   * @param {string} oldVal - The old source value
+   * @private
+   */
   _updateSource(newVal, oldVal) {
     if (typeof oldVal !== 'undefined' && newVal !== oldVal) {
       this.xpath = null;

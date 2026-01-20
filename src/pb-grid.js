@@ -65,6 +65,11 @@ export class PbGrid extends pbMixin(LitElement) {
     this._panelsInitialized = false; // Track if panels have been initialized from registry
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Sets up event listeners for pb-panel and pb-zoom events,
+   * and initializes panels from registry or template attribute.
+   */
   connectedCallback() {
     super.connectedCallback();
 
@@ -240,6 +245,12 @@ export class PbGrid extends pbMixin(LitElement) {
    * slides in all panels from left to right with a slight delay between the panels. If animejs is not
    * loaded nothing happens and content is displayed as usual.
    */
+  /**
+   * Animates elements matching the animated selector when animation is enabled.
+   * Uses animejs for fade-in animations.
+   *
+   * @private
+   */
   _animate() {
     if (this.animation) {
       // console.log('animated elements', document.querySelectorAll('pb-panel'));
@@ -363,6 +374,12 @@ export class PbGrid extends pbMixin(LitElement) {
     );
   }
 
+  /**
+   * Inserts a new panel into the grid by cloning from the template.
+   *
+   * @param {number} active - The panel template index to activate
+   * @private
+   */
   _insertPanel(active) {
     logger.log('<pb-grid> _insertPanel called with active:', active);
     logger.log('<pb-grid> Template content:', this.template.content);
@@ -386,6 +403,12 @@ export class PbGrid extends pbMixin(LitElement) {
     );
   }
 
+  /**
+   * Updates the CSS custom property --pb-computed-column-widths based on
+   * the max-width styles of rendered panels.
+   *
+   * @private
+   */
   _update() {
     // Get the actual rendered panel elements, not just direct children
     // Panels are created by cloning from template and have class '_grid_panel'
@@ -413,17 +436,35 @@ export class PbGrid extends pbMixin(LitElement) {
     this.style.setProperty('--pb-computed-column-widths', widths.join(' '));
   }
 
+  /**
+   * Gets the index of a panel element in the DOM.
+   *
+   * @param {HTMLElement} panel - The panel element
+   * @returns {number} The index of the panel, or -1 if not found
+   * @private
+   */
   _getPanelIndex(panel) {
     const panels = Array.from(this.querySelectorAll('._grid_panel'));
     return panels.indexOf(panel);
   }
 
+  /**
+   * Assigns position indices to all panel elements.
+   *
+   * @private
+   */
   _assignPanelIds() {
     this.querySelectorAll('._grid_panel').forEach((panel, idx) => {
       panel.position = idx;
     });
   }
 
+  /**
+   * Gets the current state for registry commit.
+   *
+   * @returns {Object} Object with panels property as dot-separated string
+   * @private
+   */
   _getState() {
     // Ensure panels array is valid before joining
     // Filter out any invalid values (NaN, undefined, null)
@@ -447,6 +488,13 @@ export class PbGrid extends pbMixin(LitElement) {
     `;
   }
 
+  /**
+   * Zoom handler (kept for compatibility).
+   * Zoom is now handled globally by pb-zoom component using CSS custom properties.
+   * This method does nothing and is kept for backward compatibility.
+   *
+   * @param {string} direction - The zoom direction ('in' or 'out')
+   */
   zoom(direction) {
     // Zoom is now handled globally by pb-zoom component using CSS custom properties
     // This method is kept for compatibility but does nothing
