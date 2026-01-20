@@ -8,6 +8,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';
 import { logger } from './utils/logger.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 
 let _verovio = null;
 
@@ -385,7 +386,7 @@ export class PbMei extends pbMixin(LitElement) {
         <div>${this._renderOptions()}</div>
       </div>
       ${this._svg
-        ? html`<div id="output" part="music">${unsafeHTML(this._svg)}</div>`
+        ? html`<div id="output" part="music">${unsafeHTML(sanitizeHTML(this._svg))}</div>`
         : html`<div id="output" part="music">${translate('dialogs.loading')}</div>`}
     `;
   }

@@ -3,6 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { logger } from './utils/logger.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-code-highlight.js';
 
 // Configure marked with custom renderer
@@ -115,7 +116,10 @@ export class PbMarkdown extends pbMixin(LitElement) {
     if (!this.content) {
       return null;
     }
-    return html`<div>${unsafeHTML(marked.parse(this.content))}</div>`;
+    // Sanitize markdown output to prevent XSS attacks
+    const parsed = marked.parse(this.content);
+    const sanitized = sanitizeHTML(parsed);
+    return html`<div>${unsafeHTML(sanitized)}</div>`;
   }
 
   static get styles() {

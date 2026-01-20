@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { translate } from './pb-i18n.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
 
@@ -57,9 +58,9 @@ export class PbMessage extends themableMixin(LitElement) {
   render() {
     return html`
       <pb-dialog>
-        <h2 id="title" slot="title">${unsafeHTML(this.title)}</h2>
+        <h2 id="title" slot="title">${unsafeHTML(sanitizeHTML(this.title))}</h2>
         <div id="message" class="message" tabindex="0">
-          ${this.message ? unsafeHTML(this.message) : html`<slot></slot>`}
+          ${this.message ? unsafeHTML(sanitizeHTML(this.message)) : html`<slot></slot>`}
         </div>
 
         <div class="buttons" slot="footer">
