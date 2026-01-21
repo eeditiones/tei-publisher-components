@@ -171,7 +171,7 @@ describe('pb-view', () => {
     })
   })
 
-  it('should handle animations with animejs v4.2.2', () => {
+  it('should handle animations with animejs', () => {
     interceptParts()
     cy.mount(`
       <pb-page endpoint="." api-version="1.0.0">
