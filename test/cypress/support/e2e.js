@@ -397,6 +397,34 @@ Cypress.Commands.add('waitUpdate', hostSelector => {
   return cy.get(hostSelector).then($el => cy.wrap($el[0].updateComplete));
 });
 
+// Convenience: wait for pb-tify component to initialize Tify library
+// Usage: cy.waitTifyReady('pb-tify')
+Cypress.Commands.add('waitTifyReady', (selector = 'pb-tify', options = {}) => {
+  const timeout = options.timeout || 10000
+  return cy.get(selector).then($el => {
+    const element = $el[0]
+    return new Cypress.Promise((resolve) => {
+      if (element._tify && element._tify.ready) {
+        element._tify.ready.then(() => resolve()).catch(() => resolve()) // Resolve even if promise rejects
+      } else {
+        const checkReady = setInterval(() => {
+          if (element._tify && element._tify.ready) {
+            clearInterval(checkReady)
+            element._tify.ready.then(() => resolve()).catch(() => resolve())
+          } else if (element._tify && element._tify.app && element._tify.app.$root) {
+            clearInterval(checkReady)
+            resolve()
+          }
+        }, 100)
+        setTimeout(() => {
+          clearInterval(checkReady)
+          resolve() // Resolve after timeout to avoid hanging tests
+        }, timeout)
+      }
+    })
+  })
+})
+
 // Authentication helpers for real backend tests
 Cypress.Commands.add('login', (fixtureName = 'user') => {
   return cy.fixture(fixtureName).then(({ user, password }) => {
