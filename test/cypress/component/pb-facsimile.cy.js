@@ -92,6 +92,72 @@ describe('pb-facsimile', () => {
     });
   });
 
+  it('should not remove body elements when entering fullscreen', () => {
+    cy.mount(`
+      <div>
+        <pb-page endpoint="." api-version="1.0.0">
+          <pb-facsimile
+            base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+            facsimiles='["15929_000_IDL5772_BOss12034_IIIp79.jpg"]'
+            default-zoom-level="0"
+            show-navigator=""
+            show-sequence-control=""
+            reference-strip=""
+            show-navigation-control=""
+            show-home-control=""
+            show-rotation-control=""
+            show-full-page-control="">
+            <h3 slot="before">Facsimile Viewer Test</h3>
+            <div slot="after">Status: <span id="status"></span></div>
+          </pb-facsimile>
+        </pb-page>
+        <h3 id="other">Some other data</h3>
+      </div>
+    `)
+
+    cy.get('pb-facsimile').then(($facsimile) => {
+      const facsimile = $facsimile[0]
+
+      // Mock OpenSeadragon viewer with buttonGroup
+      const requestFullscreenStub = cy.stub().as('requestFullscreen')
+      facsimile.viewer = {
+        element: {
+          requestFullscreen: requestFullscreenStub,
+          querySelector: cy.stub().returns({
+            title: 'Toggle full page',
+            setPointerCapture: cy.stub(),
+            dispatchEvent: cy.stub()
+          })
+        },
+        buttonGroup: {
+          buttons: [{
+            tooltip: 'Toggle full page',
+            onRelease: null,
+            raiseEvent: cy.stub()
+          }]
+        },
+        addHandler: cy.stub()
+      }
+
+      // Call _overrideFullscreenButton to set up the handler
+      facsimile._overrideFullscreenButton()
+
+      // Verify the override is in place
+      const button = facsimile.viewer.buttonGroup.buttons.find(b => b.tooltip === 'Toggle full page')
+      expect(button).to.exist
+      expect(button.onRelease).to.be.a('function')
+
+      // Simulate fullscreen button click
+      button.onRelease()
+
+      // Verify requestFullscreen was called (not OSD's default behavior)
+      cy.get('@requestFullscreen').should('have.been.called')
+
+      // Verify other elements are still in DOM (not removed by OSD)
+      cy.get('#other').should('exist').should('have.text', 'Some other data')
+    })
+  })
+
   describe('request deduplication', () => {
     beforeEach(() => {
       // Suppress uncaught exceptions from OpenSeadragon loading
