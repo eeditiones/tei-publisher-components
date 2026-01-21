@@ -25,6 +25,9 @@ describe('pb-tify e2e', () => {
   it('should display IIIF viewer with default manifest', () => {
     cy.get('pb-tify').should('exist')
     
+    // Wait for Tify to initialize
+    cy.waitTifyReady('pb-tify', { timeout: 15000 })
+    
     // Wait for the IIIF viewer to initialize
     cy.get('pb-tify').should('be.visible')
     
@@ -32,6 +35,7 @@ describe('pb-tify e2e', () => {
     cy.get('pb-tify').then($el => {
       const element = $el[0]
       expect(element._container).to.exist
+      expect(element._tify).to.exist
     })
   })
 
@@ -39,11 +43,13 @@ describe('pb-tify e2e', () => {
     // Test clicking on different facs links
     cy.get('pb-facs-link').contains('Shakespeare').click()
     
-    // Wait for manifest to load
+    // Wait for Tify to initialize and manifest to load
+    cy.waitTifyReady('pb-tify', { timeout: 15000 })
     cy.get('pb-tify').should('be.visible')
     
     // Test clicking on page-specific link
     cy.get('pb-facs-link').contains('page 4').click()
+    cy.waitTifyReady('pb-tify', { timeout: 10000 })
     
     // Verify the viewer is still functional
     cy.get('pb-tify').should('be.visible')
@@ -53,17 +59,22 @@ describe('pb-tify e2e', () => {
     // Test Historia Astronomiae manifest
     cy.get('pb-facs-link').contains('Historia Astronomiae').click()
     
-    // Wait for manifest to load
+    // Wait for Tify to initialize and manifest to load
+    cy.waitTifyReady('pb-tify', { timeout: 15000 })
     cy.get('pb-tify').should('be.visible')
     
     // Verify viewer is functional with different manifest
     cy.get('pb-tify').then($el => {
       const element = $el[0]
       expect(element._container).to.exist
+      expect(element._tify).to.exist
     })
   })
 
   it('should emit pb-refresh events on page changes', () => {
+    // Wait for Tify to initialize first
+    cy.waitTifyReady('pb-tify', { timeout: 15000 })
+    
     // Listen for pb-refresh events
     cy.window().then(win => {
       const refreshSpy = cy.spy()
@@ -71,6 +82,9 @@ describe('pb-tify e2e', () => {
       
       // Navigate to a specific page
       cy.get('pb-facs-link').contains('page 4').click()
+      
+      // Wait for Tify to handle navigation
+      cy.waitTifyReady('pb-tify', { timeout: 10000 })
       
       // Wait a bit for the event to be emitted
       cy.wait(1000).then(() => {
@@ -118,28 +132,7 @@ describe('pb-tify e2e', () => {
       cy.wait('@imageInfo', { timeout: 10000 })
 
       // Wait for Tify to be ready
-      cy.get('pb-tify').then($el => {
-        const element = $el[0]
-        return new Cypress.Promise((resolve) => {
-          if (element._tify && element._tify.ready) {
-            element._tify.ready.then(() => resolve())
-          } else {
-            const checkReady = setInterval(() => {
-              if (element._tify && element._tify.ready) {
-                clearInterval(checkReady)
-                element._tify.ready.then(() => resolve())
-              } else if (element._tify && element._tify.app && element._tify.app.$root) {
-                clearInterval(checkReady)
-                resolve()
-              }
-            }, 100)
-            setTimeout(() => {
-              clearInterval(checkReady)
-              resolve()
-            }, 10000)
-          }
-        })
-      })
+      cy.waitTifyReady('pb-tify', { timeout: 10000 })
 
       // Listen for pb-refresh events
       cy.window().then(win => {
@@ -195,25 +188,7 @@ describe('pb-tify e2e', () => {
       cy.wait('@manifest3', { timeout: 10000 })
 
       // Wait for Tify to be ready
-      cy.get('pb-tify').then($el => {
-        const element = $el[0]
-        return new Cypress.Promise((resolve) => {
-          if (element._tify && element._tify.ready) {
-            element._tify.ready.then(() => resolve())
-          } else {
-            const checkReady = setInterval(() => {
-              if (element._tify && element._tify.app && element._tify.app.$root) {
-                clearInterval(checkReady)
-                resolve()
-              }
-            }, 100)
-            setTimeout(() => {
-              clearInterval(checkReady)
-              resolve()
-            }, 10000)
-          }
-        })
-      })
+      cy.waitTifyReady('pb-tify', { timeout: 10000 })
 
       // Listen for pb-refresh events
       cy.window().then(win => {
@@ -273,25 +248,7 @@ describe('pb-tify e2e', () => {
       cy.wait('@manifest3', { timeout: 10000 })
 
       // Wait for Tify to be ready
-      cy.get('pb-tify').then($el => {
-        const element = $el[0]
-        return new Cypress.Promise((resolve) => {
-          if (element._tify && element._tify.ready) {
-            element._tify.ready.then(() => resolve())
-          } else {
-            const checkReady = setInterval(() => {
-              if (element._tify && element._tify.app && element._tify.app.$root) {
-                clearInterval(checkReady)
-                resolve()
-              }
-            }, 100)
-            setTimeout(() => {
-              clearInterval(checkReady)
-              resolve()
-            }, 10000)
-          }
-        })
-      })
+      cy.waitTifyReady('pb-tify', { timeout: 10000 })
 
       // Verify Vue store watcher is set up
       cy.get('pb-tify').then($el => {
@@ -407,28 +364,8 @@ describe('pb-tify e2e', () => {
           }
         })
 
-        cy.get('pb-tify').then($el => {
-          const element = $el[0]
-          return new Cypress.Promise((resolve) => {
-            if (element._tify && element._tify.ready) {
-              element._tify.ready.then(() => resolve())
-            } else {
-              const checkReady = setInterval(() => {
-                if (element._tify && element._tify.ready) {
-                  clearInterval(checkReady)
-                  element._tify.ready.then(() => resolve())
-                } else if (element._tify && element._tify.app && element._tify.app.$root) {
-                  clearInterval(checkReady)
-                  resolve()
-                }
-              }, 100)
-              setTimeout(() => {
-                clearInterval(checkReady)
-                resolve()
-              }, 10000)
-            }
-          })
-        })
+        // Wait for Tify to be ready
+        cy.waitTifyReady('pb-tify', { timeout: 10000 })
 
         cy.get('pb-tify').should('be.visible')
         
@@ -515,28 +452,8 @@ describe('pb-tify e2e', () => {
           }
         })
 
-        cy.get('pb-tify').then($el => {
-          const element = $el[0]
-          return new Cypress.Promise((resolve) => {
-            if (element._tify && element._tify.ready) {
-              element._tify.ready.then(() => resolve())
-            } else {
-              const checkReady = setInterval(() => {
-                if (element._tify && element._tify.ready) {
-                  clearInterval(checkReady)
-                  element._tify.ready.then(() => resolve())
-                } else if (element._tify && element._tify.app && element._tify.app.$root) {
-                  clearInterval(checkReady)
-                  resolve()
-                }
-              }, 100)
-              setTimeout(() => {
-                clearInterval(checkReady)
-                resolve()
-              }, 10000)
-            }
-          })
-        })
+        // Wait for Tify to be ready
+        cy.waitTifyReady('pb-tify', { timeout: 10000 })
 
         cy.get('pb-tify').should('be.visible')
         
