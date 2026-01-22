@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import TomSelect from 'tom-select';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { get as i18n } from './pb-i18n.js';
 
 function importTheme(theme) {

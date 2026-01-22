@@ -1,5 +1,5 @@
-import { get as i18n } from './pb-i18n.js';
-import { logger } from './utils/logger.js';
+import { get as i18n } from '../../pb-i18n.js';
+import { logger } from '../logger.js';
 
 export class SearchResultService {
   /*

@@ -6,7 +6,8 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
+
 import { logger } from './utils/logger.js';
 
 let _verovio = null;

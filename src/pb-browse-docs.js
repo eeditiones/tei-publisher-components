@@ -3,7 +3,7 @@ import { PbLoad } from './pb-load.js';
 import { waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { registry } from './urls.js';
 import { logger } from './utils/logger.js';
 import './pb-icon.js';

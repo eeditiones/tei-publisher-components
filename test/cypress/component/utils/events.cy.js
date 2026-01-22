@@ -1,6 +1,6 @@
-// Cypress CT: pb-events
-import '../../../src/pb-events.js'
-import { PbEvents } from '../../../src/pb-events.js'
+// Cypress CT: utils/events.js
+import '../../../../src/utils/events.js'
+import { PbEvents } from '../../../../src/utils/events.js'
 
 describe('PbEvents', () => {
   it('should subscribe to default channel', () => {

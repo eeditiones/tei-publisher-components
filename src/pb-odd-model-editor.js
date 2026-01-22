@@ -8,7 +8,7 @@ import './pb-icon-button.js';
 
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { logger } from './utils/logger.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';

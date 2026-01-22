@@ -1,5 +1,5 @@
 import { match, compile, pathToRegexp } from 'path-to-regexp';
-import { PbEvents } from './pb-events.js';
+import { PbEvents } from './utils/events.js';
 import { getSubscribedChannels } from './pb-mixin.js';
 import { logger } from './utils/logger.js';
 
