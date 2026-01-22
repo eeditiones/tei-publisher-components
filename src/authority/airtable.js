@@ -1,6 +1,6 @@
 import '@lrnwebcomponents/es-global-bridge';
 import { Registry } from './registry.js';
-import { resolveURL } from '../utils.js';
+import { resolveURL } from '../utils/url.js';
 import { logger } from '../utils/logger.js';
 
 function expandTemplate(template = '', options) {

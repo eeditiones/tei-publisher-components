@@ -1,4 +1,4 @@
-import { defaultChannel } from './pb-mixin.js';
+import { defaultChannel } from '../pb-mixin.js';
 
 /**
  * Utility class to plug into TEI Publisher's event system from custom javascript.

@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { SearchResultService } from './search-result-service.js';
-import { ParseDateService } from './parse-date-service.js';
+import { SearchResultService } from './utils/services/search-result-service.js';
+import { ParseDateService } from './utils/services/parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
 import { logger } from './utils/logger.js';
 import { sanitizeHTML } from './utils/sanitize.js';
