@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
 import { logger } from './utils/logger.js';
 import './pb-icon.js';
 import { translate } from './pb-i18n.js';
@@ -349,7 +350,7 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
       }
 
       .found {
-        padding-left: 20px;
+        padding-left: .5rem;
       }
     `;
   }
