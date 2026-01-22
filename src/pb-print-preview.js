@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 
 /**
  * Generates a HTML print preview of a document using the [pagedjs](https://pagedjs.org/) polyfill

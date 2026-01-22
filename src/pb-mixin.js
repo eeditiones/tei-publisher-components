@@ -1,4 +1,4 @@
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 
 if (!window.TeiPublisher) {
   window.TeiPublisher = {};

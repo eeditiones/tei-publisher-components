@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
-import { getCSSProperty } from './utils.js';
+import { getCSSProperty } from './utils/css.js';
 import { logger } from './utils/logger.js';
 import * as themes from './pb-popover-themes.js';
 

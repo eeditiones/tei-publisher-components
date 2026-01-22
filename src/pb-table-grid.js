@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { Grid, PluginPosition } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { loadStylesheets, importStyles, themableMixin } from './theming.js';
 import { translate } from './pb-i18n.js';
 import './pb-table-column.js';

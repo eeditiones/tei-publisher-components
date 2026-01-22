@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import 'tify';
 import { pbMixin, waitOnce, defaultChannel, getEmittedChannels } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { registry } from './urls.js';
 import { logger } from './utils/logger.js';
 import { createErrorElement, clearErrorElement, formatErrorMessage } from './utils/error-handling.js';

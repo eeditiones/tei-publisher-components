@@ -1,6 +1,6 @@
 // Cypress CT: pb-document
 import '../../../src/pb-document.js'
-import { PbEvents } from '../../../src/pb-events.js'
+import { PbEvents } from '../../../src/utils/events.js'
 
 describe('pb-document', () => {
   it('should have correct paths', () => {

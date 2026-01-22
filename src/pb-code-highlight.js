@@ -6,7 +6,8 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import { resolveURL, getCSSProperty } from './utils.js';
+import { resolveURL } from './utils/url.js';
+import { getCSSProperty } from './utils/css.js';
 import { themableMixin } from './theming.js';
 import { logger } from './utils/logger.js';
 
