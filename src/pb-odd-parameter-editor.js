@@ -5,7 +5,7 @@ import './pb-autocomplete.js';
 import './pb-icon-button.js';
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { get as i18n, translate } from './pb-i18n.js';
 import { logger } from './utils/logger.js';
 

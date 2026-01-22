@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { logger } from './utils/logger.js';
 import { loadStylesheets } from './theming.js';
 import { initTranslation } from './pb-i18n.js';

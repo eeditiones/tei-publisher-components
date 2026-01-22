@@ -7,7 +7,7 @@ import { logger } from './utils/logger.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
 import './pb-edit-xml.js';
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { themableMixin } from './theming.js';
 
 /**
