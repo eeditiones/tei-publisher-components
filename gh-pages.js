@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const copy = require('recursive-copy');
 
 const pkg = fs.readFileSync('package.json', 'utf-8');
 const json = JSON.parse(pkg);
@@ -12,12 +11,23 @@ const dist = path.join(dir, 'dist');
 fs.mkdirSync(dist, { recursive: true });
 
 console.log('[gh-pages] Copying files to %s', dir);
-copy('dist', dist);
-copy('i18n', path.join(dir, 'i18n'));
-copy('images', path.join(dir, 'images'));
-copy('lib', path.join(dir, 'lib'));
-copy('css', path.join(dir, 'css'));
-copy('src', path.join(dir, 'src'));
+
+// Native Node.js replacement for recursive-copy using fs.cpSync (Node 16.7+)
+const dirsToCopy = ['dist', 'i18n', 'images', 'lib', 'css', 'src'];
+dirsToCopy.forEach(src => {
+  const dest = path.join(dir, src);
+  try {
+    if (fs.existsSync(src)) {
+      fs.cpSync(src, dest, { recursive: true });
+      console.log(`Copied: ${src} -> ${dest}`);
+    } else {
+      console.warn(`Source not found: ${src}`);
+    }
+  } catch (error) {
+    console.error(`Error copying ${src}:`, error.message);
+    process.exit(1);
+  }
+});
 
 // Only link stable versions as latest, not pre-release versions (e.g., v.*-next.*)
 const isStableVersion = !json.version.includes('-next');
