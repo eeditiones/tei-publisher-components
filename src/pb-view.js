@@ -1043,7 +1043,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
     params.odd = `${this.getOdd()}.odd`;
     params.view = this.getView();
-    params.fill = this.fill;
+    if (this.fill) {
+        params.fill = this.fill;
+    }
     if (pos) {
       params.root = pos;
     }
