@@ -1,3 +1,10 @@
+# [3.0.0-next-4.10](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.9...v3.0.0-next-4.10) (2026-01-23)
+
+
+### Bug Fixes
+
+* **pb-view:** do not pass fill parameter if undefined ([c90d5c3](https://github.com/eeditiones/tei-publisher-components/commit/c90d5c3894f63fa8d564d9774f904dc80d3fef87))
+
 # [3.0.0-next-4.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.8...v3.0.0-next-4.9) (2026-01-19)
 
 
