@@ -1,6 +1,6 @@
 ARG EXIST_VERSION=release
 ARG BUILD=local
-ARG PUBLISHER_VERSION=master
+ARG PUBLISHER_VERSION=9.1.1
 
 # START STAGE 1
 FROM ghcr.io/eeditiones/builder:latest AS builder
@@ -11,7 +11,7 @@ ARG PUBLISHER_VERSION
 # Build tei-publisher-app
 RUN  git clone https://github.com/eeditiones/tei-publisher-app.git \
     && cd tei-publisher-app \
-    && git checkout ${PUBLISHER_VERSION} \
+    && git checkout v${PUBLISHER_VERSION} \
     # if you prefer to have webcomponents included locally, comment out following line and
     # enable the ones below
     && sed -i 's/$config:webcomponents :=.*;/$config:webcomponents := "local";/' modules/config.xqm \
