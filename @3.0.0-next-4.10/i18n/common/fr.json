@@ -1,0 +1,214 @@
+{
+  "language": "Langue",
+  "menu": {
+    "documentation": "Documentation",
+    "admin": {
+      "title": "Fonctions avancées",
+      "recompile": "Recompiler le fichier ODD",
+      "appGenerator": "Générateur d’applications",
+      "edit-odd": "Éditer l’ODD"
+    },
+    "news": "Actualités",
+    "download": {
+      "title": "Télécharger",
+      "pdf-latex": "PDF (version LaTeX)",
+      "pdf-fo": "PDF (version XSL-FO)",
+      "pdf-title": "Télécharger en PDF",
+      "fo-source": "Source XSL-FO",
+      "latex-source": "Source TeX",
+      "single-page": "Page unique",
+      "epub-download": "Télécharger un ebook au format ePub",
+      "view-tei": "Voir le fichier source XML TEI"
+    }
+  },
+  "dialogs": {
+    "error": "Oups ... ",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "serverError": "Erreur d’exécution de la requête.",
+    "generatingFile": "Génération du fichier...",
+    "downloadMessage": "La génération du fichier à télécharger peut prendre quelques minutes, merci de patienter. Cette boîte de dialogue se fermera automatiquement à la fin du téléchargement.",
+    "loading": "Chargement ..."
+  },
+  "document": {
+    "contents": "Contenus",
+    "selectODD": "Sélectionner un ODD",
+    "selectTemplate": "Sélectionner un template de page",
+    "selectFeature": "Sélectionner une fonctionnalité",
+    "normalized": "Vue normalisée",
+    "plain": "Vue texte non formaté",
+    "view-type": "Vue page",
+    "add-panel": "Ajouter une vue",
+    "caveat-heading": "Avertissement",
+    "settings": "Paramètres",
+    "caveat": "Ces options permettent de tester l'application de différents templates de pages et différents fichiers ODD au document courant. Veuillez noter que les préférences paramétrées dans ces fichiers peuvent être spécifiques à certains types de documents et ne pas être pertinentes pour d'autres. Par exemple, une carte ne pourra pas être produite si l'encodage ne contient pas de coordonnées géographiques explicites et modélisées en fonction des traitements souhaités. Si le message \"Erreur d'exécution de la requête\" s'affiche, c'est souvent l'indication d'un défaut d'alignement entre les données encodées, le fichier ODD et le template de page."
+  },
+  "browse": {
+    "description": "Utilisez cette application pour expérimenter la publication de fichiers TEI et XML à partir de modèles de traitements configurables via un fichier ODD. Chargez vos fichiers XML dans l'application, créez un nouveau fichier de spécification ODD puis commencez à définir vos choix via une interface graphique ou directement en XML TEI.",
+    "login": "est nécessaire pour pouvoir télécharger des fichiers ou accéder aux fonctions avancées (utilisateur par défaut : 'tei-demo' ; mot de passe : 'demo').",
+    "sort": "Trier par",
+    "filter": "Filtrer selon",
+    "filterPlaceholder": "Filtrer",
+    "items": "{{count}} résultat",
+    "items_plural": "{{count}} résultats",
+    "title": "Titre",
+    "author": "Auteur",
+    "modificationDate": "Date de modification",
+    "file": "Nom de fichier",
+    "delete": "Supprimer",
+    "confirmDeletion": "Voulez-vous vraiment supprimer ce fichier ?",
+    "confirmDeletion_plural": "Êtes-vous sûr de vouloir supprimer {{count}} fichiers?",
+    "documents": "Documents",
+    "collections": "Collection locale",
+    "dts": "Protocole de partage de textes DTS",
+    "test": {
+      "title": "Collection de démonstration de TEI Publisher",
+      "description": "Documents présentant diverses caractéristiques. Cette sélection n’est en aucun cas exhaustive mais représente un sous-ensemble de ce qu’il est possible de faire. Vous êtes invités à proposer vos propres cas d'utilisation pour compléter cette liste."
+    },
+    "playground": {
+      "title": "Aire de jeux",
+      "description": "Une collection accessible en écriture dans laquelle vous pouvez télécharger vos propres documents à tester."
+    },
+    "doc": {
+      "title": "Documentation",
+      "description": "Documentation (au format XML Docbook)."
+    },
+    "markdown": {
+      "title": "Exemple de Markdown",
+      "description": "Un exemple d'utilisation de markdown pour le contenu statique."
+    },
+    "up": "Aller au Parent"
+  },
+  "upload": {
+    "upload": "Télécharger",
+    "drop": "Déposez {{accept}} fichiers ici pour les télécharger."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Afficher le code",
+      "hide": "Cacher le code"
+    },
+    "editCode": {
+      "show": "Modifier le code",
+      "hide": "Fermer l’éditeur"
+    }
+  },
+  "clipboard": {
+    "copy": "Cliquez sur l'icône pour copier dans le presse-papiers",
+    "paste": "Collez dans le champ de saisie pour tester"
+  },
+  "login": {
+    "login": "Se connecter",
+    "as": "Connecté en tant que {{user}}",
+    "user": "Utilisateur",
+    "password": "Mot de passe",
+    "invalid": "Mot de passe incorrect ou utilisateur non valide",
+    "requiredGroup": "doit être membre du groupe {{group}}"
+  },
+  "search": {
+    "search": "Recherche",
+    "reset": "Réinitialiser ",
+    "placeholder": "rechercher...",
+    "sections": "dans le texte",
+    "headings": "dans les titres de sections"
+  },
+  "dts": {
+    "endpoint": "Sélectionner une URL racine",
+    "note": "Fonction expérimentale permettant d'accéder aux données d'autres éditions exposées via une API DTS (Distributed Text Services)\""
+  },
+  "odd": {
+    "files": "Fichiers ODD",
+    "manage": {
+      "filename": "Nom du fichier ODD (sans suffixe)",
+      "title": "Titre à afficher",
+      "create": "Créer",
+      "create-from-example": "Créer à partir d'exemples",
+      "delete": "Êtes-vous sûr de vouloir supprimer le fichier {{file}} ?",
+      "regenerate-all": "Régénérer tous les ODD (lent)",
+      "filename-error": "Obligatoire. Utilisez des lettres, chiffres, - et _",
+      "title-error": "Un titre est requis"
+    },
+    "editor": {
+      "delete-spec": "Voulez-vous vraiment supprimer la spécification de l'élément pour {{ident}} ?",
+      "save": "Sauvegarder",
+      "saving": "Enregistrement en cours...",
+      "saved": "Sauvegardé",
+      "denied": "Autorisation Refusée",
+      "denied-message": "Vous n'avez pas l'autorisation de sauvegarder {{odd}}",
+      "reload": "Recharger",
+      "reload-confirm": "Toute modification non enregistrée sera perdue. Voulez-vous continuer ?",
+      "add-element": "Ajouter un élément",
+      "odd-source": "Source ODD ",
+      "specs": "Spécifications de l’élément",
+      "jump-to": "Aller à l’élément ...",
+      "title-short": "Titre court",
+      "title-short-placeholder": "Titre court à afficher",
+      "description-label": "Description",
+      "description-placeholder": "Description de l’ODD",
+      "source-label": "ODD de base",
+      "source-placeholder": "ODD à hériter de",
+      "use-namespace": "Vérifier l’utilisation d’un espace de noms différent de TEI",
+      "namespace-placeholder": "URI de l’espace de noms par défaut (si ce n’est pas TEI)",
+      "title": "Titre",
+      "title-placeholder": "Titre de du fichier ODD",
+      "model": {
+        "delete-model-label": "Supprimer le modèle ?",
+        "delete-model-message": "Voulez-vous vraiment supprimer le modèle sélectionné ?",
+        "description-placeholder": "[Documenter le modèle]",
+        "predicate-placeholder": "[Définir d’autres conditions qui doivent être remplies (en xquery)]",
+        "link-with-or": "ou",
+        "css-class-placeholder": "[Nom de la classe CSS (pour les CSS externes)]",
+        "custom-behaviour-placeholder": "[Comportement personnalisé]",
+        "template-placeholder": "[Définir le gabarit de code à appliquer au contenu]",
+        "param-name-placeholder": "[Paramètre]",
+        "empty": "[Vide]"
+      },
+      "css-source": "Ouvrir le fichier CSS"
+    }
+  },
+  "facets": {
+    "show": "Montrer les 50 premiers",
+    "genre": "Genre",
+    "language": "Langue"
+  },
+  "appgen": {
+    "account": {
+      "user": "Compte utilisateur pour les tâches d'administration. L'utilisateur sera créé s'il n'existe pas encore.",
+      "owner": "Le compte utilisateur qui sera propriétaire de l'application.",
+      "password": "Mot de passe de l'utilisateur propriétaire de l'application."
+    },
+    "submit": "Sauvegarder et générer",
+    "index": {
+      "help": "Définir le bloc le plus petit sur lequel un index plein texte est créé. Pour les documents organisés en divisions, choisir « Créer sur une division » est en général le meilleur choix. S’il n’y a pas de division, choisissez « Créer sur le texte ».",
+      "label": "Index plein texte par défaut",
+      "index-div": "Créer sur une division",
+      "index-text": "Créer sur le texte"
+    },
+    "view": {
+      "help": "Choisissez comment le texte sera affiché par défaut : par page ou par division. L'affichage par page nécessite que le TEI soit correctement encodé avec des balises &lt;tei:pb&gt;.",
+      "div": "Par division (chapitre/section...)",
+      "page": "Par page"
+    },
+    "label": "Vue par défaut",
+    "template": {
+      "help": "Choisissez le gabarit HTML à utiliser par défaut",
+      "label": "Gabarit HTML"
+    },
+    "title": {
+      "help": "Titre de l'application qui sera affiché dans le tableau de bord",
+      "label": "Nom de l'application"
+    },
+    "collection": "Nom de la sous-collection pour conserver les documents TEI",
+    "abbrev": {
+      "label": "Nom abrégé à utiliser dans les URL et les noms de fichiers",
+      "placeholder": "Nom abrégé"
+    },
+    "uri": "URL pour identifier l'application de manière unique",
+    "dialog": {
+      "title": "L’application a été générée"
+    },
+    "open": "Ouvrir",
+    "success": "Votre application a été générée avec succès !"
+  }
+}

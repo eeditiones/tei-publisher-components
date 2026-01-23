@@ -1,0 +1,320 @@
+{
+  "language": "语言",
+  "menu": {
+    "documentation": "文档",
+    "admin": {
+      "title": "管理员",
+      "recompile": "重新编译ODD",
+      "appGenerator": "应用程序生成器",
+      "edit-odd": "编辑ODD"
+    },
+    "news": "最新消息",
+    "download": {
+      "title": "下载",
+      "pdf-latex": "PDF (LaTeX版本)",
+      "pdf-fo": "PDF (FO版本)",
+      "pdf-title": "下载PDF",
+      "fo-source": "FO源码",
+      "latex-source": "TeX源码",
+      "single-page": "单页",
+      "epub-download": "下载为epub电子书",
+      "view-tei": "查看TEI XML文件"
+    }
+  },
+  "dialogs": {
+    "error": "出错了！",
+    "close": "关闭",
+    "yes": "确定",
+    "no": "取消",
+    "serverError": "向服务器请求失败。",
+    "generatingFile": "正在生成文件",
+    "downloadMessage": "生成下载文件可能需要几分钟的时间。请稍后。该对话框将在下载完成后自动关闭。",
+    "loading": "正在载入..."
+  },
+  "document": {
+    "contents": "目录",
+    "selectODD": "选择ODD",
+    "selectTemplate": "选择模板",
+    "selectFeature": "选择功能",
+    "normalized": "标准视图",
+    "plain": "阅读视图",
+    "view-type": "页面视图",
+    "add-panel": "添加视图",
+    "caveat-heading": "注意事项",
+    "settings": "设置",
+    "caveat": "只需在这里更改这些选项，就可以试验不同的页面模板和ODD。请注意，并非每个设置组合对所有文档都成立。如同没有明确编码和处理的坐标无法生成地图一样，页面视图也需要先标记分页符。如果你看到“服务器没有回复任何内容”的消息，通常即表明编码数据、ODD和页面模板相互不匹配。"
+  },
+  "browse": {
+    "description": "使用这个应用程序用来实验和试行各种包含处理模型指令的ODD。您可以上传个人文件并创建自定义的ODD。",
+    "login": "上传文件或查看管理功能(默认用户：“tei-demo”，密码：“demo”)。",
+    "login-1": "登录为 ",
+    "login-2": "密码",
+    "login-3": "试用您自己的文档和 ODD",
+    "sort": "排序方式",
+    "filter": "过滤条件",
+    "filterPlaceholder": "过滤器",
+    "items": "找到 {{count}} 项",
+    "items_plural": "找到 {{count}} 项",
+    "title": "标题",
+    "author": "作者",
+    "modificationDate": "修改日期",
+    "file": "文件名",
+    "delete": "删除",
+    "confirmDeletion": "确定要删除该文件吗？",
+    "confirmDeletion_plural": "确定要删除该{{count}}份文件吗？",
+    "documents": "文件",
+    "documents-removed": "已删除文档",
+    "document-not-found": "未找到文档",
+    "document-remove-failed": "删除文档失败",
+    "collections": "本地收藏夹",
+    "dts": "分布式文本服务(实验性)",
+    "test": {
+      "title": "TEI Publisher 演示收藏",
+      "description": "展示各种特征的文件。 其选择并不全面，只展示了一部分可能性。欢迎您以個人案例加以補充。"
+    },
+    "playground": {
+      "title": "游乐场",
+      "description": "可输入的集合，便于上传个人文件进行测试。"
+    },
+    "doc": {
+      "title": "文档",
+      "description": "文档 (以Docbook XML编写)"
+    },
+    "markdown": {
+      "title": "标记符示例",
+      "description": "静态内容中使用标记符的示例"
+    },
+    "annotate": {
+      "title": "注释示例",
+      "description": "注释文档的另一个游乐场。"
+    },
+    "up": "返回上层"
+  },
+  "upload": {
+    "upload": "上传",
+    "drop": "将{{accept}}文件拖至此处上传"
+  },
+  "demo": {
+    "showCode": {
+      "show": "显示代码",
+      "hide": "隐藏代码"
+    },
+    "editCode": {
+      "show": "编辑代码",
+      "hide": "关闭编辑器"
+    }
+  },
+  "clipboard": {
+    "copy": "点击复制到剪贴板",
+    "paste": "粘贴至输入栏测试"
+  },
+  "login": {
+    "login": "登入",
+    "as": "以 {{user}} 身份登录",
+    "user": "用户",
+    "password": "密码",
+    "invalid": "密码错误或用户无效",
+    "requiredGroup": "必须属于 {{group}}"
+  },
+  "search": {
+    "search": "搜索",
+    "reset": "重置",
+    "placeholder": "输入查询",
+    "sections": "章节搜索",
+    "headings": "标题搜索",
+    "title": "搜索标题",
+    "content": "搜索内容",
+    "scope": "查询范围"
+  },
+  "dts": {
+    "endpoint": "选择终结点",
+    "note": "实验性: 通过DTS API 访问其他版本",
+    "requires-login": "需要登录"
+  },
+  "odd": {
+    "files": "ODD 文件",
+    "manage": {
+      "filename": "ODD 文件名(无后缀)",
+      "title": "显示标题",
+      "create": "创建",
+      "create-from-example": "从实例中创建",
+      "delete": "确定要删除ODD文件 {{file}}?",
+      "regenerate-all": "重新生成所有ODD(慢)",
+      "filename-error": "必填。使用字母、 数字、 - 和 _",
+      "title-error": "请输入标题。"
+    },
+    "editor": {
+      "delete-spec": "确定要删除 '{{ident}}'元素规范？",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "已保存",
+      "unsaved": "有尚未保存的更改，将被包含在导出中！仍要继续吗？",
+      "download": "下载 ODD",
+      "save-as": "保存 ODD 到目录",
+      "denied": "无权限",
+      "denied-message": "您没有权限保存 {{odd}}",
+      "reload": "重新加载",
+      "reload-confirm": "未保存的更改都将丢失。是否继续？",
+      "add-element": "添加元素",
+      "odd-source": "ODD源码",
+      "specs": "元素规范",
+      "jump-to": "跳转至元素...",
+      "title-short": "短标题",
+      "title-short-placeholder": "显示的短标题",
+      "description-label": "描述",
+      "description-placeholder": "ODD的描述",
+      "source-label": "基础ODD",
+      "source-placeholder": "ODD 扩展自",
+      "use-namespace": "检查是否使用了与TEI不同的命名空间",
+      "namespace-placeholder": "默认的命名空间URI (若非TEI)",
+      "title": "标题",
+      "title-placeholder": "ODD 标题",
+      "model": {
+        "delete-model-label": "删除模型？",
+        "delete-model-message": "您确定要删除选中的模型？",
+        "description-placeholder": "[记录模型]",
+        "predicate-placeholder": "[定义必须满足的其他条件(在xquery中)]",
+        "link-with-or": "或",
+        "css-class-placeholder": "[定义CSS 类名 (用于外部 CSS 名称)]",
+        "custom-behaviour-placeholder": "[自定义行为]",
+        "template-placeholder": "[定义适用于内容的代码模板]",
+        "param-name-placeholder": "[参数名]",
+        "empty": "清空 [Empty]",
+        "mode-placeholder": "[处理模式-传递到后续模型]",
+        "set-param": "设置"
+      },
+      "css-source": "打开CSS文件"
+    }
+  },
+  "facets": {
+    "show": "显示前50",
+    "genre": "体裁",
+    "language": "语言",
+    "feature": "功能",
+    "form": "表单",
+    "period": "周期"
+  },
+  "appgen": {
+    "account": {
+      "user": "管理任务的用户账户。如果用户还不存在，将创建该用户。",
+      "owner": "将拥有该应用程序的用户账户。",
+      "password": "拥有此应用程序的用户密码。"
+    },
+    "submit": "保存/生成",
+    "index": {
+      "help": "定义创建全文索引的最小文本单位。对于有多个段落的文档，最好选择 \"创建段落\"。如果没有分段，选择 \"创建文本\"。",
+      "label": "默认全文索引",
+      "index-div": "创建段落",
+      "index-text": "创建文本"
+    },
+    "view": {
+      "help": "选择浏览文本时默认显示的内容：单页或整段。按页显示需要先用&lt;tei:pb&gt;标签正确标记TEI。",
+      "div": "按段落(章/节)",
+      "page": "按页"
+    },
+    "label": "默认视图",
+    "template": {
+      "help": "选择默认使用的HTML模板",
+      "label": "HTML 模板"
+    },
+    "title": {
+      "help": "将显示 (例如在Dashboard中) 的应用程序标题",
+      "label": "应用程序标题"
+    },
+    "collection": "持有TEI文件子集的名称",
+    "abbrev": {
+      "label": "在 URL 和文件名中使用的短名",
+      "placeholder": "短名称"
+    },
+    "uri": "唯一识别应用程序的 URL",
+    "dialog": {
+      "title": "应用程序已生成"
+    },
+    "open": "打开",
+    "success": "您的应用程式已成功产生"
+  },
+  "annotations": {
+    "edit": "编辑批注",
+    "delete": "删除批注",
+    "save": "合并并保存批注到 TEI",
+    "no-properties": "未定义属性。",
+    "person": "人员",
+    "organisation": "组织",
+    "place": "地点",
+    "term": "术语",
+    "date": "日期",
+    "reg": "规范化",
+    "app": "考证条目",
+    "hi": "突出显示",
+    "ref": "链接 (ref)",
+    "pb": "分页 (pb)",
+    "pagenum": "页码 (@n)",
+    "facs": "图像 URL (@facs)",
+    "abbreviation": "缩写",
+    "occurrences": "文本中出现的情况",
+    "correction": "矫正",
+    "expansion": "扩展",
+    "reference": "引用",
+    "lookup": "搜索实体",
+    "apply": "应用批注",
+    "apply-all": "选择并应用所有",
+    "search-other": "在其他文档中搜索事件",
+    "save-other": "搜索其它文档中的事件并立即应用批注",
+    "changes": "更改",
+    "undo": "撤消上次更改",
+    "download": "将合并的 TEI 保存到本地文件",
+    "reload": "重新加载源 TEI",
+    "preview": "刷新预览",
+    "confirm-restore-title": "确认还原",
+    "restore": "在上次会话中已找到此文档的注释。您想要重新加载它们吗？",
+    "confirm-reload-title": "确认重载",
+    "confirm-reload": "丢弃当前批注并重新加载源？",
+    "modify": "将编辑应用到基础文本",
+    "modify-info": "注意：这不是一个批注，将在合并后修改基础文本。",
+    "permission": "权限被拒绝：您无权保存批注。",
+    "ner": {
+      "title": "提取已命名实体",
+      "description": "尝试在文本中自动找到命名的实体，并将它们标记为批注。",
+      "run": "运行",
+      "model": "选择一个模型",
+      "denied": "未保存的更改：请先存储或丢弃。"
+    },
+    "confirm-discard-title": "丢弃",
+    "confirm-discard": "丢弃事件列表？",
+    "doc-count": "{{count}} / {{total}}",
+    "toggle": "显示/隐藏预览/控制面板",
+    "add-entity": "创建实体",
+    "edit-entity": "编辑主体",
+    "edit-reference": "搜索/编辑参考",
+    "hints": {
+      "modify": "标记为相同类型但不同键的实体",
+      "incomplete": "标记为相同类型但没有键",
+      "unmarked": "文本中未标记的事件",
+      "open-in-tab": "在新标签中打开文档进行审核"
+    }
+  },
+  "ner": {
+    "title": "训练一个命名实体识别模型",
+    "not-found": "此功能需要运行 TEI Publisher NER 服务！无法联系服务。",
+    "found": "发现带有spaCy版本的 TEI Publisher NER",
+    "name-placeholder": "要创建的模型名称",
+    "name": "名称",
+    "path": "路径",
+    "path-placeholder": "文档或集合的相对路径",
+    "path-info": "输入文档或集合的路径以用作训练输入。路径应相对于 TEI Publisher 的数据根目录。",
+    "lang-info": "您可以为某种语言训练一个新模型，或者选择下面的一个现有模型进行扩展。如果不扩展现有模型，您必须指定一种语言。否则请留空。",
+    "language-placeholder": "用于创建模型的语言",
+    "language": "语言",
+    "language-error": "需要一个语言或基本模型",
+    "model": "基础模型",
+    "model-placeholder": "要扩展或复制的基础模型",
+    "vectors": "仅从基础模型复制向量",
+    "output": "训练输出",
+    "prepare": "准备培训数据",
+    "start": "运行"
+  },
+  "timeline": {
+    "unknown": "未注明日期",
+    "clear": "清除日期选择"
+  }
+}
