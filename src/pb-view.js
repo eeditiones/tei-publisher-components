@@ -1445,7 +1445,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     } else {
       params.view = this.getView();
     }
-    params.fill = this.fill;
+    if (this.fill) {
+        params.fill = this.fill;
+    }
     if (pos && !isMetadataPanel) {
       params.root = pos;
     }
