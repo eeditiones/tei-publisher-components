@@ -7,8 +7,14 @@ const excluded = new Set(EXCLUDED_TAGS);
 let firstLoad = true;
 if (firstLoad) {
   hotkeys.filter = event => {
-    const { tagName } = event.target || event.srcElement;
-    return !(tagName.isContentEditable || excluded.has(tagName));
+    const { target } = /** @type {{target: HTMLElement}} */ (event);
+    if (target.isContentEditable) {
+      return false;
+    }
+
+    const { tagName } = target;
+
+    return !excluded.has(tagName);
   };
   firstLoad = false;
 }
