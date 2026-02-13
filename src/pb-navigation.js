@@ -57,7 +57,14 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
 
     this.subscribeTo('pb-update', this._update.bind(this));
 
-    this.registerHotkey('next', () => this.emitTo('pb-navigate', { direction: this.direction }));
+    this.registerHotkey('next', () => {
+      // Do not handle this hotkey if we have something focused. Otherwise we would basically
+      // disable the arrowkeys in input fields
+      if (window.document.activeElement && window.document.activeElement !== window.document.body) {
+        return;
+      }
+      this.emitTo('pb-navigate', { direction: this.direction });
+    });
 
     this.signalReady();
   }
