@@ -1,3 +1,10 @@
+## [3.0.7](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.6...v3.0.7) (2026-02-17)
+
+
+### Bug Fixes
+
+* **pb-navigation:** do not navigate when we have anything focused ([1da31ce](https://github.com/eeditiones/tei-publisher-components/commit/1da31ce31aaa2436c6ae33b2b03c7484a779ab8d))
+
 ## [3.0.6](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.5...v3.0.6) (2026-01-23)
 
 
