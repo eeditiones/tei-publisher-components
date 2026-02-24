@@ -1079,6 +1079,9 @@ class PbViewAnnotate extends PbView {
 
     const rootRect = root.getBoundingClientRect();
     const rect = range.getBoundingClientRect();
+    /**
+     * @type {HTMLElement}
+     */
     let marker = root.querySelector('[part=highlight]');
     if (!marker) {
       marker = document.createElement('div');
@@ -1092,7 +1095,7 @@ class PbViewAnnotate extends PbView {
     marker.style.width = `${rect.width + 4}px`;
     marker.style.height = `${rect.height}px`;
 
-    range.startContainer.parentNode.scrollIntoView(true);
+    marker.scrollIntoView(true);
   }
 
   hideMarker() {
