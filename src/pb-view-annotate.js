@@ -275,6 +275,10 @@ class PbViewAnnotate extends PbView {
     // fill should always be 0 when doing annotations!!!
     this.fill = 0;
 
+    // It is nonsense to (automatically) translate the contents of the annotation app. It will just
+    // break any offset mapping we ever want to do.
+    this.setAttribute('translate', 'no');
+
     let isMouseDown = false;
 
     this._inHandler = false;
@@ -322,9 +326,18 @@ class PbViewAnnotate extends PbView {
       scheduleCallback(delay);
     };
 
-    document.addEventListener('selectionchange', this._eventHandler.bind(this));
-    this.shadowRoot.addEventListener('mousedown', this._eventHandler.bind(this));
-    this.shadowRoot.addEventListener('mouseup', this._eventHandler.bind(this));
+    // A controller for a signal that will fire when we are disconnected and we should clean up the event listeners
+    this._disconnectedSignal = new AbortController();
+
+    document.addEventListener('selectionchange', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
+    this.shadowRoot.addEventListener('mousedown', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
+    this.shadowRoot.addEventListener('mouseup', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
 
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
@@ -336,14 +349,31 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
 
-    this.addEventListener('pb-disable', () => {
-      this._disabled = true;
-    });
-    this.addEventListener('pb-enable', () => {
-      this._disabled = false;
-    });
+    this.addEventListener(
+      'pb-disable',
+      () => {
+        this._disabled = true;
+      },
+      {
+        signal: this._disconnectedSignal.signal,
+      },
+    );
+    this.addEventListener(
+      'pb-enable',
+      () => {
+        this._disabled = false;
+      },
+      { signal: this._disconnectedSignal.signal },
+    );
 
     this._resizeHandler();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // Remove any events that we had earlier.
+    this._disconnectedSignal.abort();
   }
 
   get annotations() {
@@ -1052,6 +1082,9 @@ class PbViewAnnotate extends PbView {
 
     const rootRect = root.getBoundingClientRect();
     const rect = range.getBoundingClientRect();
+    /**
+     * @type {HTMLElement}
+     */
     let marker = root.querySelector('[part=highlight]');
     if (!marker) {
       marker = document.createElement('div');
@@ -1065,7 +1098,7 @@ class PbViewAnnotate extends PbView {
     marker.style.width = `${rect.width + 4}px`;
     marker.style.height = `${rect.height}px`;
 
-    range.startContainer.parentNode.scrollIntoView(true);
+    marker.scrollIntoView(true);
   }
 
   hideMarker() {

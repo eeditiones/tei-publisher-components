@@ -346,6 +346,10 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
   }
 
   _queryChanged(e) {
+    if (this.query === e.target.value) {
+      // Bogus onchange. No need to requery. A requery would only cause a flash of an empty result set
+      return;
+    }
     this._results = [];
     this.query = e.target.value;
     this._query();
