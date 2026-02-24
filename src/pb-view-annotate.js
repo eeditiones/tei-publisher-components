@@ -275,6 +275,10 @@ class PbViewAnnotate extends PbView {
     // fill should always be 0 when doing annotations!!!
     this.fill = 0;
 
+    // It is nonsense to (automatically) translate the contents of the annotation app. It will just
+    // break any offset mapping we ever want to do.
+    this.setAttribute('translate', 'no');
+
     let isMouseDown = false;
 
     this._inHandler = false;
