@@ -322,9 +322,18 @@ class PbViewAnnotate extends PbView {
       scheduleCallback(delay);
     };
 
-    document.addEventListener('selectionchange', this._eventHandler.bind(this));
-    this.shadowRoot.addEventListener('mousedown', this._eventHandler.bind(this));
-    this.shadowRoot.addEventListener('mouseup', this._eventHandler.bind(this));
+    // A controller for a signal that will fire when we are disconnected and we should clean up the event listeners
+    this._disconnectedSignal = new AbortController();
+
+    document.addEventListener('selectionchange', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
+    this.shadowRoot.addEventListener('mousedown', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
+    this.shadowRoot.addEventListener('mouseup', this._eventHandler, {
+      signal: this._disconnectedSignal.signal,
+    });
 
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
@@ -336,14 +345,31 @@ class PbViewAnnotate extends PbView {
       this.emitTo('pb-annotations-changed', { ranges: this._ranges, refresh: true });
     });
 
-    this.addEventListener('pb-disable', () => {
-      this._disabled = true;
-    });
-    this.addEventListener('pb-enable', () => {
-      this._disabled = false;
-    });
+    this.addEventListener(
+      'pb-disable',
+      () => {
+        this._disabled = true;
+      },
+      {
+        signal: this._disconnectedSignal.signal,
+      },
+    );
+    this.addEventListener(
+      'pb-enable',
+      () => {
+        this._disabled = false;
+      },
+      { signal: this._disconnectedSignal.signal },
+    );
 
     this._resizeHandler();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // Remove any events that we had earlier.
+    this._disconnectedSignal.abort();
   }
 
   get annotations() {
