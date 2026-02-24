@@ -1,3 +1,12 @@
+## [3.0.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.7...v3.0.8) (2026-02-24)
+
+
+### Bug Fixes
+
+* **pb-authority:** do not requery if the query is the same ([27b49ea](https://github.com/eeditiones/tei-publisher-components/commit/27b49ea9b36f5d2e1fe99f57df596dcf2f05ec01))
+* **pb-authority:** never translate the contents of pb-view-annotate ([c9a43c4](https://github.com/eeditiones/tei-publisher-components/commit/c9a43c42cab110c26ab6250a8b0ea0244a6579e7))
+* **pb-view-annotate:** scroll marker into view instead of parent element ([f105004](https://github.com/eeditiones/tei-publisher-components/commit/f105004928d2acd1eb0ccec0d3605cdc0526920d))
+
 ## [3.0.7](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.6...v3.0.7) (2026-02-17)
 
 
