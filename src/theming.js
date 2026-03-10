@@ -32,7 +32,7 @@ export async function loadStylesheets(urls) {
 }
 
 function loadResource(url) {
-  return fetch(url)
+  return fetch(url, { headers: { accept: 'text/css' } })
     .then(response => {
       if (response.ok) {
         return response.text();
