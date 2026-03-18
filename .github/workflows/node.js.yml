@@ -32,7 +32,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v5
-      - name: Use Node.js 
+      - name: Use Node.js
         uses: actions/setup-node@v5
         with:
           node-version: "24"
@@ -54,6 +54,7 @@ jobs:
       issues: write
       pull-requests: write
       pages: write
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
     steps:
       - uses: actions/checkout@v5
         with:
@@ -69,11 +70,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
       - name: Build docs
         run: npm run gh-pages
         if: success()
-      
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
