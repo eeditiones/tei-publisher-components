@@ -1,3 +1,10 @@
+## [3.0.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.8...v3.0.9) (2026-03-18)
+
+
+### Bug Fixes
+
+* **theming:** add accept: text/css header to theme resource ([768aa57](https://github.com/eeditiones/tei-publisher-components/commit/768aa57b59c5bc7287d99a9eb9963be14953da23))
+
 ## [3.0.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.7...v3.0.8) (2026-02-24)
 
 
