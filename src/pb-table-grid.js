@@ -9,6 +9,7 @@ import '@polymer/iron-form';
 import '@polymer/paper-icon-button';
 import './pb-table-column.js';
 import { registry } from './urls.js';
+import { translate } from './pb-i18n.js';
 
 /**
  * A table grid based on [gridjs](https://gridjs.io/), which loads its data from a server endpoint
@@ -240,9 +241,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
                 <paper-input
                   id="search"
                   name="search"
-                  label="Search"
+                  label="${translate('search.search')}"
                   value="${this._params.search || ''}"
-                  @keyup="${e => (e.keyCode == 13 ? this._submit() : null)}"
+                  @keyup="${e => (e.keyCode === 13 ? this._submit() : null)}"
                 >
                   <paper-icon-button
                     icon="search"
