@@ -1,3 +1,16 @@
+# [3.1.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.9...v3.1.0) (2026-03-25)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** make search string in pb-table-grid localizable ([25079f1](https://github.com/eeditiones/tei-publisher-components/commit/25079f1084a52f5f0a8a4943f3c9c3d1f237ddc5))
+
+
+### Features
+
+* **pb-table-grid:** add attribute to move pagination to the top ([fbb8b90](https://github.com/eeditiones/tei-publisher-components/commit/fbb8b901e625365102e88571e71646f785319ded))
+* **pb-table-grid:** make pb-table-grid stylable like other components ([01b6705](https://github.com/eeditiones/tei-publisher-components/commit/01b6705f43cba8dfdf20c8c5923918680003764a))
+
 ## [3.0.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.8...v3.0.9) (2026-03-18)
 
 
