@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { Grid, PluginPosition } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
-import { loadStylesheets, importStyles } from './theming.js';
+import { loadStylesheets, importStyles, themableMixin } from './theming.js';
 import { translate } from './pb-i18n.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
@@ -36,7 +36,7 @@ import { registry } from './urls.js';
  * <pb-table-column label="Died" property="death"></pb-table-column>
  * ```
  */
-export class PbTableGrid extends pbMixin(LitElement) {
+export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       /**
@@ -144,9 +144,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
     if (gridjsTheme) {
       sheets.push(gridjsTheme);
     }
+    // Manually import styles for backwards compatibility with pb-components < 3 importStyles
+    // extracts any relevant styling rules to this element and wraps them in `:host`. Which you can
+    // (and should) do manually anyway
     if (theme) {
       sheets.push(theme);
     }
+
     this.shadowRoot.adoptedStyleSheets = sheets;
   }
 
