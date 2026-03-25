@@ -394,6 +394,10 @@ export class PbPage extends pbMixin(LitElement) {
     this._i18nInstance = i18next.createInstance();
     this._i18nInstance.use(LanguageDetector).use(Backend);
     this._i18nInstance.init(options).then(t => {
+      if (!this._i18nInstance) {
+        // We got deconstructed already
+        return;
+      }
       initTranslation(t);
       // initialized and ready to go!
       this._updateI18n(t);
