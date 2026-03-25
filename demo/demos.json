@@ -160,7 +160,8 @@
     "demo/pb-formula.html": "Demo"
   },
   "pb-table-grid": {
-    "demo/pb-table-grid.html": "Demo"
+    "demo/pb-table-grid.html": "Demo",
+    "demo/pb-table-grid2.html": "Demo with Search"
   },
   "pb-custom-form": {
     "demo/pb-custom-form.html": "Demo"
