@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { Grid } from 'gridjs';
+import { Grid, PluginPosition } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { loadStylesheets, importStyles } from './theming.js';
@@ -75,6 +75,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
       search: {
         type: Boolean,
       },
+      /**
+       * If specified, render the pagination controls above the table instead of below.
+       */
+      paginationTop: {
+        type: Boolean,
+        attribute: 'pagination-top',
+      },
       _params: {
         type: Object,
       },
@@ -91,6 +98,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     this._params = {};
     this.resizable = false;
     this.search = false;
+    this.paginationTop = false;
     this.perPage = 10;
     this.height = null;
     this.fixedHeader = false;
@@ -222,6 +230,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
     };
 
     this.grid = new Grid(config);
+    if (this.paginationTop) {
+      this.grid.plugin.get('pagination').position = PluginPosition.Header;
+    }
     this.grid.on('load', () => {
       this.emitTo('pb-results-received', {
         params: this._params,
