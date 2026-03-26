@@ -86,6 +86,13 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         type: Boolean,
         attribute: 'pagination-top',
       },
+      /**
+       * Optional list of column ids/properties to show. If empty or undefined, all columns are visible.
+       */
+      visibleColumns: {
+        type: Array,
+        attribute: 'visible-columns',
+      },
       _params: {
         type: Object,
       },
@@ -103,10 +110,17 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.perPage = 10;
     this.height = null;
     this.fixedHeader = false;
+    this.visibleColumns = null;
+    this._pbColumns = [];
+    this._columns = [];
+    this._selectedRow = null;
+    this._onTableClick = this._onTableClick.bind(this);
+    this._onDocumentClick = this._onDocumentClick.bind(this);
   }
 
   async connectedCallback() {
     super.connectedCallback();
+    document.addEventListener('click', this._onDocumentClick);
 
     this.subscribeTo('pb-search-resubmit', ev => {
       this._submit();
@@ -151,12 +165,17 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.shadowRoot.adoptedStyleSheets = sheets;
   }
 
+  disconnectedCallback() {
+    document.removeEventListener('click', this._onDocumentClick);
+    super.disconnectedCallback();
+  }
+
   firstUpdated() {
     const table = this.shadowRoot.getElementById('table');
+    table.addEventListener('click', this._onTableClick);
 
-    const pbColumns = this.querySelectorAll('pb-table-column');
-    const columns = [];
-    pbColumns.forEach(column => columns.push(column.data()));
+    this._pbColumns = Array.from(this.querySelectorAll('pb-table-column'));
+    this._columns = this._getColumnsConfig();
     waitOnce('pb-page-ready', data => {
       if (data && data.language) {
         this.language = data.language;
@@ -166,7 +185,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
       const config = {
         height: this.height,
         fixedHeader: true,
-        columns,
+        columns: this._columns,
         resizable: this.resizable,
         server: {
           url,
@@ -181,7 +200,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
               if (!cols.length) return prev;
               const col = cols[0];
               return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}order=${
-                columns[col.index].id
+                this._columns[col.index].id
               }&dir=${col.direction === 1 ? 'asc' : 'desc'}`;
             },
           },
@@ -223,13 +242,87 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         this.grid.plugin.get('pagination').position = PluginPosition.Header;
       }
       this.grid.on('load', () => {
+        this._clearRowSelection();
         this.emitTo('pb-results-received', {
           params: this._params,
         });
+        this._applyColumnVisibilityToDom();
       });
 
       this.grid.render(table);
     });
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('visibleColumns') && this.grid) {
+      this._columns = this._getColumnsConfig();
+      this._applyColumnVisibilityToDom();
+    }
+  }
+
+  _visibleColumnsAsSet() {
+    return Array.isArray(this.visibleColumns) ? new Set(this.visibleColumns) : null;
+  }
+
+  _columnId(pbColumn, config) {
+    return config.id || pbColumn.property || pbColumn.label;
+  }
+
+  _getColumnsConfig() {
+    const visibleSet = this._visibleColumnsAsSet();
+    return this._pbColumns.map(pbColumn => {
+      const config = pbColumn.data();
+      const id = this._columnId(pbColumn, config);
+      return visibleSet ? { ...config, hidden: !visibleSet.has(id) } : config;
+    });
+  }
+
+  _applyColumnVisibilityToDom() {
+    const visibleSet = this._visibleColumnsAsSet();
+    const table = this.shadowRoot.querySelector('.gridjs-table');
+    if (!table) {
+      return;
+    }
+    this._columns.forEach((column, index) => {
+      const id = column.id || this._pbColumns[index]?.property || this._pbColumns[index]?.label;
+      const hidden = visibleSet ? !visibleSet.has(id) : false;
+      const cells = table.querySelectorAll(`th:nth-child(${index + 1}), td:nth-child(${index + 1})`);
+      cells.forEach(cell => {
+        cell.style.display = hidden ? 'none' : '';
+      });
+    });
+  }
+
+  _onTableClick(event) {
+    const row = event.target.closest('tbody tr');
+    if (!row) {
+      return;
+    }
+    this._toggleRowSelection(row);
+  }
+
+  _onDocumentClick(event) {
+    const path = event.composedPath();
+    if (!path.includes(this)) {
+      this._clearRowSelection();
+    }
+  }
+
+  _toggleRowSelection(row) {
+    if (this._selectedRow === row) {
+      this._clearRowSelection();
+      return;
+    }
+    this._clearRowSelection();
+    this._selectedRow = row;
+    this._selectedRow.classList.add('grid-row-selected');
+  }
+
+  _clearRowSelection() {
+    if (this._selectedRow) {
+      this._selectedRow.classList.remove('grid-row-selected');
+      this._selectedRow = null;
+    }
   }
 
   _submit() {
@@ -278,6 +371,9 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     return css`
       :host {
         display: block;
+      }
+      .grid-row-selected td.gridjs-td {
+        background-color: var(--pb-table-grid-selected-row-background-color, #e8f0fe);
       }
       button {
         border: 0;
