@@ -118,4 +118,30 @@ describe('pb-table-grid', () => {
     expect(columnById('nationality').hidden).to.not.be.true;
     expect(columnById('birth').hidden).to.be.true;
   });
+
+  it('toggles row highlight and clears it on outside click', async () => {
+    const grid = await renderGrid();
+    await waitUntil(
+      () => !!grid.shadowRoot.querySelector('tbody tr'),
+      'at least one row should render',
+      { timeout: 5000 },
+    );
+    const firstRow = grid.shadowRoot.querySelector('tbody tr');
+
+    firstRow.click();
+    await grid.updateComplete;
+    expect(firstRow.classList.contains('grid-row-selected')).to.be.true;
+
+    firstRow.click();
+    await grid.updateComplete;
+    expect(firstRow.classList.contains('grid-row-selected')).to.be.false;
+
+    firstRow.click();
+    await grid.updateComplete;
+    expect(firstRow.classList.contains('grid-row-selected')).to.be.true;
+
+    document.body.click();
+    await grid.updateComplete;
+    expect(firstRow.classList.contains('grid-row-selected')).to.be.false;
+  });
 });

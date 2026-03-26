@@ -113,10 +113,14 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.visibleColumns = null;
     this._pbColumns = [];
     this._columns = [];
+    this._selectedRow = null;
+    this._onTableClick = this._onTableClick.bind(this);
+    this._onDocumentClick = this._onDocumentClick.bind(this);
   }
 
   async connectedCallback() {
     super.connectedCallback();
+    document.addEventListener('click', this._onDocumentClick);
 
     this.subscribeTo('pb-search-resubmit', ev => {
       this._submit();
@@ -161,8 +165,14 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.shadowRoot.adoptedStyleSheets = sheets;
   }
 
+  disconnectedCallback() {
+    document.removeEventListener('click', this._onDocumentClick);
+    super.disconnectedCallback();
+  }
+
   firstUpdated() {
     const table = this.shadowRoot.getElementById('table');
+    table.addEventListener('click', this._onTableClick);
 
     this._pbColumns = Array.from(this.querySelectorAll('pb-table-column'));
     this._columns = this._getColumnsConfig();
@@ -232,6 +242,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         this.grid.plugin.get('pagination').position = PluginPosition.Header;
       }
       this.grid.on('load', () => {
+        this._clearRowSelection();
         this.emitTo('pb-results-received', {
           params: this._params,
         });
@@ -282,6 +293,38 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     });
   }
 
+  _onTableClick(event) {
+    const row = event.target.closest('tbody tr');
+    if (!row) {
+      return;
+    }
+    this._toggleRowSelection(row);
+  }
+
+  _onDocumentClick(event) {
+    const path = event.composedPath();
+    if (!path.includes(this)) {
+      this._clearRowSelection();
+    }
+  }
+
+  _toggleRowSelection(row) {
+    if (this._selectedRow === row) {
+      this._clearRowSelection();
+      return;
+    }
+    this._clearRowSelection();
+    this._selectedRow = row;
+    this._selectedRow.classList.add('grid-row-selected');
+  }
+
+  _clearRowSelection() {
+    if (this._selectedRow) {
+      this._selectedRow.classList.remove('grid-row-selected');
+      this._selectedRow = null;
+    }
+  }
+
   _submit() {
     this.grid.forceRender();
   }
@@ -328,6 +371,9 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     return css`
       :host {
         display: block;
+      }
+      .grid-row-selected td.gridjs-td {
+        background-color: var(--pb-table-grid-selected-row-background-color, #e8f0fe);
       }
       button {
         border: 0;
