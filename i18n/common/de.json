@@ -126,6 +126,23 @@
     "content": "Inhalte durchsuchen",
     "scope": "Suchbereich"
   },
+  "tableGrid": {
+    "search": "Suche",
+    "searchPlaceholder": "Schlüsselwort eingeben...",
+    "sortAsc": "Spalte aufsteigend sortieren",
+    "sortDesc": "Spalte absteigend sortieren",
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "navigate": "Seite {{page}} von {{pages}}",
+    "page": "Seite {{page}}",
+    "showing": "Anzeigen",
+    "to": "zu",
+    "of": "von",
+    "results": "Ergebnisse",
+    "loading": "Laden...",
+    "noRecordsFound": "Keine passenden Einträge gefunden",
+    "error": "Ein Fehler ist aufgetreten, während die Daten abgerufen wurden"
+  },
   "dts": {
     "endpoint": "Server wählen",
     "note": "Experimentell: Zugriff auf externe Editionen über DTS API",
