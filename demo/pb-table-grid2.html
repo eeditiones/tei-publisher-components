@@ -52,7 +52,12 @@
     <h1>Using pb-table-grid with Search and Pagination</h1>
 
     <pb-page theme="components.css" url-path="query" api-version="1.0.0">
+      <label>
+        <input id="compact-view" type="checkbox" />
+        Compact view (hide "Born" and "Died" columns)
+      </label>
       <pb-table-grid
+        id="philosophers-grid"
         class="table-grid"
         source="./philosophers.json"
         css-path="../css/gridjs"
@@ -73,5 +78,15 @@
         <pb-table-column label="Known For" property="known_for"></pb-table-column>
       </pb-table-grid>
     </pb-page>
+    <script type="module">
+      const compactCheckbox = document.getElementById('compact-view');
+      const tableGrid = document.getElementById('philosophers-grid');
+
+      compactCheckbox.addEventListener('change', () => {
+        tableGrid.visibleColumns = compactCheckbox.checked
+          ? ['name', 'nationality', 'known_for']
+          : ['name', 'birth', 'death', 'nationality', 'known_for'];
+      });
+    </script>
   </body>
 </html>
