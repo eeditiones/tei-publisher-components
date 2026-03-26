@@ -126,6 +126,23 @@
     "content": "Przeszukaj zawartość",
     "scope": "Obszar kwerendy"
   },
+  "tableGrid": {
+    "search": "Szukaj",
+    "searchPlaceholder": "Wpisz słowo kluczowe...",
+    "sortAsc": "Sortuj kolumnę rosnąco",
+    "sortDesc": "Sortuj kolumnę malejąco",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "navigate": "Strona {{page}} z {{pages}}",
+    "page": "Strona {{page}}",
+    "showing": "Wyświetlanie",
+    "to": "do",
+    "of": "z",
+    "results": "wyników",
+    "loading": "Ładowanie...",
+    "noRecordsFound": "Brak pasujących rekordów",
+    "error": "Wystąpił błąd podczas pobierania danych"
+  },
   "dts": {
     "endpoint": "Wybierz Endpoint",
     "note": "Wersja eksperymentalna: uzyskaj dostęp do edycji, które udostępniają API DTS",

@@ -9,7 +9,7 @@ import '@polymer/iron-form';
 import '@polymer/paper-icon-button';
 import './pb-table-column.js';
 import { registry } from './urls.js';
-import { translate } from './pb-i18n.js';
+import { get as i18n, translate } from './pb-i18n.js';
 
 /**
  * A table grid based on [gridjs](https://gridjs.io/), which loads its data from a server endpoint
@@ -114,6 +114,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this._pbColumns = [];
     this._columns = [];
     this._selectedRow = null;
+    this._gridI18nInitialized = false;
     this._onTableClick = this._onTableClick.bind(this);
     this._onDocumentClick = this._onDocumentClick.bind(this);
   }
@@ -134,9 +135,12 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.subscribeTo(
       'pb-i18n-update',
       ev => {
-        const needsRefresh = this.language && this.language !== ev.detail.language;
+        const needsRefresh = this.language !== ev.detail.language;
         this.language = ev.detail.language;
-        if (needsRefresh) {
+        const needsInitialI18nRefresh = !this._gridI18nInitialized;
+        if ((needsRefresh || needsInitialI18nRefresh) && this.grid) {
+          this.grid.updateConfig({ language: this._gridLanguageConfig() });
+          this._gridI18nInitialized = true;
           this._submit();
         }
       },
@@ -186,6 +190,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         height: this.height,
         fixedHeader: true,
         columns: this._columns,
+        language: this._gridLanguageConfig(),
         resizable: this.resizable,
         server: {
           url,
@@ -329,6 +334,38 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.grid.forceRender();
   }
 
+  _gridLanguageConfig() {
+    return {
+      search: {
+        placeholder: () => i18n('tableGrid.searchPlaceholder'),
+      },
+      sort: {
+        sortAsc: () => i18n('tableGrid.sortAsc'),
+        sortDesc: () => i18n('tableGrid.sortDesc'),
+      },
+      pagination: {
+        previous: () => i18n('tableGrid.previous'),
+        next: () => i18n('tableGrid.next'),
+        navigate: (page, pages) =>
+          i18n('tableGrid.navigate', {
+            page,
+            pages,
+          }),
+        page: page =>
+          i18n('tableGrid.page', {
+            page,
+          }),
+        showing: () => i18n('tableGrid.showing'),
+        to: () => i18n('tableGrid.to'),
+        of: () => i18n('tableGrid.of'),
+        results: () => i18n('tableGrid.results'),
+      },
+      loading: () => i18n('tableGrid.loading'),
+      noRecordsFound: () => i18n('tableGrid.noRecordsFound'),
+      error: () => i18n('tableGrid.error'),
+    };
+  }
+
   _paramsFromSubforms(params) {
     if (this.subforms) {
       document.querySelectorAll(this.subforms).forEach(form => {
@@ -349,7 +386,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
                 <paper-input
                   id="search"
                   name="search"
-                  label="${translate('search.search')}"
+                  label="${translate('tableGrid.search')}"
                   value="${this._params.search || ''}"
                   @keyup="${e => (e.keyCode === 13 ? this._submit() : null)}"
                 >
