@@ -1,3 +1,11 @@
+# [3.2.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.1.0...v3.2.0) (2026-03-26)
+
+
+### Features
+
+* **pb-table-grid:** allow  columns to be hidden/shown dynamically ([297fb8b](https://github.com/eeditiones/tei-publisher-components/commit/297fb8bd93701b88281bfb2cd19e6a631cb2880e))
+* **pb-table-grid:** highlight currently selected row ([27bf14d](https://github.com/eeditiones/tei-publisher-components/commit/27bf14d4d44413ea4f673157e40fbcce0228e81c))
+
 # [3.1.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.9...v3.1.0) (2026-03-25)
 
 
