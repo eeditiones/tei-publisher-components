@@ -119,6 +119,19 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this._onDocumentClick = this._onDocumentClick.bind(this);
   }
 
+  _applyPaginationPosition() {
+    if (!this.grid || !this.grid.plugin) {
+      return;
+    }
+    const paginationPlugin = this.grid.plugin.get('pagination');
+    if (!paginationPlugin) {
+      return;
+    }
+    paginationPlugin.position = this.paginationTop
+      ? PluginPosition.Header
+      : PluginPosition.Footer;
+  }
+
   async connectedCallback() {
     super.connectedCallback();
     document.addEventListener('click', this._onDocumentClick);
@@ -139,9 +152,11 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         this.language = ev.detail.language;
         const needsInitialI18nRefresh = !this._gridI18nInitialized;
         if ((needsRefresh || needsInitialI18nRefresh) && this.grid) {
-          this.grid.updateConfig({ language: this._gridLanguageConfig() });
           this._gridI18nInitialized = true;
-          this._submit();
+          if (needsRefresh) {
+            this._applyPaginationPosition();
+            this._submit();
+          }
         }
       },
       [],
@@ -243,11 +258,13 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
       };
 
       this.grid = new Grid(config);
-      if (this.paginationTop) {
-        this.grid.plugin.get('pagination').position = PluginPosition.Header;
-      }
+      this._applyPaginationPosition();
       this.grid.on('load', () => {
         this._clearRowSelection();
+        if (this.paginationTop) {
+          // `forceRender()` can reset GridJS plugin state; re-apply after each load.
+          this.grid.plugin.get('pagination').position = PluginPosition.Header;
+        }
         this.emitTo('pb-results-received', {
           params: this._params,
         });
