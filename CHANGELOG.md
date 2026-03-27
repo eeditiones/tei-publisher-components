@@ -1,3 +1,10 @@
+# [3.0.0-next-4.13](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.12...v3.0.0-next-4.13) (2026-03-27)
+
+
+### Bug Fixes
+
+* **theming:** pass accept: text/css header to theme resource ([7fc0d21](https://github.com/eeditiones/tei-publisher-components/commit/7fc0d213d1440f17eeb0b6d6bcc1a2733e07fbb5))
+
 # [3.0.0-next-4.12](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.11...v3.0.0-next-4.12) (2026-02-24)
 
 
