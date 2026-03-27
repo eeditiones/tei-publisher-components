@@ -9,7 +9,7 @@ import '@polymer/iron-form';
 import '@polymer/paper-icon-button';
 import './pb-table-column.js';
 import { registry } from './urls.js';
-import { get as i18n, translate } from './pb-i18n.js';
+import { get as i18n } from './pb-i18n.js';
 
 /**
  * A table grid based on [gridjs](https://gridjs.io/), which loads its data from a server endpoint
@@ -403,7 +403,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
                 <paper-input
                   id="search"
                   name="search"
-                  label="${translate('tableGrid.search')}"
+                  label="${i18n('tableGrid.search')}"
                   value="${this._params.search || ''}"
                   @keyup="${e => (e.keyCode === 13 ? this._submit() : null)}"
                 >
