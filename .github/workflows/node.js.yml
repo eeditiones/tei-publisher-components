@@ -10,12 +10,15 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: read # for checkout
+
 jobs:
   build:
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v6
-      - name: Use Node.js 
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "22"
@@ -33,3 +36,36 @@ jobs:
           resource: http-get://localhost:8080/exist/apps/tei-publisher/index.html
       - name: npm test
         run: npm test
+
+  release:
+    name: Release
+    needs: [ build ]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: npm install and build
+        run:
+          npm ci
+          npm run build:production
+      - name: Build docker image
+        run: docker build -t exist-db -f Dockerfile .
+      - name: Start docker image
+        run: docker run --publish 8080:8080 --detach exist-db
+      - name: Wait for eXist
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8080/exist/apps/tei-publisher/api/version
+      - run: npm test
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
