@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-edit-app Demo</title>
+        <link rel="stylesheet" href="demo.css">
+        <script type="module" src="../pb-components-bundle.js"></script>
+
+        <style>
+            *:focus {
+                outline: none;
+            }
+            pb-login {
+                --pb-login-link-color: #886666;
+            }
+        </style>
+    </head>
+
+    <body>
+        <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+            <pb-login group="tei"></pb-login>
+            <pb-edit-app></pb-edit-app>
+        </pb-page>
+    </body>
+</html>
