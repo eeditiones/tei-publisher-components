@@ -410,7 +410,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
                 type="search"
                 .value="${this._params.search || ''}"
                 aria-label="${translate('tableGrid.search')}"
-                placeholder="${i18n('tableGrid.searchPlaceholder')}"
+                placeholder="${translate('tableGrid.searchPlaceholder')}"
                 @keyup="${e => (e.key === 'Enter' ? this._submit() : null)}"
               />
               <button type="button" @click="${this._submit}">
