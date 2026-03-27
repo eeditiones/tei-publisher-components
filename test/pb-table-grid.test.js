@@ -102,7 +102,19 @@ describe('pb-table-grid', () => {
 
   it('renders pagination at the top when pagination-top is set', async () => {
     const grid = await renderGrid('pagination-top');
-    expect(grid.shadowRoot.querySelector('.gridjs-head .gridjs-pages')).to.exist;
+    await waitUntil(
+      () =>
+        !!grid.shadowRoot.querySelector('.gridjs-head .gridjs-pages') ||
+        !!grid.shadowRoot.querySelector('.gridjs-head .gridjs-pagination'),
+      'header pagination should render',
+      { timeout: 5000 },
+    );
+
+    const headerPagination =
+      grid.shadowRoot.querySelector('.gridjs-head .gridjs-pages') ||
+      grid.shadowRoot.querySelector('.gridjs-head .gridjs-pagination');
+    expect(headerPagination).to.exist;
+    expect(grid.shadowRoot.querySelector('.gridjs-footer .gridjs-pagination')).to.be.null;
   });
 
   it('applies visibleColumns and hides non-listed columns', async () => {

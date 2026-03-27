@@ -3,13 +3,9 @@ import { Grid, PluginPosition } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { importStyles, loadStylesheets, themableMixin } from './theming.js';
-import '@polymer/paper-input/paper-input';
-import '@polymer/iron-icons';
-import '@polymer/iron-form';
-import '@polymer/paper-icon-button';
 import './pb-table-column.js';
 import { registry } from './urls.js';
-import { translate } from './pb-i18n.js';
+import { get as i18n, translate } from './pb-i18n.js';
 
 /**
  * A table grid based on [gridjs](https://gridjs.io/), which loads its data from a server endpoint
@@ -114,8 +110,22 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this._pbColumns = [];
     this._columns = [];
     this._selectedRow = null;
+    this._gridI18nInitialized = false;
     this._onTableClick = this._onTableClick.bind(this);
     this._onDocumentClick = this._onDocumentClick.bind(this);
+  }
+
+  _applyPaginationPosition() {
+    if (!this.grid || !this.grid.plugin) {
+      return;
+    }
+    const paginationPlugin = this.grid.plugin.get('pagination');
+    if (!paginationPlugin) {
+      return;
+    }
+    paginationPlugin.position = this.paginationTop
+      ? PluginPosition.Header
+      : PluginPosition.Footer;
   }
 
   async connectedCallback() {
@@ -134,10 +144,15 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.subscribeTo(
       'pb-i18n-update',
       ev => {
-        const needsRefresh = this.language && this.language !== ev.detail.language;
+        const needsRefresh = this.language !== ev.detail.language;
         this.language = ev.detail.language;
-        if (needsRefresh) {
-          this._submit();
+        const needsInitialI18nRefresh = !this._gridI18nInitialized;
+        if ((needsRefresh || needsInitialI18nRefresh) && this.grid) {
+          this._gridI18nInitialized = true;
+          if (needsRefresh) {
+            this._applyPaginationPosition();
+            this._submit();
+          }
         }
       },
       [],
@@ -186,6 +201,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
         height: this.height,
         fixedHeader: true,
         columns: this._columns,
+        language: this._gridLanguageConfig(),
         resizable: this.resizable,
         server: {
           url,
@@ -210,9 +226,9 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
           limit: this.perPage,
           server: {
             url: (prev, page, limit) => {
-              const form = this.shadowRoot.getElementById('form');
+              const form = this.shadowRoot.getElementById('search-form');
               if (form) {
-                Object.assign(this._params, form.serializeForm());
+                Object.assign(this._params, this._serializeForm(form));
               }
               this._params = this._paramsFromSubforms(this._params);
               this._params.limit = limit;
@@ -238,11 +254,13 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
       };
 
       this.grid = new Grid(config);
-      if (this.paginationTop) {
-        this.grid.plugin.get('pagination').position = PluginPosition.Header;
-      }
+      this._applyPaginationPosition();
       this.grid.on('load', () => {
         this._clearRowSelection();
+        if (this.paginationTop) {
+          // `forceRender()` can reset GridJS plugin state; re-apply after each load.
+          this.grid.plugin.get('pagination').position = PluginPosition.Header;
+        }
         this.emitTo('pb-results-received', {
           params: this._params,
         });
@@ -329,6 +347,38 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this.grid.forceRender();
   }
 
+  _gridLanguageConfig() {
+    return {
+      search: {
+        placeholder: () => i18n('tableGrid.searchPlaceholder'),
+      },
+      sort: {
+        sortAsc: () => i18n('tableGrid.sortAsc'),
+        sortDesc: () => i18n('tableGrid.sortDesc'),
+      },
+      pagination: {
+        previous: () => i18n('tableGrid.previous'),
+        next: () => i18n('tableGrid.next'),
+        navigate: (page, pages) =>
+          i18n('tableGrid.navigate', {
+            page,
+            pages,
+          }),
+        page: page =>
+          i18n('tableGrid.page', {
+            page,
+          }),
+        showing: () => i18n('tableGrid.showing'),
+        to: () => i18n('tableGrid.to'),
+        of: () => i18n('tableGrid.of'),
+        results: () => i18n('tableGrid.results'),
+      },
+      loading: () => i18n('tableGrid.loading'),
+      noRecordsFound: () => i18n('tableGrid.noRecordsFound'),
+      error: () => i18n('tableGrid.error'),
+    };
+  }
+
   _paramsFromSubforms(params) {
     if (this.subforms) {
       document.querySelectorAll(this.subforms).forEach(form => {
@@ -340,27 +390,33 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     return params;
   }
 
+  _serializeForm(form) {
+    const data = {};
+    const formData = new FormData(form);
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+    return data;
+  }
+
   render() {
     return html`
       ${this.search
         ? html`
-            <iron-form id="form">
-              <form action="">
-                <paper-input
-                  id="search"
-                  name="search"
-                  label="${translate('search.search')}"
-                  value="${this._params.search || ''}"
-                  @keyup="${e => (e.keyCode === 13 ? this._submit() : null)}"
-                >
-                  <paper-icon-button
-                    icon="search"
-                    @click="${this._submit}"
-                    slot="suffix"
-                  ></paper-icon-button>
-                </paper-input>
-              </form>
-            </iron-form>
+            <form id="search-form" action="">
+              <input
+                id="search"
+                name="search"
+                type="search"
+                .value="${this._params.search || ''}"
+                aria-label="${translate('tableGrid.search')}"
+                placeholder="${translate('tableGrid.searchPlaceholder')}"
+                @keyup="${e => (e.key === 'Enter' ? this._submit() : null)}"
+              />
+              <button type="button" @click="${this._submit}">
+                ${translate('tableGrid.search')}
+              </button>
+            </form>
           `
         : null}
       <div id="table"></div>

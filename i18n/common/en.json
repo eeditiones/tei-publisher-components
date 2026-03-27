@@ -126,6 +126,23 @@
     "content": "Search content",
     "scope": "Query scope"
   },
+  "tableGrid": {
+    "search": "Search",
+    "searchPlaceholder": "Type a keyword...",
+    "sortAsc": "Sort column ascending",
+    "sortDesc": "Sort column descending",
+    "previous": "Previous",
+    "next": "Next",
+    "navigate": "Page {{page}} of {{pages}}",
+    "page": "Page {{page}}",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "results": "results",
+    "loading": "Loading...",
+    "noRecordsFound": "No matching records found",
+    "error": "An error occurred while fetching data"
+  },
   "dts": {
     "endpoint": "Select Endpoint",
     "note": "Experimental: access other editions which expose the DTS API",
