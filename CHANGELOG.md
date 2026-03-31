@@ -1,3 +1,14 @@
+## [3.2.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.0...v3.2.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** drop polymer controls ([408b1f9](https://github.com/eeditiones/tei-publisher-components/commit/408b1f99e27d34dd7565fafe53e489772561e384))
+* **pb-table-grid:** i18n for navigation and toolbar ([9e91a9a](https://github.com/eeditiones/tei-publisher-components/commit/9e91a9a228bb8cc5206191032d1b60ba1210c6ad))
+* **pb-table-grid:** race condition causes navigation to disappear ([1ecf7d9](https://github.com/eeditiones/tei-publisher-components/commit/1ecf7d9bbe68b0c9842d7d66c6bbd3e782766ee9))
+* **pb-table-grid:** use translate in html literals ([515acfb](https://github.com/eeditiones/tei-publisher-components/commit/515acfb91536044eff241a0174b53f23f445106d))
+* trigger release pipeline ([d63a335](https://github.com/eeditiones/tei-publisher-components/commit/d63a335614a9a0590df533623b4221bc2b9b0b05))
+
 # [3.2.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.1.0...v3.2.0) (2026-03-26)
 
 
