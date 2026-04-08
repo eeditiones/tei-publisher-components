@@ -103,9 +103,13 @@ export function getSubscribedChannels(elem) {
  *
  * @polymer
  * @mixinFunction
+ *
+ * @template {typeof import('lit-element').LitElement} T
+ * @param {T} BaseClass
+ *
  */
-export const pbMixin = superclass =>
-  class PbMixin extends superclass {
+export const pbMixin = BaseClass =>
+  class PbMixin extends BaseClass {
     static get properties() {
       return {
         /**

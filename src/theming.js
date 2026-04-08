@@ -141,9 +141,12 @@ function getSelectors(component) {
  * Implements support for injecting user-defined styles into a web component's shadow DOM.
  * Styles will be copied from the global component theme CSS imported by `pb-page`
  * (see `theme` property on `pb-page`)
+ *
+ * @template {typeof import('lit-element').LitElement} T
+ * @param {T} BaseClass
  */
-export const themableMixin = superclass =>
-  class ThemableMixin extends superclass {
+export const themableMixin = BaseClass =>
+  class ThemableMixin extends BaseClass {
     connectedCallback() {
       super.connectedCallback();
       waitOnce('pb-page-ready', options => {
