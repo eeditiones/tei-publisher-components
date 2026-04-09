@@ -36,8 +36,6 @@ function listPbComponentsSync () {
   }
 }
 
-
-
 module.exports = defineConfig({
   includeShadowDom: true,
   retries: 1,
@@ -67,10 +65,6 @@ module.exports = defineConfig({
     }
   },
   e2e: {
-    setupNodeEvents (on, config) {
-      // keep your other tasks if needed
-      return config
-    },
     baseUrl: process.env.CYPRESS_baseUrl || 'http://localhost:5173',
     retries: 1,
     specPattern: 'test/cypress/e2e/**/*.cy.{js,ts}',
