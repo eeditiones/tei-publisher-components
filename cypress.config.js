@@ -2,6 +2,7 @@
 const { defineConfig } = require('cypress')
 const fs = require('fs')
 const path = require('path')
+const { cypressViteOptimizeDepsInteropPlugin } = require('./test/cypress/vite-optimize-deps-interop-plugin')
 
 function listDemoPagesSync () {
   const demoDir = path.resolve(__dirname, 'demo')
@@ -36,53 +37,6 @@ function listPbComponentsSync () {
   }
 }
 
-function cypressRolldownCompatPlugin () {
-  return {
-    name: 'cypress-rolldown-compat',
-    configResolved (config) {
-      if (!config || !config.optimizeDeps) return
-
-      // rolldown-vite can expose esbuildOptions via a compatibility accessor.
-      // Cypress CT expects a plain object and reads nested fields directly.
-      try {
-        Object.defineProperty(config.optimizeDeps, 'esbuildOptions', {
-          value: {},
-          configurable: true,
-          enumerable: true,
-          writable: true
-        })
-      } catch (e) {
-        // Keep CT startup resilient; fallback to assignment where possible.
-        config.optimizeDeps.esbuildOptions = {}
-      }
-    }
-  }
-}
-
-function createCtViteCompatConfig () {
-  const pathToRegexpShim = path.resolve(__dirname, 'test/cypress/support/shims/path-to-regexp-interop.js')
-  return {
-    server: { open: false },
-    resolve: {
-      alias: [
-        {
-          // Match the bare package only; avoid rewriting subpaths imported by the shim.
-          find: /^path-to-regexp$/,
-          replacement: pathToRegexpShim
-        }
-      ]
-    },
-    optimizeDeps: {
-      // Keep Cypress CT deterministic and avoid optimizer discovery churn.
-      noDiscovery: true,
-      include: ['path-to-regexp'],
-      // Force interop wrapper for CJS-style export surfaces under rolldown.
-      needsInterop: ['path-to-regexp']
-    },
-    plugins: [cypressRolldownCompatPlugin()]
-  }
-}
-
 module.exports = defineConfig({
   includeShadowDom: true,
   retries: 1,
@@ -92,14 +46,13 @@ module.exports = defineConfig({
   downloadsFolder: 'test/cypress/downloads',
   component: {
     devServer: /** @type {any} */ ({
-      // NOTE(Vite8 migration):
-      // Keep CT on plain `vite` config shape while we are on Vite 7.
-      // We observed Vite 8/Rolldown optimizer incompatibilities with Cypress CT
-      // in this project, so this remains intentionally conservative.
-      // Planned path: trial `rolldown-vite` on Vite 7 first, then switch to Vite 8.
+      // `framework: 'none'` is valid for Lit/custom elements but not in Cypress TS types.
       framework: 'none',
       bundler: 'vite',
-      viteConfig: createCtViteCompatConfig()
+      viteConfig: {
+        server: { open: false },
+        plugins: [cypressViteOptimizeDepsInteropPlugin()]
+      }
     }),
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/component.js',
