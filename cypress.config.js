@@ -45,6 +45,11 @@ module.exports = defineConfig({
   downloadsFolder: 'test/cypress/downloads',
   component: {
     devServer: {
+      // NOTE(Vite8 migration):
+      // Keep CT on plain `vite` config shape while we are on Vite 7.
+      // We observed Vite 8/Rolldown optimizer incompatibilities with Cypress CT
+      // in this project, so this remains intentionally conservative.
+      // Planned path: trial `rolldown-vite` on Vite 7 first, then switch to Vite 8.
       framework: 'none',
       bundler: 'vite',
       viteConfig: {

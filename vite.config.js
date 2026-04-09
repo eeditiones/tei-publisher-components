@@ -12,6 +12,11 @@ const isCypress = !!process.env.CYPRESS;
 // - Serves from repo root so existing demo and api pages work
 // - Opens api.html by default
 // - Replaces process.env.NODE_ENV usages for legacy code paths
+// Migration context:
+// - Vite 8 moves dependency optimization to Rolldown.
+// - In this repo, CT failures surfaced in Cypress/Vite integration when testing Vite 8 directly.
+// - We intentionally keep v7-safe optimizer settings and will migrate in two steps:
+//   1) `vite` -> `npm:rolldown-vite@7.x` (compat trial), 2) `rolldown-vite` -> `vite@8`.
 export default defineConfig({
   root: '.',
   server: {
@@ -69,6 +74,7 @@ export default defineConfig({
   optimizeDeps: {
     // Keep CT startup deterministic: avoid crawling the whole demo tree.
     // With Vite v7, entries are globs; we target the CT index only.
+    // This also narrows blast radius while validating Rolldown migration incrementally.
     entries: isCypress ? ['test/cypress/support/component-index.html'] : undefined,
     noDiscovery: isCypress,
     // Prebundle common deps once so they aren't evaluated from multiple URLs
