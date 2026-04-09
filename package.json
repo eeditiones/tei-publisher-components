@@ -99,7 +99,7 @@
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-copy": "^3.5.0",
     "semantic-release": "^25.0.3",
-    "vite": "^7.3.2",
+    "vite": "^8.0.8",
     "web-component-analyzer": "^2.0.0"
   },
   "prettier": "@open-wc/prettier-config",
