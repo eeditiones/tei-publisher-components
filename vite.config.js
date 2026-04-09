@@ -1,3 +1,4 @@
+/* eslint-env node */
 const MOCK_VERSION = {
   api: '1.0.0',
   app: { name: 'mock-app', version: '0.0.0' },
@@ -51,7 +52,6 @@ export default defineConfig({
 
           if (url.startsWith('/demo/resources/i18n/common')) {
             const languageFile = url.substring('/demo/resources/i18n/common'.length + 1);
-            console.log(languageFile);
 
             try {
               const text = await readFile(
@@ -101,15 +101,14 @@ export default defineConfig({
       },
     },
   ],
-  resolve: {
-    alias: [
-      // Normalize any accidental /node_modules path imports to bare package names
-    ],
-  },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   optimizeDeps: {
+    // Keep CT startup deterministic: avoid crawling the whole demo tree.
+    // With Vite v7, entries are globs; we target the CT index only.
+    entries: isCypress ? ['test/cypress/support/component-index.html'] : undefined,
+    noDiscovery: isCypress,
     // Prebundle common deps once so they aren't evaluated from multiple URLs
     include: [
       // Add commonly used packages here if needed
