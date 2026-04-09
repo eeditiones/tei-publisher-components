@@ -1,6 +1,5 @@
 import { LitElement } from 'lit';
 import { html } from 'gridjs';
-import './pb-popover.js';
 
 /**
  * Defines a column within `pb-table-grid`.

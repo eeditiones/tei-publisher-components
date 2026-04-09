@@ -1,8 +1,8 @@
 import { LitElement, html, css } from 'lit';
-import { Grid } from 'gridjs';
+import { Grid, PluginPosition } from 'gridjs';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
-import { loadStylesheets, importStyles } from './theming.js';
+import { loadStylesheets, importStyles, themableMixin } from './theming.js';
 import { translate } from './pb-i18n.js';
 import './pb-table-column.js';
 import { registry } from './urls.js';
@@ -36,7 +36,7 @@ import { registry } from './urls.js';
  * <pb-table-column label="Died" property="death"></pb-table-column>
  * ```
  */
-export class PbTableGrid extends pbMixin(LitElement) {
+export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       /**
@@ -75,6 +75,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
       search: {
         type: Boolean,
       },
+      /**
+       * If specified, render the pagination controls above the table instead of below.
+       */
+      paginationTop: {
+        type: Boolean,
+        attribute: 'pagination-top',
+      },
       _params: {
         type: Object,
       },
@@ -91,6 +98,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
     this._params = {};
     this.resizable = false;
     this.search = false;
+    this.paginationTop = false;
     this.perPage = 10;
     this.height = null;
     this.fixedHeader = false;
@@ -136,9 +144,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
     if (gridjsTheme) {
       sheets.push(gridjsTheme);
     }
+    // Manually import styles for backwards compatibility with pb-components < 3 importStyles
+    // extracts any relevant styling rules to this element and wraps them in `:host`. Which you can
+    // (and should) do manually anyway
     if (theme) {
       sheets.push(theme);
     }
+
     this.shadowRoot.adoptedStyleSheets = sheets;
   }
 
@@ -222,6 +234,9 @@ export class PbTableGrid extends pbMixin(LitElement) {
     };
 
     this.grid = new Grid(config);
+    if (this.paginationTop) {
+      this.grid.plugin.get('pagination').position = PluginPosition.Header;
+    }
     this.grid.on('load', () => {
       this.emitTo('pb-results-received', {
         params: this._params,
