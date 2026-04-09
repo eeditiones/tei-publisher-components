@@ -812,14 +812,15 @@ describe('pb-view', () => {
         </pb-page>
       `)
       
-      // Wait for the intercept and then for error handling to complete
+      // Wait for the intercept and then for component state to settle.
+      // Waiting for pb-end-update here can race if the event fires before
+      // the listener is attached in this test branch.
       cy.wait('@indexError')
-      cy.waitForEvent('pb-end-update')
       
       // Verify error was handled gracefully
       cy.get('pb-view').should('exist')
       
-      cy.get('pb-view').then($el => {
+      cy.get('pb-view').should($el => {
         const element = $el[0]
         // Component should be in a valid state even after error
         expect(element._loading).to.be.false
