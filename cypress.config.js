@@ -2,6 +2,7 @@
 const { defineConfig } = require('cypress')
 const fs = require('fs')
 const path = require('path')
+const { cypressViteOptimizeDepsInteropPlugin } = require('./test/cypress/vite-optimize-deps-interop-plugin')
 
 function listDemoPagesSync () {
   const demoDir = path.resolve(__dirname, 'demo')
@@ -44,13 +45,15 @@ module.exports = defineConfig({
   fixturesFolder: 'test/cypress/fixtures',
   downloadsFolder: 'test/cypress/downloads',
   component: {
-    devServer: {
+    devServer: /** @type {any} */ ({
+      // `framework: 'none'` is valid for Lit/custom elements but not in Cypress TS types.
       framework: 'none',
       bundler: 'vite',
       viteConfig: {
-        server: { open: false }
+        server: { open: false },
+        plugins: [cypressViteOptimizeDepsInteropPlugin()]
       }
-    },
+    }),
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/component.js',
     indexHtmlFile: 'test/cypress/support/component-index.html',
