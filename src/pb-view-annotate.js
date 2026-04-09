@@ -200,6 +200,78 @@ function collectText(node) {
   return [str.join(''), start];
 }
 
+/**
+ * @typedef {Object} MatchAnchor
+ * @property {'tei'|'local'} mode
+ * @property {string|null} context
+ * @property {number} start
+ * @property {number} end
+ * @property {number} localStart
+ * @property {number} localEnd
+ * @property {Node} textNode
+ */
+
+/**
+ * Build a normalized anchor for a matched text segment.
+ * Prefers TEI-relative coordinates, with local text-node offsets as fallback.
+ *
+ * @param {Node} node
+ * @param {number} localStart
+ * @param {number} localEnd
+ * @returns {MatchAnchor}
+ */
+function buildMatchAnchor(node, localStart, localEnd) {
+  const startRange = rangeToPoint(node, localStart);
+  const endRange = rangeToPoint(node, localEnd, 'end');
+  const hasTeiRange = Boolean(startRange && endRange && startRange.parent);
+
+  return {
+    mode: hasTeiRange ? 'tei' : 'local',
+    context: hasTeiRange ? startRange.parent : null,
+    start: hasTeiRange ? Number(startRange.offset) : localStart,
+    end: hasTeiRange ? Number(endRange.offset) : localEnd,
+    localStart,
+    localEnd,
+    textNode: node,
+  };
+}
+
+/**
+ * Resolve a normalized match anchor to a browser range.
+ *
+ * @param {Element} root
+ * @param {MatchAnchor} anchor
+ * @returns {Range|null}
+ */
+function resolveAnchorRange(root, anchor) {
+  const range = document.createRange();
+
+  if (anchor.mode === 'tei' && anchor.context) {
+    const context = Array.from(root.querySelectorAll(`[data-tei="${anchor.context}"]`)).filter(
+      node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
+    )[0];
+    if (context) {
+      const startPoint = pointToRange(context, anchor.start);
+      const endPoint = pointToRange(context, anchor.end);
+      if (startPoint && endPoint) {
+        range.setStart(startPoint[0], startPoint[1]);
+        range.setEnd(endPoint[0], endPoint[1]);
+        return range;
+      }
+    }
+  }
+
+  if (!anchor.textNode) {
+    return null;
+  }
+  const textLength = anchor.textNode.textContent?.length || 0;
+  const localStart = Math.max(0, Math.min(anchor.localStart ?? 0, textLength));
+  const localEnd = Math.max(localStart, Math.min(anchor.localEnd ?? localStart, textLength));
+  range.setStart(anchor.textNode, localStart);
+  range.setEnd(anchor.textNode, localEnd);
+  return range;
+}
+
 function clearProperties(teiRange) {
   const cleaned = {};
   Object.keys(teiRange.properties).forEach(key => {
@@ -1033,29 +1105,35 @@ class PbViewAnnotate extends PbView {
     );
     while (walker.nextNode()) {
       const node = walker.currentNode;
+      if (!node.textContent) {
+        continue;
+      }
       const matches = Array.from(node.textContent.matchAll(regex));
       for (const match of matches) {
         const end = match.index + match[0].length;
         let isAnnotated = false;
         let ref = null;
-        const annoData = node.parentNode.dataset.annotation;
-        const annoType = node.parentNode.dataset.type;
+        const parentNode = /** @type {Element | null} */ (node.parentNode);
+        const annoData = parentNode?.dataset?.annotation;
+        const annoType = parentNode?.dataset?.type;
         if (annoData && annoType) {
           const parsed = JSON.parse(annoData) || {};
           isAnnotated = annoType === type;
           ref = parsed[this.getKey(type)];
         }
 
-        const startRange = rangeToPoint(node, match.index);
-        const endRange = rangeToPoint(node, end, 'end');
+        const anchor = buildMatchAnchor(node, match.index, end);
 
         const [str, start] = collectText(node);
         const entry = {
           annotated: isAnnotated,
-          context: startRange.parent,
-          start: startRange.offset,
-          end: endRange.offset,
-          textNode: node,
+          mode: anchor.mode,
+          context: anchor.context,
+          start: anchor.start,
+          end: anchor.end,
+          localStart: anchor.localStart,
+          localEnd: anchor.localEnd,
+          textNode: anchor.textNode,
           kwic: kwicText(str, start + match.index, start + end),
         };
         entry[this.getKey(type)] = ref;
@@ -1067,17 +1145,15 @@ class PbViewAnnotate extends PbView {
 
   scrollTo(teiRange) {
     const root = this.shadowRoot.getElementById('view');
-    const range = document.createRange();
+    let range = null;
     if (teiRange.annotated) {
+      range = document.createRange();
       range.selectNode(teiRange.textNode);
     } else {
-      const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
-        node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
-      )[0];
-      const startPoint = pointToRange(context, teiRange.start);
-      const endPoint = pointToRange(context, teiRange.end);
-      range.setStart(startPoint[0], startPoint[1]);
-      range.setEnd(endPoint[0], endPoint[1]);
+      range = resolveAnchorRange(root, teiRange);
+    }
+    if (!range) {
+      return;
     }
 
     const rootRect = root.getBoundingClientRect();
