@@ -1,3 +1,11 @@
+# [3.0.0-next-4.14](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.13...v3.0.0-next-4.14) (2026-04-09)
+
+
+### Features
+
+* **pb-table-grid:** add attribute to move pagination to the top ([f778ca5](https://github.com/eeditiones/tei-publisher-components/commit/f778ca5c32c1822b6b3b1f576bb9c39b1b51ba64))
+* **pb-table-grid:** make pb-table-grid stylable like other components ([5fba657](https://github.com/eeditiones/tei-publisher-components/commit/5fba6574d706b80ceb88607e398440aac53445b4))
+
 # [3.0.0-next-4.13](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.12...v3.0.0-next-4.13) (2026-03-27)
 
 
