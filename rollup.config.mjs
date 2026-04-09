@@ -149,18 +149,14 @@ export default [
           {
             src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
             dest: './lib',
+            transform: contents =>
+              contents.toString().replace(/\n\/\/# sourceMappingURL=.*$/m, ''),
           },
           {
             src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
             dest: './dist/lib',
-          },
-          {
-            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map',
-            dest: './lib',
-          },
-          {
-            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map',
-            dest: './dist/lib',
+            transform: contents =>
+              contents.toString().replace(/\n\/\/# sourceMappingURL=.*$/m, ''),
           },
           {
             src: './node_modules/openseadragon/build/openseadragon/images/*',
