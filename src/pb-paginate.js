@@ -1,7 +1,20 @@
-import { LitElement, html, css, nothing } from 'lit';
-import { pbMixin } from './pb-mixin.js';
-import { translate } from './pb-i18n.js';
+import { LitElement, css, html, nothing } from 'lit';
 import './pb-icon.js';
+import { translate } from './pb-i18n.js';
+import { themableMixin } from './theming.js';
+import { pbMixin } from './pb-mixin.js';
+
+/**
+ * @typedef {{type: 'overflow'}} Overflow
+ */
+
+/**
+ * @typedef {{type: 'page', label: number, class: 'active'|''}} Page
+ */
+
+/**
+ * @typedef {Overflow | Page} PageOrOverflow
+ */
 
 /**
  * Display a pagination control from which the user can select a page to view
@@ -15,7 +28,7 @@ import './pb-icon.js';
  * @fires pb-results-received - When received, recalculates page ranges to display according to the parameters received
  * @csspart count - the span displaying the number of items
  */
-export class PbPaginate extends pbMixin(LitElement) {
+export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
@@ -69,74 +82,208 @@ export class PbPaginate extends pbMixin(LitElement) {
         type: Number,
       },
       /**
-       * todo:
+       * The actual pages
        */
       pages: {
         type: Array,
       },
+
       /**
        * show or hide (i.e. generate) previous and next buttons,
-       * default value is false, controls are not generated
+       * default value is true, controls are generated
        */
       showPreviousNext: {
         type: Boolean,
-        attribute: 'show-previous-next'
-      }
+        attribute: 'show-previous-next',
+      },
     };
   }
 
   constructor() {
     super();
+    /**
+     * The total amount of results
+     * @type {number}
+     */
     this.total = 0;
+
+    /**
+     * The start of this page. 1-based
+     * @type {number}
+     */
     this.start = 1;
+
+    /**
+     * How many items per page
+     * @type {number}
+     */
     this.perPage = 10;
+
+    /**
+     * The current page
+     * @type {number}
+     */
     this.page = 1;
+
+    /**
+     * The total amount of pages
+     * @type {number}
+     */
     this.pageCount = 10;
+
+    /**
+     * The amount of pages to show
+     * @type {number}
+     */
     this.range = 5;
+
+    /**
+     * The actual pages
+     * @type {PageOrOverflow[]}
+     */
     this.pages = [];
     this.foundLabel = 'browse.items';
+
+    this.showPreviousNext = true;
   }
 
   connectedCallback() {
     super.connectedCallback();
+
     this.subscribeTo('pb-results-received', this._refresh.bind(this));
+    this._update(this.start, this.total);
   }
 
-  render() {
-    return html`
-      <button
-        type="button"
-        class="pb-paginate__nav"
-        data-page="first"
-        @click=${this._handleFirst}
-        aria-label=${translate('paginate.first')}
-      >
-        <pb-icon icon="chevron-left"></pb-icon>
-      </button>
-      ${this.pages.map(
-        (item, index) => html`
-          <button
-            type="button"
-            class="pb-paginate__page ${item.class}"
-            @click=${() => this._handleClick(item, index)}
-            aria-current=${item.class === 'active' ? 'page' : nothing}
-          >
-            ${item.label}
-          </button>
-        `,
-      )}
-      <button
-        type="button"
-        class="pb-paginate__nav"
-        data-page="last"
-        @click=${this._handleLast}
-        aria-label=${translate('paginate.last')}
-      >
-        <pb-icon icon="chevron-right"></pb-icon>
-      </button>
+  _update(start, total) {
+    if (!total || !start) {
+      return;
+    }
+    this.pageCount = Math.ceil(total / this.perPage);
+    this.page = Math.ceil(start / this.perPage);
 
-      <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
-    `;
+    // If everything fits within range+2 slots, show all pages
+    if (this.pageCount <= this.range + 2) {
+      this.pages = Array.from({ length: this.pageCount }, (_, i) => ({
+        type: 'page',
+        label: i + 1,
+        class: i + 1 === this.page ? 'active' : '',
+      }));
+      return;
+    }
+
+    // Total slots = range + 2: page 1 (fixed) + range middle slots + last page (fixed).
+    // Middle slots hold a consecutive window plus up to 2 overflow markers.
+    // Core window size when both overflows are present = range - 2.
+    const coreSize = this.range - 2;
+
+    // Center core window around current page within [2, pageCount-1]
+    let winStart = this.page - Math.floor(coreSize / 2);
+    let winEnd = winStart + coreSize - 1;
+
+    if (winStart < 2) {
+      winStart = 2;
+      winEnd = winStart + coreSize - 1;
+    }
+    if (winEnd > this.pageCount - 1) {
+      winEnd = this.pageCount - 1;
+      winStart = Math.max(2, winEnd - coreSize + 1);
+    }
+
+    // Extend window when an overflow would hide ≤1 page, or reclaim freed overflow slot
+    if (winStart === 2) {
+      winEnd = Math.min(this.pageCount - 1, winEnd + 1);
+    } else if (winStart === 3) {
+      winStart = 2;
+    } else if (winEnd === this.pageCount - 1) {
+      winStart = Math.max(2, winStart - 1);
+    } else if (winEnd === this.pageCount - 2) {
+      winEnd = this.pageCount - 1;
+    }
+
+    /**
+     * @type {Overflow}
+     */
+    const overflow = { type: 'overflow' };
+    /** @type {PageOrOverflow[]} */
+    const pages = [];
+    pages.push({ type: 'page', label: 1, class: this.page === 1 ? 'active' : '' });
+    if (winStart > 2) {
+      pages.push(overflow);
+    }
+    for (let i = 0, l = winEnd - winStart + 1; i < l; i += 1) {
+      pages.push({
+        type: 'page',
+        label: winStart + i,
+        class: winStart + i === this.page ? 'active' : '',
+      });
+    }
+
+    if (winEnd < this.pageCount - 1) {
+      pages.push(overflow);
+    }
+    pages.push({
+      type: 'page',
+      label: this.pageCount,
+      class: this.page === this.pageCount ? 'active' : '',
+    });
+
+    this.pages = pages;
+  }
+
+  _refresh(ev) {
+    this.start = Number(ev.detail.start);
+    this.total = ev.detail.count;
+    this._update(this.start, this.total);
+  }
+
+  /**
+   * Go to a page
+   *
+   * @param {number} item
+   */
+  _handleClick(item) {
+    this.start = (item - 1) * this.perPage + 1;
+    ['pb-load', 'pb-paginate'].forEach(ev => {
+      this.emitTo(ev, {
+        params: {
+          start: this.start,
+          'per-page': this.perPage,
+          page: item,
+        },
+      });
+    });
+  }
+
+  /**
+   * Go to the first page in the pagination
+   */
+  _handleFirst() {
+    this.start = 1;
+    ['pb-load', 'pb-paginate'].forEach(event => {
+      this.emitTo(event, {
+        params: {
+          start: 1,
+          'per-page': this.perPage,
+          page: 0,
+        },
+      });
+    });
+  }
+
+  /**
+   * Go to the last page in the pagination
+   */
+  _handleLast() {
+    this.start = (this.pageCount - 1) * this.perPage + 1;
+    ['pb-load', 'pb-paginate'].forEach(event => {
+      this.emitTo(event, {
+        params: {
+          start: this.start,
+          'per-page': this.perPage,
+          page: this.pageCount - 1,
+        },
+      });
+    });
   }
 
   static get styles() {
@@ -151,36 +298,51 @@ export class PbPaginate extends pbMixin(LitElement) {
         gap: 8px;
       }
 
-      .pb-paginate__nav,
-      .pb-paginate__page {
-        padding: 4px 8px;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        color: inherit;
-        font: inherit;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
+      nav {
+        display: flex;
+        ul {
+          display: flex;
+          .pb-paginate__nav,
+          .pb-paginate__overflow,
+          .pb-paginate__page {
+            display: inherit;
+            flex: 1 0 auto;
+            height: 2.5rem;
+            justify-content: center;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+            background: transparent;
+            min-width: 2.5rem;
 
-      .pb-paginate__page.active {
-        background-color: var(--pb-color-primary);
-        color: var(--pb-color-inverse);
-        border-radius: 50%;
-        min-width: fit-content;
-        width: 1em;
-        line-height: 1em;
-        padding: 0.4em;
-        text-align: center;
-        box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12),
-          0 3px 3px -2px rgba(0, 0, 0, 0.4);
-      }
+            &:focus-visible {
+              outline: 2px solid var(--pb-color-primary);
+              outline-offset: 2px;
+            }
 
-      .pb-paginate__page:focus-visible,
-      .pb-paginate__nav:focus-visible {
-        outline: 2px solid var(--pb-color-primary);
-        outline-offset: 2px;
+            a.active {
+              border-radius: 50%;
+              box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12),
+                0 3px 3px -2px rgba(0, 0, 0, 0.4);
+              background-color: var(--pb-color-primary);
+              color: var(--pb-color-inverse);
+            }
+
+            &.pb-paginate__overflow span,
+            a {
+              /* Make them click areas nice and big */
+              padding: 0.5rem;
+              border-radius: 2.5rem;
+              color: var(--pb-color-primary);
+              display: inline-flex;
+              align-items: center;
+              text-decoration: none;
+            }
+          }
+        }
+        span {
+          display: flex;
+          align-items: center;
+        }
       }
 
       .found {
@@ -189,104 +351,74 @@ export class PbPaginate extends pbMixin(LitElement) {
     `;
   }
 
-  _update(start, total) {
-    if (!total || !start) {
-      return;
+  render() {
+    if (this.pages.length === 0) {
+      return '';
     }
-    this.pageCount = Math.ceil(total / this.perPage);
-    this.page = Math.ceil(start / this.perPage);
-    let lowerBound = Math.max(this.page - Math.ceil(this.range / 2) + 1, 1);
-    const upperBound = Math.min(lowerBound + this.range - 1, this.pageCount);
-    lowerBound = Math.max(upperBound - this.range + 1, 1);
-    console.log(
-      '<pb-paginate> start: %d, total: %d, perPage: %d, pageCount: %s, page: %d, lower: %d, upper: %d, range: %d, show-previous-next: %s',
-      start,
-      total,
-      this.perPage,
-      this.pageCount,
-      this.page,
-      lowerBound,
-      upperBound,
-      this.range, 
-      this.showPreviousNext
-    );
-    const pages = [];
-    const prevNextPages = []; //first item for previous control, second/last item for next control
-    for (let i = lowerBound; i <= upperBound; i++) {
-      pages.push({
-        label: i,
-        class: i === this.page ? 'active' : '',
-      });
-      if(!this.showPreviousNext) continue;
-      //previous page if it's first page
-      if(lowerBound === 1 && i === 1 && this.page === i) {
-        prevNextPages.push({
-          label: i,
-          index: 0
-        });
-      }
-      //previous page
-      if(i + 1 === this.page) {
-        prevNextPages.push({
-          label: i,
-          index: pages.length - 1
-        });
-      }
-      //next page
-      if(i - 1 === this.page) {
-        prevNextPages.push({
-          label: i,
-          index: pages.length - 1
-        });
-      }
-    }
-    this.pages = pages;
-    this.prevNextPages = prevNextPages;
-  }
 
-  _refresh(ev) {
-    this.start = Number(ev.detail.start);
-    this.total = ev.detail.count;
-    this._update(this.start, this.total);
-  }
+    const overflowPart = html`<li
+      class="pb-paginate__overflow"
+      aria-label="${translate('pagination.ellipsislabel')}"
+    >
+      <span>…</span>
+    </li>`;
 
-  _handleClick(_item, index) {
-    this.start = (this.pages[index].label - 1) * this.perPage + 1;
-    for (const ev of ['pb-load', 'pb-paginate']) {
-      this.emitTo(ev, {
-        params: {
-          start: this.start,
-          'per-page': this.perPage,
-          page: index,
-        },
-      });
-    }
-  }
-
-  _handleFirst() {
-    this.start = 1;
-    for (const ev of ['pb-load', 'pb-paginate']) {
-      this.emitTo(ev, {
-        params: {
-          start: 1,
-          'per-page': this.perPage,
-          page: 0,
-        },
-      });
-    }
-  }
-
-  _handleLast() {
-    this.start = (this.pageCount - 1) * this.perPage + 1;
-    for (const ev of ['pb-load', 'pb-paginate']) {
-      this.emitTo(ev, {
-        params: {
-          start: this.start,
-          'per-page': this.perPage,
-          page: this.pageCount - 1,
-        },
-      });
-    }
+    return html`
+      <nav aria-label="${translate('pagination.pagination')}">
+        <ul>
+          ${this.showPreviousNext
+            ? html`<li
+                class="pb-paginate__nav pb-paginate__nav-previous"
+                style="${this.page === 1 ? 'visibility: hidden' : ''}"
+              >
+                <a
+                  href="javascript:void(0);"
+                  aria-label="${translate('pagination.previous')}"
+                  @click="${() => this._handleClick(this.page - 1)}"
+                  ><pb-icon slot="previous-icon" icon="chevron-left"></pb-icon>
+                  <span><pb-i18n key="pagination.previous">Previous</pb-i18n></span>
+                </a>
+              </li>`
+            : nothing}
+          ${this.pages.map(item => {
+            switch (item.type) {
+              case 'overflow':
+                return overflowPart;
+              default:
+                return html`<li class="pb-paginate__page">
+                  <a
+                    href="javascript:void(0);"
+                    aria-label="${translate('pagination.page', { page: item.label })}"
+                    class="${item.class}"
+                    @click="${() => this._handleClick(item.label)}"
+                  >
+                    ${item.label}
+                  </a>
+                </li>`;
+            }
+          })}
+          ${this.showPreviousNext
+            ? html`<li
+                class="pb-paginate__nav pb-paginate__nav_next"
+                style="${
+                  // Use visibility: hidden to make sure we still take space for this. Makes the layout shift less
+                  this.page < this.pageCount ? '' : 'visibility: hidden'
+                }"
+              >
+                <a
+                  href="javascript:void(0);"
+                  aria-label="${translate('pagination.next')}"
+                  @click="${() => this._handleClick(this.page + 1)}"
+                >
+                  <span><pb-i18n key="pagination.next">Next</pb-i18n></span
+                  ><pb-icon slot="previous-icon" icon="chevron-right"></pb-icon>
+                </a>
+              </li>`
+            : nothing}
+        </ul>
+        <span class="found" part="count">${translate(this.foundLabel, { count: this.total })}</span>
+      </nav>
+    `;
   }
 }
 customElements.define('pb-paginate', PbPaginate);

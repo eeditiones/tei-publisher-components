@@ -102,9 +102,16 @@ export function getSubscribedChannels(elem) {
  * channels, other components can address only one of the two.
  *
  * @mixinFunction
+ *
+ * @template {typeof import('lit-element').LitElement} T
+ * @param {T} BaseClass
+ *
  */
-export const pbMixin = superclass =>
-  class PbMixin extends superclass {
+export const pbMixin = BaseClass =>
+  /**
+   * @augments {BaseClass}
+   */
+  class PbMixin extends BaseClass {
     static get properties() {
       return {
         /**

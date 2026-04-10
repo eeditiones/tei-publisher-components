@@ -1,5 +1,12 @@
 {
-  "language": "Language",
+	"language": "Language",
+	"paginate": {
+		"pagination": "Pagination",
+		"next": "Next",
+		"previous": "Previous",
+		"page": "Page {{nr}}",
+		"ellipsislabel": "ellipsis indicating non-visible pages"
+	},
   "menu": {
     "documentation": "Documentation",
     "admin": {
