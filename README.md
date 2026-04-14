@@ -11,8 +11,8 @@ This repository contains the web components used by TEI Publisher and apps gener
 
 Distributing the components in a separate package has several benefits:
 
-* generated apps can depend on a specific version of the components without getting into conflict with other apps
-* the components can be embedded into any environment, e.g. a CMS or blog software, as long as they can communicate with a TEI Publisher instance running somewhere else
+- generated apps can depend on a specific version of the components without getting into conflict with other apps
+- the components can be embedded into any environment, e.g. a CMS or blog software, as long as they can communicate with a TEI Publisher instance running somewhere else
 
 While TEI Publisher 5 used Polymer as the framework for webcomponents, components now use the LitElement library, which adds only a thin layer on top of native web components.
 
@@ -27,7 +27,10 @@ All components talk to an endpoint, which will either be a TEI Publisher instanc
 To include components into your own application, you can load them from a CDN:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"></script>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@teipublisher/pb-components/dist/pb-components-bundle.js"
+></script>
 ```
 
 For most use case, including `pb-components-bundle.js` is enough. However, we ship additional bundles as described below:
@@ -38,7 +41,7 @@ For most use case, including `pb-components-bundle.js` is enough. However, we sh
 | `dist/pb-leaflet-map.js`       | (optional) support for displaying maps                                          |
 | `dist/pb-odd-editor.js`        | implements the visual ODD editor                                                |
 | `dist/pb-component-docs.js`    | components to view the API documentation of this package                        |
-| `dist/pb-tify.js` | IIIF presentation API viewer |
+| `dist/pb-tify.js`              | IIIF presentation API viewer                                                    |
 
 Bundles build on each other, so you always need to at least include `pb-components-bundle.js` in your HTML page.
 
@@ -46,7 +49,7 @@ For some examples of how to embed components into plain HTML, see the [sample co
 
 ## Loading from npm
 
-Install  `@teipublisher/pb-components` into your project:
+Install `@teipublisher/pb-components` into your project:
 
 ```sh
 npm install --save @teipublisher/pb-components
@@ -83,9 +86,9 @@ By following these guidelines, all demo pages remain portable: they can run stan
 
 ### App configuration
 
-You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment. 
+You can configure TEI Publisher (or an app generated from it) to load components from the development server. This allows you to directly test changes you made to components within the full TEI Publisher environment.
 
-In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value *dev*. Below, set `$config:webcomponents-cdn` to `http://localhost:5173`:
+In TEI Publisher, open `modules/config.xqm` and change variable `$config:webcomponents` to the value _dev_. Below, set `$config:webcomponents-cdn` to `http://localhost:5173`:
 
 ```xquery
 declare variable $config:webcomponents := "dev";
@@ -102,16 +105,19 @@ This project uses Cypress for both component testing and end-to-end testing.
 ### Running Tests
 
 **Component Tests (Fast):**
+
 ```bash
 npm run cy:run:ct
 ```
 
 **End-to-End Tests (Full):**
+
 ```bash
 npm run cy:run:e2e
 ```
 
 **Interactive Mode:**
+
 ```bash
 npm run cy:open
 ```
@@ -119,16 +125,19 @@ npm run cy:open
 **Running Individual Specs:**
 
 For **Component Tests** (single spec):
+
 ```bash
 npx cypress run --component --spec "test/cypress/component/pb-button.cy.js"
 ```
 
 For **E2E Tests** (single spec with dev server):
+
 ```bash
 npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js"'
 ```
 
 For **E2E Tests** (multiple specs with dev server):
+
 ```bash
 npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run --e2e --spec "test/cypress/e2e/pb-button.e2e.cy.js,test/cypress/e2e/pb-dialog.e2e.cy.js"'
 ```
@@ -146,11 +155,13 @@ npx concurrently --kill-others --success first 'vite --no-open' 'npx cypress run
 When writing tests, follow these patterns:
 
 **Component Tests:**
+
 - Focus on component-specific functionality
 - Test props, events, and basic rendering
 - Avoid complex component interactions (use E2E tests instead)
 
 **E2E Tests:**
+
 - Test complete user workflows
 - Use appropriate page load strategies (see Development section)
 - Test component interactions and integration
@@ -158,31 +169,34 @@ When writing tests, follow these patterns:
 **Demo Page Load Strategies:**
 
 1. **Pages with `firePageReady()` calls:**
+
 ```javascript
 beforeEach(() => {
-  cy.visit('/demo/pb-tabs.html')
+  cy.visit('/demo/pb-tabs.html');
   cy.window().then(win => {
     return new Cypress.Promise(resolve => {
-      win.addEventListener('pb-page-ready', resolve, { once: true })
-    })
-  })
-})
+      win.addEventListener('pb-page-ready', resolve, { once: true });
+    });
+  });
+});
 ```
 
 2. **Pages with `<pb-page>` but no `firePageReady()`:**
+
 ```javascript
 beforeEach(() => {
-  cy.visit('/demo/pb-dialog.html')
-  cy.get('pb-page', { timeout: 5000 }).should('exist')
-})
+  cy.visit('/demo/pb-dialog.html');
+  cy.get('pb-page', { timeout: 5000 }).should('exist');
+});
 ```
 
 3. **Simple pages:**
+
 ```javascript
 beforeEach(() => {
-  cy.visit('/demo/pb-progress.html')
-  cy.get('body', { timeout: 3000 }).should('be.visible')
-})
+  cy.visit('/demo/pb-progress.html');
+  cy.get('body', { timeout: 3000 }).should('be.visible');
+});
 ```
 
 ## Building Documentation

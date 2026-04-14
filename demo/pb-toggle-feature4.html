@@ -1,15 +1,17 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-toggle-feature Demo</title>
-    <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="demo.css" />
     <!--scripts-->
-    
+
     <script type="module">
-        import '../src/pb-icon-button.js';
+      import '../src/pb-icon-button.js';
     </script>
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -22,50 +24,59 @@
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-navigation.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style>
-                .toolbar {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px;
-                    background-color: #E0E0E0;
-                }
+      <template>
+        <style>
+          .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #e0e0e0;
+          }
 
-                h1.toggle {
-                    color: chocolate;
-                }
+          h1.toggle {
+            color: chocolate;
+          }
 
-                .switch:not(.toggle),
-                .select:not(.toggle) {
-                    display: none;
-                }
-            </style>
-            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query" version="1.0">
-                <pb-document id="document2" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
-                <div class="toolbar">
-                    <pb-toggle-feature name="mode" selector="main h1, .switch" default="off" global="">Toggle
-                    </pb-toggle-feature>
-                    <pb-select-feature name="select" label="Select" items='[
+          .switch:not(.toggle),
+          .select:not(.toggle) {
+            display: none;
+          }
+        </style>
+        <pb-page endpoint="/exist/apps/tei-publisher" url-path="query" version="1.0">
+          <pb-document
+            id="document2"
+            path="test/cortes_to_dantiscus.xml"
+            odd="dantiscus"
+          ></pb-document>
+          <div class="toolbar">
+            <pb-toggle-feature name="mode" selector="main h1, .switch" default="off" global=""
+              >Toggle
+            </pb-toggle-feature>
+            <pb-select-feature
+              name="select"
+              label="Select"
+              items='[
                         {"name": "Feature enabled", "selectors": [{"selector": ".select", "state": true, "global": true}]},
                         {"name": "Feature disabled", "selectors": [{"selector": ".select", "state": false, "global": true}]}
-                        ]'></pb-select-feature>
-                </div>
-                <main>
-                    <p class="switch">Feature 1 is enabled by pb-toggle-feature!</p>
-                    <p class="select">Feature 2 is enabled by pb-select-feature!</p>
-                    <h1>Toggle features outside pb-view/pb-load</h1>
-                    <p>By specifying the "global" attribute, one can toggle features on any element
-                        selected by the selector below the surrounding pb-page.
-                    </p>
-                </main>
-            </pb-page>
-        </template>
+                        ]'
+            ></pb-select-feature>
+          </div>
+          <main>
+            <p class="switch">Feature 1 is enabled by pb-toggle-feature!</p>
+            <p class="select">Feature 2 is enabled by pb-select-feature!</p>
+            <h1>Toggle features outside pb-view/pb-load</h1>
+            <p>
+              By specifying the "global" attribute, one can toggle features on any element selected
+              by the selector below the surrounding pb-page.
+            </p>
+          </main>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

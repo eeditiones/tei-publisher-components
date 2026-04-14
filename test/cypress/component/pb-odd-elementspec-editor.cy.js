@@ -1,24 +1,23 @@
 // Cypress CT: pb-odd-elementspec-editor
-import '../../../src/pb-odd-elementspec-editor.js'
+import '../../../src/pb-odd-elementspec-editor.js';
 
 describe('pb-odd-elementspec-editor', () => {
   it('should mount', () => {
-    cy.mount('<pb-odd-elementspec-editor></pb-odd-elementspec-editor>')
-    cy.get('pb-odd-elementspec-editor').should('exist')
-  })
+    cy.mount('<pb-odd-elementspec-editor></pb-odd-elementspec-editor>');
+    cy.get('pb-odd-elementspec-editor').should('exist');
+  });
 
   it('should accept ident property', () => {
-    cy.mount('<pb-odd-elementspec-editor ident="test-id"></pb-odd-elementspec-editor>')
+    cy.mount('<pb-odd-elementspec-editor ident="test-id"></pb-odd-elementspec-editor>');
     cy.get('pb-odd-elementspec-editor').then($el => {
-      expect($el[0].ident).to.equal('test-id')
-    })
-  })
+      expect($el[0].ident).to.equal('test-id');
+    });
+  });
 
   it('should accept mode property', () => {
-    cy.mount('<pb-odd-elementspec-editor mode="add"></pb-odd-elementspec-editor>')
+    cy.mount('<pb-odd-elementspec-editor mode="add"></pb-odd-elementspec-editor>');
     cy.get('pb-odd-elementspec-editor').then($el => {
-      expect($el[0].mode).to.equal('add')
-    })
-  })
-})
-
+      expect($el[0].mode).to.equal('add');
+    });
+  });
+});

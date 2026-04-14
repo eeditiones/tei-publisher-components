@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-print-preview Demo</title>
-    <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="demo.css" />
     <!--scripts-->
-    
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -17,24 +18,26 @@
     <script type="module" src="../src/pb-print-preview.js"></script>
     <!--/scripts-->
     <style>
-        pb-print-preview {
-            height: 80vh;
-            width: 100%;
-        }
+      pb-print-preview {
+        height: 80vh;
+        width: 100%;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <pb-page endpoint="/exist/apps/tei-publisher">
-                <pb-document id="doc" path="doc/documentation.xml" odd="docbook"></pb-document>
-                <main>
-                    <pb-print-preview src="doc" styles="resources/css/print.css,resources/fonts/font.css"></pb-print-preview>
-                </main>
-            </pb-page>
-        </template>
+      <template>
+        <pb-page endpoint="/exist/apps/tei-publisher">
+          <pb-document id="doc" path="doc/documentation.xml" odd="docbook"></pb-document>
+          <main>
+            <pb-print-preview
+              src="doc"
+              styles="resources/css/print.css,resources/fonts/font.css"
+            ></pb-print-preview>
+          </main>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

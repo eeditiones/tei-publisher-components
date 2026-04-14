@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Using pb-select (remote list)</title>
-    <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="demo.css" />
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-select.js"></script>
@@ -43,12 +43,7 @@
         <pb-page id="pb-select2-page" endpoint="." api-version="1.0.0">
           <section class="demo">
             <form id="select2-form" action="">
-              <pb-select
-                label="Language"
-                name="lang"
-                value="pl"
-                source="./select.json"
-              >
+              <pb-select label="Language" name="lang" value="pl" source="./select.json">
                 <span value="" hidden>Loading…</span>
               </pb-select>
               <button type="submit" class="pb-button pb-button--contained">Submit</button>
@@ -60,33 +55,39 @@
     </pb-demo-snippet>
 
     <script type="module">
-      import { ready, stampIfNeeded, firePageReady, syncPbSelect, wireFormOutput } from '../src/docs/demo-utils.js'
+      import {
+        ready,
+        stampIfNeeded,
+        firePageReady,
+        syncPbSelect,
+        wireFormOutput,
+      } from '../src/docs/demo-utils.js';
 
-      const initialState = Object.freeze({ lang: 'pl' })
+      const initialState = Object.freeze({ lang: 'pl' });
 
-      async function hydrate () {
-        await ready(['pb-demo-snippet', 'pb-select'])
-        const snippet = document.querySelector('pb-demo-snippet')
-        stampIfNeeded(snippet)
+      async function hydrate() {
+        await ready(['pb-demo-snippet', 'pb-select']);
+        const snippet = document.querySelector('pb-demo-snippet');
+        stampIfNeeded(snippet);
 
-        const form = document.querySelector('#select2-form')
-        const output = document.querySelector('#select2-output')
-        const control = form?.querySelector('pb-select[name="lang"]')
-        if (!form || !output || !control) return
+        const form = document.querySelector('#select2-form');
+        const output = document.querySelector('#select2-output');
+        const control = form?.querySelector('pb-select[name="lang"]');
+        if (!form || !output || !control) return;
 
-        control.value = initialState.lang
-        await syncPbSelect(control)
+        control.value = initialState.lang;
+        await syncPbSelect(control);
 
-        const render = wireFormOutput(form, output)
-        render()
+        const render = wireFormOutput(form, output);
+        render();
 
-        firePageReady({ endpoint: '.', apiVersion: '1.0.0' })
+        firePageReady({ endpoint: '.', apiVersion: '1.0.0' });
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', hydrate)
+        document.addEventListener('DOMContentLoaded', hydrate);
       } else {
-        hydrate()
+        hydrate();
       }
     </script>
   </body>

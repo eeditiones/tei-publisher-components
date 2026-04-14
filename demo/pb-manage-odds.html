@@ -1,12 +1,14 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-manage-odds Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-manage-odds.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
@@ -14,30 +16,34 @@
     <script type="module" src="../src/pb-progress.js"></script>
     <script type="module" src="../src/pb-upload.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style type="text/css">
-                pb-download {
-                    margin-right: 10px;
-                }
+      <template>
+        <style type="text/css">
+          pb-download {
+            margin-right: 10px;
+          }
 
-                pb-progress {
-                    margin-bottom: 20px;
-                }
-            </style>
-            <pb-page endpoint=".">
-                <pb-progress></pb-progress>
-                <pb-login id="login" group="tei"></pb-login>
-                <pb-restricted login="login" can-write>
-                    <pb-upload id="upload" emit="docs" subscribe="docs" accept=".xml, .tei, .odd, .docx"></pb-upload>
-                </pb-restricted>
-                <pb-manage-odds target="document-list" subscribe="docs"></pb-manage-odds>
-            </pb-page>
-        </template>
+          pb-progress {
+            margin-bottom: 20px;
+          }
+        </style>
+        <pb-page endpoint=".">
+          <pb-progress></pb-progress>
+          <pb-login id="login" group="tei"></pb-login>
+          <pb-restricted login="login" can-write>
+            <pb-upload
+              id="upload"
+              emit="docs"
+              subscribe="docs"
+              accept=".xml, .tei, .odd, .docx"
+            ></pb-upload>
+          </pb-restricted>
+          <pb-manage-odds target="document-list" subscribe="docs"></pb-manage-odds>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>
