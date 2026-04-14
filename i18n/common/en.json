@@ -62,6 +62,7 @@
     "filterPlaceholder": "Filter",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
+    "items_other": "Found {{count}} items",
     "title": "Title",
     "author": "Author",
     "modificationDate": "Modification Date",
