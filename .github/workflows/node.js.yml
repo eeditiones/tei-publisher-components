@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   pull_request:
-    branches: [ master, next* ]
+    branches: [master, next*]
 
   push:
     branches:
@@ -12,14 +12,14 @@ on:
 
 jobs:
   test-fast:
-      name: Cypress Component Tests
-      runs-on: ubuntu-latest
-      steps:
+    name: Cypress Component Tests
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v5
       - name: Use Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: '24'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Install dependencies
@@ -27,15 +27,33 @@ jobs:
       - name: Run Cypress Component Tests
         run: npm run cy:run:ct
 
-  e2e:
-      name: Cypress E2E Tests
-      runs-on: ubuntu-latest
-      steps:
+  lint:
+    name: Check code style and linting errors
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v5
       - name: Use Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Prettier for codestyle. Must pass
+        run: npm run lint:prettier
+        # - name: Run ESLint for code style. Does not pass currently
+        #   run: npm run lint:eslint
+
+  e2e:
+    name: Cypress E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Install dependencies
@@ -61,7 +79,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: '24'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: npm install
