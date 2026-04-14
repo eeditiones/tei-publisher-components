@@ -243,15 +243,15 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
    */
   _handleClick(item) {
     this.start = (item - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(ev => {
-      this.emitTo(ev, {
+    for (const eventName of ['pb-load', 'pb-paginate']) {
+      this.emitTo(eventName, {
         params: {
           start: this.start,
           'per-page': this.perPage,
           page: item,
         },
       });
-    });
+    }
   }
 
   /**
@@ -259,15 +259,15 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
    */
   _handleFirst() {
     this.start = 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+    for (const eventName of ['pb-load', 'pb-paginate']) {
+      this.emitTo(eventName, {
         params: {
           start: 1,
           'per-page': this.perPage,
           page: 0,
         },
       });
-    });
+    }
   }
 
   /**
@@ -275,15 +275,15 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
    */
   _handleLast() {
     this.start = (this.pageCount - 1) * this.perPage + 1;
-    ['pb-load', 'pb-paginate'].forEach(event => {
-      this.emitTo(event, {
+    for (const eventName of ['pb-load', 'pb-paginate']) {
+      this.emitTo(eventName, {
         params: {
           start: this.start,
           'per-page': this.perPage,
           page: this.pageCount - 1,
         },
       });
-    });
+    }
   }
 
   static get styles() {
