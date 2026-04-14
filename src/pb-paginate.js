@@ -352,10 +352,6 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
   }
 
   render() {
-    if (this.pages.length === 0) {
-      return '';
-    }
-
     const overflowPart = html`<li
       class="pb-paginate__overflow"
       aria-label="${translate('pagination.ellipsislabel')}"
