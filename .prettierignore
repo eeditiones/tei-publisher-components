@@ -1,0 +1,4 @@
+# These are external files not under our control
+/lib/
+
+/dist/
