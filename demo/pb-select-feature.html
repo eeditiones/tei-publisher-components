@@ -1,16 +1,16 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-select-feature Demo</title>
     <!--scripts-->
-    
-    
 
     <script type="module">
-        import '../src/pb-icon-button.js';
+      import '../src/pb-icon-button.js';
     </script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -21,53 +21,66 @@
     <script type="module" src="../src/pb-load.js"></script>
     <script type="module" src="../src/pb-navigation.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
-   <h1>Using pb-select-feature with pb-view</h1>
+  <body>
+    <h1>Using pb-select-feature with pb-view</h1>
     <pb-demo-snippet>
-        <template>
-            <style>
-            body {
-                --paper-fab-background: #35424b;
-            }
+      <template>
+        <style>
+          body {
+            --paper-fab-background: #35424b;
+          }
 
-            main {
-                display: flex;
-                justify-content: space-between;
-            }
-            .toolbar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #E0E0E0;
-            }
-            pb-toggle-feature {
-                display: block;
-            }
-            </style>
-            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
-                <pb-document id="document1" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+          main {
+            display: flex;
+            justify-content: space-between;
+          }
+          .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #e0e0e0;
+          }
+          pb-toggle-feature {
+            display: block;
+          }
+        </style>
+        <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
+          <pb-document
+            id="document1"
+            path="test/cortes_to_dantiscus.xml"
+            odd="dantiscus"
+          ></pb-document>
 
-                <div class="toolbar">
-                    <pb-select-feature id="select-view1" name="view1" label="View" items='[
+          <div class="toolbar">
+            <pb-select-feature
+              id="select-view1"
+              name="view1"
+              label="View"
+              items='[
                     {"name": "Diplomatic View", "properties": {"mode": "diplomatic", "view": "page"}}, 
                     {"name": "Normalized View", "properties": {"mode": "norm", "view": "single", "root": null}}
-                    ]'></pb-select-feature>
-                    <pb-navigation direction="backward" keyboard="left">
-                        <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
-                    </pb-navigation>
-                    <pb-navigation direction="forward" keyboard="right">
-                        <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
-                    </pb-navigation>
-                </div>
-                <main>
-                    <pb-view id="view1" src="document1" view="page" xpath="//text[@type='source']"></pb-view>
-                </main>
-            </pb-page>
-        </template>
+                    ]'
+            ></pb-select-feature>
+            <pb-navigation direction="backward" keyboard="left">
+              <pb-icon-button icon="icons:chevron-left"></pb-icon-button>
+            </pb-navigation>
+            <pb-navigation direction="forward" keyboard="right">
+              <pb-icon-button icon="icons:chevron-right"></pb-icon-button>
+            </pb-navigation>
+          </div>
+          <main>
+            <pb-view
+              id="view1"
+              src="document1"
+              view="page"
+              xpath="//text[@type='source']"
+            ></pb-view>
+          </main>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

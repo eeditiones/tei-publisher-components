@@ -3,10 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
@@ -15,11 +12,6 @@
     "alwaysStrict": true,
     "esModuleInterop": true
   },
-  "include": [
-    "**/*.js",
-    "node_modules/@open-wc/**/*.js"
-  ],
-  "exclude": [
-    "node_modules/!(@open-wc)"
-  ]
+  "include": ["**/*.js", "node_modules/@open-wc/**/*.js"],
+  "exclude": ["node_modules/!(@open-wc)"]
 }

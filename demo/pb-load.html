@@ -1,12 +1,14 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-load Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-document.js"></script>
@@ -15,51 +17,60 @@
     <script type="module" src="../src/pb-link.js"></script>
     <script type="module" src="../src/pb-collapse.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style type="text/css">
-            main {
-                display: flex;
-            }
+      <template>
+        <style type="text/css">
+          main {
+            display: flex;
+          }
 
-            pb-load {
-                max-width: 33%;
-                margin-right: 20px;
-            }
+          pb-load {
+            max-width: 33%;
+            margin-right: 20px;
+          }
 
-            .transcription {
-                height: 70vh;
-                overflow: auto;
-                margin-left: auto;
-                margin-right: auto;
-            }
+          .transcription {
+            height: 70vh;
+            overflow: auto;
+            margin-left: auto;
+            margin-right: auto;
+          }
 
-            pb-load ul {
-                list-style: none;
-                margin-left: 0;
-            }
+          pb-load ul {
+            list-style: none;
+            margin-left: 0;
+          }
 
-            pb-link a {
-                text-decoration: none;
-                color: #222222;
-            }
-            </style>
-            <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
-                <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page"></pb-document>
+          pb-link a {
+            text-decoration: none;
+            color: #222222;
+          }
+        </style>
+        <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
+          <pb-document
+            id="document1"
+            path="test/kant_rvernunft_1781.TEI-P5.xml"
+            odd="dta"
+            view="page"
+          ></pb-document>
 
-                <main>
-                    <pb-load url="api/document/{doc}/contents?target=transcription&icons=true" expand src="document1" auto>Loading table of
-                        contents...</pb-load>
-                    <div class="transcription">
-                        <pb-view src="document1" subscribe="transcription"></pb-view>
-                    </div>
-                </main>
-            </pb-page>
-        </template>
+          <main>
+            <pb-load
+              url="api/document/{doc}/contents?target=transcription&icons=true"
+              expand
+              src="document1"
+              auto
+              >Loading table of contents...</pb-load
+            >
+            <div class="transcription">
+              <pb-view src="document1" subscribe="transcription"></pb-view>
+            </div>
+          </main>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

@@ -7,61 +7,61 @@ version: 2
 updates:
   # ─── GitHub Actions → default branch (main) ─────────────────────────────────
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'
 
   # ─── GitHub Actions → next-4 ────────────────────────────────────────────────
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     target-branch: next-4
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'
 
   # ─── npm → default branch (main) ────────────────────────────────────────────
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: daily
     versioning-strategy: increase-if-necessary
     groups:
       rollup-and-vite:
         patterns:
-          - "rollup"
-          - "vite"
-          - "@rollup/*"
-          - "rollup-plugin-*"
+          - 'rollup'
+          - 'vite'
+          - '@rollup/*'
+          - 'rollup-plugin-*'
       babel:
         patterns:
-          - "@babel/*"
+          - '@babel/*'
       cypress-and-test-tooling:
         patterns:
-          - "cypress"
-          - "concurrently"
-          - "eslint-plugin-cypress"
-          - "eslint-plugin-chai-friendly"
-          - "web-component-analyzer"
+          - 'cypress'
+          - 'concurrently'
+          - 'eslint-plugin-cypress'
+          - 'eslint-plugin-chai-friendly'
+          - 'web-component-analyzer'
       eslint-prettier-and-lint:
         patterns:
-          - "eslint"
-          - "@eslint/*"
-          - "eslint-*"
-          - "globals"
-          - "lint-staged"
-          - "@open-wc/eslint-config"
-          - "@open-wc/prettier-config"
+          - 'eslint'
+          - '@eslint/*'
+          - 'eslint-*'
+          - 'globals'
+          - 'lint-staged'
+          - '@open-wc/eslint-config'
+          - '@open-wc/prettier-config'
       semantic-release:
         patterns:
-          - "semantic-release"
-          - "@semantic-release/*"
+          - 'semantic-release'
+          - '@semantic-release/*'
       production-dependencies:
         dependency-type: production
       development-dependencies:
@@ -69,7 +69,7 @@ updates:
 
   # ─── npm → next-4 (identical grouping) ──────────────────────────────────────
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: daily
     versioning-strategy: increase-if-necessary
@@ -77,33 +77,33 @@ updates:
     groups:
       rollup-and-vite:
         patterns:
-          - "rollup"
-          - "vite"
-          - "@rollup/*"
-          - "rollup-plugin-*"
+          - 'rollup'
+          - 'vite'
+          - '@rollup/*'
+          - 'rollup-plugin-*'
       babel:
         patterns:
-          - "@babel/*"
+          - '@babel/*'
       cypress-and-test-tooling:
         patterns:
-          - "cypress"
-          - "concurrently"
-          - "eslint-plugin-cypress"
-          - "eslint-plugin-chai-friendly"
-          - "web-component-analyzer"
+          - 'cypress'
+          - 'concurrently'
+          - 'eslint-plugin-cypress'
+          - 'eslint-plugin-chai-friendly'
+          - 'web-component-analyzer'
       eslint-prettier-and-lint:
         patterns:
-          - "eslint"
-          - "@eslint/*"
-          - "eslint-*"
-          - "globals"
-          - "lint-staged"
-          - "@open-wc/eslint-config"
-          - "@open-wc/prettier-config"
+          - 'eslint'
+          - '@eslint/*'
+          - 'eslint-*'
+          - 'globals'
+          - 'lint-staged'
+          - '@open-wc/eslint-config'
+          - '@open-wc/prettier-config'
       semantic-release:
         patterns:
-          - "semantic-release"
-          - "@semantic-release/*"
+          - 'semantic-release'
+          - '@semantic-release/*'
       production-dependencies:
         dependency-type: production
       development-dependencies:
