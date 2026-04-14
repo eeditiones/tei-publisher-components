@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 
 // Resolve Verovio ESM files to absolute paths without using package exports
 const VERO_WASM_MJS = path.resolve(__dirname, 'node_modules/verovio/dist/verovio-module.mjs');
-const VERO_ESM_MJS  = path.resolve(__dirname, 'node_modules/verovio/dist/verovio.mjs');
+const VERO_ESM_MJS = path.resolve(__dirname, 'node_modules/verovio/dist/verovio.mjs');
 
 const production = process.env.BUILD === 'production';
 

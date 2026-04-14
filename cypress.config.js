@@ -1,42 +1,42 @@
 // cypress.config.js (StandardJS)
-const { defineConfig } = require('cypress')
-const fs = require('fs')
-const path = require('path')
+const { defineConfig } = require('cypress');
+const fs = require('fs');
+const path = require('path');
 
-function listDemoPagesSync () {
-  const demoDir = path.resolve(__dirname, 'demo')
+function listDemoPagesSync() {
+  const demoDir = path.resolve(__dirname, 'demo');
   try {
-    return fs.readdirSync(demoDir, { withFileTypes: true })
+    return fs
+      .readdirSync(demoDir, { withFileTypes: true })
       .filter(e => e.isFile() && /^pb-.*\.html$/i.test(e.name))
-      .map(e => `/demo/${e.name}`)
+      .map(e => `/demo/${e.name}`);
   } catch (e) {
-    console.error('listDemoPagesSync failed:', e)
-    return []
+    console.error('listDemoPagesSync failed:', e);
+    return [];
   }
 }
 
-function listPbComponentsSync () {
-  const srcDir = path.resolve(__dirname, 'src')
+function listPbComponentsSync() {
+  const srcDir = path.resolve(__dirname, 'src');
   try {
-    return fs.readdirSync(srcDir, { withFileTypes: true })
+    return fs
+      .readdirSync(srcDir, { withFileTypes: true })
       .filter(e => e.isFile() && /^pb-.*\.js$/i.test(e.name))
       .map(e => {
-        const abs = path.join(srcDir, e.name)
-        const src = fs.readFileSync(abs, 'utf8')
+        const abs = path.join(srcDir, e.name);
+        const src = fs.readFileSync(abs, 'utf8');
         // look for customElements.define('pb-xyz', …)
-        const m = src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`]/)
+        const m = src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`]/);
         // fallback if there's extra stuff before the closing parenthesis
-        const m2 = m || src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`][^)]*\)/)
-        return m2 ? { file: e.name, tag: m2[1] } : null
+        const m2 = m || src.match(/customElements\.define\(\s*['"`](pb-[^'"`]+)['"`][^)]*\)/);
+        return m2 ? { file: e.name, tag: m2[1] } : null;
       })
-      .filter(Boolean)
+      .filter(Boolean);
   } catch (e) {
-    console.error('listPbComponentsSync failed:', e)
-    return []
+    console.error('listPbComponentsSync failed:', e);
+    return [];
   }
 }
-
-
 
 module.exports = defineConfig({
   includeShadowDom: true,
@@ -50,26 +50,28 @@ module.exports = defineConfig({
       framework: 'none',
       bundler: 'vite',
       viteConfig: {
-        server: { open: false }
-      }
+        server: { open: false },
+      },
     },
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/component.js',
     indexHtmlFile: 'test/cypress/support/component-index.html',
-    setupNodeEvents (on, config) {
+    setupNodeEvents(on, config) {
       on('task', {
-        listPbComponents () { return listPbComponentsSync() }
-      })
-      return config
+        listPbComponents() {
+          return listPbComponentsSync();
+        },
+      });
+      return config;
     },
     env: {
-      components: listPbComponentsSync()
-    }
+      components: listPbComponentsSync(),
+    },
   },
   e2e: {
-    setupNodeEvents (on, config) {
+    setupNodeEvents(on, config) {
       // keep your other tasks if needed
-      return config
+      return config;
     },
     baseUrl: process.env.CYPRESS_baseUrl || 'http://localhost:5173',
     retries: 1,
@@ -80,7 +82,8 @@ module.exports = defineConfig({
       // Allow tests to detect if running against real backend
       realBackend: process.env.CYPRESS_realBackend === 'true',
       // Backend URL for real backend testing
-      existBackend: process.env.CYPRESS_existBackend || 'http://localhost:8080/exist/apps/tei-publisher'
-    }
-  }
-})
+      existBackend:
+        process.env.CYPRESS_existBackend || 'http://localhost:8080/exist/apps/tei-publisher',
+    },
+  },
+});

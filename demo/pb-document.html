@@ -1,45 +1,59 @@
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
-        <title>pb-document Demo</title>
-        <link rel="stylesheet" href="demo.css">
-        <!--scripts-->
-        
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-document.js"></script>
-        <script type="module" src="../src/pb-view.js"></script>
-        <!--/scripts-->
-    </head>
+    <title>pb-document Demo</title>
+    <link rel="stylesheet" href="demo.css" />
+    <!--scripts-->
 
-    <body>
-        <pb-demo-snippet>
-            <template>
-                <style type="text/css">
-                main {
-                    height: 70vh;
-                    overflow: auto;
-                    display: flex;
-                    justify-content: space-between;
-                }
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-document.js"></script>
+    <script type="module" src="../src/pb-view.js"></script>
+    <!--/scripts-->
+  </head>
 
-                pb-view {
-                    flex: 1 0;
-                }
-                </style>
-                <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
-                    <pb-document id="document1" path="test/kant_rvernunft_1781.TEI-P5.xml" odd="dta" view="page" disable-history></pb-document>
-                    <pb-document id="document2" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+  <body>
+    <pb-demo-snippet>
+      <template>
+        <style type="text/css">
+          main {
+            height: 70vh;
+            overflow: auto;
+            display: flex;
+            justify-content: space-between;
+          }
 
-                    <!-- Display two document views side by side -->
-                    <main>
-                        <pb-view id="view1" src="document1" disable-history></pb-view>
-                        <pb-view id="view2" src="document2"></pb-view>
-                    </main>
-                </pb-page>
-            </template>
-        </pb-demo-snippet>
-    </body>
+          pb-view {
+            flex: 1 0;
+          }
+        </style>
+        <pb-page endpoint="/exist/apps/tei-publisher" url-path="query">
+          <pb-document
+            id="document1"
+            path="test/kant_rvernunft_1781.TEI-P5.xml"
+            odd="dta"
+            view="page"
+            disable-history
+          ></pb-document>
+          <pb-document
+            id="document2"
+            path="doc/documentation.xml"
+            odd="docbook"
+            view="div"
+          ></pb-document>
+
+          <!-- Display two document views side by side -->
+          <main>
+            <pb-view id="view1" src="document1" disable-history></pb-view>
+            <pb-view id="view2" src="document2"></pb-view>
+          </main>
+        </pb-page>
+      </template>
+    </pb-demo-snippet>
+  </body>
 </html>

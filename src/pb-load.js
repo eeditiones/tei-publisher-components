@@ -323,9 +323,14 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
     const doc = this.getDocument();
     console.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
-    console.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
+    console.log(
+      `<pb-load> Available elements with id "${this.src}":`,
+      document.getElementById(this.src),
+    );
     if (doc) {
-      console.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
+      console.log(
+        `<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`,
+      );
     }
     if (!this.plain) {
       if (doc && doc.path) {
@@ -337,13 +342,17 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         if (this._retryCount < this._maxRetries) {
           this._retryCount++;
           const delay = Math.min(100 * this._retryCount, 1000); // Progressive delay up to 1 second
-          console.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
+          console.warn(
+            `<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`,
+          );
           setTimeout(() => {
             this.load(ev);
           }, delay);
           return;
         } else {
-          console.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
+          console.error(
+            `<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`,
+          );
           // Instead of returning, show a loading state and keep trying
           this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
           return;
@@ -352,7 +361,9 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         // No document and no src specified - this might be intentional for plain mode
         // But if we have {doc} in the URL template, we should warn
         if (this.url && this.url.includes('{doc}')) {
-          console.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
+          console.warn(
+            `<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`,
+          );
         }
       }
 

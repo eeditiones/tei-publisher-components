@@ -1,56 +1,58 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-svg Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-svg.js"></script>
     <script type="module" src="../src/pb-events.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style>
-                body {
-                    --pb-svg-height: 50vh;
-                    --pb-svg-width: 640px;
-                }
-            </style>
-            <pb-page endpoint="/exist/apps/tei-publisher">
-                <main>
-                    <button onclick="swap();">Swap image</button>
-                    <pb-svg
-                        url="https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg">
-                    </pb-svg>
-                </main>
-                <script type="application/javascript">
-                    const files = [
-                        'https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg',
-                        'https://upload.wikimedia.org/wikipedia/commons/f/f2/Air_conditioning_unit-en.svg',
-                        'https://upload.wikimedia.org/wikipedia/commons/2/21/Horse_anatomy.svg'
-                    ];
+      <template>
+        <style>
+          body {
+            --pb-svg-height: 50vh;
+            --pb-svg-width: 640px;
+          }
+        </style>
+        <pb-page endpoint="/exist/apps/tei-publisher">
+          <main>
+            <button onclick="swap();">Swap image</button>
+            <pb-svg
+              url="https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg"
+            >
+            </pb-svg>
+          </main>
+          <script type="application/javascript">
+            const files = [
+              'https://upload.wikimedia.org/wikipedia/commons/2/2d/Fortepian_-_mechanizm_angielski.svg',
+              'https://upload.wikimedia.org/wikipedia/commons/f/f2/Air_conditioning_unit-en.svg',
+              'https://upload.wikimedia.org/wikipedia/commons/2/21/Horse_anatomy.svg',
+            ];
 
-                    let current = 0;
-                    function swap() {
-                        current++;
-                        if (current === files.length) {
-                            current = 0;
-                        }
-                        pbEvents.emit('pb-show-annotation', null, {
-                            file: files[current]
-                        });
-                    }
-                </script>
-            </pb-page>
-        </template>
+            let current = 0;
+            function swap() {
+              current++;
+              if (current === files.length) {
+                current = 0;
+              }
+              pbEvents.emit('pb-show-annotation', null, {
+                file: files[current],
+              });
+            }
+          </script>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

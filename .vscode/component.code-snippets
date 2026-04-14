@@ -1,65 +1,59 @@
 {
-	"Attribute Change Callback": {
-		"prefix": "attr",
-		"scope": "javascript",
-		"body": [
-			"attributeChangedCallback(name, oldVal, newVal) {",
-			"\tsuper.attributeChangedCallback(name, oldVal, newVal);",
-			"\t$0",
-			"}"
-		]
-	},
-	"Demo Entry": {
-		"prefix": "demo",
-		"scope": "json",
-		"body": [
-			"\"pb-$1\": {",
-			"\t\"demo/pb-$1.html\": \"Demo\"",
-			"}$0"
-		]
-	},
-	"Create LitElement": {
-		"prefix": [
-			"litelem"
-		],
-		"scope": "javascript",
-		"body": [
-			"import { LitElement, html, css } from 'lit-element';",
-			"import { pbMixin } from './pb-mixin';\n\n",
-			"/**",
-			" *",
-			" *",
-			" * @customElement  ${TM_FILENAME_BASE}",
-			" * @polymer",
-			" * @demo demo/${TM_FILENAME_BASE}.html",
-			" * @appliesMixin pbMixin",
-			" */",
-			"export class $1 extends pbMixin(LitElement) {",
-			"\tstatic get properties() {",
-			"\t\treturn {",
-			"\t\t\t...super.properties",
-			"\t\t};",
-			"\t}\n",
-			"\tconstructor() {",
-			"\t\tsuper();",
-			"\t}\n",
-			"\tconnectedCallback() {",
-			"\t\tsuper.connectedCallback();",
-			"\t}\n",
-			"\trender() {",
-			"\t\treturn html`",
-			"\t\t\t$0",
-			"\t\t`;",
-			"\t}\n",
-			"\tstatic get styles() {",
-			"\t\treturn css`",
-			"\t\t\t:host {",
-			"\t\t\t\tdisplay: block;",
-			"\t\t\t}",
-			"\t\t`;",
-			"\t}",
-			"}",
-			"customElements.define('${TM_FILENAME_BASE}', $1);"
-		]
-	}
+  "Attribute Change Callback": {
+    "prefix": "attr",
+    "scope": "javascript",
+    "body": [
+      "attributeChangedCallback(name, oldVal, newVal) {",
+      "\tsuper.attributeChangedCallback(name, oldVal, newVal);",
+      "\t$0",
+      "}"
+    ]
+  },
+  "Demo Entry": {
+    "prefix": "demo",
+    "scope": "json",
+    "body": ["\"pb-$1\": {", "\t\"demo/pb-$1.html\": \"Demo\"", "}$0"]
+  },
+  "Create LitElement": {
+    "prefix": ["litelem"],
+    "scope": "javascript",
+    "body": [
+      "import { LitElement, html, css } from 'lit-element';",
+      "import { pbMixin } from './pb-mixin';\n\n",
+      "/**",
+      " *",
+      " *",
+      " * @customElement  ${TM_FILENAME_BASE}",
+      " * @polymer",
+      " * @demo demo/${TM_FILENAME_BASE}.html",
+      " * @appliesMixin pbMixin",
+      " */",
+      "export class $1 extends pbMixin(LitElement) {",
+      "\tstatic get properties() {",
+      "\t\treturn {",
+      "\t\t\t...super.properties",
+      "\t\t};",
+      "\t}\n",
+      "\tconstructor() {",
+      "\t\tsuper();",
+      "\t}\n",
+      "\tconnectedCallback() {",
+      "\t\tsuper.connectedCallback();",
+      "\t}\n",
+      "\trender() {",
+      "\t\treturn html`",
+      "\t\t\t$0",
+      "\t\t`;",
+      "\t}\n",
+      "\tstatic get styles() {",
+      "\t\treturn css`",
+      "\t\t\t:host {",
+      "\t\t\t\tdisplay: block;",
+      "\t\t\t}",
+      "\t\t`;",
+      "\t}",
+      "}",
+      "customElements.define('${TM_FILENAME_BASE}', $1);"
+    ]
+  }
 }

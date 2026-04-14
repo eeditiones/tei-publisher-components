@@ -2,7 +2,7 @@ name: Docker and Cypress E2E Tests
 
 on:
   pull_request:
-    branches: [ master, next* ]
+    branches: [master, next*]
   push:
     branches:
       - next*
@@ -17,7 +17,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: '24'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Install dependencies

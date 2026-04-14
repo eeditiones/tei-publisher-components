@@ -1,25 +1,25 @@
 {
-    "demo": {
-        "message": "Benutzerdefinierte Nachricht",
-        "select-lang": "Sprache wählen...",
-        "select-state": "Staat auswählen ...",
-        "select-animal": "Wähle Dein bevorzugtes Haustier ...",
-        "cat": "Katze",
-        "dog": "Hund",
-        "bird": "Vogel"
-    },
-    "document": {
-        "contents": "Inhaltsverzeichnis angepasst"
-    },
-    "browse": {
-        "items": "Gefunden {{count}} Einträge"
-    },
-    "dialogs": {
-        "downloadMessage": "Download Nachricht"
-    },
-    "menu": {
-        "download": {
-            "title": "Download"
-        }
+  "demo": {
+    "message": "Benutzerdefinierte Nachricht",
+    "select-lang": "Sprache wählen...",
+    "select-state": "Staat auswählen ...",
+    "select-animal": "Wähle Dein bevorzugtes Haustier ...",
+    "cat": "Katze",
+    "dog": "Hund",
+    "bird": "Vogel"
+  },
+  "document": {
+    "contents": "Inhaltsverzeichnis angepasst"
+  },
+  "browse": {
+    "items": "Gefunden {{count}} Einträge"
+  },
+  "dialogs": {
+    "downloadMessage": "Download Nachricht"
+  },
+  "menu": {
+    "download": {
+      "title": "Download"
     }
+  }
 }

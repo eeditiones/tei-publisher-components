@@ -80,8 +80,8 @@ export class PbPaginate extends pbMixin(LitElement) {
        */
       showPreviousNext: {
         type: Boolean,
-        attribute: 'show-previous-next'
-      }
+        attribute: 'show-previous-next',
+      },
     };
   }
 
@@ -207,8 +207,8 @@ export class PbPaginate extends pbMixin(LitElement) {
       this.page,
       lowerBound,
       upperBound,
-      this.range, 
-      this.showPreviousNext
+      this.range,
+      this.showPreviousNext,
     );
     const pages = [];
     const prevNextPages = []; //first item for previous control, second/last item for next control
@@ -217,26 +217,26 @@ export class PbPaginate extends pbMixin(LitElement) {
         label: i,
         class: i === this.page ? 'active' : '',
       });
-      if(!this.showPreviousNext) continue;
+      if (!this.showPreviousNext) continue;
       //previous page if it's first page
-      if(lowerBound === 1 && i === 1 && this.page === i) {
+      if (lowerBound === 1 && i === 1 && this.page === i) {
         prevNextPages.push({
           label: i,
-          index: 0
+          index: 0,
         });
       }
       //previous page
-      if(i + 1 === this.page) {
+      if (i + 1 === this.page) {
         prevNextPages.push({
           label: i,
-          index: pages.length - 1
+          index: pages.length - 1,
         });
       }
       //next page
-      if(i - 1 === this.page) {
+      if (i - 1 === this.page) {
         prevNextPages.push({
           label: i,
-          index: pages.length - 1
+          index: pages.length - 1,
         });
       }
     }
