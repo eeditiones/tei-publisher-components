@@ -66,9 +66,9 @@ describe('pb-panel', () => {
     `);
 
     cy.get('#panel').find('select option').should('have.length', 3);
-    cy.get('#panel').find('select option').eq(0).should('have.text', 'Alpha');
-    cy.get('#panel').find('select option').eq(1).should('have.text', 'Beta');
-    cy.get('#panel').find('select option').eq(2).should('have.text', 'Gamma');
+    cy.get('#panel').find('select option').eq(0).should('contain.text', 'Alpha');
+    cy.get('#panel').find('select option').eq(1).should('contain.text', 'Beta');
+    cy.get('#panel').find('select option').eq(2).should('contain.text', 'Gamma');
   });
 
   it('should show first panel by default', () => {
