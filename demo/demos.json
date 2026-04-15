@@ -89,6 +89,9 @@
   "pb-message": {
     "demo/pb-message.html": "Demo"
   },
+  "pb-paginate": {
+    "demo/pb-paginate.html": "Demo"
+  },
   "pb-popover": {
     "demo/pb-popover.html": "Demo"
   },

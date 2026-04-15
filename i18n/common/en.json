@@ -1,5 +1,12 @@
 {
-  "language": "Language",
+	"language": "Language",
+	"paginate": {
+		"pagination": "Pagination",
+		"next": "Next",
+		"previous": "Previous",
+		"page": "Page {{nr}}",
+		"ellipsislabel": "ellipsis indicating non-visible pages"
+	},
   "menu": {
     "documentation": "Documentation",
     "admin": {
@@ -55,6 +62,7 @@
     "filterPlaceholder": "Filter",
     "items": "Found {{count}} item",
     "items_plural": "Found {{count}} items",
+    "items_other": "Found {{count}} items",
     "title": "Title",
     "author": "Author",
     "modificationDate": "Modification Date",
