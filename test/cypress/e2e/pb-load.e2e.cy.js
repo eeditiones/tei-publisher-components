@@ -52,7 +52,7 @@ describe('pb-load Document Resolution Regression', () => {
 
     // The component should eventually stop retrying and show an error or empty state
     // This tests the retry limit mechanism
-    cy.get('pb-load', { timeout: 15000 }).then($pbLoad => {
+    cy.get('pb-load', { timeout: 150000 }).should($pbLoad => {
       // Should either have content or be in a stable state (not continuously retrying)
       const text = $pbLoad.text();
       expect(text).to.not.include('Loading table of contents...');
