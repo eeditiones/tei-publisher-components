@@ -1,3 +1,15 @@
+# [3.0.0-next-4.15](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.14...v3.0.0-next-4.15) (2026-04-15)
+
+
+### Bug Fixes
+
+* **localization:** add label for browse.items when count > 1 ([070f662](https://github.com/eeditiones/tei-publisher-components/commit/070f662aad26de99d76cd18f6dd1142c96809982))
+
+
+### Features
+
+* **pb-paginate:** change pagination visualization to be compatible with uswds ([1df9369](https://github.com/eeditiones/tei-publisher-components/commit/1df9369e7c8fe8f8e61b78f1bcdb5d5c2be5669a))
+
 # [3.0.0-next-4.14](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.13...v3.0.0-next-4.14) (2026-04-09)
 
 
