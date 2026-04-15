@@ -1,28 +1,33 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-edit-xml Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-edit-xml.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <pb-page endpoint="/exist/apps/tei-publisher">
-                <ul>
-                    <li><pb-edit-xml path="/db/apps/tei-publisher/data/doc/documentation.xml">View Documentation</pb-edit-xml></li>
-                </ul>
-            </pb-page>
-        </template>
+      <template>
+        <pb-page endpoint="/exist/apps/tei-publisher">
+          <ul>
+            <li>
+              <pb-edit-xml path="/db/apps/tei-publisher/data/doc/documentation.xml"
+                >View Documentation</pb-edit-xml
+              >
+            </li>
+          </ul>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

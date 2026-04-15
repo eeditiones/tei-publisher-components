@@ -673,16 +673,16 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.loadContent.url = `${this.getEndpoint()}/${
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
-    
+
     // Set Accept header to request JSON response
     this.loadContent.headers = {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     };
-    
+
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    
+
     // Handle case where generateRequest returns null (invalid URL)
     if (!request) {
       console.warn('pb-odd-editor: Failed to generate request - invalid URL');
@@ -690,7 +690,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       document.dispatchEvent(new CustomEvent('pb-end-update'));
       return;
     }
-    
+
     request
       .then(data => this.handleOdd({ response: data }))
       .catch(error => {

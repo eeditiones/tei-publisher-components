@@ -1,33 +1,35 @@
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
-        <title>pb-edit-app Demo</title>
-        <link rel="stylesheet" href="demo.css">
-        <!--scripts-->
-        
-        
-        <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
-        <script type="module" src="../src/pb-page.js"></script>
-        <script type="module" src="../src/pb-login.js"></script>
-        <script type="module" src="../src/pb-edit-app.js"></script>
-        <!--/scripts-->
+    <title>pb-edit-app Demo</title>
+    <link rel="stylesheet" href="demo.css" />
+    <!--scripts-->
 
-        <style>
-            *:focus {
-                outline: none;
-            }
-            pb-login {
-                --pb-login-link-color: #886666;
-            }
-        </style>
-    </head>
+    <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
+    <script type="module" src="../src/pb-page.js"></script>
+    <script type="module" src="../src/pb-login.js"></script>
+    <script type="module" src="../src/pb-edit-app.js"></script>
+    <!--/scripts-->
 
-    <body>
-        <pb-page endpoint="." url-path="query">
-            <pb-login group="tei"></pb-login>
-            <pb-edit-app></pb-edit-app>
-        </pb-page>
-    </body>
+    <style>
+      *:focus {
+        outline: none;
+      }
+      pb-login {
+        --pb-login-link-color: #886666;
+      }
+    </style>
+  </head>
+
+  <body>
+    <pb-page endpoint="." url-path="query">
+      <pb-login group="tei"></pb-login>
+      <pb-edit-app></pb-edit-app>
+    </pb-page>
+  </body>
 </html>

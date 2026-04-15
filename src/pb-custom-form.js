@@ -123,9 +123,7 @@ export class PbCustomForm extends PbLoad {
     const slottedElements = Array.from(this.querySelectorAll('input, select, textarea'));
     const allElements = [...new Set([...formElements, ...slottedElements])];
 
-    const elements = allElements.filter(
-      el => el.name && !el.disabled && !el.closest('[disabled]'),
-    );
+    const elements = allElements.filter(el => el.name && !el.disabled && !el.closest('[disabled]'));
     const initial = {};
     elements.forEach(element => {
       if (!(element.name in initial)) {

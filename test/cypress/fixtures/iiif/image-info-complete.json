@@ -12,9 +12,7 @@
     { "width": 1240, "height": 1754 },
     { "width": 2480, "height": 3507 }
   ],
-  "tiles": [
-    { "width": 512, "height": 512, "scaleFactors": [1, 2, 4, 8, 16, 32] }
-  ],
+  "tiles": [{ "width": 512, "height": 512, "scaleFactors": [1, 2, 4, 8, 16, 32] }],
   "profile": [
     "http://iiif.io/api/image/2/level2.json",
     {
@@ -45,4 +43,3 @@
     }
   ]
 }
-

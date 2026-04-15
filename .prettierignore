@@ -1,0 +1,7 @@
+# These are external files not under our control
+/lib/
+
+# These are generated on install
+/dist/
+/css/
+pb-elements.json

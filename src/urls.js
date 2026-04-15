@@ -261,12 +261,12 @@ class Registry {
 
   commit(elem, newState, overwrite = false) {
     // Debug: Log what component is calling registry.commit (only for commits that might reset root)
-    if (newState && ('root' in newState) && newState.root === null) {
+    if (newState && 'root' in newState && newState.root === null) {
       const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
       console.warn('[registry] commit called with root=null by:', componentName, {
         newState,
         overwrite,
-        stack: new Error().stack
+        stack: new Error().stack,
       });
     }
     this._commit(elem, newState, overwrite, false);
@@ -278,7 +278,7 @@ class Registry {
     console.warn('[registry] replace called by:', componentName, {
       newState,
       overwrite,
-      stack: new Error().stack
+      stack: new Error().stack,
     });
     this._commit(elem, newState, overwrite, true);
   }
@@ -296,7 +296,7 @@ class Registry {
       mergedState: this.state,
       resolvedUrl: resolved.toString(),
       resolvedHash: resolved.hash,
-      resolvedSearch: resolved.search
+      resolvedSearch: resolved.search,
     });
 
     const chs = getSubscribedChannels(elem);
@@ -312,11 +312,19 @@ class Registry {
     if (replace) {
       window.history.replaceState(json, '', resolved);
       log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      console.log('[registry] _commit: replaced URL', {
+        url: resolved.toString(),
+        hash: resolved.hash,
+        search: resolved.search,
+      });
     } else {
       window.history.pushState(json, '', resolved);
       log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      console.log('[registry] _commit: pushed URL', {
+        url: resolved.toString(),
+        hash: resolved.hash,
+        search: resolved.search,
+      });
     }
   }
 
@@ -344,7 +352,7 @@ class Registry {
       usePath: this.usePath,
       urlPattern: this.urlPattern,
       urlIgnore: Array.from(this.urlIgnore),
-      pathParams: Array.from(this.pathParams)
+      pathParams: Array.from(this.pathParams),
     });
 
     for (const [param, value] of Object.entries(this.state)) {
@@ -353,7 +361,13 @@ class Registry {
         // fill up missing parameters by stripping potential "user." prefix
         const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
         const shouldIgnore = this.pathParams.has(normParam) || this.urlIgnore.has(normParam);
-        console.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
+        console.log('[registry] urlFromState: processing param (urlPattern)', {
+          param,
+          normParam,
+          value,
+          shouldIgnore,
+          willInclude: !shouldIgnore,
+        });
         if (!shouldIgnore) {
           setParam(value, normParam);
         }
@@ -365,19 +379,35 @@ class Registry {
         const willInclude = (param !== 'path' || !this.usePath) && !this.urlIgnore.has(param);
         // Filter out unwanted default values that shouldn't be in URLs
         // These are typically set by components during initialization but shouldn't pollute the URL
-        const isUnwantedDefault = (
+        const isUnwantedDefault =
           (param === 'view' && value === 'single') ||
           (param === 'odd' && value === 'teipublisher') ||
-          (param === 'panels' && typeof value === 'string' && value.split('.').length > 10) // Malformed panels (concatenated)
-        );
-        console.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
+          (param === 'panels' && typeof value === 'string' && value.split('.').length > 10); // Malformed panels (concatenated)
+        console.log('[registry] urlFromState: processing param (no urlPattern)', {
+          param,
+          value,
+          willInclude,
+          isUnwantedDefault,
+          isPath: param === 'path',
+          usePath: this.usePath,
+          inUrlIgnore: this.urlIgnore.has(param),
+        });
         if (willInclude && !isUnwantedDefault) {
           setParam(value, param);
         } else if (isUnwantedDefault) {
-          console.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
+          console.log('[registry] urlFromState: filtering out unwanted default value', {
+            param,
+            value,
+            reason: 'unwanted default',
+          });
         }
       } else {
-        console.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
+        console.log('[registry] urlFromState: skipping param', {
+          param,
+          value,
+          reason:
+            param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore',
+        });
       }
     }
 
@@ -401,7 +431,10 @@ class Registry {
 
     if (this.state.id && !this.urlPattern) {
       newUrl.hash = `#${this.state.id}`;
-      console.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
+      console.log('[registry] urlFromState: set hash from state.id', {
+        id: this.state.id,
+        hash: newUrl.hash,
+      });
     }
 
     console.log('[registry] urlFromState: final URL', {
@@ -411,7 +444,7 @@ class Registry {
       hasIdParam: newUrl.searchParams.has('id'),
       idParamValue: newUrl.searchParams.get('id'),
       hasRootParam: newUrl.searchParams.has('root'),
-      rootParamValue: newUrl.searchParams.get('root')
+      rootParamValue: newUrl.searchParams.get('root'),
     });
 
     return newUrl;

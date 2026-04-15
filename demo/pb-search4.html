@@ -1,12 +1,13 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-search Demo</title>
     <!--scripts-->
-    
 
     <script type="module" src="../src/pb-page.js"></script>
     <script type="module" src="../src/pb-load.js"></script>
@@ -15,42 +16,37 @@
     <script type="module" src="../src/pb-progress.js"></script>
     <script type="module" src="../src/pb-i18n.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style>
-            </style>
-            <pb-page endpoint="/exist/apps/tei-publisher">
-                <pb-progress></pb-progress>
-                <main>
-                    <h2>without buttons</h2>
+      <template>
+        <style></style>
+        <pb-page endpoint="/exist/apps/tei-publisher">
+          <pb-progress></pb-progress>
+          <main>
+            <h2>without buttons</h2>
 
-                    <pb-search id="search-form">
-                    </pb-search>
+            <pb-search id="search-form"> </pb-search>
 
-                    <h2>paper buttons for search + reset</h2>
+            <h2>paper buttons for search + reset</h2>
 
-                    <pb-search id="search-form">
-                        <button slot="searchButton">submit</button>
-                        <button slot="resetButton">reset</button>
-                    </pb-search>
+            <pb-search id="search-form">
+              <button slot="searchButton">submit</button>
+              <button slot="resetButton">reset</button>
+            </pb-search>
 
-                    <h2>native buttons for search + reset</h2>
-                    <pb-search id="search-form2">
-                        <button slot="searchButton">submit</button>
-                        <button slot="resetButton">reset</button>
-                    </pb-search>
+            <h2>native buttons for search + reset</h2>
+            <pb-search id="search-form2">
+              <button slot="searchButton">submit</button>
+              <button slot="resetButton">reset</button>
+            </pb-search>
 
-
-                    <pb-paginate per-page="10" range="5"></pb-paginate>
-                    <pb-load url="templates/search-results.html"></pb-load>
-
-                </main>
-            </pb-page>
-        </template>
+            <pb-paginate per-page="10" range="5"></pb-paginate>
+            <pb-load url="templates/search-results.html"></pb-load>
+          </main>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

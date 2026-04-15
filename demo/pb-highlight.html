@@ -1,51 +1,64 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-highlight Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-highlight.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style>
-            pb-page {
-                display: flex;
-                justify-content: space-between;
-            }
-            </style>
-            <pb-page>
-                <div>
-                    <p>
-                        <pb-highlight key="s1" highlight-self="highlight-self">Lorem ipsum dolor sit amet, consetetur
-                            sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-                            dolore magna aliquyam erat, sed diam voluptua.</pb-highlight>
-                        <pb-highlight key="s2">At vero eos et accusam et justo duo dolores et ea rebum.</pb-highlight>
-                        <pb-highlight key="s3">Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-                            sit amet.</pb-highlight>
-                    </p>
-                </div>
-                <div>
-                    <p>
-                        <pb-highlight key="s1">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                            eirmod tempor invidunt ut labore et
-                            dolore magna aliquyam erat, sed diam voluptua.</pb-highlight>
-                        <pb-highlight key="s2">At vero eos et accusam et justo duo dolores et ea rebum.</pb-highlight>
-                        <pb-highlight key="s3">Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-                            sit amet.</pb-highlight>
-                    </p>
-                </div>
-            </pb-page>
-        </template>
+      <template>
+        <style>
+          pb-page {
+            display: flex;
+            justify-content: space-between;
+          }
+        </style>
+        <pb-page>
+          <div>
+            <p>
+              <pb-highlight key="s1" highlight-self="highlight-self"
+                >Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+                voluptua.</pb-highlight
+              >
+              <pb-highlight key="s2"
+                >At vero eos et accusam et justo duo dolores et ea rebum.</pb-highlight
+              >
+              <pb-highlight key="s3"
+                >Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+                amet.</pb-highlight
+              >
+            </p>
+          </div>
+          <div>
+            <p>
+              <pb-highlight key="s1"
+                >Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+                tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+                voluptua.</pb-highlight
+              >
+              <pb-highlight key="s2"
+                >At vero eos et accusam et justo duo dolores et ea rebum.</pb-highlight
+              >
+              <pb-highlight key="s3"
+                >Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+                amet.</pb-highlight
+              >
+            </p>
+          </div>
+        </pb-page>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

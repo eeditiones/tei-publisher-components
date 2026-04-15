@@ -1,52 +1,53 @@
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>pb-progress Demo</title>
     <!--scripts-->
-    
+
     <script type="module" src="../src/docs/pb-demo-snippet.js"></script>
     <script type="module" src="../src/pb-progress.js"></script>
     <script type="module" src="../src/pb-page.js"></script>
     <!--/scripts-->
-</head>
+  </head>
 
-<body>
+  <body>
     <pb-demo-snippet>
-        <template>
-            <style>
-            pb-progress {
-                width: 100%;
-            }
+      <template>
+        <style>
+          pb-progress {
+            width: 100%;
+          }
 
-            button {
-                margin-top: 20px;
+          button {
+            margin-top: 20px;
+          }
+        </style>
+        <pb-page>
+          <pb-progress></pb-progress>
+          <button id="button">Click to start ...</button>
+        </pb-page>
+        <script>
+          let started = false;
+          const btn = document.getElementById('button');
+          btn.addEventListener('click', ev => {
+            ev.preventDefault();
+            if (started) {
+              started = false;
+              btn.innerHTML = 'Click to start';
+              pbEvents.emit('pb-end-update');
+            } else {
+              started = true;
+              btn.innerHTML = 'Click to stop';
+              pbEvents.emit('pb-start-update');
             }
-            </style>
-            <pb-page>
-                <pb-progress></pb-progress>
-                <button id="button">Click to start ...</button>
-            </pb-page>
-            <script>
-                let started = false;
-                const btn = document.getElementById('button');
-                btn.addEventListener('click', (ev) => {
-                    ev.preventDefault();
-                    if (started) {
-                        started = false;
-                        btn.innerHTML = 'Click to start';
-                        pbEvents.emit('pb-end-update');
-                    } else {
-                        started = true;
-                        btn.innerHTML = 'Click to stop';
-                        pbEvents.emit('pb-start-update');
-                    }
-                });
-            </script>
-        </template>
+          });
+        </script>
+      </template>
     </pb-demo-snippet>
-</body>
-
+  </body>
 </html>

@@ -81,7 +81,11 @@ export class PbGrid extends pbMixin(LitElement) {
       // Store the active template index for this panel, but don't change the panels array structure
       // The panels array represents which panels are visible, not which template each panel is showing
       // We'll track active templates separately if needed, but for now just log it
-      console.log('<pb-grid> Panel %d switched to template %s (not committing to registry)', panelIdx, ev.detail.active);
+      console.log(
+        '<pb-grid> Panel %d switched to template %s (not committing to registry)',
+        panelIdx,
+        ev.detail.active,
+      );
       // DO NOT commit - panels parameter should remain stable
     });
 
@@ -97,8 +101,16 @@ export class PbGrid extends pbMixin(LitElement) {
       // Split by '.' and parse each segment as integer
       const parsed = panelsParam.split('.').map(param => parseInt(param, 10));
       // Only use if all segments are valid numbers and reasonable (max 10 panels)
-      if (parsed.length > 0 && parsed.length <= 10 && parsed.every(p => !isNaN(p) && p >= 0 && p < 10)) {
-        console.log('<pb-grid> connectedCallback: Using panels from registry:', parsed, 'overriding template attribute');
+      if (
+        parsed.length > 0 &&
+        parsed.length <= 10 &&
+        parsed.every(p => !isNaN(p) && p >= 0 && p < 10)
+      ) {
+        console.log(
+          '<pb-grid> connectedCallback: Using panels from registry:',
+          parsed,
+          'overriding template attribute',
+        );
         this.panels = parsed;
         this._panelsInitialized = true;
       }
@@ -107,7 +119,11 @@ export class PbGrid extends pbMixin(LitElement) {
       // If template has panels="[0,1,2]" but we want to use that only if no registry value exists
       // But we should still mark as initialized to prevent duplicates
       if (this.panels && this.panels.length > 0) {
-        console.log('<pb-grid> connectedCallback: Using panels from template attribute:', this.panels, '(no registry value)');
+        console.log(
+          '<pb-grid> connectedCallback: Using panels from template attribute:',
+          this.panels,
+          '(no registry value)',
+        );
         this._panelsInitialized = true;
       }
     }
@@ -129,9 +145,14 @@ export class PbGrid extends pbMixin(LitElement) {
         );
         return;
       }
-      const newState = state.panels ? state.panels.split('.').map(p => parseInt(p, 10)).filter(p => !isNaN(p)) : [];
+      const newState = state.panels
+        ? state.panels
+            .split('.')
+            .map(p => parseInt(p, 10))
+            .filter(p => !isNaN(p))
+        : [];
       const newStateStr = newState.join('.');
-      
+
       // Prevent duplicate rebuilds if panels haven't actually changed
       if (this._lastPanelsState === newStateStr) {
         console.log(
@@ -140,7 +161,7 @@ export class PbGrid extends pbMixin(LitElement) {
         );
         return;
       }
-      
+
       // Prevent rebuild if we haven't initialized yet (firstUpdated hasn't run)
       // This prevents the registry callback from running before firstUpdated and creating duplicates
       if (!this._panelsInitialized && !this.template) {
@@ -149,8 +170,13 @@ export class PbGrid extends pbMixin(LitElement) {
         );
         return;
       }
-      
-      console.log('<pb-grid> Registry subscribe callback rebuilding DOM with panels:', newState, 'current panels:', this.panels);
+
+      console.log(
+        '<pb-grid> Registry subscribe callback rebuilding DOM with panels:',
+        newState,
+        'current panels:',
+        this.panels,
+      );
       this._lastPanelsState = newStateStr;
       this.panels = newState;
       this._panelsInitialized = true;
@@ -160,11 +186,14 @@ export class PbGrid extends pbMixin(LitElement) {
     });
     this._columns = this.panels.length;
     this.template = this.querySelector('template');
-    
+
     // If template is ready and we have panels but haven't initialized, mark as initialized
     // This handles the case where template attribute was parsed before registry value was read
     if (this.template && this.panels && this.panels.length > 0 && !this._panelsInitialized) {
-      console.log('<pb-grid> connectedCallback: Template ready, panels from attribute:', this.panels);
+      console.log(
+        '<pb-grid> connectedCallback: Template ready, panels from attribute:',
+        this.panels,
+      );
       this._panelsInitialized = true;
     }
   }
@@ -175,28 +204,45 @@ export class PbGrid extends pbMixin(LitElement) {
     // We need to ensure we use the registry value, not the template attribute
     const panelsParam = registry.get('panels');
     if (panelsParam) {
-      const parsed = panelsParam.split('.').map(param => parseInt(param, 10)).filter(p => !isNaN(p) && p >= 0 && p < 10);
+      const parsed = panelsParam
+        .split('.')
+        .map(param => parseInt(param, 10))
+        .filter(p => !isNaN(p) && p >= 0 && p < 10);
       if (parsed.length > 0 && parsed.length <= 10) {
         const parsedStr = parsed.join('.');
         const currentStr = this.panels.join('.');
         if (parsedStr !== currentStr) {
-          console.log('<pb-grid> firstUpdated: Overriding template panels', this.panels, 'with registry value', parsed);
+          console.log(
+            '<pb-grid> firstUpdated: Overriding template panels',
+            this.panels,
+            'with registry value',
+            parsed,
+          );
           this.panels = parsed;
           this._panelsInitialized = true;
         }
       }
     }
-    
+
     // Only insert panels if they haven't been inserted yet
     // This prevents duplicates if registry subscribe callback already created them
     const existingPanels = this.querySelectorAll('._grid_panel').length;
     if (existingPanels === 0 && this.panels && this.panels.length > 0) {
-      console.log('<pb-grid> firstUpdated: Inserting panels:', this.panels, 'existing panels:', existingPanels);
+      console.log(
+        '<pb-grid> firstUpdated: Inserting panels:',
+        this.panels,
+        'existing panels:',
+        existingPanels,
+      );
       this.panels.forEach(panelNum => this._insertPanel(panelNum));
     } else {
-      console.log('<pb-grid> firstUpdated: Skipping panel insertion - already have', existingPanels, 'panels');
+      console.log(
+        '<pb-grid> firstUpdated: Skipping panel insertion - already have',
+        existingPanels,
+        'panels',
+      );
     }
-    
+
     // Track initial state to prevent duplicate rebuilds
     this._lastPanelsState = this._getState().panels;
     this._isUpdatingFromRegistry = true;
@@ -421,7 +467,9 @@ export class PbGrid extends pbMixin(LitElement) {
   _getState() {
     // Ensure panels array is valid before joining
     // Filter out any invalid values (NaN, undefined, null)
-    const validPanels = this.panels.filter(p => typeof p === 'number' && !isNaN(p) && p >= 0 && p < 10);
+    const validPanels = this.panels.filter(
+      p => typeof p === 'number' && !isNaN(p) && p >= 0 && p < 10,
+    );
     return { panels: validPanels.join('.') };
   }
 

@@ -114,13 +114,13 @@ export class PbFacsLink extends pbMixin(LitElement) {
 
   _trigger() {
     console.log('<facs-link> %s %o', this.facs, this.coordinates);
-    
+
     // Validate facs URL before attempting to load
     if (!this.facs || this.facs.trim() === '') {
       console.warn('<pb-facs-link> No facs URL provided');
       return;
     }
-    
+
     // If emitOnLoad was false or undefined (default), load the facsimile now when user interacts
     if (this.emitOnLoad !== true && !this._loaded) {
       this._loaded = true;
@@ -130,7 +130,7 @@ export class PbFacsLink extends pbMixin(LitElement) {
         element: this,
       });
     }
-    
+
     // Only emit pb-show-annotation if we're actually going to show something
     // This prevents runaway requests when users interact with the page
     if (this.emitOnLoad === true) {
