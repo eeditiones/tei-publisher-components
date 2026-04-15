@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+  <title>TEI Publisher Components - Native Design System</title>
+  <link rel="stylesheet" href="../src/assets/design-system.css">
+  <style>
+    body {
+      font-family: var(--pb-font-family);
+      background-color: var(--pb-background-color);
+      color: var(--pb-on-background-color);
+      margin: 0;
+      padding: var(--pb-spacing-6);
+      line-height: var(--pb-line-height-normal);
+    }
+
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .demo-section {
+      margin-bottom: var(--pb-spacing-12);
+      padding: var(--pb-spacing-8);
+      background-color: var(--pb-surface-color);
+      border-radius: var(--pb-border-radius-lg);
+      box-shadow: var(--pb-elevation-2);
+    }
+
+    .demo-section h2 {
+      margin-top: 0;
+      color: var(--pb-primary-color);
+      border-bottom: 2px solid var(--pb-primary-color);
+      padding-bottom: var(--pb-spacing-3);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--pb-spacing-6);
+      margin-top: var(--pb-spacing-6);
+    }
+
+    .demo-item {
+      padding: var(--pb-spacing-5);
+      border: 1px solid var(--pb-neutral-300);
+      border-radius: var(--pb-border-radius-md);
+      background-color: var(--pb-surface-variant);
+    }
+
+    .demo-item h3 {
+      margin-top: 0;
+      font-size: var(--pb-font-size-md);
+      color: var(--pb-neutral-800);
+    }
+
+    .color-palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--pb-spacing-3);
+    }
+
+    .color-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--pb-spacing-3);
+      border-radius: var(--pb-border-radius-md);
+      border: 1px solid var(--pb-neutral-300);
+    }
+
+    .color-box {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--pb-border-radius-sm);
+      margin-bottom: var(--pb-spacing-2);
+    }
+
+    .color-name {
+      font-size: var(--pb-font-size-sm);
+      text-align: center;
+    }
+
+    .demo-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--pb-spacing-3);
+      align-items: center;
+    }
+
+    .demo-inputs {
+      display: grid;
+      gap: var(--pb-spacing-5);
+    }
+
+    .demo-tabs-example .pb-tab-panels {
+      min-height: 200px;
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: var(--pb-spacing-4);
+    }
+
+    .icon-demo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--pb-spacing-3);
+      border: 1px solid var(--pb-neutral-200);
+      border-radius: var(--pb-border-radius-md);
+    }
+
+    .icon-demo pb-icon {
+      font-size: 24px;
+      margin-bottom: var(--pb-spacing-2);
+    }
+
+    .icon-name {
+      font-size: var(--pb-font-size-sm);
+      text-align: center;
+    }
+
+    .code-block {
+      background-color: var(--pb-neutral-100);
+      border: 1px solid var(--pb-neutral-300);
+      border-radius: var(--pb-border-radius-md);
+      padding: var(--pb-spacing-4);
+      font-family: var(--pb-font-family-mono);
+      font-size: var(--pb-font-size-sm);
+      overflow-x: auto;
+      margin: var(--pb-spacing-3) 0;
+    }
+
+    .responsive-demo {
+      resize: horizontal;
+      overflow: auto;
+      border: 2px dashed var(--pb-neutral-400);
+      padding: var(--pb-spacing-5);
+      min-width: 300px;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Load icon sprite -->
+  <div style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Navigation icons -->
+        <g id="icon-expand-more">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </g>
+        
+        <g id="icon-expand-less">
+          <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/>
+        </g>
+        
+        <g id="icon-chevron-right">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </g>
+        
+        <g id="icon-chevron-left">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </g>
+        
+        <g id="icon-menu">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </g>
+        
+        <g id="icon-close">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </g>
+        
+        <!-- Action icons -->
+        <g id="icon-search">
+          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </g>
+        
+        <g id="icon-edit">
+          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </g>
+        
+        <g id="icon-delete">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </g>
+        
+        <g id="icon-add">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </g>
+        
+        <g id="icon-save">
+          <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+        </g>
+        
+        <g id="icon-copy">
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </g>
+        
+        <g id="icon-download">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </g>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="demo-container">
+    <header style="text-align: center; margin-bottom: var(--pb-spacing-12);">
+      <h1 style="color: var(--pb-primary-color); margin-bottom: var(--pb-spacing-3);">
+        TEI Publisher Components - Native Design System
+      </h1>
+      <p style="font-size: var(--pb-font-size-lg); color: var(--pb-neutral-700);">
+        Modern, accessible components using native HTML elements
+      </p>
+    </header>
+
+    <!-- Color Palette -->
+    <section class="demo-section">
+      <h2>Color Palette</h2>
+      <div class="color-palette">
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-primary-color);"></div>
+          <div class="color-name">Primary</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-primary-color-dark);"></div>
+          <div class="color-name">Primary Dark</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-primary-color-light);"></div>
+          <div class="color-name">Primary Light</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-error-color);"></div>
+          <div class="color-name">Error</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-success-color);"></div>
+          <div class="color-name">Success</div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: var(--pb-warning-color);"></div>
+          <div class="color-name">Warning</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buttons -->
+    <section class="demo-section">
+      <h2>Buttons</h2>
+      
+      <div class="demo-item">
+        <h3>Button Variants</h3>
+        <div class="demo-buttons">
+          <button class="pb-button pb-button--text" type="button">Text Button</button>
+          <button class="pb-button pb-button--outlined" type="button">Outlined Button</button>
+          <button class="pb-button pb-button--contained" type="button">Contained Button</button>
+          <button class="pb-button pb-button--text" type="button" disabled>Disabled</button>
+        </div>
+        
+        <div class="code-block">
+&lt;button class="pb-button pb-button--text"&gt;Text Button&lt;/button&gt;
+&lt;button class="pb-button pb-button--outlined"&gt;Outlined Button&lt;/button&gt;
+&lt;button class="pb-button pb-button--contained"&gt;Contained Button&lt;/button&gt;
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <h3>Button Sizes</h3>
+        <div class="demo-buttons">
+          <button class="pb-button pb-button--contained pb-button--sm" type="button">Small</button>
+          <button class="pb-button pb-button--contained" type="button">Medium</button>
+          <button class="pb-button pb-button--contained pb-button--lg" type="button">Large</button>
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <h3>Icon Buttons</h3>
+        <div class="demo-buttons">
+          <button class="pb-button pb-button--icon" type="button" aria-label="Save document">
+            <pb-icon icon="save"></pb-icon>
+          </button>
+          <button class="pb-button pb-button--icon pb-button--contained" type="button" aria-label="Edit item">
+            <pb-icon icon="edit"></pb-icon>
+          </button>
+          <button class="pb-button pb-button--fab" type="button" aria-label="Add new item">
+            <pb-icon icon="add" style="font-size: 24px;">
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+            </pb-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <h3>Buttons with Icons</h3>
+        <div class="demo-buttons">
+          <button class="pb-button pb-button--contained" type="button">
+            <pb-icon icon="save"></pb-icon>
+            Save Document
+          </button>
+          <button class="pb-button pb-button--outlined" type="button">
+            <pb-icon icon="search"></pb-icon>
+            Search
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Inputs -->
+    <section class="demo-section">
+      <h2>Form Inputs</h2>
+      
+      <div class="demo-inputs">
+        <div class="demo-item">
+          <h3>Text Inputs with Floating Labels</h3>
+          <div class="pb-input-container">
+            <input class="pb-input" type="text" id="demo-input-1" placeholder=" ">
+            <label for="demo-input-1" class="pb-input-label">Full Name</label>
+          </div>
+          
+          <div class="pb-input-container">
+            <input class="pb-input" type="email" id="demo-input-2" placeholder=" " required>
+            <label for="demo-input-2" class="pb-input-label">Email Address</label>
+            <div class="pb-input-helper">We'll use this to contact you</div>
+          </div>
+
+          <div class="pb-input-container">
+            <input class="pb-input" type="text" id="demo-input-3" placeholder=" " value="Pre-filled value">
+            <label for="demo-input-3" class="pb-input-label">Website URL</label>
+          </div>
+        </div>
+
+        <div class="demo-item">
+          <h3>Input States</h3>
+          <div class="pb-input-container">
+            <input class="pb-input" type="text" id="demo-input-error" placeholder=" " aria-invalid="true" value="invalid@">
+            <label for="demo-input-error" class="pb-input-label" style="color: var(--pb-error-color);">Email (Error State)</label>
+            <div class="pb-input-error">Please enter a valid email address</div>
+          </div>
+
+          <div class="pb-input-container">
+            <input class="pb-input" type="text" id="demo-input-disabled" placeholder=" " disabled value="Disabled input">
+            <label for="demo-input-disabled" class="pb-input-label">Disabled Input</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dropdowns -->
+    <section class="demo-section">
+      <h2>Dropdowns</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-item">
+          <h3>Native Select</h3>
+          <div class="pb-input-container">
+            <select class="pb-input" id="demo-select">
+              <option value="">Choose an option...</option>
+              <option value="option1">Option 1</option>
+              <option value="option2">Option 2</option>
+              <option value="option3">Option 3</option>
+            </select>
+            <label for="demo-select" class="pb-input-label">Select Option</label>
+          </div>
+        </div>
+
+        <div class="demo-item">
+          <h3>Custom Dropdown</h3>
+          <div class="pb-dropdown">
+            <button class="pb-dropdown__trigger" type="button">
+              <span class="pb-dropdown__value">Select a country...</span>
+              <pb-icon icon="expand-more" class="pb-dropdown__trigger-icon" decorative></pb-icon>
+            </button>
+            <ul class="pb-dropdown__menu" hidden>
+              <li class="pb-dropdown__item" data-value="us">United States</li>
+              <li class="pb-dropdown__item" data-value="ca">Canada</li>
+              <li class="pb-dropdown__item" data-value="mx">Mexico</li>
+              <li class="pb-dropdown__item" data-value="uk">United Kingdom</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="demo-section">
+      <h2>Tabs</h2>
+      
+      <div class="demo-item demo-tabs-example">
+        <div class="pb-tabs" role="tablist" aria-label="Demo content">
+          <button class="pb-tab pb-tab--selected" type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">
+            Overview
+          </button>
+          <button class="pb-tab" type="button" role="tab" id="tab-features" aria-controls="panel-features" aria-selected="false" tabindex="-1">
+            Features
+          </button>
+          <button class="pb-tab" type="button" role="tab" id="tab-docs" aria-controls="panel-docs" aria-selected="false" tabindex="-1">
+            Documentation
+          </button>
+        </div>
+        
+        <div class="pb-tab-panels">
+          <div class="pb-tab-panel pb-tab-panel--active" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview" tabindex="0">
+            <h3>Overview</h3>
+            <p>This is the overview panel content. It provides a general introduction to the design system and its components.</p>
+            <ul>
+              <li>Native HTML elements</li>
+              <li>Material Design inspired</li>
+              <li>Fully accessible</li>
+              <li>Mobile responsive</li>
+            </ul>
+          </div>
+          <div class="pb-tab-panel" role="tabpanel" id="panel-features" aria-labelledby="tab-features" tabindex="0" hidden>
+            <h3>Features</h3>
+            <p>Key features of the design system:</p>
+            <ul>
+              <li>CSS Custom Properties for theming</li>
+              <li>Consistent spacing and typography</li>
+              <li>Dark mode support</li>
+              <li>Print-friendly styles</li>
+            </ul>
+          </div>
+          <div class="pb-tab-panel" role="tabpanel" id="panel-docs" aria-labelledby="tab-docs" tabindex="0" hidden>
+            <h3>Documentation</h3>
+            <p>Documentation and resources:</p>
+            <ul>
+              <li>Component API documentation</li>
+              <li>Accessibility guidelines</li>
+              <li>Migration patterns</li>
+              <li>Testing strategies</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Icons -->
+    <section class="demo-section">
+      <h2>Icons</h2>
+      
+      <div class="demo-item">
+        <h3>Icon Sizes</h3>
+        <div style="display: flex; align-items: center; gap: var(--pb-spacing-4); margin-bottom: var(--pb-spacing-4);">
+          <pb-icon icon="save" size="xs"></pb-icon>
+          <pb-icon icon="save" size="sm"></pb-icon>
+          <pb-icon icon="save" size="md"></pb-icon>
+          <pb-icon icon="save" size="lg"></pb-icon>
+          <pb-icon icon="save" size="xl"></pb-icon>
+        </div>
+
+        <h3>Available Icons</h3>
+        <div class="icon-grid">
+          <div class="icon-demo">
+            <pb-icon icon="save"></pb-icon>
+            <span class="icon-name">save</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="edit"></pb-icon>
+            <span class="icon-name">edit</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="delete"></pb-icon>
+            <span class="icon-name">delete</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="search"></pb-icon>
+            <span class="icon-name">search</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="expand-more"></pb-icon>
+            <span class="icon-name">expand-more</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="expand-less"></pb-icon>
+            <span class="icon-name">expand-less</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="add"></pb-icon>
+            <span class="icon-name">add</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="copy"></pb-icon>
+            <span class="icon-name">copy</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="download"></pb-icon>
+            <span class="icon-name">download</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="close"></pb-icon>
+            <span class="icon-name">close</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="menu"></pb-icon>
+            <span class="icon-name">menu</span>
+          </div>
+          <div class="icon-demo">
+            <pb-icon icon="chevron-right"></pb-icon>
+            <span class="icon-name">chevron-right</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Responsive Design -->
+    <section class="demo-section">
+      <h2>Responsive Design</h2>
+      <div class="demo-item">
+        <h3>Resize to Test Responsiveness</h3>
+        <p>Drag the right border of the container below to see how components adapt:</p>
+        <div class="responsive-demo">
+          <div class="demo-buttons" style="margin-bottom: var(--pb-spacing-4);">
+            <button class="pb-button pb-button--contained" type="button">Responsive Button</button>
+            <button class="pb-button pb-button--outlined" type="button">Another Button</button>
+          </div>
+          
+          <div class="pb-input-container">
+            <input class="pb-input" type="text" id="responsive-input" placeholder=" ">
+            <label for="responsive-input" class="pb-input-label">Responsive Input</label>
+          </div>
+          
+          <div class="pb-tabs" role="tablist" style="margin-top: var(--pb-spacing-4);">
+            <button class="pb-tab pb-tab--selected" type="button" role="tab">Tab 1</button>
+            <button class="pb-tab" type="button" role="tab">Tab 2</button>
+            <button class="pb-tab" type="button" role="tab">Tab 3</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accessibility Features -->
+    <section class="demo-section">
+      <h2>Accessibility Features</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <h3>Focus Management</h3>
+          <p>Try navigating with the Tab key:</p>
+          <div class="demo-buttons">
+            <button class="pb-button pb-button--text" type="button">First</button>
+            <button class="pb-button pb-button--outlined" type="button">Second</button>
+            <button class="pb-button pb-button--contained" type="button">Third</button>
+          </div>
+        </div>
+        
+        <div class="demo-item">
+          <h3>Screen Reader Support</h3>
+          <button class="pb-button pb-button--icon pb-button--contained" type="button" aria-label="Delete this item">
+            <pb-icon icon="delete" decorative></pb-icon>
+          </button>
+          <p style="font-size: var(--pb-font-size-sm); margin-top: var(--pb-spacing-2);">
+            Icon button with proper aria-label
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- JavaScript for interactive demos -->
+  <script type="module">
+    import '../src/pb-icon.js';
+    
+    // Custom dropdown functionality
+    document.querySelectorAll('.pb-dropdown').forEach(dropdown => {
+      const trigger = dropdown.querySelector('.pb-dropdown__trigger');
+      const menu = dropdown.querySelector('.pb-dropdown__menu');
+      const items = dropdown.querySelectorAll('.pb-dropdown__item');
+      const valueElement = dropdown.querySelector('.pb-dropdown__value');
+
+      trigger.addEventListener('click', () => {
+        const isOpen = !menu.hidden;
+        menu.hidden = isOpen;
+        dropdown.classList.toggle('pb-dropdown--open', !isOpen);
+      });
+
+      items.forEach(item => {
+        item.addEventListener('click', () => {
+          valueElement.textContent = item.textContent;
+          menu.hidden = true;
+          dropdown.classList.remove('pb-dropdown--open');
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+          menu.hidden = true;
+          dropdown.classList.remove('pb-dropdown--open');
+        }
+      });
+    });
+
+    // Tab functionality
+    document.querySelectorAll('.pb-tabs').forEach(tabContainer => {
+      const tabs = tabContainer.querySelectorAll('[role="tab"]');
+      const panels = document.querySelectorAll('[role="tabpanel"]');
+
+      function selectTab(selectedTab) {
+        tabs.forEach((tab, index) => {
+          const isSelected = tab === selectedTab;
+          tab.setAttribute('aria-selected', isSelected);
+          tab.tabIndex = isSelected ? 0 : -1;
+          tab.classList.toggle('pb-tab--selected', isSelected);
+          
+          if (panels[index]) {
+            panels[index].hidden = !isSelected;
+            panels[index].classList.toggle('pb-tab-panel--active', isSelected);
+          }
+        });
+      }
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectTab(tab));
+        
+        tab.addEventListener('keydown', (e) => {
+          let newIndex = index;
+          
+          switch (e.key) {
+            case 'ArrowLeft':
+              newIndex = index > 0 ? index - 1 : tabs.length - 1;
+              break;
+            case 'ArrowRight':
+              newIndex = index < tabs.length - 1 ? index + 1 : 0;
+              break;
+            case 'Home':
+              newIndex = 0;
+              break;
+            case 'End':
+              newIndex = tabs.length - 1;
+              break;
+            default:
+              return;
+          }
+          
+          e.preventDefault();
+          tabs[newIndex].focus();
+          selectTab(tabs[newIndex]);
+        });
+      });
+    });
+
+    // Input floating label behavior
+    document.querySelectorAll('.pb-input').forEach(input => {
+      const container = input.closest('.pb-input-container');
+      
+      function updateLabel() {
+        if (input.value || input === document.activeElement) {
+          container.classList.add('pb-input-container--filled');
+        } else {
+          container.classList.remove('pb-input-container--filled');
+        }
+      }
+      
+      input.addEventListener('focus', updateLabel);
+      input.addEventListener('blur', updateLabel);
+      input.addEventListener('input', updateLabel);
+      
+      // Initial state
+      updateLabel();
+    });
+
+    // Add ripple effect to buttons
+    document.querySelectorAll('.pb-button').forEach(button => {
+      button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          pointer-events: none;
+        `;
+        
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+
+    // Add ripple animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

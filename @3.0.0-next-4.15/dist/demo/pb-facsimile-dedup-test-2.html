@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-facsimile Request Deduplication Test - Multiple Images</title>
+    <link rel="stylesheet" href="demo.css">
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" api-version="1.0">
+                <div>
+                    <pb-facsimile
+                        base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+                        subscribe="transcription"
+                        default-zoom-level="0"
+                    >
+                        <h3 slot="before">Facsimile Viewer Test</h3>
+                        <div slot="after">Status: <span id="status"></span></div>
+                    </pb-facsimile>
+                    <h3 id="other">Some other data</h3>
+                    <pb-facs-link
+                        emit="transcription"
+                        facs="12446_000_BCz_1596p302.jpg"
+                        coordinates="[ 1,2,3,4 ]"
+                    >First area</pb-facs-link>
+                    <pb-facs-link
+                        emit="transcription"
+                        facs="12446_000_BCz_1596p303.jpg"
+                        coordinates="[ 5,6,7,8 ]"
+                    >Second area</pb-facs-link>
+                    <pb-facs-link
+                        emit="transcription"
+                        facs="12446_000_BCz_1596p302.jpg"
+                        coordinates="[ 9,10,11,12 ]"
+                    >Third area</pb-facs-link>
+                </div>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
+
