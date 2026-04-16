@@ -131,6 +131,37 @@ describe('pb-table-grid', () => {
     expect(columnById('birth').hidden).to.be.true;
   });
 
+  it('keeps hidden column cells hidden after pagination', async () => {
+    const grid = await renderGrid();
+    grid.visibleColumns = ['name', 'nationality'];
+    await grid.updateComplete;
+
+    const birthColumnIndex = 2;
+    const birthCellsHidden = () => {
+      const cells = Array.from(
+        grid.shadowRoot.querySelectorAll(`tbody tr > :nth-child(${birthColumnIndex})`),
+      );
+      return cells.length > 0 && cells.every(cell => cell.style.display === 'none');
+    };
+
+    await waitUntil(birthCellsHidden, 'birth column cells should be hidden on initial page', {
+      timeout: 5000,
+    });
+
+    const page2Button = Array.from(grid.shadowRoot.querySelectorAll('.gridjs-pages button')).find(
+      button => button.textContent.trim() === '2',
+    );
+    expect(page2Button).to.exist;
+    page2Button.click();
+
+    await waitUntil(() => grid._params.start === 6, 'pagination should move to page 2', {
+      timeout: 5000,
+    });
+    await waitUntil(birthCellsHidden, 'birth column cells should stay hidden after pagination', {
+      timeout: 5000,
+    });
+  });
+
   it('toggles row highlight and clears it on outside click', async () => {
     const grid = await renderGrid();
     await waitUntil(
