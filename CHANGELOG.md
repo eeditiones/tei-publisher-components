@@ -1,3 +1,10 @@
+## [3.2.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.1...v3.2.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** ensure column hiding works across pagination ([86dccef](https://github.com/eeditiones/tei-publisher-components/commit/86dccefe8b9a26e757ddc3407034b7c0aebb0c31))
+
 ## [3.2.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.0...v3.2.1) (2026-03-31)
 
 
