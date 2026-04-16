@@ -111,6 +111,7 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     this._columns = [];
     this._selectedRow = null;
     this._gridI18nInitialized = false;
+    this._visibilityApplyFrame = null;
     this._onTableClick = this._onTableClick.bind(this);
     this._onDocumentClick = this._onDocumentClick.bind(this);
   }
@@ -181,6 +182,10 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
   }
 
   disconnectedCallback() {
+    if (this._visibilityApplyFrame !== null) {
+      cancelAnimationFrame(this._visibilityApplyFrame);
+      this._visibilityApplyFrame = null;
+    }
     document.removeEventListener('click', this._onDocumentClick);
     super.disconnectedCallback();
   }
@@ -255,16 +260,16 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
 
       this.grid = new Grid(config);
       this._applyPaginationPosition();
-      this.grid.on('load', () => {
+      this.grid.on('ready', () => {
         this._clearRowSelection();
         if (this.paginationTop) {
-          // `forceRender()` can reset GridJS plugin state; re-apply after each load.
+          // `forceRender()` can reset GridJS plugin state; re-apply after each ready event.
           this.grid.plugin.get('pagination').position = PluginPosition.Header;
         }
         this.emitTo('pb-results-received', {
           params: this._params,
         });
-        this._applyColumnVisibilityToDom();
+        this._scheduleColumnVisibilityReapply();
       });
 
       this.grid.render(table);
@@ -308,6 +313,16 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
       cells.forEach(cell => {
         cell.style.display = hidden ? 'none' : '';
       });
+    });
+  }
+
+  _scheduleColumnVisibilityReapply() {
+    if (this._visibilityApplyFrame !== null) {
+      cancelAnimationFrame(this._visibilityApplyFrame);
+    }
+    this._visibilityApplyFrame = requestAnimationFrame(() => {
+      this._visibilityApplyFrame = null;
+      this._applyColumnVisibilityToDom();
     });
   }
 
