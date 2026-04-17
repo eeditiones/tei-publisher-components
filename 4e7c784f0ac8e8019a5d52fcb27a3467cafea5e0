@@ -1,0 +1,30 @@
+package.json
+  h_058c4ed50bd6c9 53,56,65,92,96-97
+cypress.config.js
+  5823035f9ba712de 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "4e7c784f0ac8e8019a5d52fcb27a3467cafea5e0",
+  "prompts": {
+    "5823035f9ba712de": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "aefb45e6-659c-431e-bab9-d66880c17806",
+        "model": "default"
+      },
+      "human_author": "duncdrum",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 26,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_058c4ed50bd6c9": {
+      "author": "duncdrum"
+    }
+  }
+}
