@@ -2,7 +2,6 @@
 const { defineConfig } = require('cypress')
 const fs = require('fs')
 const path = require('path')
-const { cypressViteOptimizeDepsInteropPlugin } = require('./test/cypress/vite-optimize-deps-interop-plugin')
 
 function listDemoPagesSync () {
   const demoDir = path.resolve(__dirname, 'demo')
@@ -50,8 +49,7 @@ module.exports = defineConfig({
       framework: 'none',
       bundler: 'vite',
       viteConfig: {
-        server: { open: false },
-        plugins: [cypressViteOptimizeDepsInteropPlugin()]
+        server: { open: false }
       }
     }),
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
