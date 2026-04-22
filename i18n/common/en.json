@@ -308,7 +308,27 @@
       "incomplete": "marked same type but without key",
       "unmarked": "unmarked occurrence in text",
       "open-in-tab": "Open document in new tab to review"
-    }
+    },
+    "other-occ1": "Found matches in",
+    "other-occ2": "other documents",
+    "loading": "Loading ",
+    "loading-failed": "Failed to load",
+    "not-found": "Not found",
+    "user": "User",
+    "rev-desc": "Revision Description",
+    "change-summary": "Change summary",
+    "change-placeholder": "Optional short description",
+    "status": "Status",
+    "enrichment": "Enrichment",
+    "details": "Annotation Details",
+    "hi-bold": "bold",
+    "hi-i": "italic",
+    "markup": "Inline text/markup or sequence of paragraphs",
+    "select": "Select element around current cursor position",
+    "enclose": "Enclose selection in new element",
+    "enclose-remove": "Remove enclosing tags",
+    "insert-place": "Insert placeName",
+    "insert-person": "Insert persName"
   },
   "ner": {
     "title": "Train a Named Entity Recognition Model",
