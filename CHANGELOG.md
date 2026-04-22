@@ -1,3 +1,10 @@
+## [3.2.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.2...v3.2.3) (2026-04-22)
+
+
+### Bug Fixes
+
+* **i18n:** missing i18n labels for annotations editor ([52b18dd](https://github.com/eeditiones/tei-publisher-components/commit/52b18dd96756dfcc4e16b2d4eb117ca1e61a4d1f))
+
 ## [3.2.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.1...v3.2.2) (2026-04-16)
 
 
