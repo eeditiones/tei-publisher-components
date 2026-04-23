@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.4...v3.3.0) (2026-04-23)
+
+
+### Features
+
+* **i18n:** localization PL ([fe97113](https://github.com/eeditiones/tei-publisher-components/commit/fe97113fdeb3b729ad7cd697dfc61852a49f0e11))
+
 ## [3.2.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.3...v3.2.4) (2026-04-23)
 
 
