@@ -72,11 +72,11 @@
       "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
-    "demo": {
+    "playground": {
       "title": "Playground",
       "description": "A writable collection into which you can upload your own documents for testing."
     },
-    "playground": {
+    "demo": {
       "title": "Demo Collection",
       "description": "A collection of various TEI use-case scenarios."
     },
