@@ -1,3 +1,11 @@
+## [3.2.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.3...v3.2.4) (2026-04-23)
+
+
+### Bug Fixes
+
+* **i18n:** fix labels ([40b3dad](https://github.com/eeditiones/tei-publisher-components/commit/40b3dad44ba53b31d7970c87f9b8dabad8765e11))
+* **i18n:** missing i18n labels for demo ([59c79fa](https://github.com/eeditiones/tei-publisher-components/commit/59c79fa640865402ddc292b7743408b11de574d8))
+
 ## [3.2.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.2...v3.2.3) (2026-04-22)
 
 
