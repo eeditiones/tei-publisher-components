@@ -72,9 +72,13 @@
       "title": "TEI Publisher Demo Collection",
       "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
     },
-    "playground": {
+    "demo": {
       "title": "Playground",
       "description": "A writable collection into which you can upload your own documents for testing."
+    },
+    "playground": {
+      "title": "Demo Collection",
+      "description": "A collection of various TEI use-case scenarios."
     },
     "doc": {
       "title": "Documentation",
@@ -87,6 +91,14 @@
     "annotate": {
       "title": "Annotation Samples",
       "description": "Another playground for annotating documents."
+    },
+    "jats": {
+      "title": "JATS Samples",
+      "description": "Examples using JATS (the Journal Article Tag Suite)."
+    },
+    "docx": {
+      "title": "DOCX Import",
+      "description": "Example and documentation for importing DOCX to TEI via ODD."
     },
     "up": "Go to parent"
   },
