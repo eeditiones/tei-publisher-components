@@ -76,6 +76,10 @@
       "title": "Poletko eksperymentalne",
       "description": "Kolekcja z prawem zapisu plików. Tutaj można zapisać własne pliki źródłowe dla celów testowych."
     },
+    "demo": {
+      "title": "Kolekcja Demo",
+      "description": "Zbiór różnych scenariuszy wykorzystujących znakowanie w TEI."
+    },
     "doc": {
       "title": "Dokumentacja",
       "description": "Dokumentacja (w formacie Docbook XML)."
@@ -87,6 +91,14 @@
     "annotate": {
       "title": "Przykłady anotacji",
       "description": "Poletko eksperymentalne do anotowania dokumentów."
+    },
+    "jats": {
+      "title": "Próbki JATS",
+      "description": "Przykłady użycia JATS (Journal Article Article Tag)."
+    },
+    "docx": {
+      "title": "Import DOCX",
+      "description": "Przykład i dokumentacja importu DOCX do TEI via ODD."
     },
     "up": "Przejdź do katalogu nadrzędnego"
   },
@@ -131,16 +143,16 @@
     "searchPlaceholder": "Wpisz słowo kluczowe...",
     "sortAsc": "Sortuj kolumnę rosnąco",
     "sortDesc": "Sortuj kolumnę malejąco",
-    "previous": "Poprzednia",
-    "next": "Następna",
+    "previous": "Wstecz",
+    "next": "Dalej",
     "navigate": "Strona {{page}} z {{pages}}",
     "page": "Strona {{page}}",
     "showing": "Wyświetlanie",
     "to": "do",
     "of": "z",
-    "results": "wyników",
+    "results": "wyniki/-ów",
     "loading": "Ładowanie...",
-    "noRecordsFound": "Brak pasujących rekordów",
+    "noRecordsFound": "Nie znaleziono pasujących rekordów",
     "error": "Wystąpił błąd podczas pobierania danych"
   },
   "dts": {
@@ -308,7 +320,27 @@
       "incomplete": "zaznaczono obiekt tego samego typ, ale bez identyfikatora",
       "unmarked": "nieoznaczone wystąpienie w tekście",
       "open-in-tab": "Otwórz podgląd dokumentu w nowej karcie"
-    }
+    },
+    "other-occ1": "Znaleziono dopasowania w innych dokumentach: ",
+    "other-occ2": "",
+    "loading": "Ładowanie ",
+    "loading-failed": "Wczytywanie nie powiodło się",
+    "not-found": "Nie znaleziono",
+    "user": "Użytkownik",
+    "rev-desc": "Opis zmiany",
+    "change-summary": "Podsumowanie zmian",
+    "change-placeholder": "Opcjonalny krótki opis",
+    "status": "Stan",
+    "enrichment": "Rozszerzenie (feature)",
+    "details": "Szczegóły adnotacji",
+    "hi-bold": "pogrubienie",
+    "hi-i": "kursywa",
+    "markup": "Tekst/tekst ze znacznikami",
+    "select": "Wybierz element wokół bieżącej pozycji kursora",
+    "enclose": "Otocz zaznaczenie nowym znacznikiem",
+    "enclose-remove": "Usuń znacznik otaczający",
+    "insert-place": "Wstaw znacznik placeName",
+    "insert-person": "Wstaw znacznik persName"
   },
   "ner": {
     "title": "Wytrenuj model rozpoznawania nazw własnych",
@@ -333,5 +365,11 @@
   "timeline": {
     "unknown": "bez daty",
     "clear": "Wyczyść wybór daty"
+  },
+  "toolbar": {
+    "zoom": {
+      "in": "Powiększ",
+      "out": "Zmniejsz"
+    }
   }
 }
