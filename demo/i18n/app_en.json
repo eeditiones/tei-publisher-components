@@ -1,25 +1,31 @@
 {
-    "demo": {
-        "message": "User defined message",
-        "select-lang": "Pick language...",
-        "select-state": "Pick a state ...",
-        "select-animal": "Select your favorite pet ...",
-        "cat": "Cat",
-        "dog": "Dog",
-        "bird": "Bird"
+  "demo": {
+    "message": "User defined message",
+    "select-lang": "Pick language...",
+    "select-state": "Pick a state ...",
+    "select-animal": "Select your favorite pet ...",
+    "cat": "Cat",
+    "dog": "Dog",
+    "bird": "Bird",
+    "showCode": {
+      "show": "Show"
     },
-    "document": {
-        "contents": "Custom Table of Contents"
-    },
-    "browse": {
-        "items": "Found {{count}} items"
-    },
-    "dialogs": {
-        "downloadMessage": "Download message"
-    },
-    "menu": {
-        "download": {
-            "title": "Download"
-        }
+    "editCode": {
+      "show": "Edit"
     }
+  },
+  "document": {
+    "contents": "Custom Table of Contents"
+  },
+  "browse": {
+    "items": "Found {{count}} items"
+  },
+  "dialogs": {
+    "downloadMessage": "Download message"
+  },
+  "menu": {
+    "download": {
+      "title": "Download"
+    }
+  }
 }
