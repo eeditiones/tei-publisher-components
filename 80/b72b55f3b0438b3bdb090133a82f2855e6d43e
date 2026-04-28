@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "80b72b55f3b0438b3bdb090133a82f2855e6d43e",
+  "prompts": {
+    "4d9472734c521def": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "67043061-c33a-49c7-a6cf-09fb5aa7ab99",
+        "model": "composer-2-fast"
+      },
+      "human_author": "duncdrum",
+      "messages": [],
+      "total_additions": 22,
+      "total_deletions": 4,
+      "accepted_lines": 20,
+      "overriden_lines": 0
+    }
+  }
+}
