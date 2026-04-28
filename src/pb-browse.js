@@ -1,6 +1,7 @@
 import { PbLoad } from './pb-load.js';
 import { registry } from './urls.js';
 import { waitOnce } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Extends PbLoad to support browsing collections.
@@ -77,7 +78,7 @@ export class PbBrowse extends PbLoad {
         if (this.history) {
           registry.commit(this, { collection: this.collection });
         }
-        console.log('<pb-browse> loading collection %s', this.collection);
+        logger.log('<pb-browse> loading collection %s', this.collection);
         this.emitTo('pb-search-resubmit');
       });
     });

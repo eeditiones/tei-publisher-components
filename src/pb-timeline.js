@@ -1,8 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { SearchResultService } from './search-result-service.js';
-import { ParseDateService } from './parse-date-service.js';
+import { SearchResultService } from './utils/services/search-result-service.js';
+import { ParseDateService } from './utils/services/parse-date-service.js';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-fetch.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
@@ -417,7 +419,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
       const { endDateStr } = event.detail;
       if (this._fullRangeSelected(startDateStr, endDateStr)) {
         // do not mark the whole histogram, reset selection instead
-        console.log('_fullRangeSelected() is true');
+        logger.log('_fullRangeSelected() is true');
         this.resetSelection();
         return;
       }
@@ -444,21 +446,20 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
         if (this.scopes.includes(this.scope)) {
           this.setData(this.searchResult.export(this.scope));
         } else {
-          console.error('unknown scope ', this.scope);
+          logger.error('unknown scope ', this.scope);
         }
       }
     }
   }
 
-  setData(dataObj) {
+  async setData(dataObj) {
     this.dataObj = dataObj;
     this.maxValue = Math.max(...this.dataObj.data.map(binObj => binObj.value));
     this.requestUpdate();
-    this.updateComplete.then(() => {
-      this.bins = this.shadowRoot.querySelectorAll('.bin-container');
-      this.resetSelection();
-      this._resetTooltip();
-    });
+    await this.updateComplete;
+    this.bins = this.shadowRoot.querySelectorAll('.bin-container');
+    this.resetSelection();
+    this._resetTooltip();
   }
 
   get label() {
@@ -628,11 +629,12 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     const datestr = event.currentTarget.dataset.tooltip;
     const value = this._numberWithCommas(event.currentTarget.dataset.value);
     const info = event.currentTarget.querySelector('.info');
+    // Sanitize tooltip content to prevent XSS attacks
+    const infoHTML = info ? sanitizeHTML(info.innerHTML) : '';
+    const tooltipContent = `<div><strong>${sanitizeHTML(datestr || '')}</strong>: ${value}</div><ul>${infoHTML}</ul>`;
     this.tooltip.querySelector(
       '.tooltip-text',
-    ).innerHTML = `<div><strong>${datestr}</strong>: ${value}</div><ul>${
-      info ? info.innerHTML : ''
-    }</ul>`;
+    ).innerHTML = tooltipContent;
 
     // Force a reflow to get accurate tooltip dimensions
     this.tooltip.style.visibility = 'hidden';
@@ -686,9 +688,11 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     }`;
     const value = selectedBins.map(bin => Number(bin.dataset.value)).reduce((a, b) => a + b);
     const valueFormatted = this._numberWithCommas(value);
+    // Sanitize tooltip content to prevent XSS attacks
+    const tooltipContent = `<strong>${sanitizeHTML(label)}</strong>: ${valueFormatted}`;
     this.tooltip.querySelector(
       '.tooltip-text',
-    ).innerHTML = `<strong>${label}</strong>: ${valueFormatted}`;
+    ).innerHTML = tooltipContent;
     this.tooltip.querySelector('.tooltip-close').classList.remove('hidden');
     this.tooltip.classList.add('draggable');
 
@@ -894,7 +898,7 @@ export class PbTimeline extends themableMixin(pbMixin(LitElement)) {
     if (binObj.info && binObj.info.length > 0 && binObj.info.length <= 10) {
       return html`
         <ul class="info">
-          ${binObj.info.map(info => html`<li>${unsafeHTML(info)}</li>`)}
+          ${binObj.info.map(info => html`<li>${unsafeHTML(sanitizeHTML(info))}</li>`)}
         </ul>
       `;
     }

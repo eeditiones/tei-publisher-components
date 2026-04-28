@@ -3,6 +3,19 @@
 /**
  * Lightweight replacement for `<iron-ajax>` using the Fetch API.
  * Provides a mostly compatible surface for existing components.
+ *
+ * @element pb-fetch
+ * @fires response - Fired when the request completes successfully
+ * @fires error - Fired when the request fails or returns an error status
+ *
+ * @example
+ * <pb-fetch
+ *   url="/api/data"
+ *   method="POST"
+ *   handle-as="json"
+ *   @response="${this._handleResponse}"
+ *   @error="${this._handleError}"
+ * ></pb-fetch>
  */
 export class PbFetch extends HTMLElement {
   static get observedAttributes() {
@@ -26,6 +39,10 @@ export class PbFetch extends HTMLElement {
     this._controller = null;
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes attributes from the DOM if present.
+   */
   connectedCallback() {
     if (this.hasAttribute('method')) {
       this.attributeChangedCallback('method', null, this.getAttribute('method'));
@@ -45,6 +62,13 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Called when an observed attribute changes.
+   *
+   * @param {string} name - The name of the attribute that changed
+   * @param {string|null} oldValue - The old value of the attribute
+   * @param {string|null} newValue - The new value of the attribute
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'handle-as':
@@ -64,14 +88,29 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Sets the URL for the request.
+   *
+   * @param {string} value - The URL to request
+   */
   set url(value) {
     this._url = value || '';
   }
 
+  /**
+   * Gets the URL for the request.
+   *
+   * @returns {string} The current URL
+   */
   get url() {
     return this._url;
   }
 
+  /**
+   * Sets the HTTP method for the request (GET, POST, PUT, DELETE, etc.).
+   *
+   * @param {string} value - The HTTP method (will be uppercased)
+   */
   set method(value) {
     const next = (value || 'GET').toUpperCase();
     if (this._method === next) {
@@ -85,10 +124,21 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Gets the HTTP method for the request.
+   *
+   * @returns {string} The current HTTP method
+   */
   get method() {
     return this._method;
   }
 
+  /**
+   * Sets how the response body should be handled.
+   * Valid values: 'json', 'text', 'blob', 'arraybuffer'
+   *
+   * @param {string} value - The response handling type (will be lowercased)
+   */
   set handleAs(value) {
     const next = (value || 'json').toLowerCase();
     if (this._handleAs === next) {
@@ -102,10 +152,20 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Gets how the response body is handled.
+   *
+   * @returns {string} The current response handling type
+   */
   get handleAs() {
     return this._handleAs;
   }
 
+  /**
+   * Sets whether to include credentials (cookies, authorization headers) in the request.
+   *
+   * @param {boolean} value - Whether to include credentials
+   */
   set withCredentials(value) {
     const next = Boolean(value);
     if (this._withCredentials === next) {
@@ -119,10 +179,20 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Gets whether credentials are included in requests.
+   *
+   * @returns {boolean} Whether credentials are included
+   */
   get withCredentials() {
     return this._withCredentials;
   }
 
+  /**
+   * Sets the Content-Type header for the request.
+   *
+   * @param {string|null} value - The Content-Type value (e.g., 'application/json')
+   */
   set contentType(value) {
     if (this._contentType === value) {
       return;
@@ -135,10 +205,19 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Gets the Content-Type header for the request.
+   *
+   * @returns {string|null} The current Content-Type value
+   */
   get contentType() {
     return this._contentType;
   }
 
+  /**
+   * Aborts the current request if one is in progress.
+   * Sets loading to false and clears the abort controller.
+   */
   abort() {
     if (this._controller) {
       this._controller.abort();
@@ -147,6 +226,13 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Generates and executes the HTTP request.
+   * Builds the URL with query parameters, sends the request, and parses the response.
+   * Dispatches 'response' event on success or 'error' event on failure.
+   *
+   * @returns {Promise<any|null>} The parsed response body, or null if the request failed or was aborted
+   */
   async generateRequest() {
     if (!this._url) {
       return null;
@@ -221,6 +307,12 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Builds the full URL by appending query parameters from this.params.
+   *
+   * @returns {string} The URL with query parameters appended
+   * @private
+   */
   _buildUrlWithParams() {
     if (!this.params || Object.keys(this.params).length === 0) {
       return this._url;
@@ -248,6 +340,13 @@ export class PbFetch extends HTMLElement {
     return `${this._url}${separator}${paramPairs.join('&')}`;
   }
 
+  /**
+   * Builds the RequestInit object for the fetch call.
+   * Sets method, headers, credentials, and body.
+   *
+   * @returns {RequestInit} The fetch request initialization object
+   * @private
+   */
   _buildRequestInit() {
     const baseHeaders =
       this.headers && typeof this.headers.entries === 'function'
@@ -268,6 +367,14 @@ export class PbFetch extends HTMLElement {
     return init;
   }
 
+  /**
+   * Prepares the request body based on the body type and content type.
+   * Handles FormData, Blob, ArrayBuffer, string, URLSearchParams, and object types.
+   *
+   * @param {Headers} headers - The request headers object (may be modified)
+   * @returns {string|FormData|Blob|ArrayBuffer|undefined} The prepared body, or undefined if no body
+   * @private
+   */
   _prepareBody(headers) {
     if (this.body == null) {
       return undefined;
@@ -314,6 +421,13 @@ export class PbFetch extends HTMLElement {
     return this.body;
   }
 
+  /**
+   * Parses the response body based on the handleAs setting.
+   *
+   * @param {Response} response - The fetch Response object
+   * @returns {Promise<{parsed: any, rawText: string}>} Object containing parsed body and raw text
+   * @private
+   */
   async _parseBody(response) {
     const cloned = response.clone();
     let rawText = '';
@@ -348,6 +462,14 @@ export class PbFetch extends HTMLElement {
     }
   }
 
+  /**
+   * Creates an XHR-like shim object for compatibility with iron-ajax.
+   * Provides status, statusText, responseURL, and header access methods.
+   *
+   * @param {Response} response - The fetch Response object
+   * @returns {Object} An object with XHR-like properties and methods
+   * @private
+   */
   _createXhrShim(response) {
     return {
       status: response.status,
@@ -359,6 +481,14 @@ export class PbFetch extends HTMLElement {
     };
   }
 
+  /**
+   * Encodes an object as URL-encoded form data.
+   * Handles URLSearchParams, strings, and plain objects.
+   *
+   * @param {Object|string|URLSearchParams} body - The body to encode
+   * @returns {string} The URL-encoded form string
+   * @private
+   */
   _encodeFormBody(body) {
     if (body instanceof URLSearchParams) {
       return body.toString();

@@ -3,6 +3,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 
 /**
  * `pb-select-odd`: Switch between available ODDs.
@@ -141,7 +142,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
       return;
     }
     this.odd = newOdd;
-    console.log('<pb-select-odd> Switching to ODD %s', this.odd);
+    logger.log('<pb-select-odd> Switching to ODD %s', this.odd);
     const doc = this.getDocument();
     if (doc) {
       doc.odd = this.odd;
@@ -170,24 +171,23 @@ export class PbSelectOdd extends pbMixin(LitElement) {
     if (this.odd) {
       requestUrl.searchParams.set('odd', this.odd);
     }
-    fetch(requestUrl.href, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { Accept: 'application/json' },
-    })
-      .then(response => {
+    (async () => {
+      try {
+        const response = await fetch(requestUrl.href, {
+          method: 'GET',
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
         if (!response.ok) {
           throw new Error(`Failed to load ODDs (${response.status})`);
         }
-        return response.json();
-      })
-      .then(data => {
+        const data = await response.json();
         this._updateOdds(Array.isArray(data) ? data : []);
-      })
-      .catch(err => {
-        console.error('<pb-select-odd> request failed', err);
+      } catch (err) {
+        logger.error('<pb-select-odd> request failed', err);
         this._updateOdds([]);
-      });
+      }
+    })();
   }
 
   _updateOdds(list) {
@@ -203,7 +203,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
       newOdd = newOdd.replace(/^(.*?)\.[^\.]+$/, '$1');
     }
     if (newOdd !== this.odd) {
-      console.log('<pb-select-odd> Set current ODD from %s to %s', this.odd, newOdd);
+      logger.log('<pb-select-odd> Set current ODD from %s to %s', this.odd, newOdd);
     }
     this.odd = newOdd;
   }

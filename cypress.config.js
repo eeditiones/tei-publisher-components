@@ -36,8 +36,6 @@ function listPbComponentsSync () {
   }
 }
 
-
-
 module.exports = defineConfig({
   includeShadowDom: true,
   retries: 1,
@@ -46,13 +44,14 @@ module.exports = defineConfig({
   fixturesFolder: 'test/cypress/fixtures',
   downloadsFolder: 'test/cypress/downloads',
   component: {
-    devServer: {
+    devServer: /** @type {any} */ ({
+      // `framework: 'none'` is valid for Lit/custom elements but not in Cypress TS types.
       framework: 'none',
       bundler: 'vite',
       viteConfig: {
         server: { open: false }
       }
-    },
+    }),
     specPattern: 'test/cypress/component/**/*.cy.{js,ts}',
     supportFile: 'test/cypress/support/component.js',
     indexHtmlFile: 'test/cypress/support/component-index.html',
@@ -67,10 +66,6 @@ module.exports = defineConfig({
     }
   },
   e2e: {
-    setupNodeEvents (on, config) {
-      // keep your other tasks if needed
-      return config
-    },
     baseUrl: process.env.CYPRESS_baseUrl || 'http://localhost:5173',
     retries: 1,
     specPattern: 'test/cypress/e2e/**/*.cy.{js,ts}',

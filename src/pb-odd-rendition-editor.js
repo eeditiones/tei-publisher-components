@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { LitElement, html, css } from 'lit';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 import './pb-icon-button.js';
 
@@ -157,7 +158,7 @@ export class PbOddRenditionEditor extends LitElement {
   }
 
   refreshEditor() {
-    console.log('refreshEditor');
+    logger.log('refreshEditor');
     const editor = this.shadowRoot.getElementById('editor');
     if (!editor) {
     }

@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { get as i18n } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-map-layer.js';
 import './pb-map-icon.js';
 
@@ -241,9 +242,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             this._fitBounds();
           }
 
-          console.log('<pb-leaflet-map> added marker');
+          logger.log('<pb-leaflet-map> added marker');
         } else {
-          console.log('<pb-leaflet-map> Marker already added to map');
+          logger.log('<pb-leaflet-map> Marker already added to map');
         }
 
         if (this.toggle) {
@@ -284,53 +285,52 @@ export class PbLeafletMap extends pbMixin(LitElement) {
     const pluginPath = resolveURL('../lib/leaflet.markercluster-src.js');
     const geoCodingPath = resolveURL('../lib/Control.Geocoder.min.js');
 
-    const loadGeocodingOrInit = () => {
+    const loadGeocodingOrInit = async () => {
       if (this.geoCoding) {
         // Check if the geocoding script URL is accessible before trying to load it
-        fetch(geoCodingPath, { method: 'HEAD' })
-          .then(response => {
-            if (response.ok) {
-              return window.ESGlobalBridge.instance.load('geocoding', geoCodingPath);
-            } else {
-              throw new Error(
-                `Geocoding script not available at ${geoCodingPath} (${response.status})`,
-              );
-            }
-          })
-          .then(this._initMap.bind(this))
-          .catch(error => {
-            console.warn(
-              '<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:',
-              error,
-            );
+        try {
+          const response = await fetch(geoCodingPath, { method: 'HEAD' });
+          if (response.ok) {
+            await window.ESGlobalBridge.instance.load('geocoding', geoCodingPath);
             this._initMap();
-          });
+          } else {
+            throw new Error(
+              `Geocoding script not available at ${geoCodingPath} (${response.status})`,
+            );
+          }
+        } catch (error) {
+          logger.warn(
+            '<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:',
+            error,
+          );
+          this._initMap();
+        }
       } else {
         this._initMap();
       }
     };
 
-    window.ESGlobalBridge.instance
-      .load('leaflet', leafletPath)
-      .then(() => {
+    (async () => {
+      try {
+        await window.ESGlobalBridge.instance.load('leaflet', leafletPath);
         if (this.cluster) {
-          window.ESGlobalBridge.instance
-            .load('plugin', pluginPath)
-            .then(loadGeocodingOrInit)
-            .catch(error => {
-              console.warn(
-                '<pb-leaflet-map> Failed to load marker cluster plugin, initializing without clustering:',
-                error,
-              );
-              loadGeocodingOrInit();
-            });
+          try {
+            await window.ESGlobalBridge.instance.load('plugin', pluginPath);
+            await loadGeocodingOrInit();
+          } catch (error) {
+            logger.warn(
+              '<pb-leaflet-map> Failed to load marker cluster plugin, initializing without clustering:',
+              error,
+            );
+            await loadGeocodingOrInit();
+          }
         } else {
-          loadGeocodingOrInit();
+          await loadGeocodingOrInit();
         }
-      })
-      .catch(error => {
-        console.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
-      });
+      } catch (error) {
+        logger.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
+      }
+    })();
   }
 
   render() {
@@ -429,7 +429,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
     // Check if geocoding library is properly loaded
     if (!L.Control || !L.Control.Geocoder) {
-      console.warn(
+      logger.warn(
         '<pb-leaflet-map> Geocoding library not properly loaded, skipping geocoding configuration',
       );
       return;
@@ -437,7 +437,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
     // Check if nominatim method exists
     if (!L.Control.Geocoder.nominatim) {
-      console.warn(
+      logger.warn(
         '<pb-leaflet-map> Nominatim geocoder not available, skipping geocoding configuration',
       );
       return;
@@ -523,10 +523,15 @@ export class PbLeafletMap extends pbMixin(LitElement) {
       let layer;
       switch (config.type) {
         case 'geojson':
-          config.data().then(data => {
-            layer = L.geoJSON([data]);
-            this._addLayer(config, layer, layers);
-          });
+          (async () => {
+            try {
+              const data = await config.data();
+              layer = L.geoJSON([data]);
+              this._addLayer(config, layer, layers);
+            } catch (error) {
+              logger.error('<pb-leaflet-map> Failed to load GeoJSON layer:', error);
+            }
+          })();
           break;
         default:
           layer = L.tileLayer(config.url, config.options);

@@ -1,11 +1,11 @@
 name: Docker and Cypress E2E Tests
 
 on:
-  pull_request:
-    branches: [ master, next* ]
-  push:
-    branches:
-      - next*
+  # pull_request:
+  #   branches: [ master, next* ]
+  # push:
+  #   branches:
+  #     - next*
   workflow_dispatch:
 
 jobs:

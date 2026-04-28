@@ -6,19 +6,21 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-xquery';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import { resolveURL, getCSSProperty } from './utils.js';
+import { resolveURL } from './utils/url.js';
+import { getCSSProperty } from './utils/css.js';
 import { themableMixin } from './theming.js';
+import { logger } from './utils/logger.js';
 
 const PRISM_THEMES = new Map();
 
 function loadTheme(theme) {
   const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
   if (PRISM_THEMES.has(themeName)) {
-    console.log('Using cached theme: %s', themeName);
+    logger.log('Using cached theme: %s', themeName);
     return PRISM_THEMES.get(themeName);
   }
 
-  const promise = new Promise(resolve => {
+  const promise = (async () => {
     // Try to determine the correct base URL for CSS themes
     let resource;
     try {
@@ -45,18 +47,17 @@ function loadTheme(theme) {
       resource = resolveURL('../css/prismjs/') + themeName;
     }
     
-    console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
-    fetch(resource)
-      .then(response => response.text())
-      .catch(() => resolve(''))
-      .then(text => {
-        resolve(
-          html`<style>
-            ${text}
-          </style>`,
-        );
-      });
-  });
+    logger.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
+    try {
+      const response = await fetch(resource);
+      const text = await response.text();
+      return html`<style>
+        ${text}
+      </style>`;
+    } catch {
+      return html`<style></style>`;
+    }
+  })();
   PRISM_THEMES.set(themeName, promise);
   return promise;
 }
@@ -139,9 +140,10 @@ export class PbCodeHighlight extends themableMixin(LitElement) {
     super.attributeChangedCallback(name, oldValue, newValue);
     switch (name) {
       case 'theme':
-        loadTheme(newValue).then(loadedStyles => {
+        (async () => {
+          const loadedStyles = await loadTheme(newValue);
           this._themeStyles = loadedStyles;
-        });
+        })();
         break;
       default:
         break;

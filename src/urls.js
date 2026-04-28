@@ -1,6 +1,7 @@
 import { match, compile, pathToRegexp } from 'path-to-regexp';
-import { PbEvents } from './pb-events.js';
+import { PbEvents } from './utils/events.js';
 import { getSubscribedChannels } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Convert path-to-regexp v6 syntax to v8 syntax
@@ -27,7 +28,7 @@ function convertPathToRegexpSyntax(pattern) {
 function log(...args) {
   args[0] = `%c<registry>%c ${args[0]}`;
   args.splice(1, 0, 'font-weight: bold; color: #99FF33;', 'color: inherit; font-weight: normal');
-  console.log.apply(null, args);
+  logger.log.apply(null, args);
 }
 
 /**
@@ -98,6 +99,15 @@ class Registry {
     this.currentUser = null;
   }
 
+  /**
+   * Configures the registry with URL parsing options.
+   *
+   * @param {boolean} [usePath=true] - Whether to use the URL path for the document path
+   * @param {boolean} [idHash=false] - Whether to interpret URL hash as xml:id
+   * @param {string} [rootPath=''] - Root path to strip from URLs
+   * @param {string} [urlPattern] - URL pattern template (path-to-regexp format)
+   * @param {string} [ignoredParams] - Comma-separated list of parameters to ignore in URLs
+   */
   configure(usePath = true, idHash = false, rootPath = '', urlPattern, ignoredParams) {
     this.rootPath = rootPath;
     this.usePath = usePath;
@@ -123,7 +133,7 @@ class Registry {
     // determine initial state of the registry by parsing current URL
     const initialState = this._stateFromURL();
     if (!initialState) {
-      console.error(
+      logger.error(
         '<registry> failed to parse URL: %s using template %s',
         window.location,
         this.urlTemplate,
@@ -142,7 +152,7 @@ class Registry {
       try {
         this.channelStates = JSON.parse(ev.state);
       } catch (e) {
-        console.error('<registry> error restoring state: %s', e.toString());
+        logger.error('<registry> error restoring state: %s', e.toString());
         return;
       }
 
@@ -157,6 +167,13 @@ class Registry {
     });
   }
 
+  /**
+   * Subscribe a component to state changes.
+   * The callback will be invoked whenever the URL state changes (e.g., browser back/forward).
+   *
+   * @param {HTMLElement} component - The component subscribing to state changes
+   * @param {Function} callback - Function to call with the new state for the component's channel
+   */
   subscribe(component, callback) {
     this._listeners.push({
       component,
@@ -164,6 +181,13 @@ class Registry {
     });
   }
 
+  /**
+   * Parses the current URL and extracts state parameters.
+   * Handles both path-based and query parameter-based state.
+   *
+   * @private
+   * @returns {Object} The state object parsed from the URL
+   */
   _stateFromURL() {
     const params = {};
     this.hash = window.location.hash;
@@ -184,7 +208,7 @@ class Registry {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.forEach((value, key) => {
       if ((this.urlPattern && this.pathParams.has(key)) || (this.usePath && key === 'path')) {
-        console.warn(
+        logger.warn(
           'Found path parameter in query, but usePath is set to true. The path parameter will be ignored.',
         );
         return;
@@ -204,6 +228,13 @@ class Registry {
     return params;
   }
 
+  /**
+   * Gets the state object for a component's channel.
+   * Creates an empty state object if none exists.
+   *
+   * @param {HTMLElement} component - The component to get state for
+   * @returns {Object} The state object for the component's channel
+   */
   getState(component) {
     const channel = getSubscribedChannels(component)[0];
     const state = this.channelStates[channel];
@@ -214,11 +245,24 @@ class Registry {
     return this.channelStates[channel];
   }
 
+  /**
+   * Sets the state for a component's channel.
+   * Merges the new state with existing state.
+   *
+   * @param {HTMLElement} component - The component to set state for
+   * @param {Object} newState - The state object to merge
+   */
   setState(component, newState) {
     const channel = getSubscribedChannels(component)[0];
     this.channelStates[channel] = Object.assign(this.channelStates[channel], newState);
   }
 
+  /**
+   * Clears parameters from the global state that match a regex pattern.
+   *
+   * @param {HTMLElement} component - The component requesting the clear (unused, kept for API consistency)
+   * @param {RegExp} regex - Regular expression to match parameter names
+   */
   clearParametersMatching(component, regex) {
     const { state } = this;
 
@@ -229,19 +273,48 @@ class Registry {
     }
   }
 
+  /**
+   * Gets a value from the state using a dot-notation path.
+   * Returns the defaultValue if the path doesn't exist or any intermediate value is undefined.
+   *
+   * @param {string} path - Dot-notation path (e.g., 'user.name' or 'doc.path')
+   * @param {any} [defaultValue] - Value to return if path doesn't exist
+   * @returns {any} The value at the path or defaultValue
+   *
+   * @example
+   * registry.get('doc.path', '/default.xml')  // Returns state.doc.path or '/default.xml'
+   * registry.get('user.name')                 // Returns state.user.name or undefined
+   */
   get(path, defaultValue) {
     if (!this.state) {
-      return undefined;
+      return defaultValue;
     }
     const value = path.split('.').reduce((state, component) => {
-      if (!state[component]) {
+      // If state is null/undefined, stop reducing and return undefined
+      if (state == null || typeof state !== 'object') {
+        return undefined;
+      }
+      // If component doesn't exist, return undefined
+      if (!(component in state)) {
         return undefined;
       }
       return state[component];
     }, this.state);
-    return value || defaultValue;
+    // Return defaultValue if value is undefined, null, or falsy (but allow 0, false, '')
+    return value !== undefined ? value : defaultValue;
   }
 
+  /**
+   * Sets a value in the state using a dot-notation path.
+   * Creates intermediate objects as needed.
+   *
+   * @param {string} path - Dot-notation path (e.g., 'user.name' or 'doc.path')
+   * @param {any} value - The value to set
+   *
+   * @example
+   * registry.set('doc.path', '/document.xml')
+   * registry.set('user.name', 'John')
+   */
   set(path, value) {
     if (!path.includes('.')) {
       this.state[path] = value;
@@ -259,11 +332,19 @@ class Registry {
     lastIntermediate[lastPart] = value;
   }
 
+  /**
+   * Commits state changes to the URL and browser history.
+   * Creates a new history entry (can be navigated back to).
+   *
+   * @param {HTMLElement} elem - The component making the commit
+   * @param {Object} newState - The new state to commit
+   * @param {boolean} [overwrite=false] - If true, replace entire state; if false, merge with existing
+   */
   commit(elem, newState, overwrite = false) {
     // Debug: Log what component is calling registry.commit (only for commits that might reset root)
     if (newState && ('root' in newState) && newState.root === null) {
       const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-      console.warn('[registry] commit called with root=null by:', componentName, {
+      logger.warn('[registry] commit called with root=null by:', componentName, {
         newState,
         overwrite,
         stack: new Error().stack
@@ -272,10 +353,18 @@ class Registry {
     this._commit(elem, newState, overwrite, false);
   }
 
+  /**
+   * Replaces the current URL state without creating a new history entry.
+   * Useful for initial state setup or silent updates.
+   *
+   * @param {HTMLElement} elem - The component making the replace
+   * @param {Object} newState - The new state to set
+   * @param {boolean} [overwrite=false] - If true, replace entire state; if false, merge with existing
+   */
   replace(elem, newState, overwrite = false) {
     // Debug: Log what component is calling registry.replace
     const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-    console.warn('[registry] replace called by:', componentName, {
+    logger.warn('[registry] replace called by:', componentName, {
       newState,
       overwrite,
       stack: new Error().stack
@@ -283,12 +372,21 @@ class Registry {
     this._commit(elem, newState, overwrite, true);
   }
 
+  /**
+   * Internal method to commit state changes.
+   *
+   * @private
+   * @param {HTMLElement} elem - The component making the commit
+   * @param {Object} newState - The new state
+   * @param {boolean} overwrite - Whether to overwrite or merge state
+   * @param {boolean} replace - Whether to replace (true) or push (false) history entry
+   */
   _commit(elem, newState, overwrite, replace) {
     const oldState = { ...this.state };
     this.state = overwrite ? newState : { ...this.state, ...newState };
     const resolved = this.urlFromState();
 
-    console.log('[registry] _commit: committing state', {
+    logger.log('[registry] _commit: committing state', {
       oldState,
       newState,
       overwrite,
@@ -312,14 +410,21 @@ class Registry {
     if (replace) {
       window.history.replaceState(json, '', resolved);
       log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      logger.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     } else {
       window.history.pushState(json, '', resolved);
       log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      logger.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     }
   }
 
+  /**
+   * Generates a URL from the current state.
+   * Handles path-based and query parameter-based state encoding.
+   *
+   * @returns {URL} A new URL object representing the current state
+   * @private
+   */
   urlFromState() {
     const newUrl = new URL(window.location.href);
 
@@ -338,7 +443,7 @@ class Registry {
       }
     }
 
-    console.log('[registry] urlFromState: building URL from state', {
+    logger.log('[registry] urlFromState: building URL from state', {
       state: this.state,
       idHash: this.idHash,
       usePath: this.usePath,
@@ -353,7 +458,7 @@ class Registry {
         // fill up missing parameters by stripping potential "user." prefix
         const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
         const shouldIgnore = this.pathParams.has(normParam) || this.urlIgnore.has(normParam);
-        console.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
+        logger.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
         if (!shouldIgnore) {
           setParam(value, normParam);
         }
@@ -370,14 +475,14 @@ class Registry {
           (param === 'odd' && value === 'teipublisher') ||
           (param === 'panels' && typeof value === 'string' && value.split('.').length > 10) // Malformed panels (concatenated)
         );
-        console.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
+        logger.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
         if (willInclude && !isUnwantedDefault) {
           setParam(value, param);
         } else if (isUnwantedDefault) {
-          console.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
+          logger.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
         }
       } else {
-        console.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
+        logger.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
       }
     }
 
@@ -401,10 +506,10 @@ class Registry {
 
     if (this.state.id && !this.urlPattern) {
       newUrl.hash = `#${this.state.id}`;
-      console.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
+      logger.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
     }
 
-    console.log('[registry] urlFromState: final URL', {
+    logger.log('[registry] urlFromState: final URL', {
       url: newUrl.toString(),
       search: newUrl.search,
       hash: newUrl.hash,
@@ -417,6 +522,12 @@ class Registry {
     return newUrl;
   }
 
+  /**
+   * Serializes the channel states to JSON.
+   * Used for storing state in browser history.
+   *
+   * @returns {string} JSON string representation of channel states
+   */
   toJSON() {
     return JSON.stringify(this.channelStates);
   }

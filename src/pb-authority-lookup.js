@@ -4,6 +4,9 @@ import { themableMixin } from './theming.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { createConnectors } from './authority/connectors.js';
+import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
+import { handleError, formatErrorMessage } from './utils/error-handling.js';
 import './pb-restricted.js';
 
 /**
@@ -89,6 +92,10 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this.group = 'tei';
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes stopwords, sets up event listeners, and loads authority connectors.
+   */
   connectedCallback() {
     super.connectedCallback();
 
@@ -114,7 +121,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       }
     });
 
-    console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
+    logger.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
   }
 
   render() {
@@ -163,12 +170,12 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
 
   async lookup(register, id, container) {
     if (!id || id === '') {
-      console.log('<pb-authority-lookup> Key is empty');
+      logger.log('<pb-authority-lookup> Key is empty');
       container.innerHTML = '';
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log(
+    logger.log(
       '<pb-authority-lookup> Retrieving info for %s from %s using %s',
       id,
       register,
@@ -200,8 +207,8 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             </svg>
           </button>
           ${item.link
-            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
-            : html`${unsafeHTML(item.label)}`}
+            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(sanitizeHTML(item.label))}</a>`
+            : html`${unsafeHTML(sanitizeHTML(item.label))}`}
           <div class="badges">
             ${item.occurrences > 0
               ? html`<span class="occurrences badge" part="occurrences">${item.occurrences}</span>`
@@ -315,6 +322,16 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     `;
   }
 
+  /**
+   * Handles selection of an authority item.
+   * Calls the connector's select method and emits pb-authority-select event.
+   *
+   * @param {Object} item - The authority item that was selected
+   * @param {string} item.register - The authority register name
+   * @param {string} item.id - The item ID
+   * @param {string[]} item.strings - The item strings
+   * @private
+   */
   _select(item) {
     const connector = this._authorities[item.register];
     const options = {
@@ -325,26 +342,71 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       },
     };
     if (connector) {
-      connector
-        .select(item)
-        .then(() => this.emitTo('pb-authority-select', options))
-        .catch(e => this.emitTo('pb-authority-error', { status: e.message }));
+      (async () => {
+        try {
+          await connector.select(item);
+          this.emitTo('pb-authority-select', options);
+        } catch (e) {
+          // Use error handling utility for consistent error logging and event emission
+          const errorMessage = formatErrorMessage(
+            e,
+            'Failed to select authority item',
+            {
+              network: 'Network error selecting authority item',
+              404: 'Authority item not found',
+              403: 'Access denied'
+            }
+          );
+          
+          handleError(e, {
+            componentName: 'pb-authority-lookup',
+            emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+            eventName: 'pb-authority-error',
+            eventDetail: { message: errorMessage, status: e.status || e.statusCode || e.message }
+          });
+        }
+      })();
     } else {
       this.emitTo('pb-authority-select', options);
     }
   }
 
+  /**
+   * Handles editing an authority entity.
+   * Calls the connector's select method and emits pb-authority-edit-entity event.
+   *
+   * @param {Object} item - The authority item to edit
+   * @param {string} item.id - The item ID
+   * @param {string} item.register - The authority register name
+   * @private
+   */
   _editEntity(item) {
     const connector = this._authorities[item.register];
     if (connector) {
-      connector
-        .select(item)
-        .then(() => this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register }));
+      (async () => {
+        try {
+          await connector.select(item);
+          this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
+        } catch (e) {
+          // Use error handling utility for consistent error logging
+          handleError(e, {
+            componentName: 'pb-authority-lookup',
+            silent: true
+          });
+        }
+      })();
     } else {
       this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
     }
   }
 
+  /**
+   * Handles query input changes.
+   * Updates the query property and triggers a new search.
+   *
+   * @param {Event} e - The input event
+   * @private
+   */
   _queryChanged(e) {
     if (this.query === e.target.value) {
       // Bogus onchange. No need to requery. A requery would only cause a flash of an empty result set
@@ -355,22 +417,62 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this._query();
   }
 
-  _query() {
+  /**
+   * Performs an authority lookup query.
+   * Fetches results from the authority connector and merges occurrence counts.
+   *
+   * @private
+   */
+  async _query() {
     this.emitTo('pb-start-update');
-    this._authorities[this.type].query(this.query).then(results => {
-      this._occurrences(results.items).then(merged => {
-        this._results = merged;
-      });
+    try {
+      const results = await this._authorities[this.type].query(this.query);
+      const merged = await this._occurrences(results.items);
+      this._results = merged;
       this.emitTo('pb-end-update');
       // this.shadowRoot.getElementById('query').focus();
-    });
+    } catch (error) {
+      // Use error handling utility for consistent error logging and event emission
+      const errorMessage = formatErrorMessage(
+        error,
+        'Failed to query authority',
+        {
+          404: 'Authority service not found',
+          403: 'Access denied to authority service',
+          500: 'Authority service error',
+          network: 'Network error connecting to authority service'
+        }
+      );
+      
+      handleError(error, {
+        componentName: 'pb-authority-lookup',
+        emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+        eventName: 'pb-authority-error',
+        eventDetail: { message: errorMessage, status: error.status || error.statusCode }
+      });
+      
+      this.emitTo('pb-end-update');
+    }
   }
 
+  /**
+   * Emits pb-authority-new-entity event to create a new entity.
+   *
+   * @private
+   */
   _addEntity() {
     this.emitTo('pb-authority-new-entity', { query: this.query, type: this.type });
   }
 
-  _occurrences(items) {
+  /**
+   * Fetches occurrence counts for authority items from the server.
+   * Sorts results by occurrence count, with local items prioritized.
+   *
+   * @param {Array<Object>} items - Array of authority items
+   * @returns {Promise<Array<Object>>} Items with occurrence counts added and sorted
+   * @private
+   */
+  async _occurrences(items) {
     if (this.noOccurrences) {
       return Promise.resolve(items);
     }
@@ -379,40 +481,45 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     items.forEach(item => {
       params.append('id', item.id);
     });
-    return new Promise(resolve => {
-      fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
+    try {
+      const response = await fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
         method: 'POST',
         body: params,
-      })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
+      });
+      if (!response.ok) {
+        return items; // Return items without occurrences if request fails
+      }
+      const json = await response.json();
+      items.forEach(item => {
+        if (json[item.id]) {
+          item.occurrences = json[item.id];
+        } else {
+          item.occurrences = 0;
+        }
+      });
+      items.sort((i1, i2) => {
+        const d = i2.occurrences - i1.occurrences;
+        if (d === 0) {
+          if (i1.provider === 'local' && i2.provider !== 'local') {
+            return -1;
           }
-        })
-        .then(json => {
-          items.forEach(item => {
-            if (json[item.id]) {
-              item.occurrences = json[item.id];
-            } else {
-              item.occurrences = 0;
-            }
-          });
-          items.sort((i1, i2) => {
-            const d = i2.occurrences - i1.occurrences;
-            if (d === 0) {
-              if (i1.provider === 'local' && i2.provider !== 'local') {
-                return -1;
-              }
-              if (i2.provider === 'local' && i1.provider !== 'local') {
-                return 1;
-              }
-              return this.sortByLabel ? i1.label.localeCompare(i2.label) : 0;
-            }
-            return d;
-          });
-          resolve(items);
-        });
-    });
+          if (i2.provider === 'local' && i1.provider !== 'local') {
+            return 1;
+          }
+          return this.sortByLabel ? i1.label.localeCompare(i2.label) : 0;
+        }
+        return d;
+      });
+      return items;
+    } catch (error) {
+      // Use error handling utility for consistent error logging
+      // Don't emit event here as this is a non-critical failure (occurrences are optional)
+      handleError(error, {
+        componentName: 'pb-authority-lookup',
+        silent: true
+      });
+      return items; // Return items without occurrences if request fails
+    }
   }
 }
 customElements.define('pb-authority-lookup', PbAuthorityLookup);

@@ -1,4 +1,4 @@
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 
 if (!window.TeiPublisher) {
   window.TeiPublisher = {};
@@ -392,6 +392,14 @@ export const pbMixin = BaseClass =>
       chs.forEach(ch => this._emit(ch, type, options));
     }
 
+    /**
+     * Internal method to emit an event to a specific channel.
+     *
+     * @private
+     * @param {string} key - The channel key
+     * @param {string} type - The event type
+     * @param {Object} [options] - Event detail data
+     */
     _emit(key, type, options) {
       if (type === 'pb-ready') {
         readyEventsFired.add(key);
@@ -421,6 +429,22 @@ export const pbMixin = BaseClass =>
       return null;
     }
 
+    /**
+     * Gets a URL parameter by name from the current page URL.
+     * Returns a single value if the parameter appears once, or an array if it appears multiple times.
+     *
+     * @param {string} name - The parameter name to retrieve
+     * @param {any} [fallback] - The value to return if the parameter doesn't exist
+     * @returns {string|string[]|any} The parameter value(s) or fallback
+     *
+     * @example
+     * // URL: ?id=123
+     * this.getParameter('id')  // Returns: '123'
+     *
+     * @example
+     * // URL: ?tag=foo&tag=bar
+     * this.getParameter('tag')  // Returns: ['foo', 'bar']
+     */
     getParameter(name, fallback) {
       const params = TeiPublisher.url.searchParams && TeiPublisher.url.searchParams.getAll(name);
       if (params && params.length == 1) {
@@ -432,6 +456,15 @@ export const pbMixin = BaseClass =>
       return fallback;
     }
 
+    /**
+     * Gets all URL parameters from the current page URL as an object.
+     *
+     * @returns {Object<string, string|string[]>} An object mapping parameter names to their values
+     *
+     * @example
+     * // URL: ?id=123&view=page
+     * this.getParameters()  // Returns: { id: '123', view: 'page' }
+     */
     getParameters() {
       const params = {};
       for (const key of TeiPublisher.url.searchParams.keys()) {
@@ -440,14 +473,42 @@ export const pbMixin = BaseClass =>
       return params;
     }
 
+    /**
+     * Gets the current page URL object.
+     *
+     * @returns {URL} The URL object for the current page
+     */
     getUrl() {
       return TeiPublisher.url;
     }
 
+    /**
+     * Gets the TEI Publisher endpoint URL.
+     * This is set from the `pb-page-ready` event.
+     *
+     * @returns {string|undefined} The endpoint URL or undefined if not set
+     */
     getEndpoint() {
       return this._endpoint;
     }
 
+    /**
+     * Converts a relative URL to an absolute URL.
+     * If the URL is already absolute (starts with a protocol), it is returned as-is.
+     * Otherwise, it is resolved relative to the endpoint or current location.
+     *
+     * @param {string} relative - The relative URL to convert
+     * @param {string} [server] - Optional server URL to use as base (overrides endpoint)
+     * @returns {string} The absolute URL
+     *
+     * @example
+     * // With endpoint: 'http://example.com/app'
+     * this.toAbsoluteURL('api/data')  // Returns: 'http://example.com/app/api/data'
+     *
+     * @example
+     * // Already absolute
+     * this.toAbsoluteURL('https://example.com/api')  // Returns: 'https://example.com/api'
+     */
     toAbsoluteURL(relative, server) {
       if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(relative)) {
         return relative;
@@ -465,14 +526,48 @@ export const pbMixin = BaseClass =>
       return new URL(relative, base).href;
     }
 
+    /**
+     * Checks if the current API version meets or exceeds the required version.
+     *
+     * @param {string} requiredVersion - The minimum required version (e.g., '1.0.0')
+     * @returns {boolean} True if current API version >= required version
+     *
+     * @example
+     * if (this.minApiVersion('1.0.0')) {
+     *   // Use new API features
+     * }
+     */
     minApiVersion(requiredVersion) {
       return cmpVersion(this._apiVersion, requiredVersion) >= 0;
     }
 
+    /**
+     * Checks if the current API version is less than the required version.
+     *
+     * @param {string} requiredVersion - The version to compare against
+     * @returns {boolean} True if current API version < required version
+     *
+     * @example
+     * if (this.lessThanApiVersion('1.0.0')) {
+     *   // Use legacy API
+     * }
+     */
     lessThanApiVersion(requiredVersion) {
       return cmpVersion(this._apiVersion, requiredVersion) < 0;
     }
 
+    /**
+     * Compares the current API version with a required version.
+     *
+     * @param {string} requiredVersion - The version to compare against
+     * @returns {number} -1 if current < required, 0 if equal, 1 if current > required
+     *
+     * @example
+     * const cmp = this.compareApiVersion('1.0.0')
+     * if (cmp < 0) {
+     *   // Version is too old
+     * }
+     */
     compareApiVersion(requiredVersion) {
       return cmpVersion(this._apiVersion, requiredVersion);
     }

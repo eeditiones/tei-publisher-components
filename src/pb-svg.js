@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Show an SVG image with zoom and pan functionality. The image URL may
@@ -59,33 +60,35 @@ export class PbSvg extends pbMixin(LitElement) {
     }
   }
 
-  load() {
+  async load() {
     if (!this.url) {
       return;
     }
     const uri = this.toAbsoluteURL(this.url);
-    console.log('<pb-svg> Loading %s', uri);
+    logger.log('<pb-svg> Loading %s', uri);
     if (this._pan) {
       this._pan.destroy();
       this._pan = null;
       this.container.innerHTML = '';
     }
-    fetch(uri)
-      .then(response => response.text())
-      .then(data => {
-        if (!window.svgPanZoom) {
-          console.error('<pb-svg> svgPanZoom not available');
-          return;
-        }
-        const doc = new DOMParser().parseFromString(data, 'image/svg+xml');
-        const svg = doc.documentElement;
-        this.container.appendChild(svg);
-        this._pan = window.svgPanZoom(svg, {
-          controlIconsEnabled: true,
-          fit: true,
-          center: true,
-        });
+    try {
+      const response = await fetch(uri);
+      const data = await response.text();
+      if (!window.svgPanZoom) {
+        logger.error('<pb-svg> svgPanZoom not available');
+        return;
+      }
+      const doc = new DOMParser().parseFromString(data, 'image/svg+xml');
+      const svg = doc.documentElement;
+      this.container.appendChild(svg);
+      this._pan = window.svgPanZoom(svg, {
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
       });
+    } catch (error) {
+      logger.error('<pb-svg> Error loading SVG: %o', error);
+    }
   }
 
   render() {

@@ -3,7 +3,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
 import './pb-fetch.js';
-import { minVersion } from './utils.js';
+import { minVersion } from './utils/version.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
 

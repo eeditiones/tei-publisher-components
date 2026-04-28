@@ -1,14 +1,15 @@
 import { LitElement, html, css } from 'lit';
 import tippy from 'tippy.js';
 import { pbMixin } from './pb-mixin.js';
-import { getCSSProperty } from './utils.js';
+import { getCSSProperty } from './utils/css.js';
+import { logger } from './utils/logger.js';
 import * as themes from './pb-popover-themes.js';
 
 function _injectStylesheet(root, name, cssCode) {
   const style = root.querySelector(`#pb-popover-${name}`);
   if (!style) {
     const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
-    console.log('Loading tippy styles for theme %s into %o', name, container);
+    logger.log('Loading tippy styles for theme %s into %o', name, container);
     const elem = document.createElement('style');
     elem.type = 'text/css';
     elem.id = `pb-popover-${name}`;
@@ -232,7 +233,7 @@ export class PbPopover extends pbMixin(LitElement) {
     const slot = this._getSlot();
     this._observer = new MutationObserver(() => {
       this.alternate = this._getContent();
-      console.log('alternate changed');
+      logger.log('alternate changed');
       this.emitTo('pb-popover-changed', this.alternate);
     });
     this._observer.observe(this, { subtree: true, childList: true, characterData: true });
@@ -300,7 +301,7 @@ export class PbPopover extends pbMixin(LitElement) {
     if (this.for) {
       target = root.getElementById(this.for);
       if (!target) {
-        console.error('<pb-popover> target element %s not found', this.for);
+        logger.error('<pb-popover> target element %s not found', this.for);
       }
     } else {
       target = this.shadowRoot.getElementById('link');
@@ -362,20 +363,19 @@ export class PbPopover extends pbMixin(LitElement) {
     }
   }
 
-  _loadRemoteContent() {
+  async _loadRemoteContent() {
     const url = this.toAbsoluteURL(this.remote);
-    fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.text())
-      .then(data => {
-        this.alternate = data;
-      })
-      .catch(error => {
-        console.error('<pb-popover> Error retrieving remote content: %o', error);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'same-origin',
       });
+      const data = await response.text();
+      this.alternate = data;
+    } catch (error) {
+      logger.error('<pb-popover> Error retrieving remote content: %o', error);
+    }
   }
 
   static get styles() {

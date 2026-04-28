@@ -1,4 +1,5 @@
 import { LitElement } from 'lit';
+import { logger } from './utils/logger.js';
 
 const ignore = ['type', 'url', 'label', 'base', 'show'];
 
@@ -83,16 +84,13 @@ export class PbMapLayer extends LitElement {
         options[key] = this[key];
       }
     });
-    console.log('<pb-leaflet-map-layer> Options: %o', options);
+    logger.log('<pb-leaflet-map-layer> Options: %o', options);
     return options;
   }
 
   async data() {
-    return new Promise(resolve => {
-      fetch(this.url)
-        .then(response => response.json())
-        .then(json => resolve(json));
-    });
+    const response = await fetch(this.url);
+    return await response.json();
   }
 }
 customElements.define('pb-map-layer', PbMapLayer);

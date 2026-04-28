@@ -4,6 +4,7 @@ import { supported as fsSupported, fileSave } from 'browser-fs-access';
 import { repeat } from 'lit/directives/repeat.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
+import { logger } from './utils/logger.js';
 
 import '@vaadin/tabs';
 
@@ -685,19 +686,22 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     
     // Handle case where generateRequest returns null (invalid URL)
     if (!request) {
-      console.warn('pb-odd-editor: Failed to generate request - invalid URL');
+      logger.warn('pb-odd-editor: Failed to generate request - invalid URL');
       this.loading = false;
       document.dispatchEvent(new CustomEvent('pb-end-update'));
       return;
     }
     
-    request
-      .then(data => this.handleOdd({ response: data }))
-      .catch(error => {
-        console.warn('pb-odd-editor: Failed to load ODD data:', error);
+    (async () => {
+      try {
+        const data = await request;
+        this.handleOdd({ response: data });
+      } catch (error) {
+        logger.warn('pb-odd-editor: Failed to load ODD data:', error);
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
-      });
+      }
+    })();
   }
 
   handleOdd(req) {
@@ -705,7 +709,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     // Handle case where data is null (request failed)
     if (!data) {
-      console.warn('pb-odd-editor: Failed to load ODD data');
+      logger.warn('pb-odd-editor: Failed to load ODD data');
       return;
     }
 
@@ -727,7 +731,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     if (data.elementSpecs && Array.isArray(data.elementSpecs)) {
       this.elementSpecs = data.elementSpecs.map(es => this.mapElementSpec(es));
     } else {
-      console.warn('pb-odd-editor: elementSpecs data is missing or invalid');
+      logger.warn('pb-odd-editor: elementSpecs data is missing or invalid');
       this.elementSpecs = [];
     }
 
@@ -778,7 +782,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _openElementSpec(ev, index) {
-    console.log('_openElementSpec ', ev, index);
+    logger.log('_openElementSpec ', ev, index);
 
     const spec = this.elementSpecs[index]; // get target elementspec
     this._updateElementspec(spec);
@@ -823,7 +827,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _closeTabHandler(ev, index) {
-    console.log('_closeTabHandler ', index);
+    logger.log('_closeTabHandler ', index);
     ev.preventDefault();
     ev.stopPropagation();
 
@@ -915,8 +919,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _paste(e) {
-    console.log('_paste ', e);
-    console.log('_paste clipboard', this.clipboard);
+    logger.log('_paste ', e);
+    logger.log('_paste clipboard', this.clipboard);
 
     if (this.clipboard == {} || this.clipboard == undefined) {
       return;
@@ -963,7 +967,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
     const existingSpec = this.elementSpecs.find(spec => spec.ident === ident);
     if (existingSpec) {
-      console.log('<pb-odd-editor> element spec to be added already exists: %s', ident);
+      logger.log('<pb-odd-editor> element spec to be added already exists: %s', ident);
       const id = `#es_${ident}`;
       const target = this.shadowRoot.querySelector(id);
       if (!target) {
@@ -991,7 +995,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
     const request = this.loadContent.generateRequest();
-    request.then(data => this._handleElementSpecResponse({ response: data }));
+    (async () => {
+      try {
+        const data = await request;
+        this._handleElementSpecResponse({ response: data });
+      } catch (error) {
+        logger.error('<pb-odd-editor> Failed to load element spec:', error);
+      }
+    })();
   }
 
   _handleElementSpecResponse(req) {
@@ -1017,7 +1028,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
-    this.requestUpdate().then(() => {
+    (async () => {
+      await this.requestUpdate();
       const elem = this.shadowRoot.querySelectorAll('.nav-item');
       const idx = this.elementSpecs.indexOf(newSpec);
 
@@ -1025,27 +1037,28 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
       elem[idx].click();
       elem[idx].focus();
-    });
+    })();
   }
 
   removeElementSpec(ev) {
     const { ident } = ev.detail.target;
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }))
-      .then(
-        () => {
-          const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
-          this.elementSpecs.splice(targetIndex, 1);
-          this.requestUpdate();
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }));
+        const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
+        this.elementSpecs.splice(targetIndex, 1);
+        this.requestUpdate();
 
-          const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
-          const tabName = selectedTab.getAttribute('name');
-          const idx = this.tabs.indexOf(tabName);
-          this._closeTab(idx);
-        },
-        () => null,
-      );
+        const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
+        const tabName = selectedTab.getAttribute('name');
+        const idx = this.tabs.indexOf(tabName);
+        this._closeTab(idx);
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   serializeOdd() {
@@ -1181,11 +1194,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     const request = saveOdd.generateRequest();
-    request
-      .then(data => {
+    (async () => {
+      try {
+        const data = await request;
         this.handleSaveComplete({ response: data }, download);
-      })
-      .catch(this.handleSaveError.bind(this));
+      } catch (error) {
+        this.handleSaveError(error);
+      }
+    })();
   }
 
   // to be deprecated: only used for old api
@@ -1234,13 +1250,17 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     if (download) {
       const blob = new Blob([data.source], { type: 'application/xml' });
-      fileSave(blob, {
-        fileName: this.odd,
-        extensions: ['.odd'],
-      }).then(
-        () => console.log(`<pb-odd-editor> ${this.odd} exported`),
-        () => console.log('<pb-odd-editor> export aborted'),
-      );
+      (async () => {
+        try {
+          await fileSave(blob, {
+            fileName: this.odd,
+            extensions: ['.odd'],
+          });
+          logger.log(`<pb-odd-editor> ${this.odd} exported`);
+        } catch {
+          logger.log('<pb-odd-editor> export aborted');
+        }
+      })();
     }
   }
 
@@ -1251,18 +1271,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _reload() {
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'))
-      .then(
-        () => {
-          this.load();
-          this.tabs = [];
-          this.tabIndex = 0;
-          this.shadowRoot.getElementById('currentElement').innerHTML = '';
-        },
-        () => null,
-      );
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'));
+        this.load();
+        this.tabs = [];
+        this.tabIndex = 0;
+        this.shadowRoot.getElementById('currentElement').innerHTML = '';
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   _setCurrentSelection(e) {
@@ -1310,11 +1331,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _handleLoadError(e) {
-    console.log('loading error occurred: ', e);
+    logger.log('loading error occurred: ', e);
     const msg = this.shadowRoot.getElementById('errorMsg');
     msg.style.background = 'red';
     const { url } = this.shadowRoot.getElementById('loadContent');
-    console.log('url ', url);
+    logger.log('url ', url);
     msg.show('Error: ', `ODD file could not be loaded from ${url}`);
   }
 

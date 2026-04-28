@@ -3,6 +3,8 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
+import { handleError, formatErrorMessage } from './utils/error-handling.js';
 
 /**
  * Implements a list which is split into different categories
@@ -109,7 +111,7 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
       this.selected = registry.state.category || this.selected;
 
       registry.subscribe(this, state => {
-        console.log('<pb-split-list> popstate: %o', state);
+        logger.log('<pb-split-list> popstate: %o', state);
         this.selected = state.category;
         this.submit(false);
       });
@@ -147,26 +149,41 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
     const params = new URLSearchParams(formParams);
 
     const url = `${this.toAbsoluteURL(this.url)}?${params.toString()}`;
-    console.log(`<pb-split-list> Fetching from URL: ${url}`);
+    logger.log(`<pb-split-list> Fetching from URL: ${url}`);
 
     this.emitTo('pb-start-update');
 
-    fetch(url)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
+    (async () => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
         }
-        return Promise.reject(response.status);
-      })
-      .then(json => {
+        const json = await response.json();
         this._categories = json.categories;
         this.innerHTML = json.items.join('');
         this.emitTo('pb-end-update');
-      })
-      .catch(error => {
-        console.error(`<pb-split-list> Error caught: ${error}`);
+      } catch (error) {
+        // Use error handling utility for consistent error logging and event emission
+        const statusMessages = {
+          404: 'Resource not found',
+          403: 'Access denied',
+          500: 'Server error',
+          network: 'Network error occurred'
+        };
+        
+        const errorMessage = formatErrorMessage(error, 'Failed to load data', statusMessages);
+        
+        handleError(error, {
+          componentName: 'pb-split-list',
+          emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+          eventName: 'pb-split-list-error',
+          eventDetail: { message: errorMessage }
+        });
+        
         this.emitTo('pb-end-update');
-      });
+      }
+    })();
   }
 
   _selectCategory(ev, category) {

@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 
 // will be set by rollup when bundling
 const PB_COMPONENTS_VERSION = null;

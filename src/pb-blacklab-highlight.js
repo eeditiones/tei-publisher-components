@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 import './pb-icon-button.js';
 
 /**
@@ -112,7 +113,7 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
     waitOnce('pb-page-ready', () => {
       this.viewElement = document.getElementById(this.view);
       if (!this.viewElement) {
-        console.error(`${this}: view element with id ${this.view} does not exist`);
+        logger.error(`${this}: view element with id ${this.view} does not exist`);
         return;
       }
       this.shadow = this.viewElement.shadowRoot;
@@ -177,22 +178,19 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
     const url = `${this.getEndpoint()}/api/blacklab/doc?pattern=${this.pattern}&doc=${
       this.docId
     }&per-document=${this.perDocument}&format=json`;
-    await fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.kwicData = data;
-      })
-      .then(() => {
-        this._markAllMatches();
-        this._showMatch(this.matchParam);
-      })
-      .catch(error => {
-        console.error('Error retrieving remote content: ', error);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'same-origin',
       });
+      const data = await response.json();
+      this.kwicData = data;
+      this._markAllMatches();
+      this._showMatch(this.matchParam);
+    } catch (error) {
+      logger.error('Error retrieving remote content: ', error);
+    }
   }
 
   _markAllMatches() {

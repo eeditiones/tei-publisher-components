@@ -3,8 +3,9 @@ import { PbLoad } from './pb-load.js';
 import { waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 import './pb-dialog.js';
 import './pb-autocomplete.js';
@@ -229,7 +230,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     if (this.login) {
       const login = document.getElementById(this.login);
       if (!login) {
-        console.error('<pb-browse-docs> connected pb-login element not found!');
+        logger.error('<pb-browse-docs> connected pb-login element not found!');
       } else {
         this.subscribeTo(
           'pb-login',
@@ -521,7 +522,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const filter = filterInput ? filterInput.value : this.filter;
     const filterBy = filterSelect ? filterSelect.value : this.filterBy;
     if (typeof filter !== 'undefined') {
-      console.log('<pb-browse-docs> Filter by %s', filter);
+      logger.log('<pb-browse-docs> Filter by %s', filter);
       this.filter = filter;
       registry.commit(this, { filter, filterBy });
       this.load();
@@ -532,7 +533,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const filterSelect = ev?.target ?? this.shadowRoot.getElementById('filterSelect');
     const filterBy = filterSelect ? filterSelect.value : null;
     if (filterBy && filterBy !== this.filterBy) {
-      console.log('<pb-browse-docs> Filtering on %s', filterBy);
+      logger.log('<pb-browse-docs> Filtering on %s', filterBy);
       this.filterBy = filterBy;
       const autocomplete = this.shadowRoot.getElementById('filterString');
       if (autocomplete) {
@@ -545,7 +546,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     const sortSelect = ev?.target ?? this.shadowRoot.getElementById('sortSelect');
     const sortBy = sortSelect ? sortSelect.value : null;
     if (sortBy && sortBy !== this.sortBy) {
-      console.log('<pb-browse-docs> Sorting by %s', sortBy);
+      logger.log('<pb-browse-docs> Sorting by %s', sortBy);
       this.sortBy = sortBy;
       registry.commit(this, { sort: sortBy });
 
@@ -581,7 +582,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
         this.collection = link.getAttribute('data-collection');
         this.start = 1;
         registry.commit(this, { collection: this.collection });
-        console.log('<pb-browse-docs> loading collection %s', this.collection);
+        logger.log('<pb-browse-docs> loading collection %s', this.collection);
         this.load();
       });
     });
@@ -607,7 +608,7 @@ export class PbBrowseDocs extends themableMixin(PbLoad) {
     } else {
       files = [this._file];
     }
-    console.log('<pb-browse-docs> Deleting %o', this._file);
+    logger.log('<pb-browse-docs> Deleting %o', this._file);
     const params = {
       action: 'delete',
       'docs[]': files,

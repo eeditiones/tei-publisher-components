@@ -1,8 +1,16 @@
 import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
-/** Import external script dynamically */
+/**
+ * Imports an external script dynamically using ESGlobalBridge.
+ *
+ * @param {string} name - The name identifier for the script
+ * @param {string} location - The URL of the script to load
+ * @returns {Promise<void>} Resolves when the script is loaded
+ * @private
+ */
 function _import(name, location) {
   window.ESGlobalBridge.requestAvailability();
   return new Promise(resolve => {
@@ -12,11 +20,13 @@ function _import(name, location) {
 }
 
 /**
- * Update the stylesheet required by MathJax.
+ * Updates the stylesheet required by MathJax.
  * Needs to be done after typesetting has completed.
+ * Handles font-face extraction for shadow DOM contexts.
  *
- * @param {Element} context
- * @param {Element} styles
+ * @param {Element} context - The root context (document or shadow root)
+ * @param {HTMLElement} styles - The stylesheet element to update
+ * @private
  */
 function _updateStyles(context, styles) {
   let root = context.getRootNode();
@@ -45,7 +55,12 @@ function _updateStyles(context, styles) {
 }
 
 /**
- * Iterate through the given `pb-formula` elements and typeset the math.
+ * Iterates through the given `pb-formula` elements and typesets the math.
+ * Supports both MathML and TeX notation.
+ *
+ * @param {Element} context - The root context element
+ * @param {NodeList|Array} formulas - Collection of pb-formula elements to typeset
+ * @private
  */
 function _initMath(context, formulas) {
   formulas.forEach(formula => {
@@ -81,18 +96,23 @@ function _initMath(context, formulas) {
 }
 
 /**
- * Search the passed in element for `pb-formula` elements and
- * render them via MathJax.
+ * Searches the passed element for `pb-formula` elements and renders them via MathJax.
  *
- * Formulas need to be processed sequentially or the output will
- * be screwed up. Therefore we cannot call MathJax asynchronously
- * but need to do it from this central controller.
+ * Formulas need to be processed sequentially or the output will be incorrect.
+ * Therefore we cannot call MathJax asynchronously but need to do it from this central controller.
  *
- * @param {Element} elem the root element to process
+ * If MathJax is not yet loaded, it will be loaded dynamically and typesetting will occur
+ * once MathJax is ready.
+ *
+ * @param {Element} elem - The root element to search for pb-formula elements
+ *
+ * @example
+ * // Typeset all formulas in a pb-view
+ * typesetMath(document.querySelector('pb-view'))
  */
 export function typesetMath(elem) {
   const formulas = elem.querySelectorAll('pb-formula');
-  console.log(`<pb-formula> Found ${formulas.length} elements to typeset ...`);
+  logger.log(`<pb-formula> Found ${formulas.length} elements to typeset ...`);
   if (formulas.length > 0) {
     if (window.MathJax) {
       _initMath(elem, formulas);

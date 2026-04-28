@@ -188,7 +188,7 @@ describe('pb-tify component', () => {
       
       // Wait for error to be handled
       cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
-      cy.get('.pb-tify-error').should('contain.text', 'Access denied')
+      cy.get('.pb-tify-error').should('contain.text', 'Access denied to IIIF manifest')
     })
 
     it('should handle network errors', () => {
@@ -201,7 +201,7 @@ describe('pb-tify component', () => {
       
       // Wait for error to be handled
       cy.get('.pb-tify-error', { timeout: 5000 }).should('exist')
-      cy.get('.pb-tify-error').should('contain.text', 'Network error')
+      cy.get('.pb-tify-error').should('contain.text', 'Network error loading IIIF manifest')
     })
 
     it('should handle invalid JSON errors', () => {

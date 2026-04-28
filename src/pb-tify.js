@@ -1,8 +1,10 @@
 import { LitElement } from 'lit';
 import 'tify';
 import { pbMixin, waitOnce, defaultChannel, getEmittedChannels } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
+import { createErrorElement, clearErrorElement, formatErrorMessage } from './utils/error-handling.js';
 
 function _injectStylesheet(path) {
   const style = document.querySelector(`link#pb-tify`);
@@ -298,36 +300,41 @@ export class PbTify extends pbMixin(LitElement) {
         if (!root) {
           this._pendingNavigation = direction;
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              // Wait a bit more for root to be available
-              const waitForRoot = () => {
-                const root = this._getRootFromApp();
-                if (root) {
-                  if (this._pendingNavigation) {
-                    const queuedDirection = this._pendingNavigation;
-                    this._pendingNavigation = null;
-                    this._handleNavigate(queuedDirection);
-                  }
-                } else {
-                  // Retry after a short delay (max 10 seconds)
-                  if (!this._navWaitStart) {
-                    this._navWaitStart = Date.now();
-                  }
-                  const elapsed = Date.now() - this._navWaitStart;
-                  if (elapsed < 10000) {
-                    setTimeout(waitForRoot, 50);
-                  } else {
-                    // Try to proceed anyway
+            (async () => {
+              try {
+                await this._tify.ready;
+                // Wait a bit more for root to be available
+                const waitForRoot = () => {
+                  const root = this._getRootFromApp();
+                  if (root) {
                     if (this._pendingNavigation) {
                       const queuedDirection = this._pendingNavigation;
                       this._pendingNavigation = null;
                       this._handleNavigate(queuedDirection);
                     }
+                  } else {
+                    // Retry after a short delay (max 10 seconds)
+                    if (!this._navWaitStart) {
+                      this._navWaitStart = Date.now();
+                    }
+                    const elapsed = Date.now() - this._navWaitStart;
+                    if (elapsed < 10000) {
+                      setTimeout(waitForRoot, 50);
+                    } else {
+                      // Try to proceed anyway
+                      if (this._pendingNavigation) {
+                        const queuedDirection = this._pendingNavigation;
+                        this._pendingNavigation = null;
+                        this._handleNavigate(queuedDirection);
+                      }
+                    }
                   }
-                }
-              };
-              waitForRoot();
-            });
+                };
+                waitForRoot();
+              } catch (error) {
+                logger.error('<pb-tify> Error waiting for Tify ready in navigation:', error);
+              }
+            })();
           }
           return;
         }
@@ -412,7 +419,7 @@ export class PbTify extends pbMixin(LitElement) {
 
       // Only validate that we have a manifest URL - let Tify handle invalid URLs
       if (!manifestUrl || manifestUrl.trim() === '') {
-        console.warn('<pb-tify> Invalid manifest URL:', this.manifest);
+        logger.warn('<pb-tify> Invalid manifest URL:', this.manifest);
         return;
       }
 
@@ -450,43 +457,47 @@ export class PbTify extends pbMixin(LitElement) {
       // Wait for ready, then try to get root, but proceed either way
       // The viewer should display even without root - we only need root for navigation
       if (this._tify && this._tify.ready) {
-        this._tify.ready.then(() => {
-          // Try to get root, but don't wait too long
-          const waitForRoot = () => {
-            if (this._tify && this._tify.app) {
-              // Try different ways to access the manifest/root data
-              const root = this._tify.app.$root || this._tify.app.root || this._tify.app.manifest || (this._tify.app.$data && this._tify.app.$data.root);
-              if (root) {
-                this._onTifyFullyReady();
-                return;
+        (async () => {
+          try {
+            await this._tify.ready;
+            // Try to get root, but don't wait too long
+            const waitForRoot = async () => {
+              if (this._tify && this._tify.app) {
+                // Try different ways to access the manifest/root data
+                const root = this._tify.app.$root || this._tify.app.root || this._tify.app.manifest || (this._tify.app.$data && this._tify.app.$data.root);
+                if (root) {
+                  this._onTifyFullyReady();
+                  return;
+                }
               }
-            }
-            
-            // Retry after a short delay (max 2 seconds - don't wait too long)
-            if (!this._rootWaitStart) {
-              this._rootWaitStart = Date.now();
-            }
-            const elapsed = Date.now() - this._rootWaitStart;
-            if (elapsed < 2000) {
-              setTimeout(waitForRoot, 50);
-            } else {
-              // Try to fetch manifest directly as fallback
-              this._fetchAndCacheManifest().then(() => {
-                // Proceed anyway - Tify should still work, we'll handle navigation differently
-                this._onTifyFullyReady();
-              }).catch(() => {
-                // Proceed even if fetch fails
-                this._onTifyFullyReady();
-              });
-            }
-          };
-          waitForRoot();
-        }).catch(error => {
-          // Tify's ready promise rejects when manifest loading fails
-          // This is the proper way to detect manifest errors
-          console.error('<pb-tify> Tify ready promise rejected:', error);
-          this._handleManifestError(error);
-        });
+              
+              // Retry after a short delay (max 2 seconds - don't wait too long)
+              if (!this._rootWaitStart) {
+                this._rootWaitStart = Date.now();
+              }
+              const elapsed = Date.now() - this._rootWaitStart;
+              if (elapsed < 2000) {
+                setTimeout(waitForRoot, 50);
+              } else {
+                // Try to fetch manifest directly as fallback
+                try {
+                  await this._fetchAndCacheManifest();
+                  // Proceed anyway - Tify should still work, we'll handle navigation differently
+                  this._onTifyFullyReady();
+                } catch {
+                  // Proceed even if fetch fails
+                  this._onTifyFullyReady();
+                }
+              }
+            };
+            waitForRoot();
+          } catch (error) {
+            // Tify's ready promise rejects when manifest loading fails
+            // This is the proper way to detect manifest errors
+            logger.error('<pb-tify> Tify ready promise rejected:', error);
+            this._handleManifestError(error);
+          }
+        })();
       } else {
         // If ready promise not available, proceed anyway after a short delay
         setTimeout(() => {
@@ -506,7 +517,7 @@ export class PbTify extends pbMixin(LitElement) {
       // Mount Tify to the container
       this._tify.mount(this._container);
     } catch (error) {
-      console.error('<pb-tify> Failed to initialize Tify:', error);
+      logger.error('<pb-tify> Failed to initialize Tify:', error);
       this._handleManifestError(error);
     }
   }
@@ -520,7 +531,7 @@ export class PbTify extends pbMixin(LitElement) {
     
     // Check if app exists and has the necessary structure
     if (!app) {
-      console.error('<pb-tify> Tify app is not available');
+      logger.error('<pb-tify> Tify app is not available');
       return;
     }
     
@@ -740,7 +751,7 @@ export class PbTify extends pbMixin(LitElement) {
                         setTimeout(waitForTifyThenUpdate, 100);
                       } else {
                         // Give up after max attempts - update anyway
-                        console.warn('[pb-tify] thumbnail click: max attempts reached, updating registry anyway', {
+                        logger.warn('[pb-tify] thumbnail click: max attempts reached, updating registry anyway', {
                           tifyCurrentPage,
                           newPage,
                           attempts,
@@ -1075,7 +1086,7 @@ export class PbTify extends pbMixin(LitElement) {
           // Check return value: Tify API says it returns array or false
           if (result === false) {
             // Invalid page - Tify rejected it
-            console.warn('<pb-tify> setPage returned false - invalid page:', pageOrPages);
+            logger.warn('<pb-tify> setPage returned false - invalid page:', pageOrPages);
             return false;
           }
           
@@ -1108,11 +1119,11 @@ export class PbTify extends pbMixin(LitElement) {
         } catch (error) {
           // Tify throws RangeError for invalid pages
           if (error instanceof RangeError) {
-            console.warn('<pb-tify> setPage RangeError - invalid page:', pageOrPages, error.message);
+            logger.warn('<pb-tify> setPage RangeError - invalid page:', pageOrPages, error.message);
             return false; // Return false to match API behavior
           }
           // Other errors should be logged
-          console.error('<pb-tify> Error calling setPage:', error);
+          logger.error('<pb-tify> Error calling setPage:', error);
           return false;
         }
       };
@@ -1134,11 +1145,14 @@ export class PbTify extends pbMixin(LitElement) {
         } catch (error) {
           // If Tify isn't ready yet, wait for it
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              this._tify.setPage(pages);
-            }).catch(() => {
-              // Ignore errors
-            });
+            (async () => {
+              try {
+                await this._tify.ready;
+                this._tify.setPage(pages);
+              } catch {
+                // Ignore errors
+              }
+            })();
           }
         }
       };
@@ -1154,14 +1168,17 @@ export class PbTify extends pbMixin(LitElement) {
         // Call setPage directly - if Tify isn't ready, it will handle the error
         try {
           app.setPage(pages);
-              } catch (error) {
+        } catch (error) {
           // If Tify isn't ready yet, wait for it
           if (this._tify.ready) {
-            this._tify.ready.then(() => {
-              app.setPage(pages);
-            }).catch(() => {
-              // Ignore errors
-            });
+            (async () => {
+              try {
+                await this._tify.ready;
+                app.setPage(pages);
+              } catch {
+                // Ignore errors
+              }
+            })();
           }
         }
       };
@@ -1463,7 +1480,7 @@ export class PbTify extends pbMixin(LitElement) {
     if (!store || !store.options) {
       // Store not available or doesn't have options - try to set up polling anyway
       // The store might become available later, so we'll poll for it
-      console.warn('[pb-tify] Vue store not available for watcher setup, will retry with polling:', {
+      logger.warn('[pb-tify] Vue store not available for watcher setup, will retry with polling:', {
         hasApp: !!app,
         hasAppConfig: !!(app.config),
         hasGlobalProperties: !!(app.config && app.config.globalProperties),
@@ -1505,7 +1522,7 @@ export class PbTify extends pbMixin(LitElement) {
           // The guard at the top of _setupVueStoreWatcher will prevent duplicate setup
           this._setupVueStoreWatcher(app, true);
         } else if (retryCount >= maxRetries) {
-          console.warn('[pb-tify] Store not found after retries, setting up fallback polling:', {
+          logger.warn('[pb-tify] Store not found after retries, setting up fallback polling:', {
             retryCount,
             maxRetries,
             willUseFallback: true
@@ -1539,13 +1556,13 @@ export class PbTify extends pbMixin(LitElement) {
       // Get canvases
       const root = this._getRootFromApp();
       if (!root) {
-        console.warn('[pb-tify] handlePageChange: no root found for page', newPage);
+        logger.warn('[pb-tify] handlePageChange: no root found for page', newPage);
         return;
       }
 
       const canvases = this._getCanvases(root);
       if (newPage < 1 || newPage > canvases.length) {
-        console.warn('[pb-tify] handlePageChange: invalid page', {
+        logger.warn('[pb-tify] handlePageChange: invalid page', {
           newPage,
           totalCanvases: canvases.length,
           validRange: `1-${canvases.length}`
@@ -1618,7 +1635,7 @@ export class PbTify extends pbMixin(LitElement) {
       // If canvas label doesn't match expected page, wait a bit and retry
       // This handles cases where Vue reactivity hasn't updated the canvas array yet
       if (canvasPageNum && canvasPageNum !== expectedPageNum) {
-        console.warn('[pb-tify] handlePageChange: canvas label mismatch, waiting for Vue update', {
+        logger.warn('[pb-tify] handlePageChange: canvas label mismatch, waiting for Vue update', {
           expectedPageNum,
           canvasPageNum,
           newPage
@@ -1693,7 +1710,7 @@ export class PbTify extends pbMixin(LitElement) {
     
     // Validate that store methods exist before intercepting
     if (typeof store.updateOptions !== 'function') {
-      console.error('[pb-tify] store.updateOptions is not a function, cannot intercept', {
+      logger.error('[pb-tify] store.updateOptions is not a function, cannot intercept', {
         storeType: typeof store,
         storeKeys: Object.keys(store || {}),
         hasUpdateOptions: 'updateOptions' in store
@@ -1701,7 +1718,7 @@ export class PbTify extends pbMixin(LitElement) {
       return; // Can't intercept if methods don't exist
     }
     if (typeof store.setPage !== 'function') {
-      console.error('[pb-tify] store.setPage is not a function, cannot intercept', {
+      logger.error('[pb-tify] store.setPage is not a function, cannot intercept', {
         storeType: typeof store,
         storeKeys: Object.keys(store || {}),
         hasSetPage: 'setPage' in store
@@ -1801,7 +1818,7 @@ export class PbTify extends pbMixin(LitElement) {
                 setTimeout(() => waitForTifyUpdate(attempts + 1), 10);
               } else {
                 // Give up and call handlePageChange anyway
-                console.warn('[pb-tify] Viewer not ready after waiting, calling handlePageChange anyway');
+                logger.warn('[pb-tify] Viewer not ready after waiting, calling handlePageChange anyway');
                 // handlePageChange will manage navigation state and _isCommitting
                 handlePageChange(newPage);
               }
@@ -1857,7 +1874,7 @@ export class PbTify extends pbMixin(LitElement) {
       if (!store || !store.options || !store.options.pages) {
         // Log when store is not accessible (but throttle to avoid spam)
         if (Date.now() % 1000 < 100) { // Log roughly once per second when store is inaccessible
-          console.warn('[pb-tify] Store not accessible in polling:', {
+          logger.warn('[pb-tify] Store not accessible in polling:', {
             hasStore: !!store,
             hasOptions: !!(store && store.options),
             hasPages: !!(store && store.options && store.options.pages),
@@ -1886,7 +1903,7 @@ export class PbTify extends pbMixin(LitElement) {
       } else {
         // Log if store becomes inaccessible
         if (lastWatchedPages) {
-          console.warn('[pb-tify] Store pages became inaccessible (polling):', {
+          logger.warn('[pb-tify] Store pages became inaccessible (polling):', {
             hadPages: !!lastWatchedPages,
             storeAccessible: !!store,
             hasOptions: !!(store && store.options),
@@ -1926,7 +1943,7 @@ export class PbTify extends pbMixin(LitElement) {
           { deep: true, immediate: false }
         );
       } catch (e) {
-        console.warn('[pb-tify] app.$watch failed, using polling only:', e);
+        logger.warn('[pb-tify] app.$watch failed, using polling only:', e);
       }
     }
     // Fallback: Use Vue 3 watch API directly if available
@@ -1953,7 +1970,7 @@ export class PbTify extends pbMixin(LitElement) {
     }
     // If neither works, fall back to polling (already set up in checkPageChange)
     else {
-      console.warn('[pb-tify] Vue store watcher could not be set up - falling back to polling');
+      logger.warn('[pb-tify] Vue store watcher could not be set up - falling back to polling');
     }
   }
 
@@ -1961,55 +1978,44 @@ export class PbTify extends pbMixin(LitElement) {
     // Clear any existing error message
     this._clearError();
 
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'pb-tify-error';
-    errorDiv.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      width: 100%;
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 4px;
-      color: #6c757d;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      text-align: center;
-      padding: 20px;
-    `;
+    // Format error message based on error type
+    // Note: statusMessages keys must match what formatErrorMessage expects
+    const statusMessages = {
+      404: 'IIIF manifest not found',
+      403: 'Access denied to IIIF manifest',
+      network: 'Network error loading IIIF manifest',
+      parse: 'Invalid IIIF manifest format'
+    };
+    
+    // Use formatErrorMessage with status messages and patterns
+    // The function checks status codes first, then patterns, then common patterns
+    const messagePatterns = [
+      { pattern: /Invalid JSON|SyntaxError|Unexpected token|JSON|\$meta/i, message: 'Invalid IIIF manifest format' }
+    ];
+    
+    const errorMessage = formatErrorMessage(
+      error,
+      'Failed to load IIIF manifest',
+      statusMessages,
+      messagePatterns
+    );
 
-    // Determine error message based on error type
-    let errorMessage = 'Failed to load IIIF manifest';
-
-    // Check error message, status, and other properties
-    const errorText = error.message || error.toString() || '';
-    const status = error.status || error.statusCode;
-
-    if (status === 404 || errorText.includes('404') || errorText.includes('Not Found')) {
-      errorMessage = 'IIIF manifest not found';
-    } else if (status === 403 || errorText.includes('403') || errorText.includes('Forbidden')) {
-      errorMessage = 'Access denied to IIIF manifest';
-    } else if (
-      errorText.includes('NetworkError') ||
-      errorText.includes('Failed to fetch') ||
-      errorText.includes('network')
-    ) {
-      errorMessage = 'Network error loading IIIF manifest';
-    } else if (
-      errorText.includes('Invalid JSON') ||
-      errorText.includes('SyntaxError') ||
-      errorText.includes('parse') ||
-      errorText.includes('Unexpected token') ||
-      errorText.includes('JSON') ||
-      errorText.includes('$meta') ||
-      errorText.includes('manifest')
-    ) {
-      errorMessage = 'Invalid IIIF manifest format';
-    }
-
-    errorDiv.textContent = errorMessage;
+    // Create error message element with custom styling for Tify
+    const customStyles = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      width: '100%',
+      backgroundColor: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      color: '#6c757d',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      textAlign: 'center',
+      padding: '20px'
+    };
+    
+    const errorDiv = createErrorElement(errorMessage, 'pb-tify-error', customStyles);
 
     // Add error element to container
     if (this._container) {
@@ -2025,10 +2031,7 @@ export class PbTify extends pbMixin(LitElement) {
 
   _clearError() {
     if (this._container) {
-      const existingError = this._container.querySelector('.pb-tify-error');
-      if (existingError) {
-        existingError.remove();
-      }
+      clearErrorElement(this._container, 'pb-tify-error');
     }
   }
 
@@ -2313,7 +2316,7 @@ export class PbTify extends pbMixin(LitElement) {
     }
     
     if (!canvas) {
-      console.warn('[pb-tify] _updateUrlFromPage: skipping - no canvas provided');
+      logger.warn('[pb-tify] _updateUrlFromPage: skipping - no canvas provided');
       return;
     }
     
@@ -2391,7 +2394,7 @@ export class PbTify extends pbMixin(LitElement) {
               });
             }
           } else {
-            console.warn('[pb-tify] _updateUrlFromPage: root not found in lookup map for page', { pageNum, labelStr });
+            logger.warn('[pb-tify] _updateUrlFromPage: root not found in lookup map for page', { pageNum, labelStr });
           }
         }
       }
@@ -2463,7 +2466,7 @@ export class PbTify extends pbMixin(LitElement) {
           root = url.searchParams.get('root');
           id = url.searchParams.get('id');
         } catch (error) {
-          console.warn('[pb-tify] _updateUrlFromPage: Error parsing rendering URL:', renderingId, error);
+          logger.warn('[pb-tify] _updateUrlFromPage: Error parsing rendering URL:', renderingId, error);
         }
       }
     }
@@ -2520,7 +2523,7 @@ export class PbTify extends pbMixin(LitElement) {
         setTimeout(() => {
           const committedState = registry.getState(this);
           if (committedState.id !== finalId || committedState.root !== root) {
-            console.warn('[pb-tify] Registry state mismatch after commit', {
+            logger.warn('[pb-tify] Registry state mismatch after commit', {
               expectedId: finalId,
               expectedRoot: root,
               actualId: committedState.id,
@@ -2880,7 +2883,7 @@ export class PbTify extends pbMixin(LitElement) {
               params[key] = value;
             });
           } catch (error) {
-            console.warn('[pb-tify] _emitPbRefresh: Error parsing rendering URL:', renderingId, error);
+            logger.warn('[pb-tify] _emitPbRefresh: Error parsing rendering URL:', renderingId, error);
           }
         }
       }
@@ -2936,7 +2939,7 @@ export class PbTify extends pbMixin(LitElement) {
       });
       document.dispatchEvent(directEv);
     } catch (error) {
-      console.error('<pb-tify> Error emitting pb-refresh:', error);
+      logger.error('<pb-tify> Error emitting pb-refresh:', error);
     }
   }
 
@@ -3079,7 +3082,7 @@ export class PbTify extends pbMixin(LitElement) {
         this._cachedManifest = await response.json();
         return this._cachedManifest;
       } catch (error) {
-        console.warn('<pb-tify> Failed to fetch manifest as fallback:', error);
+        logger.warn('<pb-tify> Failed to fetch manifest as fallback:', error);
         return null;
       }
     }
@@ -3104,7 +3107,7 @@ export class PbTify extends pbMixin(LitElement) {
     }
     
     if (!docPath) {
-      console.warn('[pb-tify] _fetchPageToRootMap: could not extract document path from URL');
+      logger.warn('[pb-tify] _fetchPageToRootMap: could not extract document path from URL');
       return null;
     }
     
@@ -3118,7 +3121,7 @@ export class PbTify extends pbMixin(LitElement) {
     try {
       const response = await fetch(rootsUrl);
       if (!response.ok) {
-        console.warn('[pb-tify] _fetchPageToRootMap: failed to fetch roots map', { 
+        logger.warn('[pb-tify] _fetchPageToRootMap: failed to fetch roots map', { 
           status: response.status, 
           statusText: response.statusText,
           url: rootsUrl
@@ -3129,7 +3132,7 @@ export class PbTify extends pbMixin(LitElement) {
       const pageToRootMap = await response.json();
       return pageToRootMap;
     } catch (error) {
-      console.warn('[pb-tify] _fetchPageToRootMap: failed to fetch or parse roots map', error);
+      logger.warn('[pb-tify] _fetchPageToRootMap: failed to fetch or parse roots map', error);
       return null;
     }
   }
@@ -3350,7 +3353,7 @@ export class PbTify extends pbMixin(LitElement) {
           const channels = getEmittedChannels(this);
           this.emitTo('pb-refresh', params, channels);
         } catch (error) {
-          console.error('<pb-tify> Error parsing rendering URL:', renderingId, error);
+          logger.error('<pb-tify> Error parsing rendering URL:', renderingId, error);
         }
       }
     }
@@ -3358,7 +3361,7 @@ export class PbTify extends pbMixin(LitElement) {
 
   _addOverlay(coordinates) {
     if (!Array.isArray(coordinates) || coordinates.length !== 4) {
-      console.error('coords incomplete or missing (array of 4 numbers expected)', coordinates);
+      logger.error('coords incomplete or missing (array of 4 numbers expected)', coordinates);
       return;
     }
 

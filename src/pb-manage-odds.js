@@ -3,10 +3,11 @@ import './pb-dialog.js';
 import './pb-fetch.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-restricted.js';
 import './pb-ajax.js';
 import './pb-edit-xml.js';
-import { cmpVersion } from './utils.js';
+import { cmpVersion } from './utils/version.js';
 import { themableMixin } from './theming.js';
 
 /**
@@ -100,7 +101,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
       }
     });
     const params = { odd: `${ev.model.item.name}.odd` };
-    console.log('<pb-manage-odds> selected ODD: %o', params);
+    logger.log('<pb-manage-odds> selected ODD: %o', params);
 
     this.emitTo('pb-load', {
       params,
@@ -112,7 +113,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
 
     const name = this.shadowRoot.querySelector('input[name="new_odd"]').value;
     const title = this.shadowRoot.querySelector('input[name="title"]').value;
-    console.log('<pb-manage-odds> create ODD: %s, %s', name, title);
+    logger.log('<pb-manage-odds> create ODD: %s, %s', name, title);
     if (this.lessThanApiVersion('1.0.0')) {
       this._refresh({ new_odd: name, title });
     } else {
@@ -131,7 +132,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
     if (ev.detail.status === 201) {
       this._refresh();
     } else {
-      console.log('<pb-manage-odds> unexpected response for create odd: %o', ev.detail);
+      logger.log('<pb-manage-odds> unexpected response for create odd: %o', ev.detail);
     }
   }
 
@@ -141,13 +142,13 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
     const params = { new_odd: name, title };
     const fileBrowser = document.getElementById(this.target);
     if (!(fileBrowser || fileBrowser.getSelected)) {
-      console.error('<pb-manage-odds> target %s not found', this.target);
+      logger.error('<pb-manage-odds> target %s not found', this.target);
     }
     const selected = fileBrowser.getSelected();
     document.querySelectorAll('.document-select paper-checkbox[checked]').forEach(checkbox => {
       selected.push(checkbox.value);
     });
-    console.log('<pb-manage-odds> create ODD by example: %o', selected);
+    logger.log('<pb-manage-odds> create ODD by example: %o', selected);
     params.byExample = selected;
     this._refresh(params);
   }
@@ -159,7 +160,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
 
   _confirmDelete() {
     if (this._current) {
-      console.log('<pb-manage-odds> deleting ODD: %s', this._current);
+      logger.log('<pb-manage-odds> deleting ODD: %s', this._current);
       if (this.lessThanApiVersion('1.0.0')) {
         this._refresh({ delete: this._current });
       } else {
@@ -170,7 +171,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
       }
       this._current = null;
     } else {
-      console.error('<pb-manage-odds> no file marked for deletion');
+      logger.error('<pb-manage-odds> no file marked for deletion');
     }
   }
 
@@ -180,7 +181,7 @@ export class PbManageOdds extends themableMixin(pbMixin(LitElement)) {
     if (error.status === 410) {
       this._refresh();
     } else {
-      console.error('<pb-manage-odds> failed to delete odd: %d %o', error.status, error.response);
+      logger.error('<pb-manage-odds> failed to delete odd: %d %o', error.status, error.response);
       this.emitTo('pb-end-update');
     }
   }

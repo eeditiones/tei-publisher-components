@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import { getCSSProperty } from './utils.js';
+import { getCSSProperty } from './utils/css.js';
 import './pb-icon.js';
 import '@vaadin/upload';
 

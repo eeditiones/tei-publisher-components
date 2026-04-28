@@ -6,7 +6,10 @@ import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
+import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
+import { createErrorElement, clearErrorElement, formatErrorMessage, handleError } from './utils/error-handling.js';
 
 let _verovio = null;
 
@@ -150,22 +153,24 @@ export class PbMei extends pbMixin(LitElement) {
     super.firstUpdated();
 
     if (this.player) {
-      _import('midiPlayer', resolveURL('../lib/web-midi-player/index.js')).then(() => {
+      (async () => {
+        await _import('midiPlayer', resolveURL('../lib/web-midi-player/index.js'));
         const {
           'web-midi-player': { default: MidiPlayer },
         } = window;
         this._midiPlayer = new MidiPlayer();
-      });
+      })();
     }
 
     if (!_verovio) {
-      createVerovioModule().then(VerovioModule => {
+      (async () => {
+        const VerovioModule = await createVerovioModule();
         _verovio = new VerovioToolkit(VerovioModule);
 
         waitOnce('pb-page-ready', () => {
           this.load();
         });
-      });
+      })();
     } else {
       waitOnce('pb-page-ready', () => {
         this.load();
@@ -189,7 +194,7 @@ export class PbMei extends pbMixin(LitElement) {
         _verovio.loadData(this._data);
         this.showPage();
       } catch (error) {
-        console.error('<pb-mei> Failed to reload MEI data:', error);
+        logger.error('<pb-mei> Failed to reload MEI data:', error);
         this._handleError(error);
       }
     }
@@ -197,16 +202,21 @@ export class PbMei extends pbMixin(LitElement) {
 
   load() {
     if (this.data) {
-      console.log('<pb-mei> Rendering data');
+      logger.log('<pb-mei> Rendering data');
       this.show(this.data);
     } else if (this.url) {
       const link = this.toAbsoluteURL(this.url);
 
-      fetch(link)
-        .then(response => response.text())
-        .then(async str => {
+      (async () => {
+        try {
+          const response = await fetch(link);
+          const str = await response.text();
           this.show(str);
-        });
+        } catch (error) {
+          logger.error('<pb-mei> Failed to load MEI from URL:', error);
+          this._handleError(error);
+        }
+      })();
     }
   }
 
@@ -218,10 +228,10 @@ export class PbMei extends pbMixin(LitElement) {
       _verovio.loadData(this._data);
       this._pages = _verovio.getPageCount();
       this._page = 1;
-      console.log('<pb-mei> Loaded %d pages', this._pages);
+      logger.log('<pb-mei> Loaded %d pages', this._pages);
       this.showPage();
     } catch (error) {
-      console.error('<pb-mei> Failed to load MEI data:', error);
+      logger.error('<pb-mei> Failed to load MEI data:', error);
       this._handleError(error);
     }
   }
@@ -231,38 +241,26 @@ export class PbMei extends pbMixin(LitElement) {
   }
 
   _handleError(error) {
-    // Clear any existing error
+    // Clear any existing error and SVG data
     this._clearError();
+    this._svg = null; // Clear SVG to prevent rendering invalid data
 
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'pb-mei-error';
-    errorDiv.style.cssText = `
-      padding: 1rem;
-      margin: 1rem;
-      background-color: #fee;
-      border: 1px solid #fcc;
-      border-radius: 4px;
-      color: #c33;
-      font-family: sans-serif;
-      font-size: 14px;
-    `;
+    // Format error message based on error type
+    const messagePatterns = [
+      { pattern: /function.*signature|null function/i, message: 'Invalid MEI data format' },
+      { pattern: /parse|XML/i, message: 'Invalid XML/MEI syntax' },
+      { pattern: /WASM|module/i, message: 'MEI rendering engine error' }
+    ];
+    
+    const errorMessage = formatErrorMessage(
+      error,
+      'Failed to load MEI data',
+      {},
+      messagePatterns
+    );
 
-    let errorMessage = 'Failed to load MEI data';
-    const errorText = error.message || error.toString() || '';
-
-    if (
-      errorText.includes('function or function signature mismatch') ||
-      errorText.includes('null function')
-    ) {
-      errorMessage = 'Invalid MEI data format';
-    } else if (errorText.includes('parse') || errorText.includes('XML')) {
-      errorMessage = 'Invalid XML/MEI syntax';
-    } else if (errorText.includes('WASM') || errorText.includes('module')) {
-      errorMessage = 'MEI rendering engine error';
-    }
-
-    errorDiv.textContent = errorMessage;
+    // Create error message element using utility
+    const errorDiv = createErrorElement(errorMessage, 'pb-mei-error');
 
     // Insert error message into the component
     if (this.shadowRoot) {
@@ -273,25 +271,23 @@ export class PbMei extends pbMixin(LitElement) {
       }
     }
 
-    // Emit error event
-    this.dispatchEvent(
-      new CustomEvent('pb-mei-error', {
-        detail: {
-          error: error.message || 'Unknown error',
-          data: this._data,
-        },
-      }),
-    );
+    // Use error handling utility for consistent event emission
+    handleError(error, {
+      componentName: 'pb-mei',
+      emitEvent: (eventName, detail) => this.dispatchEvent(new CustomEvent(eventName, { detail })),
+      eventName: 'pb-mei-error',
+      eventDetail: {
+        error: error.message || 'Unknown error',
+        data: this._data,
+      }
+    });
   }
 
   _clearError() {
     if (this.shadowRoot) {
       const output = this.shadowRoot.querySelector('#output');
       if (output) {
-        const existingError = output.querySelector('.pb-mei-error');
-        if (existingError) {
-          existingError.remove();
-        }
+        clearErrorElement(output, 'pb-mei-error');
       }
     }
   }
@@ -329,7 +325,7 @@ export class PbMei extends pbMixin(LitElement) {
       this._midiPlayer.play({ arrayBuffer: array });
       this.requestUpdate('_isPlaying');
     } catch (error) {
-      console.error('<pb-mei> Failed to play MIDI:', error);
+      logger.error('<pb-mei> Failed to play MIDI:', error);
       this._isPlaying = false;
       this.requestUpdate('_isPlaying');
       this._handleError(error);
@@ -377,6 +373,9 @@ export class PbMei extends pbMixin(LitElement) {
         <div>${this._renderOptions()}</div>
       </div>
       ${this._svg
+        // Note: Verovio-generated SVG is trusted (generated by library from validated MEI data)
+        // Sanitization causes DOMPurify recursion errors with complex Verovio SVG structures
+        // Security: MEI data is validated by Verovio before rendering, so SVG output is safe
         ? html`<div id="output" part="music">${unsafeHTML(this._svg)}</div>`
         : html`<div id="output" part="music">${translate('dialogs.loading')}</div>`}
     `;

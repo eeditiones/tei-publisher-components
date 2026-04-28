@@ -2,6 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
 import './pb-code-highlight.js';
 
 // Configure marked with custom renderer
@@ -94,17 +96,16 @@ export class PbMarkdown extends pbMixin(LitElement) {
     });
   }
 
-  _load(server) {
+  async _load(server) {
     const url = this.toAbsoluteURL(this._url, server);
-    fetch(url, { credentials: 'same-origin' })
-      .then(response => response.text())
-      .catch(() => {
-        console.error('<pb-markdown> failed to load content from %s', url.toString());
-        return Promise.resolve(this.content);
-      })
-      .then(text => {
-        this.content = text;
-      });
+    try {
+      const response = await fetch(url, { credentials: 'same-origin' });
+      const text = await response.text();
+      this.content = text;
+    } catch {
+      logger.error('<pb-markdown> failed to load content from %s', url.toString());
+      // Keep existing content on error
+    }
   }
 
   createRenderRoot() {
@@ -115,7 +116,10 @@ export class PbMarkdown extends pbMixin(LitElement) {
     if (!this.content) {
       return null;
     }
-    return html`<div>${unsafeHTML(marked.parse(this.content))}</div>`;
+    // Sanitize markdown output to prevent XSS attacks
+    const parsed = marked.parse(this.content);
+    const sanitized = sanitizeHTML(parsed);
+    return html`<div>${unsafeHTML(sanitized)}</div>`;
   }
 
   static get styles() {

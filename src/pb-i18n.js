@@ -8,8 +8,11 @@ let _i18nVersion = 0;
 const _i18nCache = new Map();
 
 /**
- * Called by pb-page before the first pb-i18n-update
- * to make sure the translation function is set.
+ * Initializes the translation system with the i18next translation function.
+ * Called by `pb-page` before the first `pb-i18n-update` event to ensure
+ * the translation function is available.
+ *
+ * @param {Function} translate - The i18next translation function (t function)
  */
 export function initTranslation(translate) {
   _translateFn = translate;
@@ -32,11 +35,20 @@ export function get(key, value) {
 }
 
 /**
- * lit-html directive to translate a given key into the target language
- * using i18next.
+ * lit-html directive to translate a given key into the target language using i18next.
+ * This is the main function used in Lit templates for translations.
  *
- * @param {String} key
- * @param {Object} [value]
+ * @param {string} key - The i18n key to translate
+ * @param {Object} [value] - Optional interpolation values
+ * @returns {string} The translated string or the key if translation is not found
+ *
+ * @example
+ * // In a Lit template
+ * html`<p>${translate('common.save')}</p>`
+ *
+ * @example
+ * // With interpolation
+ * html`<p>${translate('common.welcome', { name: 'John' })}</p>`
  */
 export const translate = (key, value) => get(key, value);
 
@@ -54,8 +66,14 @@ if (typeof document !== 'undefined') {
 }
 
 /**
- * Insert translated text somewhere on an HTML page. If no translation is found,
- * display the contained content.
+ * A web component that displays translated text based on an i18n key.
+ * If no translation is found, it displays the fallback content (slot content).
+ *
+ * @example
+ * <pb-i18n key="common.save">Save</pb-i18n>
+ *
+ * @example
+ * <pb-i18n key="common.welcome" .options=${{name: 'John'}}>Welcome</pb-i18n>
  */
 export class PbI18n extends LitElement {
   static get properties() {
@@ -119,6 +137,10 @@ export class PbI18n extends LitElement {
     }
   }
 
+  /**
+   * Schedules a recomputation of the translation with debouncing.
+   * @private
+   */
   _scheduleRecompute() {
     if (this._recomputeTimer) return;
     // Small debounce to coalesce multiple updates and event bursts
@@ -128,6 +150,10 @@ export class PbI18n extends LitElement {
     }, 20);
   }
 
+  /**
+   * Recomputes the translated text, using cache when possible.
+   * @private
+   */
   _recompute() {
     const opts = this.options || {};
     const cacheKey = `${_i18nVersion}::${this.key}::${JSON.stringify(opts)}`;

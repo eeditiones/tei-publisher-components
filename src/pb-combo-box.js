@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import TomSelect from 'tom-select';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
 import { get as i18n } from './pb-i18n.js';
 
 function importTheme(theme) {
@@ -177,19 +177,20 @@ export class PbComboBox extends pbMixin(LitElement) {
             controller.abort();
           }
           controller = new AbortController();
-          fetch(`${url}?query=${encodeURIComponent(query)}`, {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'same-origin',
-            signal: controller.signal,
-          })
-            .then(response => response.json())
-            .then(json => {
+          (async () => {
+            try {
+              const response = await fetch(`${url}?query=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'same-origin',
+                signal: controller.signal,
+              });
+              const json = await response.json();
               callback(json);
-            })
-            .catch(() => {
+            } catch {
               callback();
-            });
+            }
+          })();
         };
         options.render = {
           option: this.renderFunction,

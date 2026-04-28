@@ -1,6 +1,8 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
+import { handleError, formatErrorMessage } from './utils/error-handling.js';
 import './pb-icon.js';
 import './pb-dialog.js';
 
@@ -69,33 +71,47 @@ export class PbEditApp extends pbMixin(LitElement) {
         form.action = action;
       }
 
-      fetch(templatesUrl, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'same-origin',
-      })
-        .then(response => response.json())
-        .then(json => {
+      (async () => {
+        try {
+          const response = await fetch(templatesUrl, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin',
+          });
+          const json = await response.json();
           const list = Array.isArray(json) ? json : [];
           this.templates = list;
           if (!list.find(item => item.name === this._templateValue)) {
             this._templateValue = list.length ? list[0].name : '';
           }
           this.requestUpdate();
-        })
-        .catch(error => console.error('<pb-edit-app> Failed to load templates', error));
+        } catch (error) {
+          // Use error handling utility for consistent error logging
+          handleError(error, {
+            componentName: 'pb-edit-app',
+            silent: true
+          });
+        }
+      })();
 
-      fetch(oddsUrl, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'same-origin',
-      })
-        .then(response => response.json())
-        .then(json => {
+      (async () => {
+        try {
+          const response = await fetch(oddsUrl, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'same-origin',
+          });
+          const json = await response.json();
           this.odds = Array.isArray(json) ? json : [];
           this.requestUpdate();
-        })
-        .catch(error => console.error('<pb-edit-app> Failed to load odds list', error));
+        } catch (error) {
+          // Use error handling utility for consistent error logging
+          handleError(error, {
+            componentName: 'pb-edit-app',
+            silent: true
+          });
+        }
+      })();
     });
 
     if (form) {
@@ -229,9 +245,40 @@ export class PbEditApp extends pbMixin(LitElement) {
     this._openDialog();
   }
 
+  /**
+   * Handles form submission errors.
+   * Uses the error handling utility for consistent error logging and formatting.
+   *
+   * @param {Error} error - The error object
+   * @private
+   */
   _handleSubmitError(error) {
     this.emitTo('pb-end-update');
-    const description = error?.result?.description || error?.message || 'Request failed';
+    
+    // Use error handling utility for consistent logging
+    const statusMessages = {
+      400: 'Invalid request data',
+      401: 'Authentication required',
+      403: 'Access denied',
+      404: 'Resource not found',
+      500: 'Server error',
+      network: 'Network error occurred'
+    };
+    
+    const description = formatErrorMessage(
+      error,
+      error?.result?.description || error?.message || 'Request failed',
+      statusMessages
+    );
+    
+    // Log error using utility
+    handleError(error, {
+      componentName: 'pb-edit-app',
+      emitEvent: (eventName, detail) => this.emitTo(eventName, detail),
+      eventName: 'pb-edit-app-error',
+      eventDetail: { description }
+    });
+    
     this.error = description;
     this.url = null;
     this._openDialog();

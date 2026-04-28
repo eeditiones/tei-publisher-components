@@ -3,6 +3,9 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
+import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
+import { formatErrorMessage, handleError } from './utils/error-handling.js';
 import './pb-fetch.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -175,7 +178,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     // Subscribe to pb-document events to know when the document is ready
     this.subscribeTo('pb-document', ev => {
       if (ev.detail && ev.detail.id === this.src) {
-        console.log(`<pb-load> Document ${this.src} is ready, triggering load`);
+        logger.log(`<pb-load> Document ${this.src} is ready, triggering load`);
         this.load();
       }
     });
@@ -275,7 +278,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
   toggleFeature(ev) {
     this.userParams = registry.getState(this);
-    console.log('<pb-load> toggle feature %o', this.userParams);
+    logger.log('<pb-load> toggle feature %o', this.userParams);
     if (ev.detail.refresh) {
       if (this.history) {
         registry.commit(this, this.userParams);
@@ -284,6 +287,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Constructs the URL for the load request.
+   * If `expand` is true, replaces placeholders in the URL template (e.g., {doc}) with parameter values.
+   *
+   * @param {Object} params - Parameters object (placeholders will be removed from this object)
+   * @returns {string} The absolute URL to load
+   */
   getURL(params) {
     let { url } = this;
     if (this.expand) {
@@ -299,6 +309,12 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     return this.toAbsoluteURL(url);
   }
 
+  /**
+   * Loads content from the configured URL.
+   * Handles document resolution, parameter preparation, and retry logic.
+   *
+   * @param {Event|Object} [ev] - Optional event or parameter object
+   */
   load(ev) {
     if (!this.url) {
       return;
@@ -322,28 +338,28 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
 
     const doc = this.getDocument();
-    console.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
-    console.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
+    logger.log(`<pb-load> getDocument() returned:`, doc, `src="${this.src}"`);
+    logger.log(`<pb-load> Available elements with id "${this.src}":`, document.getElementById(this.src));
     if (doc) {
-      console.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
+      logger.log(`<pb-load> Document found, path="${doc.path}", odd="${doc.odd}", view="${doc.view}"`);
     }
     if (!this.plain) {
       if (doc && doc.path) {
         params.doc = doc.path;
-        console.log(`<pb-load> Setting params.doc to:`, doc.path);
+        logger.log(`<pb-load> Setting params.doc to:`, doc.path);
         this._retryCount = 0; // Reset retry counter when document is found
       } else if (this.src) {
         // Document not found but src is specified - wait for it to be available
         if (this._retryCount < this._maxRetries) {
           this._retryCount++;
           const delay = Math.min(100 * this._retryCount, 1000); // Progressive delay up to 1 second
-          console.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
+          logger.warn(`<pb-load> Document with id "${this.src}" not found or not ready, retrying in ${delay}ms (attempt ${this._retryCount}/${this._maxRetries})`);
           setTimeout(() => {
             this.load(ev);
           }, delay);
           return;
         } else {
-          console.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
+          logger.error(`<pb-load> Document with id "${this.src}" not found after ${this._maxRetries} attempts`);
           // Instead of returning, show a loading state and keep trying
           this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
           return;
@@ -352,7 +368,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         // No document and no src specified - this might be intentional for plain mode
         // But if we have {doc} in the URL template, we should warn
         if (this.url && this.url.includes('{doc}')) {
-          console.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
+          logger.warn(`<pb-load> URL template contains {doc} placeholder but no document is available and no src is specified`);
         }
       }
 
@@ -378,7 +394,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
     // Check if the URL still contains unresolved parameters
     if (url.includes('{') && url.includes('}')) {
-      console.warn(`<pb-load> URL still contains unresolved parameters: ${url}`);
+      logger.warn(`<pb-load> URL still contains unresolved parameters: ${url}`);
       if (this.src) {
         // Keep showing loading state and retry later
         this.innerHTML = '<pb-i18n key="dialogs.loading">Loading...</pb-i18n>';
@@ -386,7 +402,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
       }
     }
 
-    console.log('<pb-load> Loading %s with parameters %o', url, params);
+    logger.log('<pb-load> Loading %s with parameters %o', url, params);
     const loader = this.shadowRoot.getElementById('loadContent');
     loader.params = params;
     loader.url = url;
@@ -398,10 +414,11 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   }
 
   /**
-   * Allow subclasses to set parameters before the request is being sent.
+   * Allows subclasses to modify parameters before the request is sent.
+   * Merges user parameters from registry state if available.
    *
-   * @param params Map of parameters
-   * @return new or modified parameters map
+   * @param {Object} params - Map of parameters to prepare
+   * @returns {Object} New or modified parameters map
    */
   prepareParameters(params) {
     if (this.userParams) {
@@ -410,12 +427,21 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     return params;
   }
 
+  /**
+   * Handles successful content response from the server.
+   * Sanitizes content, parses headers, fixes links, and triggers load callbacks.
+   *
+   * @param {Event} ev - The response event from pb-fetch
+   * @private
+   */
   _handleContent(ev) {
     const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
+    // Sanitize server response to prevent XSS attacks
+    const sanitized = sanitizeHTML(resp);
     if (this.container) {
       this.style.display = 'none';
       document.querySelectorAll(this.container).forEach(elem => {
-        elem.innerHTML = resp;
+        elem.innerHTML = sanitized;
         this._parseHeaders(ev.detail.xhr, elem);
         this._fixLinks(elem);
         this._onLoad(elem);
@@ -425,7 +451,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
       this._clearContent();
 
       const div = document.createElement('div');
-      div.innerHTML = resp;
+      div.innerHTML = sanitized;
       this._parseHeaders(ev.detail.xhr, div);
       div.slot = '';
       this.appendChild(div);
@@ -448,23 +474,64 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   _handleError() {
     this.emitTo('pb-end-update');
     const loader = this.shadowRoot.getElementById('loadContent');
-    const { response } = loader.lastError;
+    const error = loader.lastError;
+    const { response } = error;
+    
+    // Use error handling utility for consistent error logging
     if (this.silent) {
-      console.error('Request failed: %s', response ? response.description : '');
+      handleError(error, {
+        componentName: 'pb-load',
+        silent: true
+      });
       return;
     }
+    
+    // Format error message using utility
+    const statusMessages = {
+      404: 'Resource not found',
+      403: 'Access denied',
+      500: 'Server error',
+      network: 'Network error occurred'
+    };
+    
     let message;
-    if (response) {
-      message = response.description;
+    if (response && response.description) {
+      // Use formatErrorMessage to standardize error messages
+      const errorObj = {
+        message: response.description,
+        status: response.status || error.status
+      };
+      message = formatErrorMessage(
+        errorObj,
+        response.description,
+        statusMessages
+      );
     } else {
       message = '<pb-i18n key="dialogs.serverError"></pb-i18n>';
     }
+    
+    // Log error using utility
+    handleError(error, {
+      componentName: 'pb-load',
+      silent: false
+    });
+    
     const dialog = this.shadowRoot.getElementById('errorDialog');
     const messageElement = this.shadowRoot.getElementById('errorMessage');
-    messageElement.innerHTML = `<pb-i18n key="dialogs.serverError"></pb-i18n>: ${message}`;
+    // Sanitize error message to prevent XSS attacks
+    const sanitizedMessage = sanitizeHTML(message);
+    messageElement.innerHTML = `<pb-i18n key="dialogs.serverError"></pb-i18n>: ${sanitizedMessage}`;
     dialog.openDialog();
   }
 
+  /**
+   * Parses pagination headers from the XHR response or data attributes.
+   * Emits `pb-results-received` event with pagination information.
+   *
+   * @param {XMLHttpRequest} xhr - The XHR object from the request
+   * @param {HTMLElement} content - The content element to search for data attributes
+   * @private
+   */
   _parseHeaders(xhr, content) {
     // Try to determine number of pages and current position
     // Search for data-pagination-* attributes first and if they
@@ -493,6 +560,13 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     });
   }
 
+  /**
+   * Fixes relative URLs in images and links within the loaded content.
+   * Also triggers MathJax typesetting for formulas.
+   *
+   * @param {HTMLElement} content - The content element containing images and links
+   * @private
+   */
   _fixLinks(content) {
     typesetMath(content);
     if (this.fixLinks) {
@@ -504,7 +578,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         try {
           image.src = this.toAbsoluteURL(oldSrc);
         } catch (err) {
-          console.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
+          logger.warn('<pb-load> Unable to resolve image URL %s', oldSrc, err);
         }
       });
       content.querySelectorAll('a').forEach(link => {
@@ -515,12 +589,19 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
         try {
           link.href = this.toAbsoluteURL(oldHref);
         } catch (err) {
-          console.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
+          logger.warn('<pb-load> Unable to resolve link URL %s', oldHref, err);
         }
       });
     }
   }
 
+  /**
+   * Hook method called after content is loaded and processed.
+   * Override in subclasses to perform additional processing.
+   *
+   * @param {HTMLElement} content - The loaded content element
+   * @protected
+   */
   _onLoad(content) {}
 
   /**

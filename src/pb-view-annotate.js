@@ -5,6 +5,7 @@ import uniqolor from 'uniqolor/src/index';
 import { PbView } from './pb-view.js';
 import { loadTippyStyles } from './pb-popover.js';
 import { get as i18n } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Return the first child of ancestor which contains current.
@@ -91,7 +92,7 @@ function rangeToPoint(node, offset, position = 'start') {
       offset: absoluteOffset(container, node, offset),
     };
   }
-  console.error('No container with data-tei found for %o', node.parentNode);
+  logger.error('No container with data-tei found for %o', node.parentNode);
 }
 
 function ancestors(node, selector) {
@@ -197,6 +198,78 @@ function collectText(node) {
     str.push(walker.currentNode.textContent);
   }
   return [str.join(''), start];
+}
+
+/**
+ * @typedef {Object} MatchAnchor
+ * @property {'tei'|'local'} mode
+ * @property {string|null} context
+ * @property {number} start
+ * @property {number} end
+ * @property {number} localStart
+ * @property {number} localEnd
+ * @property {Node} textNode
+ */
+
+/**
+ * Build a normalized anchor for a matched text segment.
+ * Prefers TEI-relative coordinates, with local text-node offsets as fallback.
+ *
+ * @param {Node} node
+ * @param {number} localStart
+ * @param {number} localEnd
+ * @returns {MatchAnchor}
+ */
+function buildMatchAnchor(node, localStart, localEnd) {
+  const startRange = rangeToPoint(node, localStart);
+  const endRange = rangeToPoint(node, localEnd, 'end');
+  const hasTeiRange = Boolean(startRange && endRange && startRange.parent);
+
+  return {
+    mode: hasTeiRange ? 'tei' : 'local',
+    context: hasTeiRange ? startRange.parent : null,
+    start: hasTeiRange ? Number(startRange.offset) : localStart,
+    end: hasTeiRange ? Number(endRange.offset) : localEnd,
+    localStart,
+    localEnd,
+    textNode: node,
+  };
+}
+
+/**
+ * Resolve a normalized match anchor to a browser range.
+ *
+ * @param {Element} root
+ * @param {MatchAnchor} anchor
+ * @returns {Range|null}
+ */
+function resolveAnchorRange(root, anchor) {
+  const range = document.createRange();
+
+  if (anchor.mode === 'tei' && anchor.context) {
+    const context = Array.from(root.querySelectorAll(`[data-tei="${anchor.context}"]`)).filter(
+      node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
+    )[0];
+    if (context) {
+      const startPoint = pointToRange(context, anchor.start);
+      const endPoint = pointToRange(context, anchor.end);
+      if (startPoint && endPoint) {
+        range.setStart(startPoint[0], startPoint[1]);
+        range.setEnd(endPoint[0], endPoint[1]);
+        return range;
+      }
+    }
+  }
+
+  if (!anchor.textNode) {
+    return null;
+  }
+  const textLength = anchor.textNode.textContent?.length || 0;
+  const localStart = Math.max(0, Math.min(anchor.localStart ?? 0, textLength));
+  const localEnd = Math.max(localStart, Math.min(anchor.localEnd ?? localStart, textLength));
+  range.setStart(anchor.textNode, localStart);
+  range.setEnd(anchor.textNode, localEnd);
+  return range;
 }
 
 function clearProperties(teiRange) {
@@ -399,7 +472,7 @@ class PbViewAnnotate extends PbView {
 
   popHistory() {
     if (this._history.length === 0) {
-      console.warn('<pb-view-annotate> history is empty');
+      logger.warn('<pb-view-annotate> history is empty');
       return;
     }
     this._scrollTop = this.scrollTop;
@@ -464,21 +537,20 @@ class PbViewAnnotate extends PbView {
     }
   }
 
-  _handleContent() {
-    super._handleContent();
-    this.updateComplete.then(() =>
-      setTimeout(() => {
-        this._initAnnotationColors();
-        this._annotationStyles();
-        this.updateAnnotations();
-        this._markIncompleteAnnotations();
-        if (this._scrollTop) {
-          this.scrollTop = this._scrollTop;
-          this._scrollTop = undefined;
-        }
-        this.emitTo('pb-annotations-loaded');
-      }, 300),
-    );
+  async _handleContent() {
+    await super._handleContent();
+    await this.updateComplete;
+    setTimeout(() => {
+      this._initAnnotationColors();
+      this._annotationStyles();
+      this.updateAnnotations();
+      this._markIncompleteAnnotations();
+      if (this._scrollTop) {
+        this.scrollTop = this._scrollTop;
+        this._scrollTop = undefined;
+      }
+      this.emitTo('pb-annotations-loaded');
+    }, 300);
   }
 
   _updateAnnotation(teiRange, silent = false, batch = false) {
@@ -496,11 +568,11 @@ class PbViewAnnotate extends PbView {
     const startPoint = pointToRange(context, teiRange.start);
     const endPoint = pointToRange(context, teiRange.end);
     if (!(startPoint && endPoint)) {
-      console.error('<pb-view-annotate> Invalid range for %o', context);
+      logger.error('<pb-view-annotate> Invalid range for %o', context);
       return null;
     }
 
-    console.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
+    logger.log('<pb-view-annotate> Range before adjust: %o %o', startPoint, endPoint);
     if (startPoint[1] === startPoint[0].textContent.length) {
       // try to find the next text node
       const nextNode = nextTextNode(context, startPoint[0]);
@@ -525,7 +597,7 @@ class PbViewAnnotate extends PbView {
       range.setEnd(endPoint[0], endPoint[1]);
     }
 
-    console.log('<pb-view-annotate> Range: %o', range);
+    logger.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${
@@ -562,13 +634,13 @@ class PbViewAnnotate extends PbView {
           if (span) {
             this._deleteAnnotation(span);
           } else {
-            console.error('Annotation %s not found', teiRange.context);
+            logger.error('Annotation %s not found', teiRange.context);
           }
           break;
         case 'modify':
           span = this.shadowRoot.querySelector(`[data-tei="${teiRange.node}"]`);
           if (!span) {
-            console.error('<pb-view-annotate> Target node not found for %o', teiRange.node);
+            logger.error('<pb-view-annotate> Target node not found for %o', teiRange.node);
             break;
           }
           span.dataset.annotation = JSON.stringify(teiRange.properties);
@@ -608,7 +680,7 @@ class PbViewAnnotate extends PbView {
       }
       this._markSelection(range);
       this._currentSelection = range;
-      console.log('<pb-view-annotate> selection: %o', range);
+      logger.log('<pb-view-annotate> selection: %o', range);
 
       if (changed) {
         setTimeout(() => {
@@ -693,7 +765,7 @@ class PbViewAnnotate extends PbView {
     if (info.properties) {
       adjustedRange.properties = info.properties;
     }
-    console.log('<pb-view-annotate> range adjusted: %o', adjustedRange);
+    logger.log('<pb-view-annotate> range adjusted: %o', adjustedRange);
     this._ranges.push(clearProperties(adjustedRange));
     this.emitTo('pb-annotations-changed', {
       type: adjustedRange.type,
@@ -725,7 +797,7 @@ class PbViewAnnotate extends PbView {
       this._rangesMap.delete(span);
       const pos = this._ranges.indexOf(teiRange);
 
-      console.log('<pb-view-annotate> deleting annotation %o', teiRange);
+      logger.log('<pb-view-annotate> deleting annotation %o', teiRange);
 
       this._ranges.splice(pos, 1);
     }
@@ -757,7 +829,7 @@ class PbViewAnnotate extends PbView {
       selection.removeAllRanges();
       selection.addRange(newRange);
     } catch (e) {
-      console.error('<pb-view-annotate> %s', e.message);
+      logger.error('<pb-view-annotate> %s', e.message);
     } finally {
       this._inHandler = false;
     }
@@ -786,7 +858,7 @@ class PbViewAnnotate extends PbView {
         range = clearProperties(range);
         this.emitTo('pb-annotations-changed', { ranges: this._ranges });
       } else {
-        console.error('no range found for edit span %o', span);
+        logger.error('no range found for edit span %o', span);
       }
     }
     const jsonOld = JSON.parse(span.dataset.annotation);
@@ -1024,7 +1096,7 @@ class PbViewAnnotate extends PbView {
       .filter(token => token && token.length > 0)
       .map(token => escape(token))
       .join('|');
-    console.log(`<pb-view-annotate> Searching content for ${expr}...`);
+    logger.log(`<pb-view-annotate> Searching content for ${expr}...`);
     const regex = new RegExp(expr, this.caseSensitive ? 'g' : 'gi');
     const walker = document.createTreeWalker(
       this.shadowRoot.getElementById('view'),
@@ -1033,29 +1105,35 @@ class PbViewAnnotate extends PbView {
     );
     while (walker.nextNode()) {
       const node = walker.currentNode;
+      if (!node.textContent) {
+        continue;
+      }
       const matches = Array.from(node.textContent.matchAll(regex));
       for (const match of matches) {
         const end = match.index + match[0].length;
         let isAnnotated = false;
         let ref = null;
-        const annoData = node.parentNode.dataset.annotation;
-        const annoType = node.parentNode.dataset.type;
+        const parentNode = /** @type {Element | null} */ (node.parentNode);
+        const annoData = parentNode?.dataset?.annotation;
+        const annoType = parentNode?.dataset?.type;
         if (annoData && annoType) {
           const parsed = JSON.parse(annoData) || {};
           isAnnotated = annoType === type;
           ref = parsed[this.getKey(type)];
         }
 
-        const startRange = rangeToPoint(node, match.index);
-        const endRange = rangeToPoint(node, end, 'end');
+        const anchor = buildMatchAnchor(node, match.index, end);
 
         const [str, start] = collectText(node);
         const entry = {
           annotated: isAnnotated,
-          context: startRange.parent,
-          start: startRange.offset,
-          end: endRange.offset,
-          textNode: node,
+          mode: anchor.mode,
+          context: anchor.context,
+          start: anchor.start,
+          end: anchor.end,
+          localStart: anchor.localStart,
+          localEnd: anchor.localEnd,
+          textNode: anchor.textNode,
           kwic: kwicText(str, start + match.index, start + end),
         };
         entry[this.getKey(type)] = ref;
@@ -1067,17 +1145,15 @@ class PbViewAnnotate extends PbView {
 
   scrollTo(teiRange) {
     const root = this.shadowRoot.getElementById('view');
-    const range = document.createRange();
+    let range = null;
     if (teiRange.annotated) {
+      range = document.createRange();
       range.selectNode(teiRange.textNode);
     } else {
-      const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
-        node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
-      )[0];
-      const startPoint = pointToRange(context, teiRange.start);
-      const endPoint = pointToRange(context, teiRange.end);
-      range.setStart(startPoint[0], startPoint[1]);
-      range.setEnd(endPoint[0], endPoint[1]);
+      range = resolveAnchorRange(root, teiRange);
+    }
+    if (!range) {
+      return;
     }
 
     const rootRect = root.getBoundingClientRect();

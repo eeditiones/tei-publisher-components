@@ -4,7 +4,10 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 import { pbMixin, clearPageEvents } from './pb-mixin.js';
-import { resolveURL } from './utils.js';
+import { resolveURL } from './utils/url.js';
+import { sanitizeHTML } from './utils/sanitize.js';
+import { logger } from './utils/logger.js';
+import { handleError } from './utils/error-handling.js';
 import { loadStylesheets } from './theming.js';
 import { initTranslation } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
@@ -227,6 +230,11 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  /**
+   * Gets the space-separated list of locale fallback namespaces.
+   *
+   * @returns {string} Space-separated namespace names
+   */
   get localeFallbackNs() {
     // Expose a space-separated view of the current fallback namespaces
     return this._localeFallbacks && this._localeFallbacks.length
@@ -234,6 +242,12 @@ export class PbPage extends pbMixin(LitElement) {
       : '';
   }
 
+  /**
+   * Sets the locale fallback namespaces from a space-separated string.
+   * Deduplicates namespaces while preserving order.
+   *
+   * @param {string} value - Space-separated namespace names
+   */
   set localeFallbackNs(value) {
     // Replace (not append) to avoid uncontrolled growth when attribute re-applies
     const next = (value || '')
@@ -245,6 +259,10 @@ export class PbPage extends pbMixin(LitElement) {
     this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
   }
 
+  /**
+   * Called when the element is removed from the DOM.
+   * Cleans up the i18n instance and clears the global instance reference.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
     this._i18nInstance = null;
@@ -254,6 +272,11 @@ export class PbPage extends pbMixin(LitElement) {
     }
   }
 
+  /**
+   * Called when the element is inserted into the DOM.
+   * Initializes the endpoint, configures the registry, loads theme stylesheets,
+   * and detects the API version. Signals 'pb-page-ready' if requireLanguage is false.
+   */
   async connectedCallback() {
     super.connectedCallback();
 
@@ -294,30 +317,38 @@ export class PbPage extends pbMixin(LitElement) {
     } else {
       stylesheetURLs.push('components.css');
     }
-    console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
+    logger.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
     this._themeSheet = await loadStylesheets(stylesheetURLs);
 
     // try to figure out what version of TEI Publisher the server is running
     if (!this.apiVersion) {
       // first check if it has a login endpoint, i.e. runs a version < 7
       // this is necessary to prevent a CORS failure
-      const json = await fetch(`${this.endpoint}/login`)
-        .then(res => {
-          if (res.ok) {
-            return null;
-          }
+      let json = null;
+      try {
+        const loginRes = await fetch(`${this.endpoint}/login`);
+        if (!loginRes.ok) {
           // if not, access the actual /api/version endpoint to retrieve the API version
-          return fetch(`${this.endpoint}/api/version`).then(res2 => res2.json());
-        })
-        .catch(() => fetch(`${this.endpoint}/api/version`).then(res2 => res2.json()));
+          const versionRes = await fetch(`${this.endpoint}/api/version`);
+          json = await versionRes.json();
+        }
+      } catch {
+        // Fallback: try /api/version directly
+        try {
+          const versionRes = await fetch(`${this.endpoint}/api/version`);
+          json = await versionRes.json();
+        } catch (error) {
+          logger.error('<pb-page> Failed to fetch API version:', error);
+        }
+      }
 
       if (json) {
         this.apiVersion = json.api;
-        console.log(
+        logger.log(
           `<pb-page> Server reports API version ${this.apiVersion} with app ${json.app.name}/${json.app.version} running on ${json.engine.name}/${json.engine.version}`,
         );
       } else {
-        console.log('<pb-page> No API version reported by server, assuming 0.9.0');
+        logger.log('<pb-page> No API version reported by server, assuming 0.9.0');
         this.apiVersion = '0.9.0';
       }
     }
@@ -332,6 +363,11 @@ export class PbPage extends pbMixin(LitElement) {
     // Note: If requireLanguage is true, pb-page-ready will be signaled after i18n initialization in firstUpdated()
   }
 
+  /**
+   * Called after the first update/render cycle.
+   * Initializes i18next, sets up language change listeners, handles feature toggles,
+   * and triggers MathJax typesetting.
+   */
   firstUpdated() {
     super.firstUpdated();
 
@@ -356,7 +392,7 @@ export class PbPage extends pbMixin(LitElement) {
     const defaultLocales = this.endpoint 
       ? `${this.toAbsoluteURL('resources/i18n/', this.endpoint)}{{ns}}/{{lng}}.json`
       : `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
-    console.log(
+    logger.log(
       '<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
       defaultLocales,
       this.locales,
@@ -392,7 +428,7 @@ export class PbPage extends pbMixin(LitElement) {
     if (this.language) {
       options.lng = this.language;
     }
-    console.log('supported langs: %o', this.supportedLanguages);
+    logger.log('supported langs: %o', this.supportedLanguages);
     if (this.supportedLanguages) {
       options.supportedLngs = this.supportedLanguages;
     }
@@ -403,59 +439,60 @@ export class PbPage extends pbMixin(LitElement) {
       options.fallbackNS = fallbacks.slice(1);
       options.ns = fallbacks;
     }
-    console.log('<pb-page> i18next options: %o', options);
+    logger.log('<pb-page> i18next options: %o', options);
     this._i18nInstance = i18next.createInstance();
     this._i18nInstance.use(LanguageDetector).use(Backend);
-    this._i18nInstance.init(options).then(t => {
-      if (!this._i18nInstance) {
-        // We got deconstructed already
-        return;
+    (async () => {
+      try {
+        const t = await this._i18nInstance.init(options);
+        if (!this._i18nInstance) {
+          // We got deconstructed already
+          return;
+        }
+        initTranslation(t);
+        // initialized and ready to go!
+        this._updateI18n(t);
+        this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
+        if (this.requireLanguage) {
+          // When requireLanguage is true, fire pb-page-ready after init() resolves
+          // Note: init() with http-backend should wait for resources to load before resolving
+          // If resources aren't loaded, it's likely due to a failed request (e.g., intercept not matching)
+          // In that case, we still fire pb-page-ready to avoid blocking, and tests can use retry-ability
+          this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint,
+            apiVersion: this.apiVersion,
+            template: this.template,
+            language: this._i18nInstance?.language,
+          });
+        }
+      } catch (error) {
+        // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
+        logger.error('<pb-page> i18next init failed:', error);
+        if (this.requireLanguage) {
+          this.signalReady('pb-page-ready', {
+            endpoint: this.endpoint,
+            apiVersion: this.apiVersion,
+            template: this.template,
+            language: this._i18nInstance?.language,
+          });
+        }
       }
-      initTranslation(t);
-      // initialized and ready to go!
-      this._updateI18n(t);
-      this.signalReady('pb-i18n-update', { t, language: this._i18nInstance?.language });
-      if (this.requireLanguage) {
-        // When requireLanguage is true, fire pb-page-ready after init() resolves
-        // Note: init() with http-backend should wait for resources to load before resolving
-        // If resources aren't loaded, it's likely due to a failed request (e.g., intercept not matching)
-        // In that case, we still fire pb-page-ready to avoid blocking, and tests can use retry-ability
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      } else if (this.requireLanguage) {
-        // Fallback: if instance is null, fire pb-page-ready anyway to avoid blocking
-        console.warn('<pb-page> i18n instance is null, firing pb-page-ready without waiting for resources');
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      }
-    }).catch(err => {
-      // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
-      console.error('<pb-page> i18next init failed:', err);
-      if (this.requireLanguage) {
-        this.signalReady('pb-page-ready', {
-          endpoint: this.endpoint,
-          apiVersion: this.apiVersion,
-          template: this.template,
-          language: this._i18nInstance?.language,
-        });
-      }
-    });
+    })();
 
     // React to language change events by updating i18n and notifying listeners
-    this.subscribeTo('pb-i18n-language', ev => {
+    this.subscribeTo('pb-i18n-language', async ev => {
       const { language } = ev.detail;
-      this._i18nInstance.changeLanguage(language).then(t => {
+      try {
+        const t = await this._i18nInstance.changeLanguage(language);
         this._updateI18n(t);
         this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
-      }, []);
+      } catch (error) {
+        // Use error handling utility for consistent error logging
+        handleError(error, {
+          componentName: 'pb-page',
+          silent: true
+        });
+      }
     });
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
@@ -463,7 +500,7 @@ export class PbPage extends pbMixin(LitElement) {
     // Avoid a Lit reactive update here; just remove the attribute instead.
     this.removeAttribute('unresolved');
 
-    console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
+    logger.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
     // Guard: some app-header implementations may not expose _notifyLayoutChanged
     this.querySelectorAll('app-header').forEach(h => {
       if (typeof h._notifyLayoutChanged === 'function') {
@@ -474,6 +511,13 @@ export class PbPage extends pbMixin(LitElement) {
     typesetMath(this);
   }
 
+  /**
+   * Updates all elements with data-i18n attributes with translated content.
+   * Supports both attribute and innerHTML translation targets.
+   *
+   * @param {Function} t - The i18next translation function
+   * @private
+   */
   _updateI18n(t) {
     this.querySelectorAll('[data-i18n]').forEach(elem => {
       const targets = elem.getAttribute('data-i18n');
@@ -482,22 +526,32 @@ export class PbPage extends pbMixin(LitElement) {
       while (m) {
         const translated = t(m[2]);
         if (m[1]) {
+          // For attributes, use translated value directly (attributes are escaped by browser)
           elem.setAttribute(m[1], translated);
         } else {
-          elem.innerHTML = translated;
+          // Sanitize translated HTML content to prevent XSS attacks
+          elem.innerHTML = sanitizeHTML(translated);
         }
         m = regex.exec(targets);
       }
     });
   }
 
+  /**
+   * Gets the loaded theme stylesheet.
+   *
+   * @returns {CSSStyleSheet|null} The theme stylesheet or null if not loaded
+   */
   get stylesheet() {
     return this._themeSheet;
   }
 
   /**
-   * Handle the `pb-toggle` event sent by `pb-select-feature` or `pb-toggle-feature`
-   * and dispatch actions to the elements on the page.
+   * Handles the `pb-toggle` event sent by `pb-select-feature` or `pb-toggle-feature`
+   * and dispatches actions to matching elements on the page.
+   *
+   * @param {CustomEvent} ev - The pb-toggle event with detail containing selector, command, and state
+   * @private
    */
   _toggleFeatures(ev) {
     const sc = ev.detail;
