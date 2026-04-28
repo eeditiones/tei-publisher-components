@@ -9,7 +9,7 @@ import './pb-icon-button.js';
 import './pb-message.js';
 import './pb-odd-model-editor.js';
 
-import { get as i18n, translate } from './pb-i18n.js';
+import { get as i18n } from './pb-i18n.js';
 
 /**
  * A wrapper for the popular codemirror code editor.
@@ -371,7 +371,7 @@ export class PbOddElementspecEditor extends LitElement {
   }
 
   _label(key, fallback) {
-    const value = translate(key);
+    const value = i18n(key);
     return value && value !== key ? value : fallback;
   }
 
