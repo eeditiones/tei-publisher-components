@@ -1,0 +1,23 @@
+rollup.config.mjs
+  4d9472734c521def 57-66,217-226
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "d1f201f7ffd4200ece9f4ff7ad3040b2c30e4df4",
+  "prompts": {
+    "4d9472734c521def": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "67043061-c33a-49c7-a6cf-09fb5aa7ab99",
+        "model": "composer-2-fast"
+      },
+      "human_author": "duncdrum",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 20,
+      "overriden_lines": 0
+    }
+  }
+}
