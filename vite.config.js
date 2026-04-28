@@ -4,7 +4,6 @@ const MOCK_VERSION = {
   engine: { name: 'mock-engine', version: '0.0.0' },
 };
 import { defineConfig } from 'vite';
-import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
@@ -17,7 +16,8 @@ const isCypress = !!process.env.CYPRESS;
 export default defineConfig({
   root: '.',
   server: {
-    port: 5173,
+    // Serve from port 8000
+    port: 8000,
     // Don't auto-open a path when Cypress runs CT; it uses a special base
     open: isCypress ? false : '/api.html',
     cors: true,
