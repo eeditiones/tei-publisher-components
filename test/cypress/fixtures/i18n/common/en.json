@@ -11,5 +11,8 @@
   },
   "browse": {
     "items": "Found {{count}} items"
+  },
+  "search": {
+    "search": "Search (from common)"
   }
 }
