@@ -1,11 +1,110 @@
+# Separate entries per branch — Dependabot has no shorthand for multi-branch PR targets.
+#
+# Groups are evaluated in order: first matching group wins. Specific toolchains come first,
+# then broad dependency-type buckets.
+
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
+  # ─── GitHub Actions → default branch (main) ─────────────────────────────────
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "daily"
-  - package-ecosystem: "npm"
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # ─── GitHub Actions → next-4 ────────────────────────────────────────────────
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "daily"   
+      interval: weekly
+    target-branch: next-4
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # ─── npm → default branch (main) ────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    versioning-strategy: increase-if-necessary
+    groups:
+      rollup-and-vite:
+        patterns:
+          - "rollup"
+          - "vite"
+          - "@rollup/*"
+          - "rollup-plugin-*"
+      babel:
+        patterns:
+          - "@babel/*"
+      cypress-and-test-tooling:
+        patterns:
+          - "cypress"
+          - "concurrently"
+          - "eslint-plugin-cypress"
+          - "eslint-plugin-chai-friendly"
+          - "web-component-analyzer"
+      eslint-prettier-and-lint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "eslint-*"
+          - "globals"
+          - "lint-staged"
+          - "@open-wc/eslint-config"
+          - "@open-wc/prettier-config"
+      semantic-release:
+        patterns:
+          - "semantic-release"
+          - "@semantic-release/*"
+      production-dependencies:
+        dependency-type: production
+      development-dependencies:
+        dependency-type: development
+
+  # ─── npm → next-4 (identical grouping) ──────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    versioning-strategy: increase-if-necessary
+    target-branch: next-4
+    groups:
+      rollup-and-vite:
+        patterns:
+          - "rollup"
+          - "vite"
+          - "@rollup/*"
+          - "rollup-plugin-*"
+      babel:
+        patterns:
+          - "@babel/*"
+      cypress-and-test-tooling:
+        patterns:
+          - "cypress"
+          - "concurrently"
+          - "eslint-plugin-cypress"
+          - "eslint-plugin-chai-friendly"
+          - "web-component-analyzer"
+      eslint-prettier-and-lint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "eslint-*"
+          - "globals"
+          - "lint-staged"
+          - "@open-wc/eslint-config"
+          - "@open-wc/prettier-config"
+      semantic-release:
+        patterns:
+          - "semantic-release"
+          - "@semantic-release/*"
+      production-dependencies:
+        dependency-type: production
+      development-dependencies:
+        dependency-type: development
