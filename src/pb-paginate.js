@@ -4,9 +4,6 @@ import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
 import { logger } from './utils/logger.js';
 import './pb-icon.js';
-import { translate } from './pb-i18n.js';
-import { themableMixin } from './theming.js';
-import { pbMixin } from './pb-mixin.js';
 
 /**
  * @typedef {{type: 'overflow'}} Overflow
@@ -158,82 +155,6 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
     this._update(this.start, this.total);
   }
 
-  _update(start, total) {
-    if (!total || !start) {
-      return;
-    }
-    this.pageCount = Math.ceil(total / this.perPage);
-    this.page = Math.ceil(start / this.perPage);
-
-    // If everything fits within range+2 slots, show all pages
-    if (this.pageCount <= this.range + 2) {
-      this.pages = Array.from({ length: this.pageCount }, (_, i) => ({
-        type: 'page',
-        label: i + 1,
-        class: i + 1 === this.page ? 'active' : '',
-      }));
-      return;
-    }
-
-    // Total slots = range + 2: page 1 (fixed) + range middle slots + last page (fixed).
-    // Middle slots hold a consecutive window plus up to 2 overflow markers.
-    // Core window size when both overflows are present = range - 2.
-    const coreSize = this.range - 2;
-
-    // Center core window around current page within [2, pageCount-1]
-    let winStart = this.page - Math.floor(coreSize / 2);
-    let winEnd = winStart + coreSize - 1;
-
-    if (winStart < 2) {
-      winStart = 2;
-      winEnd = winStart + coreSize - 1;
-    }
-    if (winEnd > this.pageCount - 1) {
-      winEnd = this.pageCount - 1;
-      winStart = Math.max(2, winEnd - coreSize + 1);
-    }
-
-    // Extend window when an overflow would hide ≤1 page, or reclaim freed overflow slot
-    if (winStart === 2) {
-      winEnd = Math.min(this.pageCount - 1, winEnd + 1);
-    } else if (winStart === 3) {
-      winStart = 2;
-    } else if (winEnd === this.pageCount - 1) {
-      winStart = Math.max(2, winStart - 1);
-    } else if (winEnd === this.pageCount - 2) {
-      winEnd = this.pageCount - 1;
-    }
-
-    /**
-     * @type {Overflow}
-     */
-    const overflow = { type: 'overflow' };
-    /** @type {PageOrOverflow[]} */
-    const pages = [];
-    pages.push({ type: 'page', label: 1, class: this.page === 1 ? 'active' : '' });
-    if (winStart > 2) {
-      pages.push(overflow);
-    }
-    for (let i = 0, l = winEnd - winStart + 1; i < l; i += 1) {
-      pages.push({
-        type: 'page',
-        label: winStart + i,
-        class: winStart + i === this.page ? 'active' : '',
-      });
-    }
-
-    if (winEnd < this.pageCount - 1) {
-      pages.push(overflow);
-    }
-    pages.push({
-      type: 'page',
-      label: this.pageCount,
-      class: this.page === this.pageCount ? 'active' : '',
-    });
-
-    this.pages = pages;
-  }
-
   _refresh(ev) {
     this.start = Number(ev.detail.start);
     this.total = ev.detail.count;
@@ -373,7 +294,7 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
       this.page,
       lowerBound,
       upperBound,
-      this.range, 
+      this.range,
       this.showPreviousNext
     );
     const pages = [];
@@ -410,6 +331,7 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
     this.prevNextPages = prevNextPages;
   }
 
+  render() {
     return html`
       <nav aria-label="${translate('pagination.pagination')}">
         <ul>
@@ -428,21 +350,21 @@ export class PbPaginate extends themableMixin(pbMixin(LitElement)) {
               </li>`
             : nothing}
           ${this.pages.map(item => {
-            switch (item.type) {
-              case 'overflow':
-                return overflowPart;
-              default:
-                return html`<li class="pb-paginate__page">
-                  <a
-                    href="javascript:void(0);"
-                    aria-label="${translate('pagination.page', { page: item.label })}"
-                    class="${item.class}"
-                    @click="${() => this._handleClick(item.label)}"
-                  >
-                    ${item.label}
-                  </a>
-                </li>`;
+            if (item.type === 'overflow') {
+              return html`<li class="pb-paginate__overflow">
+                <span aria-hidden="true">…</span>
+              </li>`;
             }
+            return html`<li class="pb-paginate__page">
+              <a
+                href="javascript:void(0);"
+                aria-label="${translate('pagination.page', { page: item.label })}"
+                class="${item.class}"
+                @click="${() => this._handleClick(item.label)}"
+              >
+                ${item.label}
+              </a>
+            </li>`;
           })}
           ${this.showPreviousNext
             ? html`<li

@@ -1,6 +1,5 @@
 // Cypress CT: pb-paginate
 import '../../../src/pb-paginate.js'
-import { themableMixin } from '../../../src/theming.js'
 
 describe('pb-paginate', () => {
   beforeEach(() => {
@@ -9,14 +8,23 @@ describe('pb-paginate', () => {
 
   it('should emit events when page is clicked after receiving results', () => {
     cy.get('#pg').then($el => {
-      const host = $el[0];
-      host._refresh({ detail: { start: 1, count: 30 } });
-      return host.updateComplete;
-    });
+      const host = $el[0]
+      host._refresh({ detail: { start: 1, count: 30 } })
+      return host.updateComplete
+    })
 
-    cy.get('#pg').should(haveCorrectPageForm('[1*, 2, 3]'));
+    // 30 items / 10 per page → 3 pages; range 5 shows 1–3; page 1 is current for start=1
+    cy.get('#pg')
+      .shadow()
+      .find('.pb-paginate__page a')
+      .should($links => {
+        expect($links).to.have.length(3)
+        expect($links.eq(0)).to.contain.text('1').and.to.have.class('active')
+        expect($links.eq(1)).to.contain.text('2').and.not.to.have.class('active')
+        expect($links.eq(2)).to.contain.text('3').and.not.to.have.class('active')
+      })
 
-    cy.get('#pg').find('.pb-paginate__page').contains('2').click();
+    cy.get('#pg').shadow().find('.pb-paginate__page').contains('2').click()
     cy.get('#pg').then($el => {
       expect($el[0].start).to.equal(11)
     })
