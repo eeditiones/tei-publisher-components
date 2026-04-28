@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
-import { translate } from './pb-i18n.js';
+import { get as i18n, translate } from './pb-i18n.js';
 import './pb-icon.js';
 
 let autocompleteId = 0;
@@ -81,16 +81,16 @@ export class PbAutocomplete extends pbMixin(LitElement) {
 
   _resolveLabelText() {
     if (this.label) {
-      return translate(this.label);
+      return i18n(this.label);
     }
     if (this.placeholder) {
-      return translate(this.placeholder);
+      return i18n(this.placeholder);
     }
     return '';
   }
 
   _resolveHelperText() {
-    return this.helperText ? translate(this.helperText) : '';
+    return this.helperText ? i18n(this.helperText) : '';
   }
 
   get _input() {
@@ -190,7 +190,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     const labelId = labelText ? `${this._inputId}-label` : undefined;
     const helperId = helperText ? `${this._inputId}-helper` : undefined;
     const ariaLabel = !labelId && labelText ? labelText : undefined;
-    const placeholderText = labelId || !this.placeholder ? '' : translate(this.placeholder);
+    const placeholderText = labelId || !this.placeholder ? '' : i18n(this.placeholder);
 
     return html`
       <div class="autocomplete">
