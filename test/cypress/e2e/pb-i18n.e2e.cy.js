@@ -123,6 +123,10 @@ describe('pb-i18n e2e', () => {
     cy.get('li[data-i18n="document.contents"]').should('have.text', 'Custom Table of Contents');
   });
 
+  it('should always include the common localizations', () => {
+    cy.get('pb-i18n[key="search.search"]').should('have.text', 'Search (from common)');
+  });
+
   describe('advanced i18n functionality', () => {
     it('should handle complex interpolation with nested objects', () => {
       // Test that interpolation works with complex options
