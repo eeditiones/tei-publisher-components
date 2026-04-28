@@ -54,7 +54,16 @@ export default [
       format: 'es',
       sourcemap: !production,
     },
-    external: ['module', 'fs', 'path', 'url'],
+    external: [
+      // Non-node entry points (rollup polyfill / older patterns)
+      'module',
+      'fs',
+      'path',
+      'url',
+      // Verovio’s Emscripten build includes `import("node:module")` etc. for Node; the
+      // browser runtime never enters that branch (`ENVIRONMENT_IS_NODE === false`).
+      /^node:/,
+    ],
     plugins: [
       alias({
         entries: [
@@ -205,7 +214,16 @@ export default [
       format: 'es',
       sourcemap: !production,
     },
-    external: ['module', 'fs', 'path', 'url'],
+    external: [
+      // Non-node entry points (rollup polyfill / older patterns)
+      'module',
+      'fs',
+      'path',
+      'url',
+      // Verovio’s Emscripten build includes `import("node:module")` etc. for Node; the
+      // browser runtime never enters that branch (`ENVIRONMENT_IS_NODE === false`).
+      /^node:/,
+    ],
     plugins: [
       alias({
         entries: [
