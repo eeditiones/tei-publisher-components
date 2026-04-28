@@ -244,6 +244,8 @@ export class PbPage extends pbMixin(LitElement) {
     // Deduplicate while preserving order
     const seen = new Set();
     this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
+    // The common one is always needed
+    this._localeFallbacks.push('common');
   }
 
   disconnectedCallback() {
@@ -360,9 +362,10 @@ export class PbPage extends pbMixin(LitElement) {
       { once: true },
     );
 
-    const defaultLocales = this.endpoint
-      ? `${this.toAbsoluteURL('resources/i18n/', this.endpoint)}{{ns}}/{{lng}}.json`
-      : `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
+    // Register two back-ends:
+    //  - first lookup localisation from where pb-components is loaded
+    //  - then (if this.locales is set for additional locations), use a relative path from the page
+    const defaultLocales = `${resolveURL('../i18n/')}{{ns}}/{{lng}}.json`;
     logger.log(
       '<pb-page> Loading locales. common: %s; additional: %s; namespaces: %o',
       defaultLocales,
