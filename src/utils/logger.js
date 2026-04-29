@@ -1,3 +1,6 @@
+// This file is the only file that can call console.log. Disable the normal warning
+/* eslint-disable no-console */
+
 /**
  * Logger utility that conditionally logs based on environment.
  * In development, all logs are shown. In production, only warnings and errors are shown.
