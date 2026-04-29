@@ -3,6 +3,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { typesetMath } from './pb-formula.js';
 import { registry } from './urls.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-fetch.js';
 import './pb-dialog.js';
 import { themableMixin } from './theming.js';
@@ -412,10 +413,12 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
 
   _handleContent(ev) {
     const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
+    // Sanitize server response to prevent XSS attacks
+    const sanitized = sanitizeHTML(resp);
     if (this.container) {
       this.style.display = 'none';
       document.querySelectorAll(this.container).forEach(elem => {
-        elem.innerHTML = resp;
+        elem.innerHTML = sanitized;
         this._parseHeaders(ev.detail.xhr, elem);
         this._fixLinks(elem);
         this._onLoad(elem);
@@ -425,7 +428,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
       this._clearContent();
 
       const div = document.createElement('div');
-      div.innerHTML = resp;
+      div.innerHTML = sanitized;
       this._parseHeaders(ev.detail.xhr, div);
       div.slot = '';
       this.appendChild(div);
@@ -461,7 +464,9 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
     }
     const dialog = this.shadowRoot.getElementById('errorDialog');
     const messageElement = this.shadowRoot.getElementById('errorMessage');
-    messageElement.innerHTML = `<pb-i18n key="dialogs.serverError"></pb-i18n>: ${message}`;
+    // Sanitize error message to prevent XSS attacks
+    const sanitizedMessage = sanitizeHTML(message);
+    messageElement.innerHTML = `<pb-i18n key="dialogs.serverError"></pb-i18n>: ${sanitizedMessage}`;
     dialog.openDialog();
   }
 

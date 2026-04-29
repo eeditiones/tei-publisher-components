@@ -585,26 +585,18 @@ describe('Registry (urls.js)', () => {
       // Ensure state exists (get method expects state to exist)
       registry.state = { existing: { value: 'test' } }
       
-      // The get method has a bug: when reduce returns undefined for an intermediate path,
-      // the next iteration tries to access undefined[component] which throws
-      // This test documents the current behavior - it will throw if path doesn't exist
-      // To avoid the error, we need to ensure the first part of the path exists
-      try {
-        const value = registry.get('nonexistent.path', 'default')
-        // If it doesn't throw, should return 'default'
-        expect(value).to.equal('default')
-      } catch (e) {
-        // If it throws (which is a bug), we document it
-        // Error message format varies by Node.js version:
-        // - Node < 20: "Cannot read properties of undefined"
-        // - Node >= 20: "can't access property \"path\", state is undefined"
-        expect(e.message).to.satisfy((msg) => {
-          return msg.includes('Cannot read properties of undefined') ||
-                 msg.includes("can't access property") ||
-                 msg.includes('state is undefined')
-        })
-        cy.log('Known bug: get() throws when intermediate path doesn\'t exist')
-      }
+      // Should return defaultValue when intermediate path doesn't exist
+      const value = registry.get('nonexistent.path', 'default')
+      expect(value).to.equal('default')
+      
+      // Should also work when first part exists but second doesn't
+      registry.state = { existing: { value: 'test' } }
+      const value2 = registry.get('existing.nonexistent', 'fallback')
+      expect(value2).to.equal('fallback')
+      
+      // Should return undefined if no defaultValue provided
+      const value3 = registry.get('nonexistent.path')
+      expect(value3).to.be.undefined
     })
 
     it('should set nested state values using dot notation', () => {

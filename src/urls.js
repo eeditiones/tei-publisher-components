@@ -231,15 +231,21 @@ class Registry {
 
   get(path, defaultValue) {
     if (!this.state) {
-      return undefined;
+      return defaultValue;
     }
     const value = path.split('.').reduce((state, component) => {
-      if (!state[component]) {
+      // If state is null/undefined, stop reducing and return undefined
+      if (state == null || typeof state !== 'object') {
+        return undefined;
+      }
+      // If component doesn't exist, return undefined
+      if (!(component in state)) {
         return undefined;
       }
       return state[component];
     }, this.state);
-    return value || defaultValue;
+    // Return defaultValue if value is undefined, null, or falsy (but allow 0, false, '')
+    return value !== undefined ? value : defaultValue;
   }
 
   set(path, value) {
