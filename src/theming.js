@@ -31,20 +31,18 @@ export async function loadStylesheets(urls) {
   return null;
 }
 
-function loadResource(url) {
-  return fetch(url, { headers: { accept: 'text/css' } })
-    .then(response => {
-      if (response.ok) {
-        return response.text();
-      }
-      console.warn('<theming> Component stylesheet not found: %s', url);
-      return null;
-    })
-    .then(text => text)
-    .catch(error => {
-      console.error('<theming> Error loading stylesheet %s: %o', url, error);
-      return null;
-    });
+async function loadResource(url) {
+  try {
+    const response = await fetch(url, { headers: { accept: 'text/css' } });
+    if (response.ok) {
+      return await response.text();
+    }
+    console.warn('<theming> Component stylesheet not found: %s', url);
+    return null;
+  } catch (error) {
+    console.error('<theming> Error loading stylesheet %s: %o', url, error);
+    return null;
+  }
 }
 
 /**

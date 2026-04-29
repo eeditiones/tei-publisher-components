@@ -7,36 +7,37 @@ export class Metagrid extends Registry {
     const results = [];
     const url = `https://api.metagrid.ch/search?query=${encodeURIComponent(query)}`;
 
-    return new Promise(resolve => {
-      fetch(url)
-        .then(response => response.json())
-        .then(json => {
-          json.resources.forEach(item => {
-            const name = `${item.metadata.last_name}, ${item.metadata.first_name} `;
-            const result = {
-              register: this._register,
-              id: `${item.provider.slug}-${item.identifier}`,
-              label: name,
-              details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
-              link: item.link.uri,
-              provider: item.provider.slug,
-            };
-            results.push(result);
-          });
-          resolve({
-            totalItems: json.meta.total,
-            items: results,
-          });
-        });
-    });
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      json.resources.forEach(item => {
+        const name = `${item.metadata.last_name}, ${item.metadata.first_name} `;
+        const result = {
+          register: this._register,
+          id: `${item.provider.slug}-${item.identifier}`,
+          label: name,
+          details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
+          link: item.link.uri,
+          provider: item.provider.slug,
+        };
+        results.push(result);
+      });
+      return {
+        totalItems: json.meta.total,
+        items: results,
+      };
+    } catch (error) {
+      console.error('<authority-metagrid> Query failed:', error);
+      return { totalItems: 0, items: [] };
+    }
   }
 
-  info(key, container) {
+  async info(key, container) {
     const p = key.indexOf('-');
     const slug = key.substring(0, p);
-    return new Promise(resolve => {
-      this.getRecord(key).then(json => {
-        const output = `
+    try {
+      const json = await this.getRecord(key);
+      const output = `
           <h3 class="label">
             <a href="https://${json.link.uri}" target="_blank">
               ${json.metadata.last_name}, ${json.metadata.first_name}
@@ -44,13 +45,15 @@ export class Metagrid extends Registry {
           </h3>
           <p>${json.metadata.birth_date} - ${json.metadata.death_date}</p>
         `;
-        container.innerHTML = output;
-        resolve({
-          id: `${slug}-${json.identifier}`,
-          strings: [`${json.metadata.first_name} ${json.metadata.last_name}`],
-        });
-      });
-    });
+      container.innerHTML = output;
+      return {
+        id: `${slug}-${json.identifier}`,
+        strings: [`${json.metadata.first_name} ${json.metadata.last_name}`],
+      };
+    } catch (error) {
+      console.error('<authority-metagrid> Info failed:', error);
+      throw error;
+    }
   }
 
   /**
@@ -63,21 +66,23 @@ export class Metagrid extends Registry {
     const p = key.indexOf('-');
     const slug = key.substring(0, p);
     const id = key.substring(p + 1);
-    return fetch(`https://api.metagrid.ch/search?slug=${slug}&query=${id}`)
-      .then(response => response.json())
-      .then(json => {
-        const item = json.resources[0];
-        const output = { ...item };
-        output.name = `${item.metadata.first_name} ${item.metadata.last_name}`;
-        output.links = [`https://${item.link.uri}`];
-        if (item.metadata.birth_date && item.metadata.birth_date.length > 0) {
-          output.birth = item.metadata.birth_date;
-        }
-        if (item.metadata.death_date && item.metadata.death_date.length > 0) {
-          output.death = item.metadata.death_date;
-        }
-        return output;
-      })
-      .catch(reason => Promise.reject(reason));
+    try {
+      const response = await fetch(`https://api.metagrid.ch/search?slug=${slug}&query=${id}`);
+      const json = await response.json();
+      const item = json.resources[0];
+      const output = { ...item };
+      output.name = `${item.metadata.first_name} ${item.metadata.last_name}`;
+      output.links = [`https://${item.link.uri}`];
+      if (item.metadata.birth_date && item.metadata.birth_date.length > 0) {
+        output.birth = item.metadata.birth_date;
+      }
+      if (item.metadata.death_date && item.metadata.death_date.length > 0) {
+        output.death = item.metadata.death_date;
+      }
+      return output;
+    } catch (error) {
+      console.error('<authority-metagrid> getRecord failed:', error);
+      throw error;
+    }
   }
 }

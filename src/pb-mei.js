@@ -150,22 +150,24 @@ export class PbMei extends pbMixin(LitElement) {
     super.firstUpdated();
 
     if (this.player) {
-      _import('midiPlayer', resolveURL('../lib/web-midi-player/index.js')).then(() => {
+      (async () => {
+        await _import('midiPlayer', resolveURL('../lib/web-midi-player/index.js'));
         const {
           'web-midi-player': { default: MidiPlayer },
         } = window;
         this._midiPlayer = new MidiPlayer();
-      });
+      })();
     }
 
     if (!_verovio) {
-      createVerovioModule().then(VerovioModule => {
+      (async () => {
+        const VerovioModule = await createVerovioModule();
         _verovio = new VerovioToolkit(VerovioModule);
 
         waitOnce('pb-page-ready', () => {
           this.load();
         });
-      });
+      })();
     } else {
       waitOnce('pb-page-ready', () => {
         this.load();
@@ -202,11 +204,16 @@ export class PbMei extends pbMixin(LitElement) {
     } else if (this.url) {
       const link = this.toAbsoluteURL(this.url);
 
-      fetch(link)
-        .then(response => response.text())
-        .then(async str => {
+      (async () => {
+        try {
+          const response = await fetch(link);
+          const str = await response.text();
           this.show(str);
-        });
+        } catch (error) {
+          console.error('<pb-mei> Failed to load MEI from URL:', error);
+          this._handleError(error);
+        }
+      })();
     }
   }
 

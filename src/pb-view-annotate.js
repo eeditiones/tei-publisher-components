@@ -464,21 +464,20 @@ class PbViewAnnotate extends PbView {
     }
   }
 
-  _handleContent() {
-    super._handleContent();
-    this.updateComplete.then(() =>
-      setTimeout(() => {
-        this._initAnnotationColors();
-        this._annotationStyles();
-        this.updateAnnotations();
-        this._markIncompleteAnnotations();
-        if (this._scrollTop) {
-          this.scrollTop = this._scrollTop;
-          this._scrollTop = undefined;
-        }
-        this.emitTo('pb-annotations-loaded');
-      }, 300),
-    );
+  async _handleContent() {
+    await super._handleContent();
+    await this.updateComplete;
+    setTimeout(() => {
+      this._initAnnotationColors();
+      this._annotationStyles();
+      this.updateAnnotations();
+      this._markIncompleteAnnotations();
+      if (this._scrollTop) {
+        this.scrollTop = this._scrollTop;
+        this._scrollTop = undefined;
+      }
+      this.emitTo('pb-annotations-loaded');
+    }, 300);
   }
 
   _updateAnnotation(teiRange, silent = false, batch = false) {

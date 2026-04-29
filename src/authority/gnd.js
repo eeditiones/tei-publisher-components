@@ -27,7 +27,7 @@ function _details(item) {
  * Uses https://lobid.org to query the German GND
  */
 export class GND extends Registry {
-  query(key) {
+  async query(key) {
     const results = [];
     let filter;
     switch (this._register) {
@@ -47,32 +47,33 @@ export class GND extends Registry {
         filter = 'Person';
         break;
     }
-    return new Promise(resolve => {
-      fetch(
+    try {
+      const response = await fetch(
         `https://lobid.org/gnd/search?q=${encodeURIComponent(
           key,
         )}&filter=%2B%28type%3A${filter}%29&format=json&size=100`,
-      )
-        .then(response => response.json())
-        .then(json => {
-          json.member.forEach(item => {
-            const result = {
-              register: this._register,
-              id: this._prefix ? `${this._prefix}-${item.gndIdentifier}` : item.gndIdentifier,
-              label: item.preferredName,
-              link: item.id,
-              details: _details(item),
-              strings: [item.preferredName].concat(item.variantName),
-              provider: 'GND',
-            };
-            results.push(result);
-          });
-          resolve({
-            totalItems: json.totalItems,
-            items: results,
-          });
-        });
-    });
+      );
+      const json = await response.json();
+      json.member.forEach(item => {
+        const result = {
+          register: this._register,
+          id: this._prefix ? `${this._prefix}-${item.gndIdentifier}` : item.gndIdentifier,
+          label: item.preferredName,
+          link: item.id,
+          details: _details(item),
+          strings: [item.preferredName].concat(item.variantName),
+          provider: 'GND',
+        };
+        results.push(result);
+      });
+      return {
+        totalItems: json.totalItems,
+        items: results,
+      };
+    } catch (error) {
+      console.error('<authority-gnd> Query failed:', error);
+      return { totalItems: 0, items: [] };
+    }
   }
 
   /**
@@ -83,61 +84,61 @@ export class GND extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://lobid.org/gnd/${id}.json`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject();
-      })
-      .then(json => {
-        const output = { ...json };
-        output.name = json.preferredName;
-        output.link = json.id;
-        if (json.dateOfBirth && json.dateOfBirth.length > 0) {
-          output.birth = json.dateOfBirth[0];
-        }
-        if (json.dateOfDeath && json.dateOfDeath.length > 0) {
-          output.death = json.dateOfDeath[0];
-        }
-        if (json.biographicalOrHistoricalInformation) {
-          output.note = json.biographicalOrHistoricalInformation.join('; ');
-        }
-        if (json.professionOrOccupation && json.professionOrOccupation.length > 0) {
-          output.profession = json.professionOrOccupation.map(prof => prof.label);
-        }
-        return output;
-      })
-      .catch(() => Promise.reject());
+    try {
+      const response = await fetch(`https://lobid.org/gnd/${id}.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch GND record: ${response.status}`);
+      }
+      const json = await response.json();
+      const output = { ...json };
+      output.name = json.preferredName;
+      output.link = json.id;
+      if (json.dateOfBirth && json.dateOfBirth.length > 0) {
+        output.birth = json.dateOfBirth[0];
+      }
+      if (json.dateOfDeath && json.dateOfDeath.length > 0) {
+        output.death = json.dateOfDeath[0];
+      }
+      if (json.biographicalOrHistoricalInformation) {
+        output.note = json.biographicalOrHistoricalInformation.join('; ');
+      }
+      if (json.professionOrOccupation && json.professionOrOccupation.length > 0) {
+        output.profession = json.professionOrOccupation.map(prof => prof.label);
+      }
+      return output;
+    } catch (error) {
+      console.error('<authority-gnd> getRecord failed:', error);
+      throw error;
+    }
   }
 
-  info(key, container) {
+  async info(key, container) {
     if (!key) {
       return Promise.resolve();
     }
-    return new Promise((resolve, reject) => {
-      this.getRecord(key)
-        .then(json => {
-          let info;
-          if (json.type.indexOf('SubjectHeading') > -1) {
-            info = this.infoSubject(json);
-          } else if (json.type.indexOf('AuthorityResource') > -1) {
-            info = this.infoPerson(json);
-          }
-          const output = `
+    try {
+      const json = await this.getRecord(key);
+      let info;
+      if (json.type.indexOf('SubjectHeading') > -1) {
+        info = this.infoSubject(json);
+      } else if (json.type.indexOf('AuthorityResource') > -1) {
+        info = this.infoPerson(json);
+      }
+      const output = `
           <h3 class="label">
             <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
           </h3>
           ${info}
         `;
-          container.innerHTML = output;
-          resolve({
-            id: this._prefix ? `${this._prefix}-${json.gndIdentifier}` : json.gndIdentifier,
-            strings: [json.preferredName].concat(json.variantName),
-          });
-        })
-        .catch(() => reject());
-    });
+      container.innerHTML = output;
+      return {
+        id: this._prefix ? `${this._prefix}-${json.gndIdentifier}` : json.gndIdentifier,
+        strings: [json.preferredName].concat(json.variantName),
+      };
+    } catch (error) {
+      console.error('<authority-gnd> Info failed:', error);
+      throw error;
+    }
   }
 
   infoPerson(json) {

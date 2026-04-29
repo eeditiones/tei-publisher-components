@@ -177,22 +177,19 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
     const url = `${this.getEndpoint()}/api/blacklab/doc?pattern=${this.pattern}&doc=${
       this.docId
     }&per-document=${this.perDocument}&format=json`;
-    await fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-    })
-      .then(response => response.json())
-      .then(data => {
-        this.kwicData = data;
-      })
-      .then(() => {
-        this._markAllMatches();
-        this._showMatch(this.matchParam);
-      })
-      .catch(error => {
-        console.error('Error retrieving remote content: ', error);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'same-origin',
       });
+      const data = await response.json();
+      this.kwicData = data;
+      this._markAllMatches();
+      this._showMatch(this.matchParam);
+    } catch (error) {
+      console.error('Error retrieving remote content: ', error);
+    }
   }
 
   _markAllMatches() {
