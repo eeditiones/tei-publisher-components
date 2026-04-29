@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { themableMixin } from './theming.js';
+import { logger } from './utils/logger.js';
 
 /**
  * A dropdown for switching the interface language.
@@ -149,7 +150,7 @@ export class PbLang extends themableMixin(pbMixin(LitElement)) {
   _changed(e) {
     const lang = e.target.value;
     if (lang !== this.selected) {
-      console.log('<pb-lang> Language changed to %s', lang);
+      logger.log('<pb-lang> Language changed to %s', lang);
       this.emitTo('pb-i18n-language', { language: lang });
       this.selected = lang;
     }

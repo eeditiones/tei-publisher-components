@@ -9,6 +9,7 @@ import './pb-icon-button.js';
 import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
 import { cmpVersion } from './utils.js';
+import { logger } from './utils/logger.js';
 import './pb-odd-rendition-editor.js';
 import './pb-odd-parameter-editor.js';
 import './pb-message.js';
@@ -829,11 +830,11 @@ export class PbOddModelEditor extends LitElement {
   }
 
   refreshEditors() {
-    console.log('refreshEditors');
+    logger.log('refreshEditors');
     // this.shadowRoot.getElementById('predicate').refresh();
 
     if (this._isGroupOrSequence()) {
-      return console.log('asfdfa');
+      return logger.log('asfdfa');
     }
 
     // this.shadowRoot.getElementById('template').refresh();
@@ -993,7 +994,7 @@ export class PbOddModelEditor extends LitElement {
 
   addModel(newModel) {
     if (newModel.type !== 'model') {
-      console.error('only models can be added to modelSequence or modelGrp');
+      logger.error('only models can be added to modelSequence or modelGrp');
       return;
     }
     this.model.models.unshift(newModel);
@@ -1001,7 +1002,7 @@ export class PbOddModelEditor extends LitElement {
   }
 
   _removeModel(ev) {
-    console.log('_removeModel ', ev);
+    logger.log('_removeModel ', ev);
     ev.stopPropagation();
     const { model } = ev.target;
     const index = this.model.models.indexOf(model);
@@ -1032,7 +1033,7 @@ export class PbOddModelEditor extends LitElement {
   }
 
   _moveModelDown(ev) {
-    console.log('MODEL._moveModelDown ', ev);
+    logger.log('MODEL._moveModelDown ', ev);
     ev.stopPropagation();
     const { model } = ev.target;
     const index = this.model.models.indexOf(model);
@@ -1087,7 +1088,7 @@ export class PbOddModelEditor extends LitElement {
   }
 
   handleModelChanged(ev) {
-    console.log('handleModelChanged ', ev, this);
+    logger.log('handleModelChanged ', ev, this);
     ev.stopPropagation();
     const oldModel = this.model;
     const index = this.model.models.indexOf(ev.detail.oldModel);
@@ -1140,7 +1141,7 @@ export class PbOddModelEditor extends LitElement {
 
   _updatePredicate() {
     this.predicate = this.shadowRoot.getElementById('predicate').value;
-    console.log('_updatePredicate ', this.predicate);
+    logger.log('_updatePredicate ', this.predicate);
     this._fireModelChanged('predicate', this.predicate);
   }
 
@@ -1219,7 +1220,7 @@ export class PbOddModelEditor extends LitElement {
   _fireModelChanged(prop, value) {
     const oldModel = this.model;
     this.model = { ...this.model, [prop]: value };
-    console.log('model changed for %s: %o - %o', prop, value, this.model);
+    logger.log('model changed for %s: %o - %o', prop, value, this.model);
     this.dispatchEvent(
       new CustomEvent('model-changed', {
         composed: true,
@@ -1233,8 +1234,8 @@ export class PbOddModelEditor extends LitElement {
   _copy(ev) {
     ev.preventDefault();
     ev.stopPropagation();
-    console.log('odd-model.copy ', ev);
-    console.log('odd-model.copy data', this.model);
+    logger.log('odd-model.copy ', ev);
+    logger.log('odd-model.copy data', this.model);
 
     this.dispatchEvent(
       new CustomEvent('odd-copy', { composed: true, bubbles: true, detail: { model: this.model } }),
@@ -1242,7 +1243,7 @@ export class PbOddModelEditor extends LitElement {
   }
 
   _paste(ev) {
-    console.log('model _paste ', ev);
+    logger.log('model _paste ', ev);
     this.dispatchEvent(
       new CustomEvent('odd-paste', { composed: true, bubbles: true, detail: { target: this } }),
     );

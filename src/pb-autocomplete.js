@@ -3,6 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 
 let autocompleteId = 0;
@@ -557,7 +558,7 @@ export class PbAutocomplete extends pbMixin(LitElement) {
       this._applyRemoteSuggestions(data);
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('pb-autocomplete: request failed', error);
+        logger.error('pb-autocomplete: request failed', error);
       }
     } finally {
       if (this._abortController?.signal.aborted) {

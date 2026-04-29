@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { animate } from 'animejs';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 import './pb-panel.js';
 
 /**
@@ -72,7 +73,7 @@ export class PbGrid extends pbMixin(LitElement) {
       if (idx < 0) {
         return; // panel not found
       }
-      console.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
+      logger.log('<pb-grid> Updating panel %d to show %s', idx, ev.detail.active);
       // Update the panel's active template index (this is for pb-panel's internal state)
       // BUT: Do NOT commit panels to registry - panels array should only change when panels are added/removed,
       // not when a panel switches its active view. The panels parameter in the URL should remain stable.
@@ -81,7 +82,7 @@ export class PbGrid extends pbMixin(LitElement) {
       // Store the active template index for this panel, but don't change the panels array structure
       // The panels array represents which panels are visible, not which template each panel is showing
       // We'll track active templates separately if needed, but for now just log it
-      console.log('<pb-grid> Panel %d switched to template %s (not committing to registry)', panelIdx, ev.detail.active);
+      logger.log('<pb-grid> Panel %d switched to template %s (not committing to registry)', panelIdx, ev.detail.active);
       // DO NOT commit - panels parameter should remain stable
     });
 
@@ -98,7 +99,7 @@ export class PbGrid extends pbMixin(LitElement) {
       const parsed = panelsParam.split('.').map(param => parseInt(param, 10));
       // Only use if all segments are valid numbers and reasonable (max 10 panels)
       if (parsed.length > 0 && parsed.length <= 10 && parsed.every(p => !isNaN(p) && p >= 0 && p < 10)) {
-        console.log('<pb-grid> connectedCallback: Using panels from registry:', parsed, 'overriding template attribute');
+        logger.log('<pb-grid> connectedCallback: Using panels from registry:', parsed, 'overriding template attribute');
         this.panels = parsed;
         this._panelsInitialized = true;
       }
@@ -107,7 +108,7 @@ export class PbGrid extends pbMixin(LitElement) {
       // If template has panels="[0,1,2]" but we want to use that only if no registry value exists
       // But we should still mark as initialized to prevent duplicates
       if (this.panels && this.panels.length > 0) {
-        console.log('<pb-grid> connectedCallback: Using panels from template attribute:', this.panels, '(no registry value)');
+        logger.log('<pb-grid> connectedCallback: Using panels from template attribute:', this.panels, '(no registry value)');
         this._panelsInitialized = true;
       }
     }
@@ -115,7 +116,7 @@ export class PbGrid extends pbMixin(LitElement) {
     this._isUpdatingFromRegistry = false;
     this._lastPanelsState = null; // Track last panels state to prevent duplicate rebuilds
     registry.subscribe(this, state => {
-      console.log(
+      logger.log(
         '<pb-grid> Registry subscribe callback triggered, _isUpdatingFromRegistry:',
         this._isUpdatingFromRegistry,
         'state.panels:',
@@ -124,7 +125,7 @@ export class PbGrid extends pbMixin(LitElement) {
       // Only rebuild DOM if state change came from external source (e.g., browser navigation)
       // not from our own registry.commit() calls
       if (this._isUpdatingFromRegistry) {
-        console.log(
+        logger.log(
           '<pb-grid> Skipping registry subscribe callback due to _isUpdatingFromRegistry flag',
         );
         return;
@@ -134,7 +135,7 @@ export class PbGrid extends pbMixin(LitElement) {
       
       // Prevent duplicate rebuilds if panels haven't actually changed
       if (this._lastPanelsState === newStateStr) {
-        console.log(
+        logger.log(
           '<pb-grid> Skipping registry subscribe callback - panels state unchanged:',
           newStateStr,
         );
@@ -144,13 +145,13 @@ export class PbGrid extends pbMixin(LitElement) {
       // Prevent rebuild if we haven't initialized yet (firstUpdated hasn't run)
       // This prevents the registry callback from running before firstUpdated and creating duplicates
       if (!this._panelsInitialized && !this.template) {
-        console.log(
+        logger.log(
           '<pb-grid> Skipping registry subscribe callback - not yet initialized (template not ready)',
         );
         return;
       }
       
-      console.log('<pb-grid> Registry subscribe callback rebuilding DOM with panels:', newState, 'current panels:', this.panels);
+      logger.log('<pb-grid> Registry subscribe callback rebuilding DOM with panels:', newState, 'current panels:', this.panels);
       this._lastPanelsState = newStateStr;
       this.panels = newState;
       this._panelsInitialized = true;
@@ -164,7 +165,7 @@ export class PbGrid extends pbMixin(LitElement) {
     // If template is ready and we have panels but haven't initialized, mark as initialized
     // This handles the case where template attribute was parsed before registry value was read
     if (this.template && this.panels && this.panels.length > 0 && !this._panelsInitialized) {
-      console.log('<pb-grid> connectedCallback: Template ready, panels from attribute:', this.panels);
+      logger.log('<pb-grid> connectedCallback: Template ready, panels from attribute:', this.panels);
       this._panelsInitialized = true;
     }
   }
@@ -180,7 +181,7 @@ export class PbGrid extends pbMixin(LitElement) {
         const parsedStr = parsed.join('.');
         const currentStr = this.panels.join('.');
         if (parsedStr !== currentStr) {
-          console.log('<pb-grid> firstUpdated: Overriding template panels', this.panels, 'with registry value', parsed);
+          logger.log('<pb-grid> firstUpdated: Overriding template panels', this.panels, 'with registry value', parsed);
           this.panels = parsed;
           this._panelsInitialized = true;
         }
@@ -191,10 +192,10 @@ export class PbGrid extends pbMixin(LitElement) {
     // This prevents duplicates if registry subscribe callback already created them
     const existingPanels = this.querySelectorAll('._grid_panel').length;
     if (existingPanels === 0 && this.panels && this.panels.length > 0) {
-      console.log('<pb-grid> firstUpdated: Inserting panels:', this.panels, 'existing panels:', existingPanels);
+      logger.log('<pb-grid> firstUpdated: Inserting panels:', this.panels, 'existing panels:', existingPanels);
       this.panels.forEach(panelNum => this._insertPanel(panelNum));
     } else {
-      console.log('<pb-grid> firstUpdated: Skipping panel insertion - already have', existingPanels, 'panels');
+      logger.log('<pb-grid> firstUpdated: Skipping panel insertion - already have', existingPanels, 'panels');
     }
     
     // Track initial state to prevent duplicate rebuilds
@@ -215,7 +216,7 @@ export class PbGrid extends pbMixin(LitElement) {
       const draggedPanelIdx = parseInt(ev.detail.panel);
       const targetPanelIdx = this._getPanelIndex(ev.detail.target);
 
-      console.log(
+      logger.log(
         '<pb-grid> Insert panel %d at %d in %s',
         draggedPanelIdx,
         targetPanelIdx,
@@ -296,9 +297,9 @@ export class PbGrid extends pbMixin(LitElement) {
       value = max + 1;
     }
 
-    console.log('<pb-grid> Adding panel with value:', value);
-    console.log('<pb-grid> Current panels before add:', this.panels);
-    console.log(
+    logger.log('<pb-grid> Adding panel with value:', value);
+    logger.log('<pb-grid> Current panels before add:', this.panels);
+    logger.log(
       '<pb-grid> Current panel count before add:',
       this.querySelectorAll('._grid_panel').length,
     );
@@ -313,8 +314,8 @@ export class PbGrid extends pbMixin(LitElement) {
     this._update();
     this.emitTo('pb-refresh');
 
-    console.log('<pb-grid> After adding panel - panels:', this.panels);
-    console.log(
+    logger.log('<pb-grid> After adding panel - panels:', this.panels);
+    logger.log(
       '<pb-grid> After adding panel - panel count:',
       this.querySelectorAll('._grid_panel').length,
     );
@@ -335,10 +336,10 @@ export class PbGrid extends pbMixin(LitElement) {
       container = panel;
       idx = this._getPanelIndex(panel);
     }
-    console.log('<pb-grid> Removing panel %d', idx);
-    console.log('<pb-grid> Container:', container);
-    console.log('<pb-grid> Current panels:', [...this.panels]);
-    console.log('<pb-grid> Current panel count:', this.querySelectorAll('._grid_panel').length);
+    logger.log('<pb-grid> Removing panel %d', idx);
+    logger.log('<pb-grid> Container:', container);
+    logger.log('<pb-grid> Current panels:', [...this.panels]);
+    logger.log('<pb-grid> Current panel count:', this.querySelectorAll('._grid_panel').length);
 
     this.panels.splice(this.direction === 'rtl' ? this.panels.length - idx - 1 : idx, 1);
 
@@ -350,20 +351,20 @@ export class PbGrid extends pbMixin(LitElement) {
     this._assignPanelIds();
     this._update();
 
-    console.log('<pb-grid> After removal - panels:', [...this.panels]);
-    console.log(
+    logger.log('<pb-grid> After removal - panels:', [...this.panels]);
+    logger.log(
       '<pb-grid> After removal - panel count:',
       this.querySelectorAll('._grid_panel').length,
     );
   }
 
   _insertPanel(active) {
-    console.log('<pb-grid> _insertPanel called with active:', active);
-    console.log('<pb-grid> Template content:', this.template.content);
-    console.log('<pb-grid> Template firstElementChild:', this.template.content.firstElementChild);
+    logger.log('<pb-grid> _insertPanel called with active:', active);
+    logger.log('<pb-grid> Template content:', this.template.content);
+    logger.log('<pb-grid> Template firstElementChild:', this.template.content.firstElementChild);
 
     const clone = document.importNode(this.template.content.firstElementChild, true);
-    console.log('<pb-grid> Cloned element:', clone);
+    logger.log('<pb-grid> Cloned element:', clone);
 
     clone.setAttribute('active', active);
     if (this.direction === 'ltr' || this.querySelectorAll('._grid_panel').length === 0) {
@@ -374,7 +375,7 @@ export class PbGrid extends pbMixin(LitElement) {
     clone.classList.add('_grid_panel');
     this._assignPanelIds();
 
-    console.log(
+    logger.log(
       '<pb-grid> After _insertPanel - DOM panels:',
       this.querySelectorAll('._grid_panel').length,
     );

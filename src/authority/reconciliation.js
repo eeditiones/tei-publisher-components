@@ -1,4 +1,5 @@
 import { Registry } from './registry.js';
+import { logger } from '../utils/logger.js';
 
 // Todo:
 // - strings <- types
@@ -20,7 +21,7 @@ export class ReconciliationService extends Registry {
     getServiceManifest(this.endpoint).then(result => {
       this.ORConfig = result;
       if (this.debug) {
-        console.log(
+        logger.log(
           "OpenReconcile connector for register '%s' at endpoint <%s>. Using config: %o",
           this._register,
           this.endpoint,
@@ -78,7 +79,7 @@ export class ReconciliationService extends Registry {
             results.push(result);
           });
           if (this.debug) {
-            console.log('OpenReconcile results: %o', results);
+            logger.log('OpenReconcile results: %o', results);
           }
           resolve({
             totalItems: json.q1.result.length,

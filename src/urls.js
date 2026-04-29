@@ -1,6 +1,7 @@
 import { match, compile, pathToRegexp } from 'path-to-regexp';
 import { PbEvents } from './pb-events.js';
 import { getSubscribedChannels } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Convert path-to-regexp v6 syntax to v8 syntax
@@ -27,7 +28,7 @@ function convertPathToRegexpSyntax(pattern) {
 function log(...args) {
   args[0] = `%c<registry>%c ${args[0]}`;
   args.splice(1, 0, 'font-weight: bold; color: #99FF33;', 'color: inherit; font-weight: normal');
-  console.log.apply(null, args);
+  logger.log.apply(null, args);
 }
 
 /**
@@ -123,7 +124,7 @@ class Registry {
     // determine initial state of the registry by parsing current URL
     const initialState = this._stateFromURL();
     if (!initialState) {
-      console.error(
+      logger.error(
         '<registry> failed to parse URL: %s using template %s',
         window.location,
         this.urlTemplate,
@@ -142,7 +143,7 @@ class Registry {
       try {
         this.channelStates = JSON.parse(ev.state);
       } catch (e) {
-        console.error('<registry> error restoring state: %s', e.toString());
+        logger.error('<registry> error restoring state: %s', e.toString());
         return;
       }
 
@@ -184,7 +185,7 @@ class Registry {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.forEach((value, key) => {
       if ((this.urlPattern && this.pathParams.has(key)) || (this.usePath && key === 'path')) {
-        console.warn(
+        logger.warn(
           'Found path parameter in query, but usePath is set to true. The path parameter will be ignored.',
         );
         return;
@@ -263,7 +264,7 @@ class Registry {
     // Debug: Log what component is calling registry.commit (only for commits that might reset root)
     if (newState && ('root' in newState) && newState.root === null) {
       const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-      console.warn('[registry] commit called with root=null by:', componentName, {
+      logger.warn('[registry] commit called with root=null by:', componentName, {
         newState,
         overwrite,
         stack: new Error().stack
@@ -275,7 +276,7 @@ class Registry {
   replace(elem, newState, overwrite = false) {
     // Debug: Log what component is calling registry.replace
     const componentName = elem?.tagName?.toLowerCase() || elem?.constructor?.name || 'unknown';
-    console.warn('[registry] replace called by:', componentName, {
+    logger.warn('[registry] replace called by:', componentName, {
       newState,
       overwrite,
       stack: new Error().stack
@@ -288,7 +289,7 @@ class Registry {
     this.state = overwrite ? newState : { ...this.state, ...newState };
     const resolved = this.urlFromState();
 
-    console.log('[registry] _commit: committing state', {
+    logger.log('[registry] _commit: committing state', {
       oldState,
       newState,
       overwrite,
@@ -312,11 +313,11 @@ class Registry {
     if (replace) {
       window.history.replaceState(json, '', resolved);
       log('replace %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      logger.log('[registry] _commit: replaced URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     } else {
       window.history.pushState(json, '', resolved);
       log('commit %s: %o %d', resolved.toString(), this.channelStates, window.history.length);
-      console.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
+      logger.log('[registry] _commit: pushed URL', { url: resolved.toString(), hash: resolved.hash, search: resolved.search });
     }
   }
 
@@ -338,7 +339,7 @@ class Registry {
       }
     }
 
-    console.log('[registry] urlFromState: building URL from state', {
+    logger.log('[registry] urlFromState: building URL from state', {
       state: this.state,
       idHash: this.idHash,
       usePath: this.usePath,
@@ -353,7 +354,7 @@ class Registry {
         // fill up missing parameters by stripping potential "user." prefix
         const normParam = param.replace(/^(?:user\.)?(.*)$/, '$1');
         const shouldIgnore = this.pathParams.has(normParam) || this.urlIgnore.has(normParam);
-        console.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
+        logger.log('[registry] urlFromState: processing param (urlPattern)', { param, normParam, value, shouldIgnore, willInclude: !shouldIgnore });
         if (!shouldIgnore) {
           setParam(value, normParam);
         }
@@ -370,14 +371,14 @@ class Registry {
           (param === 'odd' && value === 'teipublisher') ||
           (param === 'panels' && typeof value === 'string' && value.split('.').length > 10) // Malformed panels (concatenated)
         );
-        console.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
+        logger.log('[registry] urlFromState: processing param (no urlPattern)', { param, value, willInclude, isUnwantedDefault, isPath: param === 'path', usePath: this.usePath, inUrlIgnore: this.urlIgnore.has(param) });
         if (willInclude && !isUnwantedDefault) {
           setParam(value, param);
         } else if (isUnwantedDefault) {
-          console.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
+          logger.log('[registry] urlFromState: filtering out unwanted default value', { param, value, reason: 'unwanted default' });
         }
       } else {
-        console.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
+        logger.log('[registry] urlFromState: skipping param', { param, value, reason: param === 'path' && this.usePath ? 'path param with usePath=true' : 'in urlIgnore' });
       }
     }
 
@@ -401,10 +402,10 @@ class Registry {
 
     if (this.state.id && !this.urlPattern) {
       newUrl.hash = `#${this.state.id}`;
-      console.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
+      logger.log('[registry] urlFromState: set hash from state.id', { id: this.state.id, hash: newUrl.hash });
     }
 
-    console.log('[registry] urlFromState: final URL', {
+    logger.log('[registry] urlFromState: final URL', {
       url: newUrl.toString(),
       search: newUrl.search,
       hash: newUrl.hash,
