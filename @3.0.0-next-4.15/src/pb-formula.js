@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 /** Import external script dynamically */
 function _import(name, location) {
@@ -92,7 +93,7 @@ function _initMath(context, formulas) {
  */
 export function typesetMath(elem) {
   const formulas = elem.querySelectorAll('pb-formula');
-  console.log(`<pb-formula> Found ${formulas.length} elements to typeset ...`);
+  logger.log(`<pb-formula> Found ${formulas.length} elements to typeset ...`);
   if (formulas.length > 0) {
     if (window.MathJax) {
       _initMath(elem, formulas);

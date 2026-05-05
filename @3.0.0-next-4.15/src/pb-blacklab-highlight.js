@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 import './pb-icon-button.js';
 
 /**
@@ -112,7 +113,7 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
     waitOnce('pb-page-ready', () => {
       this.viewElement = document.getElementById(this.view);
       if (!this.viewElement) {
-        console.error(`${this}: view element with id ${this.view} does not exist`);
+        logger.error(`${this}: view element with id ${this.view} does not exist`);
         return;
       }
       this.shadow = this.viewElement.shadowRoot;
@@ -191,7 +192,7 @@ export class PbBlacklabHighlight extends pbMixin(LitElement) {
         this._showMatch(this.matchParam);
       })
       .catch(error => {
-        console.error('Error retrieving remote content: ', error);
+        logger.error('Error retrieving remote content: ', error);
       });
   }
 

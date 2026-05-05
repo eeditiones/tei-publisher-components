@@ -1,6 +1,7 @@
 import { html, css } from 'lit';
 import './pb-fetch.js';
 import { PbLoad } from './pb-load.js';
+import { logger } from './utils/logger.js';
 import './pb-dialog.js';
 
 /**
@@ -182,7 +183,7 @@ export class PbCustomForm extends PbLoad {
     const loader = this.shadowRoot.getElementById('loadContent');
     const { response } = loader.lastError;
     if (this.silent) {
-      console.error('Request failed: %s', response ? response.description : '');
+      logger.error('Request failed: %s', response ? response.description : '');
       return;
     }
     let message;

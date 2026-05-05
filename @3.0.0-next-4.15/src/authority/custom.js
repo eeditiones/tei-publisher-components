@@ -7,6 +7,7 @@ import { GND } from './gnd.js';
 import { KBGA } from './kbga.js';
 import { Anton } from './anton.js';
 import { ReconciliationService } from './reconciliation.js';
+import { logger } from '../utils/logger.js';
 
 function createNestedConnectors(endpoint, root) {
   const authorities = [];
@@ -35,7 +36,7 @@ function createNestedConnectors(endpoint, root) {
         break;
       case 'Custom':
         // Avoid recursive Custom-in-Custom to break cycles; ignore or warn
-        console.warn('Nested Custom connector ignored to avoid circular dependency');
+        logger.warn('Nested Custom connector ignored to avoid circular dependency');
         return; // skip push
       default:
         instance = new Metagrid(configElem);
@@ -55,7 +56,7 @@ export class Custom extends Registry {
     this._connectors.forEach(connector => {
       connector.name = this.name;
     });
-    console.log(
+    logger.log(
       'custom connector: endpoint: %s; using authorities: %o',
       this._endpoint,
       this._connectors,

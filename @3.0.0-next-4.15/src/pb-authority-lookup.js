@@ -4,6 +4,7 @@ import { themableMixin } from './theming.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { createConnectors } from './authority/connectors.js';
+import { logger } from './utils/logger.js';
 import './pb-restricted.js';
 
 /**
@@ -114,7 +115,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       }
     });
 
-    console.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
+    logger.log('<pb-authority-lookup> Registered authorities: %o', this._authorities);
   }
 
   render() {
@@ -163,12 +164,12 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
 
   async lookup(register, id, container) {
     if (!id || id === '') {
-      console.log('<pb-authority-lookup> Key is empty');
+      logger.log('<pb-authority-lookup> Key is empty');
       container.innerHTML = '';
       return Promise.resolve();
     }
     const authority = this._authorities[register];
-    console.log(
+    logger.log(
       '<pb-authority-lookup> Retrieving info for %s from %s using %s',
       id,
       register,

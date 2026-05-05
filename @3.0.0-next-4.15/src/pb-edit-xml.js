@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Open eXide to edit a given source document.
@@ -102,12 +103,12 @@ export class PbEditXml extends themableMixin(pbMixin(LitElement)) {
       // check if eXide is really available or it's an empty page
       const app = exide.eXide;
       if (app) {
-        console.log('<pb-edit-xml> using existing eXide to open %s', path);
+        logger.log('<pb-edit-xml> using existing eXide to open %s', path);
         // eXide is there
         exide.eXide.app.findDocument(path);
         exide.focus();
       } else {
-        console.log('<pb-edit-xml> opening new eXide for %s', path);
+        logger.log('<pb-edit-xml> opening new eXide for %s', path);
         window.eXide_onload = function () {
           exide.eXide.app.findDocument(path);
         };

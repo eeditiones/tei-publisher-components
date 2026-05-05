@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * Show an SVG image with zoom and pan functionality. The image URL may
@@ -64,7 +65,7 @@ export class PbSvg extends pbMixin(LitElement) {
       return;
     }
     const uri = this.toAbsoluteURL(this.url);
-    console.log('<pb-svg> Loading %s', uri);
+    logger.log('<pb-svg> Loading %s', uri);
     if (this._pan) {
       this._pan.destroy();
       this._pan = null;
@@ -74,7 +75,7 @@ export class PbSvg extends pbMixin(LitElement) {
       .then(response => response.text())
       .then(data => {
         if (!window.svgPanZoom) {
-          console.error('<pb-svg> svgPanZoom not available');
+          logger.error('<pb-svg> svgPanZoom not available');
           return;
         }
         const doc = new DOMParser().parseFromString(data, 'image/svg+xml');

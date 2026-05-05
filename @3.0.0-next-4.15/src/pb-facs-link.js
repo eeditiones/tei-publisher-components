@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * @slot - unnamed default slot for link text
@@ -113,11 +114,11 @@ export class PbFacsLink extends pbMixin(LitElement) {
   }
 
   _trigger() {
-    console.log('<facs-link> %s %o', this.facs, this.coordinates);
+    logger.log('<facs-link> %s %o', this.facs, this.coordinates);
     
     // Validate facs URL before attempting to load
     if (!this.facs || this.facs.trim() === '') {
-      console.warn('<pb-facs-link> No facs URL provided');
+      logger.warn('<pb-facs-link> No facs URL provided');
       return;
     }
     

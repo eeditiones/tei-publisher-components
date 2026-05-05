@@ -7,6 +7,7 @@ import { VerovioToolkit } from 'verovio/esm';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { resolveURL } from './utils.js';
+import { logger } from './utils/logger.js';
 
 let _verovio = null;
 
@@ -189,7 +190,7 @@ export class PbMei extends pbMixin(LitElement) {
         _verovio.loadData(this._data);
         this.showPage();
       } catch (error) {
-        console.error('<pb-mei> Failed to reload MEI data:', error);
+        logger.error('<pb-mei> Failed to reload MEI data:', error);
         this._handleError(error);
       }
     }
@@ -197,7 +198,7 @@ export class PbMei extends pbMixin(LitElement) {
 
   load() {
     if (this.data) {
-      console.log('<pb-mei> Rendering data');
+      logger.log('<pb-mei> Rendering data');
       this.show(this.data);
     } else if (this.url) {
       const link = this.toAbsoluteURL(this.url);
@@ -218,10 +219,10 @@ export class PbMei extends pbMixin(LitElement) {
       _verovio.loadData(this._data);
       this._pages = _verovio.getPageCount();
       this._page = 1;
-      console.log('<pb-mei> Loaded %d pages', this._pages);
+      logger.log('<pb-mei> Loaded %d pages', this._pages);
       this.showPage();
     } catch (error) {
-      console.error('<pb-mei> Failed to load MEI data:', error);
+      logger.error('<pb-mei> Failed to load MEI data:', error);
       this._handleError(error);
     }
   }
@@ -329,7 +330,7 @@ export class PbMei extends pbMixin(LitElement) {
       this._midiPlayer.play({ arrayBuffer: array });
       this.requestUpdate('_isPlaying');
     } catch (error) {
-      console.error('<pb-mei> Failed to play MIDI:', error);
+      logger.error('<pb-mei> Failed to play MIDI:', error);
       this._isPlaying = false;
       this.requestUpdate('_isPlaying');
       this._handleError(error);

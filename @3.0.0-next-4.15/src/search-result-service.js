@@ -1,4 +1,5 @@
 import { get as i18n } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 export class SearchResultService {
   /*
@@ -109,9 +110,9 @@ export class SearchResultService {
             targetBinObject.value += this.data.valid[dateStr] || 0;
           }
         } catch (e) {
-          console.log(e);
-          console.log('currentCategory');
-          console.log(currentCategory);
+          logger.log(e);
+          logger.log('currentCategory');
+          logger.log(currentCategory);
         }
       });
     if (this.data.invalid) {

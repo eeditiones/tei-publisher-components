@@ -1,5 +1,6 @@
 import { waitOnce } from './pb-mixin.js';
 import 'construct-style-sheets-polyfill';
+import { logger } from './utils/logger.js';
 
 /**
  * Maps theme selector to CSSStyleSheet or null.
@@ -37,12 +38,12 @@ function loadResource(url) {
       if (response.ok) {
         return response.text();
       }
-      console.warn('<theming> Component stylesheet not found: %s', url);
+      logger.warn('<theming> Component stylesheet not found: %s', url);
       return null;
     })
     .then(text => text)
     .catch(error => {
-      console.error('<theming> Error loading stylesheet %s: %o', url, error);
+      logger.error('<theming> Error loading stylesheet %s: %o', url, error);
       return null;
     });
 }
@@ -71,7 +72,7 @@ export function importStyles(elem) {
     adoptedSheet = new CSSStyleSheet();
     adoptedSheet.replaceSync(newCSS.join(''));
   }
-  console.log('<theming> caching stylesheet for %s', selectors);
+  logger.log('<theming> caching stylesheet for %s', selectors);
   themeMap.set(selectors, adoptedSheet);
   return adoptedSheet;
 }

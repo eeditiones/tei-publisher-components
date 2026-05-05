@@ -1,6 +1,7 @@
 import '@lrnwebcomponents/es-global-bridge';
 import { Registry } from './registry.js';
 import { resolveURL } from '../utils.js';
+import { logger } from '../utils/logger.js';
 
 function expandTemplate(template = '', options) {
   return template.replace(/\${([^}]+)}/g, (match, p) => {
@@ -116,7 +117,7 @@ export class Airtable extends Registry {
         .select(options)
         .firstPage((err, records) => {
           if (err) {
-            console.error(err);
+            logger.error(err);
             reject(err);
             return;
           }
