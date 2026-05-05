@@ -10,6 +10,14 @@ on:
 
 jobs:
   docker-cypress-e2e:
+    name: Run Cypress E2E tests on actual back-end
+    # Run E2E tests on the actual back-end. Boot up exist, install tei-publisher-app for the API
+    # implementations and run the E2E tests
+
+    # disabled until we reach a concensus on how to work with multiple versions of
+    # tei-publisher-components, exist db and tei-publisher-app
+    if: false
+
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
