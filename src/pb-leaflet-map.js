@@ -3,6 +3,7 @@ import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
 import { get as i18n } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-map-layer.js';
 import './pb-map-icon.js';
 
@@ -241,9 +242,9 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             this._fitBounds();
           }
 
-          console.log('<pb-leaflet-map> added marker');
+          logger.log('<pb-leaflet-map> added marker');
         } else {
-          console.log('<pb-leaflet-map> Marker already added to map');
+          logger.log('<pb-leaflet-map> Marker already added to map');
         }
 
         if (this.toggle) {
@@ -299,7 +300,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
           })
           .then(this._initMap.bind(this))
           .catch(error => {
-            console.warn(
+            logger.warn(
               '<pb-leaflet-map> Failed to load geocoding script, initializing map without geocoding:',
               error,
             );
@@ -318,7 +319,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             .load('plugin', pluginPath)
             .then(loadGeocodingOrInit)
             .catch(error => {
-              console.warn(
+              logger.warn(
                 '<pb-leaflet-map> Failed to load marker cluster plugin, initializing without clustering:',
                 error,
               );
@@ -329,7 +330,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         }
       })
       .catch(error => {
-        console.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
+        logger.error('<pb-leaflet-map> Failed to load Leaflet library:', error);
       });
   }
 
@@ -429,7 +430,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
     // Check if geocoding library is properly loaded
     if (!L.Control || !L.Control.Geocoder) {
-      console.warn(
+      logger.warn(
         '<pb-leaflet-map> Geocoding library not properly loaded, skipping geocoding configuration',
       );
       return;
@@ -437,7 +438,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
 
     // Check if nominatim method exists
     if (!L.Control.Geocoder.nominatim) {
-      console.warn(
+      logger.warn(
         '<pb-leaflet-map> Nominatim geocoder not available, skipping geocoding configuration',
       );
       return;

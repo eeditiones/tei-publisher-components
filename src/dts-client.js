@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 import './pb-fetch.js';
 
@@ -68,7 +69,7 @@ export class DtsClient extends pbMixin(LitElement) {
     });
     this.subscribeTo('pb-load', ev => {
       this.page = ev.detail.params.page;
-      console.log('<dts-client> Loading page %d', this.page);
+      logger.log('<dts-client> Loading page %d', this.page);
       this._update();
     });
   }
@@ -92,7 +93,7 @@ export class DtsClient extends pbMixin(LitElement) {
 
   _configureEndpoint(newBaseUri) {
     if (newBaseUri) {
-      console.log('<dts-client> initializing connection to endpoint %s', newBaseUri);
+      logger.log('<dts-client> initializing connection to endpoint %s', newBaseUri);
       this.emitTo('pb-start-update');
       this.queryAPI.url = newBaseUri;
       this.queryAPI.generateRequest();
@@ -106,7 +107,7 @@ export class DtsClient extends pbMixin(LitElement) {
     }
     this.collection = member && typeof member === 'object' ? member['@id'] : member;
     this.page = null;
-    console.log('<dts-client> navigating to collection %s', this.collection);
+    logger.log('<dts-client> navigating to collection %s', this.collection);
     this._update();
   }
 
@@ -122,7 +123,7 @@ export class DtsClient extends pbMixin(LitElement) {
     this.emitTo('pb-start-update');
     const path = member['dts:passage'] || member['dts:download'];
     const url = new URL(path, this.baseUri).toString();
-    console.log('<dts-client> downloading %s', url);
+    logger.log('<dts-client> downloading %s', url);
     if (this.lessThanApiVersion('1.0.0')) {
       this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
       this.documentsAPI.params = {
@@ -143,7 +144,7 @@ export class DtsClient extends pbMixin(LitElement) {
     this.emitTo('pb-start-update');
     const path = member['dts:passage'] || member['dts:download'];
     const url = new URL(path, this.baseUri).toString();
-    console.log('<dts-client> importing %s', url);
+    logger.log('<dts-client> importing %s', url);
     if (this.lessThanApiVersion('1.0.0')) {
       this.documentsAPI.url = `${this.getEndpoint()}/modules/lib/dts.xql`;
       this.documentsAPI.params = {
@@ -180,12 +181,12 @@ export class DtsClient extends pbMixin(LitElement) {
     const json = this.queryAPI.lastResponse;
     if (json['@type'] === 'EntryPoint') {
       this._collectionEndpoint = new URL(json.collections, this.baseUri).toString();
-      console.log('<dts-client> configured collection endpoint: %s', this._collectionEndpoint);
+      logger.log('<dts-client> configured collection endpoint: %s', this._collectionEndpoint);
 
       this._update();
     } else {
       this.data = json;
-      console.log('<dts-client> received collection data: %o', json);
+      logger.log('<dts-client> received collection data: %o', json);
       if (!this.page && json.totalItems > json.member.length) {
         this.perPage = json.member.length;
       }

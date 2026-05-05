@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 
 /**
  * A dropdown to select a DTS endpoint from a configured list.
@@ -138,7 +139,7 @@ export class DtsSelectEndpoint extends pbMixin(LitElement) {
     const endpoint = this.endpoints.find(endp => endp.url === newEndpoint);
     const committedEndpoint = endpoint ? endpoint.url : newEndpoint;
     registry.commit(this, { endpoint: committedEndpoint });
-    console.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
+    logger.log('<dts-select-endpoint> Setting endpoint to %s', newEndpoint);
     this.emitTo('dts-endpoint', {
       endpoint: committedEndpoint,
       collection: endpoint ? endpoint.collection : undefined,

@@ -8,13 +8,14 @@ import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import { resolveURL, getCSSProperty } from './utils.js';
 import { themableMixin } from './theming.js';
+import { logger } from './utils/logger.js';
 
 const PRISM_THEMES = new Map();
 
 function loadTheme(theme) {
   const themeName = theme === 'default' ? 'prism.css' : `prism-${theme}.css`;
   if (PRISM_THEMES.has(themeName)) {
-    console.log('Using cached theme: %s', themeName);
+    logger.log('Using cached theme: %s', themeName);
     return PRISM_THEMES.get(themeName);
   }
 
@@ -45,7 +46,7 @@ function loadTheme(theme) {
       resource = resolveURL('../css/prismjs/') + themeName;
     }
     
-    console.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
+    logger.log('<pb-code-highlight> loading theme %s from %s', theme, resource);
     fetch(resource)
       .then(response => response.text())
       .catch(() => resolve(''))

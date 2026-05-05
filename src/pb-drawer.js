@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
+import { logger } from './utils/logger.js';
 
 /**
  * A drawer component used e.g. for table-of-contents.
@@ -97,13 +98,13 @@ export class PbDrawer extends pbMixin(LitElement) {
     const toggle = document.getElementById(this.toggle);
     const query = `(max-width: ${this.maxWidth})`;
     if (window.matchMedia(query).matches) {
-      console.log('<pb-drawer> entering overlay mode');
+      logger.log('<pb-drawer> entering overlay mode');
       this.classList.add('overlay');
       if (toggle) {
         toggle.style.display = '';
       }
     } else {
-      console.log('<pb-drawer> leaving overlay mode');
+      logger.log('<pb-drawer> leaving overlay mode');
       this.classList.remove('overlay');
       if (toggle) {
         toggle.style.display = 'none';

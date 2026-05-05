@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 import './pb-icon.js';
 import './pb-dialog.js';
 
@@ -83,7 +84,7 @@ export class PbEditApp extends pbMixin(LitElement) {
           }
           this.requestUpdate();
         })
-        .catch(error => console.error('<pb-edit-app> Failed to load templates', error));
+        .catch(error => logger.error('<pb-edit-app> Failed to load templates', error));
 
       fetch(oddsUrl, {
         method: 'GET',
@@ -95,7 +96,7 @@ export class PbEditApp extends pbMixin(LitElement) {
           this.odds = Array.isArray(json) ? json : [];
           this.requestUpdate();
         })
-        .catch(error => console.error('<pb-edit-app> Failed to load odds list', error));
+        .catch(error => logger.error('<pb-edit-app> Failed to load odds list', error));
     });
 
     if (form) {

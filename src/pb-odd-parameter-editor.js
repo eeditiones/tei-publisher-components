@@ -7,6 +7,7 @@ import '@jinntec/jinn-codemirror/dist/src/jinn-codemirror';
 
 import { cmpVersion } from './utils.js';
 import { get as i18n, translate } from './pb-i18n.js';
+import { logger } from './utils/logger.js';
 
 /**
  * represents an odd parameter element for editing
@@ -251,14 +252,14 @@ export class PbOddParameterEditor extends LitElement {
   }
 
   _delete(ev) {
-    console.log('parameter delete ', ev);
+    logger.log('parameter delete ', ev);
     ev.preventDefault();
     this.dispatchEvent(new CustomEvent('parameter-remove', {}));
   }
 
   /*
         _handleChange(e) {
-            console.log('_handleChange ', e);
+            logger.log('_handleChange ', e);
             this.value = this.shadowRoot.getElementById('editor').getSource();
             this.dispatchEvent(new CustomEvent('parameter-changed', {composed:true, bubbles:true, detail: {name: this.name, value: this.value}}));
     

@@ -1,10 +1,11 @@
 import { LitElement } from 'lit';
+import { logger } from './utils/logger.js';
 
 function sizeConverter(value, type) {
   try {
     return value.split(/\s*,\s*/).map(s => parseInt(s, 10));
   } catch (e) {
-    console.error(`<pb-map-icon> Invalid size specified: ${value}`);
+    logger.error(`<pb-map-icon> Invalid size specified: ${value}`);
     return null;
   }
 }
@@ -94,7 +95,7 @@ export class PbMapIcon extends LitElement {
         options[key] = this[key];
       }
     });
-    console.log('<pb-map-icon> Options: %o', options);
+    logger.log('<pb-map-icon> Options: %o', options);
     return options;
   }
 }

@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 
 /**
  *
@@ -83,7 +84,7 @@ export class PbRestricted extends pbMixin(LitElement) {
     const fallback = this.shadowRoot.querySelector('slot[name=fallback]');
     const hasFallback = fallback.assignedNodes().length > 0;
     if (hasFallback) {
-      console.log(this);
+      logger.log(this);
       this.classList.add('fallback');
     }
 

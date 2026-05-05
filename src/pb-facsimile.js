@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import '@lrnwebcomponents/es-global-bridge';
 import { pbMixin } from './pb-mixin.js';
 import { resolveURL } from './utils.js';
+import { logger } from './utils/logger.js';
 
 /**
  * View zoomable images using a IIIF server.
@@ -226,7 +227,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       // load OpenSeadragon
       bridge.load('openseadragon', path);
     } catch (error) {
-      console.error(error.message);
+      logger.error(error.message);
     }
   }
 
@@ -320,7 +321,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       this.emitTo('pb-facsimile-status', { status: 'loaded', facsimiles: this._facsimiles });
     });
     this.viewer.addHandler('open-failed', ev => {
-      console.error('<pb-facsimile> open failed: %s', ev.message);
+      logger.error('<pb-facsimile> open failed: %s', ev.message);
       this.loaded = false;
       this.emitTo('pb-facsimile-status', { status: 'fail' });
     });
@@ -357,7 +358,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       });
     }
     this._scheduleFacsimileObserver();
-    console.log('facsimile ready');
+    logger.log('facsimile ready');
     this.signalReady();
   }
 
@@ -444,14 +445,14 @@ export class PbFacsimile extends pbMixin(LitElement) {
 
     // check event data for completeness
     if (!event.detail.file || event.detail.file === 0) {
-      return console.error('file missing', event.detail);
+      return logger.error('file missing', event.detail);
     }
 
     if (
       event.detail.coordinates &&
       (!event.detail.coordinates[0] || event.detail.coordinates.length !== 4)
     ) {
-      return console.error('coords incomplete or missing', event.detail);
+      return logger.error('coords incomplete or missing', event.detail);
     }
 
     // find page to show
@@ -460,7 +461,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       : this._pageIndexByUrl(event.detail.file);
 
     if (page < 0) {
-      return console.error('page not found', event.detail);
+      return logger.error('page not found', event.detail);
     }
 
     if (this.viewer.currentPage() !== page) {
@@ -472,7 +473,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
       const [x1, y1, w, h] = event.detail.coordinates;
       const tiledImage = this.viewer.world.getItemAt(0);
       if (!tiledImage) {
-        console.error('No tiled image available yet for annotation.');
+        logger.error('No tiled image available yet for annotation.');
         return;
       }
       const currentRect = tiledImage.viewportToImageRectangle(tiledImage.getBounds(true));

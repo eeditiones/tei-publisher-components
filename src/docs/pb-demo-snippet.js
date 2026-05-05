@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { translate } from '../pb-i18n.js';
 import { ready, firePageReady, syncPbSelect, autoWireForms } from './demo-utils.js';
+import { logger } from '../utils/logger.js';
 import '../pb-code-highlight.js';
 
 const codePenEndpoint = 'https://teipublisher.com/exist/apps/tei-publisher';
@@ -32,7 +33,7 @@ export class PbDemoSnippet extends LitElement {
 
     const template = this.querySelector('template');
     if (!template) {
-      console.warn('<pb-demo-snippet> no <template> found inside snippet');
+      logger.warn('<pb-demo-snippet> no <template> found inside snippet');
       return;
     }
 

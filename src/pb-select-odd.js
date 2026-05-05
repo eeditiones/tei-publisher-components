@@ -3,6 +3,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { registry } from './urls.js';
+import { logger } from './utils/logger.js';
 
 /**
  * `pb-select-odd`: Switch between available ODDs.
@@ -141,7 +142,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
       return;
     }
     this.odd = newOdd;
-    console.log('<pb-select-odd> Switching to ODD %s', this.odd);
+    logger.log('<pb-select-odd> Switching to ODD %s', this.odd);
     const doc = this.getDocument();
     if (doc) {
       doc.odd = this.odd;
@@ -185,7 +186,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
         this._updateOdds(Array.isArray(data) ? data : []);
       })
       .catch(err => {
-        console.error('<pb-select-odd> request failed', err);
+        logger.error('<pb-select-odd> request failed', err);
         this._updateOdds([]);
       });
   }
@@ -203,7 +204,7 @@ export class PbSelectOdd extends pbMixin(LitElement) {
       newOdd = newOdd.replace(/^(.*?)\.[^\.]+$/, '$1');
     }
     if (newOdd !== this.odd) {
-      console.log('<pb-select-odd> Set current ODD from %s to %s', this.odd, newOdd);
+      logger.log('<pb-select-odd> Set current ODD from %s to %s', this.odd, newOdd);
     }
     this.odd = newOdd;
   }
