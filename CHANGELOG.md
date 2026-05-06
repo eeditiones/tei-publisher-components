@@ -1,3 +1,11 @@
+# [3.0.0-next-4.16](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.15...v3.0.0-next-4.16) (2026-05-06)
+
+
+### Bug Fixes
+
+* **logger:** use logger everywhere ([8a856d3](https://github.com/eeditiones/tei-publisher-components/commit/8a856d3f77ebfac663a9b310727360757a8edaf5))
+* **logger:** use logger in authorities ([e6cc5fd](https://github.com/eeditiones/tei-publisher-components/commit/e6cc5fd0d28c83d5c797397a8f0589d00ebf8b12))
+
 # [3.0.0-next-4.15](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.14...v3.0.0-next-4.15) (2026-04-15)
 
 
