@@ -75,7 +75,7 @@ export class PbSvg extends pbMixin(LitElement) {
       const response = await fetch(uri);
       const data = await response.text();
       if (!window.svgPanZoom) {
-        console.error('<pb-svg> svgPanZoom not available');
+        logger.error('<pb-svg> svgPanZoom not available');
         return;
       }
       const doc = new DOMParser().parseFromString(data, 'image/svg+xml');

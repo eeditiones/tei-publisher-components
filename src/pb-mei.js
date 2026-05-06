@@ -211,7 +211,7 @@ export class PbMei extends pbMixin(LitElement) {
           const str = await response.text();
           this.show(str);
         } catch (error) {
-          console.error('<pb-mei> Failed to load MEI from URL:', error);
+          logger.error('<pb-mei> Failed to load MEI from URL:', error);
           this._handleError(error);
         }
       })();

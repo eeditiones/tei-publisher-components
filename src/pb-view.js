@@ -1034,7 +1034,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
           // Error handled by @error event listener
         });
       } catch (error) {
-        console.error('[pb-view] _doLoad: failed to get static URL', error);
+        logger.error('[pb-view] _doLoad: failed to get static URL', error);
         // Error handled by @error event listener
       }
       return;

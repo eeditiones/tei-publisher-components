@@ -347,7 +347,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
           await connector.select(item);
           this.emitTo('pb-authority-edit-entity', { id: item.id, type: item.register });
         } catch (e) {
-          console.error('<pb-authority-lookup> Failed to select item for edit:', e);
+          logger.error('<pb-authority-lookup> Failed to select item for edit:', e);
         }
       })();
     } else {
@@ -374,7 +374,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       this.emitTo('pb-end-update');
       // this.shadowRoot.getElementById('query').focus();
     } catch (error) {
-      console.error('<pb-authority-lookup> Query failed:', error);
+      logger.error('<pb-authority-lookup> Query failed:', error);
       this.emitTo('pb-end-update');
     }
   }
@@ -431,7 +431,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       });
       return items;
     } catch (error) {
-      console.error('<pb-authority-lookup> Failed to fetch occurrences:', error);
+      logger.error('<pb-authority-lookup> Failed to fetch occurrences:', error);
       return items; // Return items without occurrences if request fails
     }
   }
