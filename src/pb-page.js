@@ -301,15 +301,23 @@ export class PbPage extends pbMixin(LitElement) {
     if (!this.apiVersion) {
       // first check if it has a login endpoint, i.e. runs a version < 7
       // this is necessary to prevent a CORS failure
-      const json = await fetch(`${this.endpoint}/login`)
-        .then(res => {
-          if (res.ok) {
-            return null;
-          }
+      let json = null;
+      try {
+        const loginRes = await fetch(`${this.endpoint}/login`);
+        if (!loginRes.ok) {
           // if not, access the actual /api/version endpoint to retrieve the API version
-          return fetch(`${this.endpoint}/api/version`).then(res2 => res2.json());
-        })
-        .catch(() => fetch(`${this.endpoint}/api/version`).then(res2 => res2.json()));
+          const versionRes = await fetch(`${this.endpoint}/api/version`);
+          json = await versionRes.json();
+        }
+      } catch {
+        // Fallback: try /api/version directly
+        try {
+          const versionRes = await fetch(`${this.endpoint}/api/version`);
+          json = await versionRes.json();
+        } catch (error) {
+          logger.error('<pb-page> Failed to fetch API version:', error);
+        }
+      }
 
       if (json) {
         this.apiVersion = json.api;
@@ -405,9 +413,10 @@ export class PbPage extends pbMixin(LitElement) {
     logger.log('<pb-page> i18next options: %o', options);
     this._i18nInstance = i18next.createInstance();
     this._i18nInstance.use(LanguageDetector).use(Backend);
-    this._i18nInstance
-      .init(options)
-      .then(t => {
+    (async () => {
+      try {
+        const t = await this._i18nInstance.init(options);
+
         if (!this._i18nInstance) {
           // We got deconstructed already
           return;
@@ -427,22 +436,11 @@ export class PbPage extends pbMixin(LitElement) {
             template: this.template,
             language: this._i18nInstance?.language,
           });
-        } else if (this.requireLanguage) {
-          // Fallback: if instance is null, fire pb-page-ready anyway to avoid blocking
-          console.warn(
-            '<pb-page> i18n instance is null, firing pb-page-ready without waiting for resources',
-          );
-          this.signalReady('pb-page-ready', {
-            endpoint: this.endpoint,
-            apiVersion: this.apiVersion,
-            template: this.template,
-            language: this._i18nInstance?.language,
-          });
         }
-      })
-      .catch(err => {
+      } catch (error) {
         // If init fails, still fire pb-page-ready if requireLanguage is true to avoid blocking
-        logger.error('<pb-page> i18next init failed:', err);
+        logger.error('<pb-page> i18next init failed:', error);
+
         if (this.requireLanguage) {
           this.signalReady('pb-page-ready', {
             endpoint: this.endpoint,
@@ -451,15 +449,19 @@ export class PbPage extends pbMixin(LitElement) {
             language: this._i18nInstance?.language,
           });
         }
-      });
+      }
+    })();
 
     // React to language change events by updating i18n and notifying listeners
-    this.subscribeTo('pb-i18n-language', ev => {
+    this.subscribeTo('pb-i18n-language', async ev => {
       const { language } = ev.detail;
-      this._i18nInstance.changeLanguage(language).then(t => {
+      try {
+        const t = await this._i18nInstance.changeLanguage(language);
         this._updateI18n(t);
         this.emitTo('pb-i18n-update', { t, language: this._i18nInstance?.language }, []);
-      }, []);
+      } catch (error) {
+        logger.error('<pb-page> Failed to change language:', error);
+      }
     });
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));

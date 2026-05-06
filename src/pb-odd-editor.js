@@ -595,9 +595,9 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   firstUpdated(changedProperties) {
     this.shadowRoot.getElementById('useNamespace').checked = this.useNamespace;
 
-    // console.log('firstUpdated ', changedProperties);
-    // console.log('firstUpdated endpoint', this.getEndpoint());
-    // console.log('firstUpdated rootpath', this.rootPath);
+    // logger.log('firstUpdated ', changedProperties);
+    // logger.log('firstUpdated endpoint', this.getEndpoint());
+    // logger.log('firstUpdated rootpath', this.rootPath);
     this.jumpCtrl = this.shadowRoot.getElementById('jumpTo');
     this.jumpCtrl.addEventListener('pb-autocomplete-selected', this.jumpTo.bind(this));
 
@@ -674,16 +674,16 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     this.loadContent.url = `${this.getEndpoint()}/${
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
-    
+
     // Set Accept header to request JSON response
     this.loadContent.headers = {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     };
-    
+
     const request = this.loadContent.generateRequest();
 
     this._hasChanges = false;
-    
+
     // Handle case where generateRequest returns null (invalid URL)
     if (!request) {
       logger.warn('pb-odd-editor: Failed to generate request - invalid URL');
@@ -691,14 +691,18 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       document.dispatchEvent(new CustomEvent('pb-end-update'));
       return;
     }
-    
-    request
-      .then(data => this.handleOdd({ response: data }))
-      .catch(error => {
+
+    (async () => {
+      try {
+        const data = await request;
+        this.handleOdd({ response: data });
+      } catch (error) {
         logger.warn('pb-odd-editor: Failed to load ODD data:', error);
+
         this.loading = false;
         document.dispatchEvent(new CustomEvent('pb-end-update'));
-      });
+      }
+    })();
   }
 
   handleOdd(req) {
@@ -856,11 +860,11 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    // console.log('attributeChangedCallback', name, oldVal, newVal);
+    // logger.log('attributeChangedCallback', name, oldVal, newVal);
 
     super.attributeChangedCallback(name, oldVal, newVal);
     if (name == 'odd' && oldVal !== newVal) {
-      // console.log('<pb-document> Emit update event');
+      // logger.log('<pb-document> Emit update event');
       // this.emitTo('pb-odd-editor', this);
       if (this.inited) {
         this.load();
@@ -909,7 +913,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _copy(e) {
-    // console.log('odd-editor._copy ', e);
+    // logger.log('odd-editor._copy ', e);
     this.clipboard = e.detail.model;
     const clone = JSON.parse(JSON.stringify(e.detail.model));
     this.clipboard = clone;
@@ -992,7 +996,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
       this.lessThanApiVersion('1.0.0') ? 'modules/editor.xql' : `api/odd/${this.odd}`
     }`;
     const request = this.loadContent.generateRequest();
-    request.then(data => this._handleElementSpecResponse({ response: data }));
+    (async () => {
+      try {
+        const data = await request;
+        this._handleElementSpecResponse({ response: data });
+      } catch (error) {
+        logger.error('<pb-odd-editor> Failed to load element spec:', error);
+      }
+    })();
   }
 
   _handleElementSpecResponse(req) {
@@ -1018,7 +1029,8 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     this.elementSpecs.sort((a, b) => a.ident.localeCompare(b.ident));
 
-    this.requestUpdate().then(() => {
+    (async () => {
+      await this.requestUpdate();
       const elem = this.shadowRoot.querySelectorAll('.nav-item');
       const idx = this.elementSpecs.indexOf(newSpec);
 
@@ -1026,27 +1038,28 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
       elem[idx].click();
       elem[idx].focus();
-    });
+    })();
   }
 
   removeElementSpec(ev) {
     const { ident } = ev.detail.target;
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }))
-      .then(
-        () => {
-          const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
-          this.elementSpecs.splice(targetIndex, 1);
-          this.requestUpdate();
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('browse.delete'), i18n('odd.editor.delete-spec', { ident }));
+        const targetIndex = this.elementSpecs.findIndex(theSpec => theSpec.ident === ident);
+        this.elementSpecs.splice(targetIndex, 1);
+        this.requestUpdate();
 
-          const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
-          const tabName = selectedTab.getAttribute('name');
-          const idx = this.tabs.indexOf(tabName);
-          this._closeTab(idx);
-        },
-        () => null,
-      );
+        const selectedTab = this.shadowRoot.querySelector('vaadin-tab[selected]');
+        const tabName = selectedTab.getAttribute('name');
+        const idx = this.tabs.indexOf(tabName);
+        this._closeTab(idx);
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   serializeOdd() {
@@ -1182,11 +1195,14 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     }
 
     const request = saveOdd.generateRequest();
-    request
-      .then(data => {
+    (async () => {
+      try {
+        const data = await request;
         this.handleSaveComplete({ response: data }, download);
-      })
-      .catch(this.handleSaveError.bind(this));
+      } catch (error) {
+        this.handleSaveError(error);
+      }
+    })();
   }
 
   // to be deprecated: only used for old api
@@ -1235,13 +1251,17 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
 
     if (download) {
       const blob = new Blob([data.source], { type: 'application/xml' });
-      fileSave(blob, {
-        fileName: this.odd,
-        extensions: ['.odd'],
-      }).then(
-        () => logger.log(`<pb-odd-editor> ${this.odd} exported`),
-        () => logger.log('<pb-odd-editor> export aborted'),
-      );
+      (async () => {
+        try {
+          await fileSave(blob, {
+            fileName: this.odd,
+            extensions: ['.odd'],
+          });
+          logger.log(`<pb-odd-editor> ${this.odd} exported`);
+        } catch {
+          logger.log('<pb-odd-editor> export aborted');
+        }
+      })();
     }
   }
 
@@ -1252,18 +1272,19 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _reload() {
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'))
-      .then(
-        () => {
-          this.load();
-          this.tabs = [];
-          this.tabIndex = 0;
-          this.shadowRoot.getElementById('currentElement').innerHTML = '';
-        },
-        () => null,
-      );
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(i18n('odd.editor.reload'), i18n('odd.editor.reload-confirm'));
+        this.load();
+        this.tabs = [];
+        this.tabIndex = 0;
+        this.shadowRoot.getElementById('currentElement').innerHTML = '';
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   _setCurrentSelection(e) {
@@ -1320,7 +1341,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   handleElementSpecChanged(e) {
-    // console.log('handleElementSpecChanged ',e);
+    // logger.log('handleElementSpecChanged ',e);
     this._hasChanges = true;
     const elementSpec = this.elementSpecs.find(es => es.ident === e.detail.ident);
     const index = this.elementSpecs.indexOf(elementSpec);
@@ -1328,7 +1349,7 @@ export class PbOddEditor extends pbHotkeys(pbMixin(LitElement)) {
     const allSpecs = Array.from(this.elementSpecs);
     allSpecs.splice(index, 1, newSpec);
     this.elementSpecs = allSpecs;
-    // console.log('updated elementspecs ', this.elementSpecs);
+    // logger.log('updated elementspecs ', this.elementSpecs);
   }
 
   _inputTitle(ev) {

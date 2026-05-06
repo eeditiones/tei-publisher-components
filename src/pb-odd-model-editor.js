@@ -1007,29 +1007,30 @@ export class PbOddModelEditor extends LitElement {
     const { model } = ev.target;
     const index = this.model.models.indexOf(model);
 
-    this.shadowRoot
-      .getElementById('dialog')
-      .confirm(
-        i18n('odd.editor.model.delete-model-label'),
-        i18n('odd.editor.model.delete-model-message'),
-      )
-      .then(
-        () => {
-          const oldModel = this.model;
-          const models = Array.from(this.model.models);
-          models.splice(index, 1);
-          this.model = { ...oldModel, models };
-          this.models = models;
-          this.dispatchEvent(
-            new CustomEvent('model-changed', {
-              composed: true,
-              bubbles: true,
-              detail: { oldModel, newModel: this.model },
-            }),
+    (async () => {
+      try {
+        await this.shadowRoot
+          .getElementById('dialog')
+          .confirm(
+            i18n('odd.editor.model.delete-model-label'),
+            i18n('odd.editor.model.delete-model-message'),
           );
-        },
-        () => null,
-      );
+        const oldModel = this.model;
+        const models = Array.from(this.model.models);
+        models.splice(index, 1);
+        this.model = { ...oldModel, models };
+        this.models = models;
+        this.dispatchEvent(
+          new CustomEvent('model-changed', {
+            composed: true,
+            bubbles: true,
+            detail: { oldModel, newModel: this.model },
+          }),
+        );
+      } catch {
+        // User cancelled, do nothing
+      }
+    })();
   }
 
   _moveModelDown(ev) {

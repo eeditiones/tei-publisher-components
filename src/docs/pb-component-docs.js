@@ -85,7 +85,8 @@ export class PbComponentDocs extends LitElement {
     super.firstUpdated();
     this.view = /** @type {PbComponentView} */ (this.shadowRoot?.getElementById('view'));
 
-    this._load().then(() => {
+    (async () => {
+      await this._load();
       const { hash } = window.location;
       if (hash) {
         const [componentName, tabIdx] = hash.substring(1).split('.');
@@ -96,7 +97,7 @@ export class PbComponentDocs extends LitElement {
           }
         }
       }
-    });
+    })();
   }
 
   async _load() {

@@ -426,13 +426,12 @@ export class PbAutocomplete extends pbMixin(LitElement) {
     this._setHighlightedIndex(next);
   }
 
-  _setHighlightedIndex(index) {
+  async _setHighlightedIndex(index) {
     this._highlightedIndex = index;
     this.requestUpdate();
-    this.updateComplete.then(() => {
-      const option = this.shadowRoot?.getElementById(`pb-autocomplete-option-${index}`);
-      option?.scrollIntoView({ block: 'nearest' });
-    });
+    await this.updateComplete;
+    const option = this.shadowRoot?.getElementById(`pb-autocomplete-option-${index}`);
+    option?.scrollIntoView({ block: 'nearest' });
   }
 
   _selectSuggestion(suggestion) {
