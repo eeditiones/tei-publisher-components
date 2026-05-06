@@ -1,0 +1,180 @@
+{
+    "count": 25,
+    "results": [
+        {
+            "name": "Immanuel Kant",
+            "birth": "1724-04-22",
+            "death": "1804-02-12",
+            "nationality": "German",
+            "known_for": "Critique of Pure Reason"
+        },
+        {
+            "name": "Friedrich Nietzsche",
+            "birth": "1844-10-15",
+            "death": "1900-08-25",
+            "nationality": "German",
+            "known_for": "Thus Spoke Zarathustra"
+        },
+        {
+            "name": "Georg Wilhelm Friedrich Hegel",
+            "birth": "1770-08-27",
+            "death": "1831-11-14",
+            "nationality": "German",
+            "known_for": "Phenomenology of Spirit"
+        },
+        {
+            "name": "Gottfried Wilhelm Leibniz",
+            "birth": "1646-07-01",
+            "death": "1716-11-14",
+            "nationality": "German",
+            "known_for": "Monadology"
+        },
+        {
+            "name": "Søren Kierkegaard",
+            "birth": "1813-05-05",
+            "death": "1855-11-11",
+            "nationality": "Danish",
+            "known_for": "Either/Or"
+        },
+        {
+            "name": "Ludwig Feuerbach",
+            "birth": "1804-07-28",
+            "death": "1872-09-13",
+            "nationality": "German",
+            "known_for": "The Essence of Christianity"
+        },
+        {
+            "name": "René Descartes",
+            "birth": "1596-03-31",
+            "death": "1650-02-11",
+            "nationality": "French",
+            "known_for": "Meditations on First Philosophy"
+        },
+        {
+            "name": "Baruch Spinoza",
+            "birth": "1632-11-24",
+            "death": "1677-02-21",
+            "nationality": "Dutch",
+            "known_for": "Ethics"
+        },
+        {
+            "name": "John Locke",
+            "birth": "1632-08-29",
+            "death": "1704-10-28",
+            "nationality": "English",
+            "known_for": "An Essay Concerning Human Understanding"
+        },
+        {
+            "name": "David Hume",
+            "birth": "1711-05-07",
+            "death": "1776-08-25",
+            "nationality": "Scottish",
+            "known_for": "A Treatise of Human Nature"
+        },
+        {
+            "name": "John Stuart Mill",
+            "birth": "1806-05-20",
+            "death": "1873-05-08",
+            "nationality": "English",
+            "known_for": "Utilitarianism"
+        },
+        {
+            "name": "Arthur Schopenhauer",
+            "birth": "1788-02-22",
+            "death": "1860-09-21",
+            "nationality": "German",
+            "known_for": "The World as Will and Representation"
+        },
+        {
+            "name": "Gottlob Frege",
+            "birth": "1848-11-08",
+            "death": "1925-07-26",
+            "nationality": "German",
+            "known_for": "Begriffsschrift"
+        },
+        {
+            "name": "Bertrand Russell",
+            "birth": "1872-05-18",
+            "death": "1970-02-02",
+            "nationality": "British",
+            "known_for": "Principia Mathematica"
+        },
+        {
+            "name": "Ludwig Wittgenstein",
+            "birth": "1889-04-26",
+            "death": "1951-04-29",
+            "nationality": "Austrian",
+            "known_for": "Tractatus Logico-Philosophicus"
+        },
+        {
+            "name": "Martin Heidegger",
+            "birth": "1889-09-26",
+            "death": "1976-05-26",
+            "nationality": "German",
+            "known_for": "Being and Time"
+        },
+        {
+            "name": "Jean-Paul Sartre",
+            "birth": "1905-06-21",
+            "death": "1980-04-15",
+            "nationality": "French",
+            "known_for": "Being and Nothingness"
+        },
+        {
+            "name": "Simone de Beauvoir",
+            "birth": "1908-01-09",
+            "death": "1986-04-14",
+            "nationality": "French",
+            "known_for": "The Second Sex"
+        },
+        {
+            "name": "Hannah Arendt",
+            "birth": "1906-10-14",
+            "death": "1975-12-04",
+            "nationality": "German-American",
+            "known_for": "The Origins of Totalitarianism"
+        },
+        {
+            "name": "Edmund Husserl",
+            "birth": "1859-04-08",
+            "death": "1938-04-27",
+            "nationality": "German",
+            "known_for": "Logical Investigations"
+        },
+        {
+            "name": "Karl Marx",
+            "birth": "1818-05-05",
+            "death": "1883-03-14",
+            "nationality": "German",
+            "known_for": "Das Kapital"
+        },
+        {
+            "name": "Friedrich Engels",
+            "birth": "1820-11-28",
+            "death": "1895-08-05",
+            "nationality": "German",
+            "known_for": "The Communist Manifesto"
+        },
+        {
+            "name": "Auguste Comte",
+            "birth": "1798-01-19",
+            "death": "1857-09-05",
+            "nationality": "French",
+            "known_for": "The Course in Positive Philosophy"
+        },
+        {
+            "name": "Henri Bergson",
+            "birth": "1859-10-18",
+            "death": "1941-01-04",
+            "nationality": "French",
+            "known_for": "Time and Free Will"
+        },
+        {
+            "name": "Ernst Cassirer",
+            "birth": "1874-07-28",
+            "death": "1945-04-13",
+            "nationality": "German",
+            "known_for": "Philosophy of Symbolic Forms"
+        }
+    ]
+}

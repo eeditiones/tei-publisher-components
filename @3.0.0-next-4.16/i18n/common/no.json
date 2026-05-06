@@ -1,0 +1,320 @@
+{
+  "language": "Språk",
+  "menu": {
+    "documentation": "Dokumentasjon",
+    "admin": {
+      "title": "Administrator",
+      "recompile": "Rekompiler ODD",
+      "appGenerator": "App-generator",
+      "edit-odd": "Rediger ODD"
+    },
+    "news": "Nyheter",
+    "download": {
+      "title": "Last ned",
+      "pdf-latex": "PDF (LaTeX versjon)",
+      "pdf-fo": "PDF (FO versjon)",
+      "pdf-title": "Last ned som PDF-fil",
+      "fo-source": "FO-kildekode",
+      "latex-source": "TeX-kildekode",
+      "single-page": "Enkeltside",
+      "epub-download": "Last ned som e-bok (epub)",
+      "view-tei": "Se TEI-XML"
+    }
+  },
+  "dialogs": {
+    "error": "Ops!",
+    "close": "Lukk",
+    "yes": "Ja",
+    "no": "nei",
+    "serverError": "Forespørsel til serveren har feilet.",
+    "generatingFile": "Genererer fil...",
+    "downloadMessage": "Å generere en fil for nedlasting kan ta noen minutter. Vennligst vent. Dialogen vil lukke seg automatisk når nedlastingen er ferdig.",
+    "loading": "Laster..."
+  },
+  "document": {
+    "contents": "Innhold",
+    "selectODD": "Velg ODD",
+    "selectTemplate": "Velg mal",
+    "selectFeature": "Velg feature",
+    "normalized": "Normalisert visning",
+    "plain": "Klartekst visning",
+    "view-type": "Sidevisning",
+    "add-panel": "Legg til visning",
+    "caveat-heading": "Pass på",
+    "settings": "Innstillinger",
+    "caveat": "Utforsk forskjellige sidemaler og ODDer ved å endre disse egenskapene. Merk at ikke alle kombinasjoner av egenskaper er fornuftig for alle dokument. For eksempel vil ikke kart bli produsert uten at koordinater er riktig kodet og sidevisning avhenger av at input fil har pb-elementer. Om du ser en beskjed om at 'serveren har ikke returnert noe innhold' er det som oftest et tegn på manglende koordinering av kodet data, ODD og sidemaler."
+  },
+  "browse": {
+    "description": "Bruk denne appen til å prøveforskjellige ODD-filer med forskjellig konfigurasjoner. Last opp dine egne filer og lag egne skreddersydde ODD-filer.",
+    "login": "for å laste opp filer eller se admistrativt grensesnitt (standard bruker 'tei-demo', passord: 'demo').",
+    "login-1": "Logg på som ",
+    "login-2": "med passord",
+    "login-3": "for å eksperimentere med dine egne filer og ODD-dokumenter",
+    "sort": "Sorter etter",
+    "filter": "Filtrer etter",
+    "filterPlaceholder": "Filtrer",
+    "items": "Fant {{count}} treff",
+    "items_plural": "Fant {{count}} dokumenter",
+    "title": "Tittel",
+    "author": "Forfatter",
+    "modificationDate": "Endret dato",
+    "file": "Filnavn",
+    "delete": "Slett",
+    "confirmDeletion": "Er du sikker på at du vil slette denne filen?",
+    "confirmDeletion_plural": "Vil du slette {{count}} dokumenter?",
+    "documents": "Dokumenter",
+    "documents-removed": "Fjernet dokumentene",
+    "document-not-found": "Dokument ikke funnet",
+    "document-remove-failed": "Kunne ikke fjerne dokumentet",
+    "collections": "Lokal samling",
+    "dts": "Distribuerte tekst-tjenester (Eksperimentell)",
+    "test": {
+      "title": "TEI Publisher Demo samling",
+      "description": "Dokumenter for å demonstrere forskjellige muligheter. Utvalget er er et lite delsett av hva som er mulig. Bidra gjerne med egne eksempler for å utvide utvalget."
+    },
+    "playground": {
+      "title": "Lekeplass",
+      "description": "En samling med skriverettigheter, der du kan laste opp egne dokumenter for testing."
+    },
+    "doc": {
+      "title": "Dokumentasjon",
+      "description": "Dokumentasjon (ved hjelp av Docbook XML)."
+    },
+    "markdown": {
+      "title": "Markdown eksempel",
+      "description": "Et eksempel på bruk av markdown for statisk innhold."
+    },
+    "annotate": {
+      "title": "Annotasjonseksempler",
+      "description": "Enda en lekeplass for å annotere dokumenter."
+    },
+    "up": "Gå til overordnet"
+  },
+  "upload": {
+    "upload": "Last opp",
+    "drop": "Slipp {{accept}} filer her for å laste opp."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Vis kode",
+      "hide": "Skjul kode"
+    },
+    "editCode": {
+      "show": "Rediger kode",
+      "hide": "Lukk editor"
+    }
+  },
+  "clipboard": {
+    "copy": "Klikk på ikonet for å kopiere til utklippstavlen",
+    "paste": "Lim inn i inndatafeltet for å teste"
+  },
+  "login": {
+    "login": "Logg inn",
+    "as": "Logget inn som {{user}}",
+    "user": "Bruker",
+    "password": "Passord",
+    "invalid": "Feil passord eller ukjent bruker",
+    "requiredGroup": "må være medlem av gruppen {{group}}"
+  },
+  "search": {
+    "search": "Søk",
+    "reset": "Tilbakestill",
+    "placeholder": "Skriv spørring",
+    "sections": "Søk seksjoner",
+    "headings": "Søk i overskrifter",
+    "title": "Søk i titler",
+    "content": "Søk i innhold",
+    "scope": "Omfang av spørring"
+  },
+  "dts": {
+    "endpoint": "Velg endpoint",
+    "note": "Eksperimentelt: få tilgang til andre utgaver som eksponerer DTS API-et",
+    "requires-login": "Krever innlogging"
+  },
+  "odd": {
+    "files": "ODD-filer",
+    "manage": {
+      "filename": "Navn for ODD (uten suffix)",
+      "title": "Tittel for visning",
+      "create": "Opprett",
+      "create-from-example": "Opprett fra eksempler",
+      "delete": "Er du sikker på at du vil slette ODD-filen {{file}}?",
+      "regenerate-all": "Regenerer alle ODD-filer (treigt)",
+      "filename-error": "Påkrevd. Bruk bokstaver, tall, - og _",
+      "title-error": "En tittel er påkrevd"
+    },
+    "editor": {
+      "delete-spec": "Vil du slette element spec for '{{ident}}'?",
+      "save": "Lagre",
+      "saving": "Lagrer ...",
+      "saved": "Lagret",
+      "unsaved": "Det er ulagrede endringer, som vil bli inkludert i eksporten! Fortsette likevel?",
+      "download": "Last ned ODD",
+      "save-as": "Lagre ODD til mappe",
+      "denied": "Tilgang nektet",
+      "denied-message": "Du har ikke tillatelse til å redigere {{odd}}",
+      "reload": "Last på nytt",
+      "reload-confirm": "Ulagrede endringer vil gå tapt. Vil du fortsette?",
+      "add-element": "Legg til element",
+      "odd-source": "ODD-kildekode",
+      "specs": "Element Specs",
+      "jump-to": "Hopp til element...",
+      "title-short": "Kortform tittel",
+      "title-short-placeholder": "Kortform visningstittel",
+      "description-label": "Beskrivelse",
+      "description-placeholder": "Beskrivelse av ODD-fil",
+      "source-label": "Base ODD",
+      "source-placeholder": "ODD å arve fra",
+      "use-namespace": "Velg for å bruke et annet namespace enn TEI",
+      "namespace-placeholder": "Standard namespace URI (om ikke TEI)",
+      "title": "Tittel",
+      "title-placeholder": "Tittel for ODD",
+      "model": {
+        "delete-model-label": "Slett modell?",
+        "delete-model-message": "Ønsker du virkelig å slette den valgte modellen?",
+        "description-placeholder": "[Dokumenter modellen]",
+        "predicate-placeholder": "[Beskriv andre forutsetninger som må være tilstede (i xquery)]",
+        "link-with-or": "eller",
+        "css-class-placeholder": "[Definer CSS klasse-navn (for ekstern CSS)]",
+        "custom-behaviour-placeholder": "[Tilpass oppførsel]",
+        "template-placeholder": "[Definer kode-mal for å kjøre på innholdet]",
+        "param-name-placeholder": "[Param navn]",
+        "empty": "[Tom]",
+        "mode-placeholder": "[Prosesseringsmodus - vidersendt til påfølgende modeller]",
+        "set-param": "sett"
+      },
+      "css-source": "Åpne CSS-filen"
+    }
+  },
+  "facets": {
+    "show": "Vis topp 50",
+    "genre": "Sjanger",
+    "language": "Språk",
+    "feature": "Egenskap",
+    "form": "Skjema",
+    "period": "Periode"
+  },
+  "appgen": {
+    "account": {
+      "user": "Brukerkonto for adminstrative oppgaver. Brukeren vil be opprettet om den ikke finnes.",
+      "owner": "Brukerkontoen som skal eie appen.",
+      "password": "Passord for brukeren som skal eie denne appen."
+    },
+    "submit": "Lagre/Opprett",
+    "index": {
+      "help": "Definer den minste blokken der en skal opprette en fulltekstindeks. For dokumenter inndelt i div, er det som oftest best å velge 'Opprett på div'. Om det ikke finnes divisjoner, velg 'Opprett på tekst'.",
+      "label": "Standard fulltekstindeks",
+      "index-div": "Opprett på div",
+      "index-text": "Opprett på tekst"
+    },
+    "view": {
+      "help": "Velg hva som er standardvisning når en viser tekst: som side, eller  som divisjon. Vis som side virker kun om det finnes &lt;pb&gt; tagger i TEI-filene.",
+      "div": "Som divisjon (kapittel/seksjon...)",
+      "page": "Som side"
+    },
+    "label": "Standard visning",
+    "template": {
+      "help": "Velg hva som er standard HTML-mal",
+      "label": "HTML-mal"
+    },
+    "title": {
+      "help": "Appens tittel som vil vises i det administrative grensesnittet",
+      "label": "Appens tittel"
+    },
+    "collection": "Navnet til undersamlingen som skal inneholde TEI-dokumenter",
+    "abbrev": {
+      "label": "Kortform som skal brukes i URL'er og filnavn",
+      "placeholder": "Forkortelse"
+    },
+    "uri": "URL for å unikt identifisere appen",
+    "dialog": {
+      "title": "App generert"
+    },
+    "open": "Åpen",
+    "success": "Din app har blitt generert!"
+  },
+  "annotations": {
+    "edit": "Rediger merknad",
+    "delete": "Slett merknad",
+    "save": "Slå sammen og lagre merknader til TEI",
+    "no-properties": "Ingen egenskaper definert.",
+    "person": "Person",
+    "organisation": "Organisasjon",
+    "place": "Sted",
+    "term": "Begrep",
+    "date": "Dato",
+    "reg": "Regularisering",
+    "app": "Apparatus oppføring",
+    "hi": "Uthev",
+    "ref": "Lenke (ref)",
+    "pb": "Page break (pb)",
+    "pagenum": "Page number (@n)",
+    "facs": "Image URL (@facs)",
+    "abbreviation": "Forkortelse",
+    "occurrences": "Forekomster i tekst",
+    "correction": "Rettelse",
+    "expansion": "Utvidelse",
+    "reference": "Referanse",
+    "lookup": "Søk entitet",
+    "apply": "Bruk merknad",
+    "apply-all": "Velg og legg til for alle",
+    "search-other": "Search for occurrences in other documents",
+    "save-other": "Search for occurrences in other documents and apply annotations immediately",
+    "changes": "Endringer",
+    "undo": "Angre siste endring",
+    "download": "Lagre sammenslåtte TEI til lokal fil",
+    "reload": "Gjennopprett kilde TEI",
+    "preview": "Forhåndsvis resultat av sammenslåing",
+    "confirm-restore-title": "Bekreft gjenoppretting",
+    "restore": "Merknader gjort for dette dokumentet i en tidligere økt er funnet. Vil du laste disse på nytt?",
+    "confirm-reload-title": "Bekreft gjenoppretting",
+    "confirm-reload": "Forkast gjeldende merknader og last inn kilden på nytt?",
+    "modify": "Bruk en endring i kildeteksten",
+    "modify-info": "Merk: Dette er ikke en merknad, men vil endre kildefilen når den er slått sammen.",
+    "permission": "Tillatelse nektet: Du kan ikke lagre merknader.",
+    "ner": {
+      "title": "Navnegjenkjenning (NER)",
+      "description": "Prøv å automatisk finne navngitte enheter i teksten og merke dem som annotasjoner.",
+      "run": "Kjør",
+      "model": "Velg en modell",
+      "denied": "Ulagrede endringer funnet: vennligst lagre eller forkast dem først."
+    },
+    "confirm-discard-title": "Forkast",
+    "confirm-discard": "Forkast listen over forekomster?",
+    "doc-count": "{{count}} of {{total}}",
+    "toggle": "Vis/Skjul forhåndsvisning/kontrollpanel",
+    "add-entity": "Opprett entitet",
+    "edit-entity": "Rediger entitet",
+    "edit-reference": "Search/edit reference",
+    "hints": {
+      "modify": "marked entity of same type but different key",
+      "incomplete": "marked same type but without key",
+      "unmarked": "unmarked occurrence in text",
+      "open-in-tab": "Open document in new tab to review"
+    }
+  },
+  "ner": {
+    "title": "Opplær en navnegjenkjenningsmodell (NER-modell)",
+    "not-found": "Denne funksjonen krever at TEI Publisher NER tjenesten kjører! Kunne ikke nå tjenesten.",
+    "found": "Fant TEI Publisher NER med spaCy versjon",
+    "name-placeholder": "Navnet på modellen som skal opprettes",
+    "name": "Navn",
+    "path": "Sti",
+    "path-placeholder": "Relativ sti til dokument eller samling",
+    "path-info": "Skriv inn stien til et dokument eller innsamling for å bruke treningsinndata. Skal være relativ til TEI Publiserers data root.",
+    "lang-info": "Du kan enten lære opp en ny modell for et språk, eller velge en eksisterende modell å utvide nedenfor. Hvis du ikke utvider en eksisterende modell, må du angi et språk. Ellers la det stå tomt.",
+    "language-placeholder": "Språk som en skal opprette modellen for",
+    "language": "Språk",
+    "language-error": "Enten et språk eller en basismodell er nødvendig",
+    "model": "Basismodell modell",
+    "model-placeholder": "Basismodell for å utvide eller kopiere fra",
+    "vectors": "Kopier bare vektorer fra basismodell",
+    "output": "Treningsresultat",
+    "prepare": "Forbereder treningsdata",
+    "start": "Kjør"
+  },
+  "timeline": {
+    "unknown": "udatert",
+    "clear": "Nullstill datovalg"
+  }
+}
