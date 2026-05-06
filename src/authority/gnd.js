@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+import { logger } from '../utils/logger.js';
 import { Registry } from './registry.js';
 
 function _details(item) {
@@ -71,7 +72,7 @@ export class GND extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-gnd> Query failed:', error);
+      logger.error('<authority-gnd> Query failed:', error);
       return { totalItems: 0, items: [] };
     }
   }
@@ -107,7 +108,7 @@ export class GND extends Registry {
       }
       return output;
     } catch (error) {
-      console.error('<authority-gnd> getRecord failed:', error);
+      logger.error('<authority-gnd> getRecord failed:', error);
       throw error;
     }
   }
@@ -136,7 +137,7 @@ export class GND extends Registry {
         strings: [json.preferredName].concat(json.variantName),
       };
     } catch (error) {
-      console.error('<authority-gnd> Info failed:', error);
+      logger.error('<authority-gnd> Info failed:', error);
       throw error;
     }
   }

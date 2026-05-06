@@ -98,7 +98,7 @@ export class Custom extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-custom> Query failed:', error);
+      logger.error('<authority-custom> Query failed:', error);
       return { totalItems: 0, items: [] };
     }
   }
@@ -135,7 +135,7 @@ export class Custom extends Registry {
       }
       throw new Error(`Failed to fetch info: ${response.status}`);
     } catch (error) {
-      console.error('<authority-custom> Info failed:', error);
+      logger.error('<authority-custom> Info failed:', error);
       throw error;
     }
   }
@@ -174,7 +174,7 @@ export class Custom extends Registry {
       }
       throw new Error(response.status.toString());
     } catch (error) {
-      console.error('<authority-custom> Select failed:', error);
+      logger.error('<authority-custom> Select failed:', error);
       throw error;
     }
   }

@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+import { logger } from '../utils/logger.js';
 import { Registry } from './registry.js';
 
 export class Metagrid extends Registry {
@@ -27,7 +28,7 @@ export class Metagrid extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-metagrid> Query failed:', error);
+      logger.error('<authority-metagrid> Query failed:', error);
       return { totalItems: 0, items: [] };
     }
   }
@@ -51,7 +52,7 @@ export class Metagrid extends Registry {
         strings: [`${json.metadata.first_name} ${json.metadata.last_name}`],
       };
     } catch (error) {
-      console.error('<authority-metagrid> Info failed:', error);
+      logger.error('<authority-metagrid> Info failed:', error);
       throw error;
     }
   }
@@ -81,7 +82,7 @@ export class Metagrid extends Registry {
       }
       return output;
     } catch (error) {
-      console.error('<authority-metagrid> getRecord failed:', error);
+      logger.error('<authority-metagrid> getRecord failed:', error);
       throw error;
     }
   }

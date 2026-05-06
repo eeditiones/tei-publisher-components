@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import { Registry } from './registry.js';
 
 export class KBGA extends Registry {
@@ -42,7 +43,7 @@ export class KBGA extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-kbga> Query failed:', error);
+      logger.error('<authority-kbga> Query failed:', error);
       return { totalItems: 0, items: [] };
     }
   }
@@ -72,7 +73,7 @@ export class KBGA extends Registry {
         strings: [typeof label === 'string' ? json.data[label] : label(json.data)],
       };
     } catch (error) {
-      console.error('<authority-kbga> Info failed:', error);
+      logger.error('<authority-kbga> Info failed:', error);
       throw error;
     }
   }
@@ -107,7 +108,7 @@ export class KBGA extends Registry {
       }
       return output;
     } catch (error) {
-      console.error('<authority-kbga> getRecord failed:', error);
+      logger.error('<authority-kbga> getRecord failed:', error);
       throw error;
     }
   }

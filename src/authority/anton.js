@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import { Registry } from './registry.js';
 
 /**
@@ -50,7 +51,7 @@ export class Anton extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-anton> Query failed:', error);
+      logger.error('<authority-anton> Query failed:', error);
       throw error;
     }
   }
@@ -77,7 +78,7 @@ export class Anton extends Registry {
         strings: [json.data[label]],
       };
     } catch (error) {
-      console.error('<authority-anton> Info failed:', error);
+      logger.error('<authority-anton> Info failed:', error);
       throw error;
     }
   }
@@ -115,7 +116,7 @@ export class Anton extends Registry {
       }
       return output;
     } catch (error) {
-      console.error('<authority-anton> getRecord failed:', error);
+      logger.error('<authority-anton> getRecord failed:', error);
       throw error;
     }
   }

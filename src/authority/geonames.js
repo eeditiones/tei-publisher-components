@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import { Registry } from './registry.js';
 
 export class GeoNames extends Registry {
@@ -33,7 +34,7 @@ export class GeoNames extends Registry {
         items: results,
       };
     } catch (error) {
-      console.error('<authority-geonames> Query failed:', error);
+      logger.error('<authority-geonames> Query failed:', error);
       return { totalItems: 0, items: [] };
     }
   }
@@ -59,7 +60,7 @@ export class GeoNames extends Registry {
         strings: [json.name],
       };
     } catch (error) {
-      console.error('<authority-geonames> Info failed:', error);
+      logger.error('<authority-geonames> Info failed:', error);
       throw error;
     }
   }
@@ -90,7 +91,7 @@ export class GeoNames extends Registry {
       output.links = [`https://www.geonames.org/${json.geonameId}`, `https://${json.wikipediaURL}`];
       return output;
     } catch (error) {
-      console.error('<authority-geonames> getRecord failed:', error);
+      logger.error('<authority-geonames> getRecord failed:', error);
       throw error;
     }
   }
