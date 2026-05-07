@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.0...v3.3.1) (2026-05-07)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** params in pb-search-resubmit event ignored ([29641b5](https://github.com/eeditiones/tei-publisher-components/commit/29641b5e0a09dc1174d974bcd1140cb6f18083c2))
+
 # [3.3.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.2.4...v3.3.0) (2026-04-23)
 
 
