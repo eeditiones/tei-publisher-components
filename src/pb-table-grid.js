@@ -134,6 +134,9 @@ export class PbTableGrid extends themableMixin(pbMixin(LitElement)) {
     document.addEventListener('click', this._onDocumentClick);
 
     this.subscribeTo('pb-search-resubmit', ev => {
+      if (ev.detail && ev.detail.params) {
+        Object.assign(this._params, ev.detail.params);
+      }
       this._submit();
     });
 
