@@ -1,4 +1,6 @@
 import { LitElement, html } from 'lit';
+import { AsyncDirective } from 'lit/async-directive.js';
+import { directive } from 'lit/directive.js';
 
 // The currently used i18next translation function
 let _translateFn;
@@ -31,14 +33,48 @@ export function get(key, value) {
   return key;
 }
 
+class TranslateDirective extends AsyncDirective {
+  constructor(partInfo) {
+    super(partInfo);
+    this._key = '';
+    this._opts = undefined;
+    this._onI18nUpdate = () => this.setValue(get(this._key, this._opts));
+  }
+
+  render(key, opts) {
+    this._key = key;
+    this._opts = opts;
+    if (this.isConnected) {
+      this._subscribe();
+    }
+    return get(key, opts);
+  }
+
+  _subscribe() {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('pb-i18n-update', this._onI18nUpdate);
+    }
+  }
+
+  disconnected() {
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('pb-i18n-update', this._onI18nUpdate);
+    }
+  }
+
+  reconnected() {
+    this._subscribe();
+  }
+}
+
 /**
  * lit-html directive to translate a given key into the target language
- * using i18next.
+ * using i18next. Automatically re-renders the bound part when the language changes.
  *
  * @param {String} key
  * @param {Object} [value]
  */
-export const translate = (key, value) => get(key, value);
+export const translate = directive(TranslateDirective);
 
 // Keep _translateFn in sync on updates (guard for non-browser envs)
 if (typeof document !== 'undefined') {
