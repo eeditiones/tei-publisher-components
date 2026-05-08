@@ -1,3 +1,10 @@
+# [3.0.0-next-4.17](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.16...v3.0.0-next-4.17) (2026-05-08)
+
+
+### Bug Fixes
+
+* **pb-i18n:** make translate a directive again ([82cda45](https://github.com/eeditiones/tei-publisher-components/commit/82cda45399bdf6149607ed638362029fa912c4cc))
+
 # [3.0.0-next-4.16](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.15...v3.0.0-next-4.16) (2026-05-06)
 
 
