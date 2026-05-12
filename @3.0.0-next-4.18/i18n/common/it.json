@@ -1,0 +1,214 @@
+{
+  "language": "Lingua",
+  "menu": {
+    "documentation": "Documentazione",
+    "admin": {
+      "title": "Amministrazione",
+      "recompile": "Ricompila ODD",
+      "appGenerator": "Generatore di App",
+      "edit-odd": "Modifica ODD"
+    },
+    "news": "Notizie",
+    "download": {
+      "title": "Scarica",
+      "pdf-latex": "PDF (Versione LaTeX)",
+      "pdf-fo": "PDF (Versione FO)",
+      "pdf-title": "Scarica in PDF",
+      "fo-source": "Sorgente FO",
+      "latex-source": "Sorgente TeX",
+      "single-page": "Pagina singola",
+      "epub-download": "Scarica ePub",
+      "view-tei": "Visualizza TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Ooops",
+    "close": "Chiudi",
+    "yes": "Sì",
+    "no": "No",
+    "serverError": "La richiesta al server non ha funzionato.",
+    "generatingFile": "Sto generando il documento...",
+    "downloadMessage": "La generazione dei documenti da scaricare può richiedere qualche minuto. Si prega di attendere. Questo messaggio si chiuderà automaticamente al completamento dell'operazione.",
+    "loading": "Caricamento ..."
+  },
+  "document": {
+    "contents": "Contenuti",
+    "selectODD": "Scegli ODD",
+    "selectTemplate": "Scegli il template",
+    "selectFeature": "Scegli la funzionalità",
+    "normalized": "Visualizzazione normalizzata",
+    "plain": "Visualizzazione di lettura semplice",
+    "view-type": "Visualizzazione pagina",
+    "add-panel": "Aggiungi una visualizzazione",
+    "caveat-heading": "Caveat",
+    "settings": "Opzioni",
+    "caveat": "Prova diversi modelli di pagina e diverse ODD, semplicemente cambiando le impostazioni che trovi qui. Fai attenzione al fatto che non tutte le combinazioni di impostazioni funzionano su tutti i documenti. Per esempio, per visualizzare una mappa serviranno delle coordinate codificate e pre-processate a seconda dei risultati che si vogliono ottenere; la visualizzazione per pagine implica che i salti di pagina siano codificati nel testo. Se vedi il messaggio \"the server did not return any content / il server non dà risultati\" si tratta probabilmente di questo problema, cioé di una non corrispondenza tra dati codificati, ODD e modello di pagina."
+  },
+  "browse": {
+    "description": "Usa questa applicazione per sperimentare e provare vari ODD contenenti istruzioni dei TEI Processing Model. Carica i tuoi file e crea un ODD personalizzato.",
+    "login": "per caricare documenti o avere accesso alle funzionalità di amministrazione (utente predefinito: 'tei-demo', password: 'demo').",
+    "sort": "Ordina per",
+    "filter": "Filtra per",
+    "filterPlaceholder": "Filtra",
+    "items": "Trovato {{count}} risultato",
+    "items_plural": "Trovati {{count}} risultati",
+    "title": "Titolo",
+    "author": "Autore",
+    "modificationDate": "Data di modifica",
+    "file": "Nome del file",
+    "delete": "Cancella",
+    "confirmDeletion": "Sei sicuro di voler cancellare questo file?",
+    "confirmDeletion_plural": "Sei sicuro di voler cancellare questi {{count}} documenti?",
+    "documents": "Documenti",
+    "collections": "Collezione locale",
+    "dts": "Distributed Text Services (Sperimentale)",
+    "test": {
+      "title": "Collezione demo TEI Publisher",
+      "description": "Documenti che mostrano varie funzionalità. La selezione non è in alcun modo completa, ma rappresenta un sottoinsieme di ciò che è possibile. Ti preghiamo di contribuire anche i tuoi esempi di impiego per una selezione più esaustiva."
+    },
+    "playground": {
+      "title": "Spazio per prove",
+      "description": "Una collezione in cui puoi caricare i tuoi documenti di prova."
+    },
+    "doc": {
+      "title": "Documentazione",
+      "description": "Documentazione (usando Docbook XML)."
+    },
+    "markdown": {
+      "title": "Esempio Markdown",
+      "description": "Un esempio di utilizzo di markdown per contenuto statico."
+    },
+    "up": "Sali di un livello"
+  },
+  "upload": {
+    "upload": "Carica",
+    "drop": "Trascina {{accept}} file qui per caricarli."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Mostra codice",
+      "hide": "Nascondi codice"
+    },
+    "editCode": {
+      "show": "Modifica codice",
+      "hide": "Chiudere l'editore"
+    }
+  },
+  "clipboard": {
+    "copy": "Clicca per copiare negli appunti",
+    "paste": "Incolla nel campo di input per testare"
+  },
+  "login": {
+    "login": "Accedi",
+    "as": "Collegato come {{user}}",
+    "user": "Utente",
+    "password": "Password",
+    "invalid": "Password errata o utente non valido",
+    "requiredGroup": "deve essere membro del gruppo {{group}}"
+  },
+  "search": {
+    "search": "Ricerca",
+    "reset": "Reset",
+    "placeholder": "Inserisci ricerca",
+    "sections": "Cerca nelle sezioni",
+    "headings": "Cerca nei titoli"
+  },
+  "dts": {
+    "endpoint": "Scegli Endpoint",
+    "note": "Sperimentale: accedi ad altre edizioni che espongono le API DTS"
+  },
+  "odd": {
+    "files": "File ODD",
+    "manage": {
+      "filename": "Nome del file ODD (senza suffisso)",
+      "title": "Titolo da mostrare",
+      "create": "Crea",
+      "create-from-example": "Crea da esempi",
+      "delete": "Sei sicuro di che voler cancellare l'ODD file {{file}}?",
+      "regenerate-all": "Rigenera tutti gli ODD (lento)",
+      "filename-error": "Obbligatorio. Utilizzare lettere, numeri, - e _",
+      "title-error": "Il titolo è obbligatorio"
+    },
+    "editor": {
+      "delete-spec": "Vuoi davvero eliminare la specificazione dell'elemento '{{ident}}'?",
+      "save": "Salva",
+      "saving": "Sto salvando...",
+      "saved": "Salvato",
+      "denied": "Permesso Negato",
+      "denied-message": "Non hai il permesso di salvare {{odd}}",
+      "reload": "Ricarica",
+      "reload-confirm": "Tutte le modifiche non salvate andranno perse. Continuare?",
+      "add-element": "Aggiungi elemento",
+      "odd-source": "Sorgente ODD",
+      "specs": "Specificazioni per l'elemento (elementSpec)",
+      "jump-to": "Salta all'elemento ...",
+      "title-short": "Titolo breve",
+      "title-short-placeholder": "Titolo breve da mostrare",
+      "description-label": "Descrizione",
+      "description-placeholder": "Descrizione dell'ODD",
+      "source-label": "ODD di base",
+      "source-placeholder": "ODD da ereditare da",
+      "use-namespace": "Controlla se usare un namespace diverso da TEI",
+      "namespace-placeholder": "Default namespace URI (se non TEI)",
+      "title": "Titolo",
+      "title-placeholder": "Titolo dell'ODD",
+      "model": {
+        "delete-model-label": "Cancella modello?",
+        "delete-model-message": "Sei sicuro di voler eliminare il modello selezionato?",
+        "description-placeholder": "[Documenta il modello]",
+        "predicate-placeholder": "[Definisci condizioni che devono essere soddisfatte (in XQuery)]",
+        "link-with-or": "oppure",
+        "css-class-placeholder": "[Definisci il nome della classe CSS (per un CSS esterno)]",
+        "custom-behaviour-placeholder": "[Behaviour personalizzato]",
+        "template-placeholder": "[Definisci il modello da applicare ai contenuti]",
+        "param-name-placeholder": "[Nome del Parametro]",
+        "empty": "[Vuoto]"
+      },
+      "css-source": "Apri il file CSS"
+    }
+  },
+  "facets": {
+    "show": "Mostra i primi 50",
+    "genre": "Genere",
+    "language": "Lingua"
+  },
+  "appgen": {
+    "account": {
+      "user": "Nome dell'utente per compiti amministrativi. L'utente verrà creato se non esiste ancora.",
+      "owner": "Nome dell'utente proprietario dell'app.",
+      "password": "Password per l'utente proprietario di questa app."
+    },
+    "submit": "Salva/Genera",
+    "index": {
+      "help": "Definire il blocco più piccolo su cui è creato un indice di testo completo. Per i documenti organizzati in divisioni, scegliere 'Crea su divisione' è solitamente il migliore. Se non ci esistono divisioni, scegli 'Crea sul testo'.",
+      "label": "Indice predefinito dell'intero testo",
+      "index-div": "Crea su divisione",
+      "index-text": "Crea su testo"
+    },
+    "view": {
+      "help": "Scegli cosa mostrare di default quando navighi il testo: una pagina singola o un'intera sezione. Visualizzare per pagina richiede che il TEI sia correttamente marcato con &lt;tei:pb&gt; tag.",
+      "div": "Per divisione (capitolo/sezione...)",
+      "page": "Per pagina"
+    },
+    "label": "Visualizzazione predefinita",
+    "template": {
+      "help": "Scegli il template HTML da utilizzare come predefinito",
+      "label": "Template HTML"
+    },
+    "title": {
+      "help": "Titolo dell'applicazione che verrà mostrata, ad es. nel pannello di controllo",
+      "label": "Titolo dell'applicazione"
+    },
+    "collection": "Nome della sotto-collezione per contenere documenti TEI",
+    "abbrev": {
+      "label": "Nome breve da utilizzare negli URL e nei nomi dei file",
+      "placeholder": "Nome breve"
+    },
+    "uri": "URL per identificare l'applicazione in modo univoco",
+    "dialog": {
+      "title": "Applicazione generata"
+    },
+    "open": "Apri",
+    "success": "La tua applicazione è stata generata con successo!"
+  }
+}
