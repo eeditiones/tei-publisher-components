@@ -9,6 +9,16 @@ import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-restricted.js';
 
 /**
+ * @typedef Item
+ * @property {string} link
+ * @property {string} label - The label for an item. May contain HTML
+ * @property {number} occurrences
+ * @property {string|null} provider
+ * @property {string} register
+ * @property {string} details
+ */
+
+/**
  * Performs authority lookups via configurable connectors.
  *
  * @fires pb-authority-select - Fired when user selects an entry from the list
@@ -185,6 +195,9 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     return info;
   }
 
+  /**
+   * @param {Item}  item
+   */
   _formatItem(item) {
     return html`
       <li>
