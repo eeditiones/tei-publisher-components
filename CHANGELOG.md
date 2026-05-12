@@ -1,3 +1,11 @@
+# [3.0.0-next-4.18](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.17...v3.0.0-next-4.18) (2026-05-12)
+
+
+### Bug Fixes
+
+* **pb-i18n:** always fall back to common localization ([4906fd0](https://github.com/eeditiones/tei-publisher-components/commit/4906fd0e5bc6cda5e2780d6cc42656927ede64ab))
+* **pb-i18n:** do not double-include the common locales ([fc216aa](https://github.com/eeditiones/tei-publisher-components/commit/fc216aa5ceba0d411eb25970985448168bfaf1d5))
+
 # [3.0.0-next-4.17](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.16...v3.0.0-next-4.17) (2026-05-08)
 
 
