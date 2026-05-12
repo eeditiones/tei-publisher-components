@@ -90,6 +90,35 @@ export function getSubscribedChannels(elem) {
 }
 
 /**
+ * The interface added by {@link pbMixin}.
+ *
+ * @typedef {{
+ *   subscribe?: string,
+ *   subscribeConfig?: object,
+ *   emit?: string,
+ *   emitConfig?: object,
+ *   waitFor?: string,
+ *   disabled: boolean,
+ *   command(command: string, state: boolean): void,
+ *   wait(callback: () => void): void,
+ *   waitForChannel(callback: () => void): void,
+ *   signalReady(name?: string, data?: any): void,
+ *   emitsOnSameChannel(other: Element): boolean,
+ *   subscribeTo(type: string, listener: (ev: CustomEvent) => any, channels?: string[]): EventListener[],
+ *   emitTo(type: string, options?: Record<string, any>, channels?: string[]): void,
+ *   getDocument(): Element | null,
+ *   getParameter(name: string, fallback?: any): any,
+ *   getParameters(): Record<string, any>,
+ *   getUrl(): URL,
+ *   getEndpoint(): string | undefined,
+ *   toAbsoluteURL(relative: string, server?: string): string,
+ *   minApiVersion(requiredVersion: string): boolean,
+ *   lessThanApiVersion(requiredVersion: string): boolean,
+ *   compareApiVersion(requiredVersion: string): number
+ * }} PbMixinInterface
+ */
+
+/**
  * Implements the core channel/event mechanism used by components in TEI Publisher
  * to communicate.
  *
@@ -103,9 +132,9 @@ export function getSubscribedChannels(elem) {
  *
  * @mixinFunction
  *
- * @template {typeof import('lit-element').LitElement} T
+ * @template {new (...args: any[]) => import('lit').LitElement} T
  * @param {T} BaseClass
- *
+ * @returns {T & (new (...args: any[]) => PbMixinInterface)}
  */
 export const pbMixin = BaseClass =>
   /**
@@ -175,11 +204,21 @@ export const pbMixin = BaseClass =>
       };
     }
 
-    constructor() {
-      super();
+    constructor(...args) {
+      super(...args);
       this._isReady = false;
       this.disabled = false;
       this._subscriptions = new Map();
+      /** @type {string | undefined} */
+      this.subscribe = undefined;
+      /** @type {object | undefined} */
+      this.subscribeConfig = undefined;
+      /** @type {string | undefined} */
+      this.emit = undefined;
+      /** @type {object | undefined} */
+      this.emitConfig = undefined;
+      /** @type {string | undefined} */
+      this.waitFor = undefined;
     }
 
     connectedCallback() {
@@ -412,8 +451,9 @@ export const pbMixin = BaseClass =>
      * @returns the document component or undefined if not set/found
      */
     getDocument() {
-      if (this.src) {
-        const doc = document.getElementById(this.src);
+      const src = /** @type {any} */ (this).src;
+      if (src) {
+        const doc = document.getElementById(src);
         if (doc) {
           return doc;
         }

@@ -141,8 +141,9 @@ function getSelectors(component) {
  * Styles will be copied from the global component theme CSS imported by `pb-page`
  * (see `theme` property on `pb-page`)
  *
- * @template {typeof import('lit-element').LitElement} T
+ * @template {new (...args: any[]) => import('lit').LitElement} T
  * @param {T} BaseClass
+ * @returns {T}
  */
 export const themableMixin = BaseClass =>
   /**
