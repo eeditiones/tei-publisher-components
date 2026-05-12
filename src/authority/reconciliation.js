@@ -1,5 +1,6 @@
 import { Registry } from './registry.js';
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 
 // Todo:
 // - strings <- types
@@ -113,7 +114,8 @@ export class ReconciliationService extends Registry {
       const url = this.ORConfig.preview.url.replace('{{id}}', encodeURIComponent(rawid));
       const response = await fetch(url);
       const output = await response.text();
-      container.innerHTML = output;
+
+      container.innerHTML = sanitizeHTML(output);
       return {
         id: this._prefix ? `${this._prefix}-${rawid}` : rawid,
       };

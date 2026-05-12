@@ -88,7 +88,7 @@ export class PbLink extends pbMixin(LitElement) {
         }
       }
     });
-    this._content = this.innerHTML;
+    This._content = this.innerHTML;
     // Clear the original content to prevent duplication
     this.innerHTML = '';
   }

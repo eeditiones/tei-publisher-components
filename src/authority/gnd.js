@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 import { Registry } from './registry.js';
 
 function _details(item) {
@@ -131,7 +132,8 @@ export class GND extends Registry {
           </h3>
           ${info}
         `;
-      container.innerHTML = output;
+
+      container.innerHTML = sanitizeHTML(output);
       return {
         id: this._prefix ? `${this._prefix}-${json.gndIdentifier}` : json.gndIdentifier,
         strings: [json.preferredName].concat(json.variantName),
