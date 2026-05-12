@@ -245,7 +245,9 @@ export class PbPage extends pbMixin(LitElement) {
     const seen = new Set();
     this._localeFallbacks = next.filter(ns => (seen.has(ns) ? false : (seen.add(ns), true)));
     // The common one is always needed
-    this._localeFallbacks.push('common');
+    if (!this._localeFallbacks.includes('common')) {
+      this._localeFallbacks.push('common');
+    }
   }
 
   disconnectedCallback() {
