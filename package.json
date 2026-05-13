@@ -35,7 +35,7 @@
     "format": "npm run format:eslint; npm run format:prettier",
     "clean": "npm run clean-lib && rimraf dist css images/leaflet demo/build docs",
     "clean-lib": "rimraf -g lib/leaflet* lib/paged* lib/web-midi-player.js lib/airtable.browser.js",
-    "prepare": "npm run docs && npm run build:production",
+    "prepare": "husky && npm run docs && npm run build:production",
     "semantic-release": "semantic-release",
     "gh-pages": "node gh-pages.js"
   },
@@ -96,6 +96,7 @@
     "eslint-plugin-chai-friendly": "^1.1.0",
     "eslint-plugin-cypress": "^5.2.1",
     "globals": "^17.0.0",
+    "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "recursive-copy": "^2.0.14",
     "rimraf": "^6.1.2",
@@ -110,8 +111,10 @@
   "lint-staged": {
     "*.js": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
+    ],
+    "*.{html,json,md,css}": [
+      "prettier --write"
     ]
   }
 }
