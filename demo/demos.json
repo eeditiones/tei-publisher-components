@@ -12,6 +12,9 @@
     "demo/pb-browse-docs.html": "Demo",
     "demo/pb-browse-docs2.html": "Passing parameters from a custom form"
   },
+  "pb-card": {
+    "demo/pb-card.html": "Demo"
+  },
   "pb-code-editor": {
     "demo/pb-code-editor.html": "Demo"
   },
