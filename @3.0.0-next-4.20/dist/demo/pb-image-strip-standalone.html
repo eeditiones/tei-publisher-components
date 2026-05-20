@@ -1,0 +1,94 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-image-strip Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style type="text/css">
+            main {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            pb-facsimile {
+                min-width: 50px;
+                height: 40vh;
+                --pb-facsimile-border: 4px solid rgba(0, 128, 90, 0.5);
+                display:block;
+            }
+            pb-image-strip {
+                display: flex;
+                flex-direction: row;
+            }
+
+            [slot="after"] {
+                margin-top: 5px;
+                padding-top: 10px;
+                border-top: 1px solid #606060;
+            }
+            [slot="before"] {
+                padding-bottom: 10px;
+                margin-bottom: 5px;
+                border-bottom: 1px solid #606060;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <!-- Display facsimile -->
+                <main>
+                    <div>
+                        <pb-facsimile base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"
+                            default-zoom-level="0" show-navigator
+                            show-navigation-control show-home-control show-rotation-control>
+                        </pb-facsimile>
+                        <div>
+                            <pb-image-strip base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/"></pb-image-strip>
+                        </div>
+                    </div>
+                    <aside>
+                        <ul>
+                            <li>
+                                <pb-facs-link order="3" facs="15929_000_IDL5772_BOss12034_IIIp79.jpg" label="a label">Page 79</pb-facs-link>, first page
+                            </li>
+                            <li>
+                                <pb-facs-link order="2" facs="15929_000_IDL5772_BOss12034_IIIp80.jpg" label="the second">Page 80</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link order="1" facs="15929_000_IDL5772_BOss12034_IIIp81.jpg" label="something">Page 81</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link order="4" facs="15929_000_IDL5772_BOss12034_IIIp82.jpg" label="completely">Page 82</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link order="5" facs="15929_000_IDL5772_BOss12034_IIIp82.jpg"
+                                    coordinates="[59,1796,429,1027]">Fragment on page 82</pb-facs-link>
+                            </li>
+                            <li>
+                                <pb-facs-link facs="does-not-exist.jpg" label="completely">Missing image: hide viewer</pb-facs-link>
+                            </li>
+                        </ul>
+                    </aside>
+                </main>
+                <script>
+                    window.addEventListener('load', () => {
+                        const viewer = document.querySelector('pb-facsimile');
+                        window.pbEvents.subscribe('pb-facsimile-status', null, (ev) => {
+                            if (ev.detail.status === 'fail') {
+                                viewer.style.visibility = 'hidden';
+                            } else {
+                                viewer.style.visibility = 'visible';
+                            }
+                        });
+                    });
+                </script>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>
