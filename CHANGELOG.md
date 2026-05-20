@@ -1,3 +1,10 @@
+# [3.0.0-next-4.20](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.19...v3.0.0-next-4.20) (2026-05-20)
+
+
+### Features
+
+* **pb-navigation:** make pb-navigation themable ([6ce5a99](https://github.com/eeditiones/tei-publisher-components/commit/6ce5a9951d2a87b53712c85b5b568c0e61d83a59))
+
 # [3.0.0-next-4.19](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.18...v3.0.0-next-4.19) (2026-05-20)
 
 
