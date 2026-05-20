@@ -1,3 +1,19 @@
+# [3.0.0-next-4.19](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.18...v3.0.0-next-4.19) (2026-05-20)
+
+
+### chore
+
+* **events:** reorganize event and utility imports across demo and source files ([2dddd19](https://github.com/eeditiones/tei-publisher-components/commit/2dddd19ef03b38a02a8505093802c298494abf0f))
+
+
+### BREAKING CHANGES
+
+* **events:** pb-events is gone, which affects public API
+
+- Replaced references to the deprecated pb-events.js with the new utils/events.js in multiple demo HTML files.
+- Updated various source files to import utility functions from their new locations in utils, enhancing code organization and maintainability.
+- Removed the obsolete utils.js file, consolidating utility functions into more specific modules for clarity.
+
 # [3.0.0-next-4.18](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.17...v3.0.0-next-4.18) (2026-05-12)
 
 
