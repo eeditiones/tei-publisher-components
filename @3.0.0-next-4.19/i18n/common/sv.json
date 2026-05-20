@@ -1,0 +1,249 @@
+{
+  "language": "Språk",
+  "menu": {
+    "documentation": "Dokumentation",
+    "admin": {
+      "title": "Administrera",
+      "recompile": "Kompilera om ODD",
+      "appGenerator": "Generera app",
+      "edit-odd": "Redigera ODD"
+    },
+    "news": "Nyheter",
+    "download": {
+      "title": "Ladda ner",
+      "pdf-latex": "PDF (LaTeX-version)",
+      "pdf-fo": "PDF (FO-version)",
+      "pdf-title": "Ladda ner som PDF",
+      "fo-source": "FO-källa",
+      "latex-source": "TeX-källa",
+      "single-page": "Enskild sida",
+      "epub-download": "Ladda ner som epub-bok",
+      "view-tei": "Visa TEI-XML"
+    }
+  },
+  "dialogs": {
+    "error": "Hoppsan, det gick fel",
+    "close": "Stäng",
+    "yes": "Ja",
+    "no": "nej",
+    "serverError": "Förfrågan till servern misslyckades.",
+    "generatingFile": "Genererar fil ...",
+    "downloadMessage": "Att skapa en fil för nerladdning kan ta upp till några minuter. Vänligen vänta. Den här dialogrutan stängs automatiskt när nedladdningen har slutförts.",
+    "loading": "Laddar ..."
+  },
+  "document": {
+    "contents": "Innehåll",
+    "selectODD": "Välj ODD",
+    "selectTemplate": "Välj mall",
+    "selectFeature": "Välj funktion",
+    "normalized": "Visa vy med normaliserat innehåll",
+    "plain": "Läsvy",
+    "view-type": "Visa som sidor",
+    "add-panel": "Lägg till vy",
+    "caveat-heading": "Detaljer och egenheter",
+    "settings": "Inställningar",
+    "caveat": "Ändra inställningarna här för att testa olika sidmallar och ODD-filer. Tänk på att inte alla inställningar är meningsfulla för alla typer av dokument. Till exempel förutsätter sidvyn att sidbrytningar har märkts upp och väljer du visa en karta måste koordinater läggas till och märkas upp. Om du ser meddelandet 'servern returnerade inte något innehåll'  är det troligen tt tecken  på att det saknas kodade data för ODD och sidmall."
+  },
+  "browse": {
+    "description": "Använd denna app för att testa olika ODD-filer som innehåller instruktioner för processmodeller. Ladda upp dina egna filer och skapa en anpassad ODD.",
+    "login": "för att kunna ladda upp filer eller utföra administrativa uppgifter (standardanvändare: 'tei-demo', lösenord: 'demo').",
+    "sort": "Sortera efter",
+    "filter": "Filtrera efter",
+    "filterPlaceholder": "Filter",
+    "items": "Hittade {{count}} objekt",
+    "items_plural": "Hittade {{count}} objekt",
+    "title": "Titel",
+    "author": "Författare",
+    "modificationDate": "Ändringsdatum",
+    "file": "Filnamn",
+    "delete": "Ta bort",
+    "confirmDeletion": "Är du säker på att du vill ta bort filen?",
+    "confirmDeletion_plural": "Är du säker på att du vill ta bort {{count}} filer?",
+    "documents": "Dokument",
+    "collections": "Lokal samling",
+    "dts": "Distribuerade texttjänster (DTS, experimentella)",
+    "test": {
+      "title": "Demosamling för TEI Publisher",
+      "description": "Dokument som visar olika funktioner. Urvalet är inte fullständigt för att täcka in vad som är möjligt. Bidra med egna användningsfall för att komplettera dessa dokument."
+    },
+    "playground": {
+      "title": "Testa med egna dokument",
+      "description": "En skrivbar samling där du kan ladda upp egna testdokument."
+    },
+    "doc": {
+      "title": "Dokumentation",
+      "description": "Dokumentation (i Docbook-XML-format)."
+    },
+    "markdown": {
+      "title": "Markdown-exempel",
+      "description": "Ett exempel på hur markdown används för statiskt innehåll."
+    },
+    "up": "Tillbaka till föräldramappen"
+  },
+  "upload": {
+    "upload": "Ladda upp",
+    "drop": "Släpp {{accept}} filer här för att ladda upp."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Visa kod",
+      "hide": "Dölj kod"
+    },
+    "editCode": {
+      "show": "Redigera kod",
+      "hide": "Stäng redigerare"
+    }
+  },
+  "clipboard": {
+    "copy": "Klicka på ikonen för att kopiera till urklipp",
+    "paste": "Klistra in i inmatningsfältet för att testa"
+  },
+  "login": {
+    "login": "Logga in",
+    "as": "Inloggad som {{user}}",
+    "user": "Användarnamn",
+    "password": "Lösenord",
+    "invalid": "Fel lösenord eller ogiltigt användarnamn",
+    "requiredGroup": "måste vara medlem i grupp {{group}}"
+  },
+  "search": {
+    "search": "Sök",
+    "reset": "Återställ",
+    "placeholder": "Ange sökfråga",
+    "sections": "Sök i avdelningar",
+    "headings": "Sök i rubriker"
+  },
+  "dts": {
+    "endpoint": "Välj tjänsteinstans att ansluta till",
+    "note": "Experimentellt: få tillgång till andra utgåvor som använder DTS-API:et"
+  },
+  "odd": {
+    "files": "ODD-filer",
+    "manage": {
+      "filename": "Filnamn för ODD (utan filändelse)",
+      "title": "Titel för visning",
+      "create": "Skapa",
+      "create-from-example": "Skapa från exempel",
+      "delete": "Är du säker på att du vill ta bort ODD-filen {{file}}?",
+      "regenerate-all": "Återskapa alla ODD-filer (långsam)",
+      "filename-error": "Krävs. Använd bokstäver, siffror, - och _",
+      "title-error": "Titel krävs"
+    },
+    "editor": {
+      "delete-spec": "Är du säker på att du vill ta bort elementspecifikationen för  '{ident}}'?",
+      "save": "Spara",
+      "saving": "Sparar ...",
+      "saved": "Sparad",
+      "denied": "Åtkomst nekad",
+      "denied-message": "Du har inte behörighet att spara {{odd}}",
+      "reload": "Ladda om",
+      "reload-confirm": "Alla osparade ändringar kommer att försvinna. Fortsätt ändå?",
+      "add-element": "Lägg till element",
+      "odd-source": "ODD-källa",
+      "specs": "Specifikationer för element",
+      "jump-to": "Hoppa till element ...",
+      "title-short": "Kortnamn",
+      "title-short-placeholder": "Kort titel för visning",
+      "description-label": "Beskrivning",
+      "description-placeholder": "ODD-beskrivning",
+      "source-label": "Bas-ODD",
+      "source-placeholder": "ODD att ärva från",
+      "use-namespace": "Bock i för att använda en annan namnrymd än den för TEI",
+      "namespace-placeholder": "Namnrymds-URI (om inte TEI)",
+      "title": "Titel",
+      "title-placeholder": "Titel på ODD",
+      "model": {
+        "delete-model-label": "Ta bort modellen?",
+        "delete-model-message": "Är du säker på att du vill ta bort den här modellen?",
+        "description-placeholder": "[Dokumentera modellen]",
+        "predicate-placeholder": "[Definiera ytterligare villkor som måste uppfyllas (i xquery)]",
+        "link-with-or": "eller",
+        "css-class-placeholder": "[Definiera CSS-klassnamn (för extern CSS)]",
+        "custom-behaviour-placeholder": "[Anpassat beteende]",
+        "template-placeholder": "[Definiera kodmall som ska tillämpas på innehållet]",
+        "param-name-placeholder": "[Parameternamn]",
+        "empty": "[Tomt]"
+      },
+      "css-source": "Öppna CSS-fil"
+    }
+  },
+  "facets": {
+    "show": "Visa 50 bästa",
+    "genre": "Genre",
+    "language": "Språk"
+  },
+  "appgen": {
+    "account": {
+      "user": "Användarkonto för administrativa uppgifter. Användaren kommer att skapas om den inte finns redan.",
+      "owner": "Användarkontot som kommer att äga appen.",
+      "password": "Lösenord för användarkontot som äger appen."
+    },
+    "submit": "Spara & generera",
+    "index": {
+      "help": "Definiera det minsta blocket för vilket ett fulltextindex skapas. För dokument organiserade i avdelningar välj \"Skapa på avdelningar (div-element)\". Om det inte finns några avdelningar, välj \"Skapa på text\".",
+      "label": "Fulltext-indexera på",
+      "index-div": "Skapa på avdelningar",
+      "index-text": "Skapa på textinnehåll"
+    },
+    "view": {
+      "help": "Välj vad som visas när du bläddrar i text: en enskild sida eller en hel avdelning. Visa sida kräver att innehållet är uppmärkt med sidbrytningselementet &lt;tei:pb&gt;.",
+      "div": "Efter avdelning (kapitel/avsnitt ...)",
+      "page": "Efter sida"
+    },
+    "label": "Visa i vy",
+    "template": {
+      "help": "HTML-mall som ska användas som standard",
+      "label": "HTML-mall"
+    },
+    "title": {
+      "help": "Titel på appen som kommer att visas bland annat i instrumentpanelen",
+      "label": "Titel på appen"
+    },
+    "collection": "Namnet på undersamlingen för att lagra TEI-dokument",
+    "abbrev": {
+      "label": "Kortnamn som ska användas i URL:er och filnamn",
+      "placeholder": "Kortnamn"
+    },
+    "uri": "URL för att unikt identifiera appen",
+    "dialog": {
+      "title": "Appen genererades"
+    },
+    "open": "Öppna",
+    "success": "Appen skapades utan problem!"
+  },
+  "annotations": {
+    "edit": "Redigera annotering",
+    "delete": "Ta bort annotering",
+    "save": "Slå ihop och spara annoteringar till TEI",
+    "no-properties": "Inga egenskaper definierade.",
+    "person": "Person",
+    "organisation": "Organisation",
+    "place": "Plats",
+    "term": "Terminologi",
+    "date": "Datum",
+    "reg": "Regularisering",
+    "app": "Notapparatinlägg",
+    "hi": "Färgmarkering",
+    "ref": "Länk (ref)",
+    "abbreviation": "Förkortning",
+    "occurrences": "Förekomster i text",
+    "correction": "Korrigering",
+    "expansion": "Expanderat",
+    "reference": "Referens",
+    "lookup": "Slå upp entitet",
+    "apply": "Tillämpa annotering",
+    "apply-all": "Välj och tillämpa alla",
+    "changes": "Ändringar",
+    "undo": "Ångra senaste ändringen",
+    "download": "Spara sammanslagen TEI till lokal fil",
+    "reload": "Ladda om ursprungs-TEI",
+    "preview": "Förhandsgranska sammanslagningsresultat",
+    "confirm-restore-title": "Bekräfta återställning",
+    "restore": "Annoteringar gjorda för detta dokument i en tidigare session har hittats. Vill du ladda om dem?",
+    "confirm-reload-title": "Bekräfta omladdning",
+    "confirm-reload": "Ignorera aktuella annoteringar och ladda om ursprungskällan?",
+    "modify": "Tillämpa en ändring i bastexten",
+    "modify-info": "Obs: detta är inte en annotering, men kommer att ändra bastexten när sammanfogas.",
+    "permission": "Åtkomst nekad: du får inte spara annoteringar."
+  }
+}

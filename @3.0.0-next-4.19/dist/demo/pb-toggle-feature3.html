@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-toggle-feature Demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <h1>Using pb-toggle-feature with pb-load</h1>
+    <p><code>pb-toggle-feature</code> component may be also combined with <code>pb-load</code> when necessary. Toggle
+        parameters will be available for PM</p>
+    <pb-demo-snippet>
+        <template>
+            <style>
+            body {
+                --paper-fab-background: #35424b;
+            }
+            main {
+                display: flex;
+                justify-content: space-between;
+            }
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #E0E0E0;
+            }
+            pb-toggle-feature {
+                display: block;
+            }
+            .name {
+                color: #339900;
+            }
+            .choice, .choice-alternate {
+                color: #888888;
+            }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0" url-path="query">
+                <pb-document id="document3" path="test/cortes_to_dantiscus.xml" odd="dantiscus"></pb-document>
+
+                <div class="toolbar">
+                    <!-- pass a parameter 'mode'. pb-view will forward this to the ODD as a user-defined parameter -->
+                    <!-- note that we have to prefix the parameter with 'user.' because that's how components.xql expects it -->
+                    <pb-toggle-feature id="toggle2" emit="loader" subscribe="loader" name="user.mode"
+                        on="diplomatic" off="norm" default="diplomatic">Diplomatic View</pb-toggle-feature>
+                </div>
+                <main>
+                    <!-- call components.xql to retrieve the full source text -->
+                    <pb-load url="api/parts/{doc}/html?xpath=//text[@type='source']&view=single" expand
+                        src="document3" auto subscribe="loader" emit="loader" history="history">Loading document ...</pb-load>
+                </main>
+            </pb-page>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-download Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                pb-progress {
+                    margin-bottom: 10px;
+                }
+
+                pb-download {
+                    margin-right: 10px;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                <pb-progress></pb-progress>
+                <main>
+                    <pb-login id="loginElem"></pb-login>
+
+                    <pb-download type="pdf" src="document1" dialog="downloadDialog" title="Download PDF">
+                        <span class="pb-button pb-button--contained">Documentation: PDF</span>
+                    </pb-download>
+                    <pb-download type="pdf" src="document1" title="Download PDF" source download>
+                        <span class="pb-button pb-button--contained">Documentation: FO source</span>
+                    </pb-download>
+                    <!-- old api: -->
+                    <!--pb-download type="pdf" url="test/graves6.xml" dialog="downloadDialog" title="Download PDF"
+                            odd="graves.odd" -->
+                    <pb-download type="pdf" url="api/document/test%2Fgraves6.xml" dialog="downloadDialog"
+                        title="Download PDF" odd="graves.odd">
+                        <span class="pb-button pb-button--contained">Letter: PDF</span>
+                    </pb-download>
+
+                    <pb-restricted login="loginElem">
+                        <!-- old api: -->
+                        <!--pb-ajax url="modules/lib/regenerate.xql?odd=graves.odd"-->
+                        <pb-ajax url="api/odd?odd=graves.odd" method="post">
+                            <span class="pb-button pb-button--contained">Recompile ODD</span><span slot="title">Recompile ODD</span>
+                        </pb-ajax>
+                    </pb-restricted>
+
+                    <pb-download url="odd-editor.html" src="document1">
+                        <span class="pb-button pb-button--contained">Edit ODD</span>
+                    </pb-download>
+                </main>
+            </pb-page>
+            <pb-dialog id="downloadDialog" title="Generating File...">
+                <p>Generating a file may take a while ...</p>
+                <div slot="footer" class="buttons">
+                    <button class="pb-button pb-button--text" type="button" rel="prev" autofocus>
+                        close
+                    </button>
+                </div>
+            </pb-dialog>
+        </template>
+    </pb-demo-snippet>
+    <script type="module">
+      import { firePageReady } from '../src/docs/demo-utils.js'
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => firePageReady({ endpoint: '/exist/apps/tei-publisher' }))
+      } else {
+        firePageReady({ endpoint: '/exist/apps/tei-publisher' })
+      }
+    </script>
+</body>
+
+</html>
