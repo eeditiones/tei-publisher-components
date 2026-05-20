@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { pbMixin } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Navigate backward/forward in a document. This component does not implement any functionality itself.
@@ -11,7 +12,8 @@ import { pbHotkeys } from './pb-hotkeys.js';
  * @fires pb-navigate - Fire event indicating that listening components should navigate in the given direction
  * @fires pb-update - When received, updates the state of navigation buttons (disables when no forward/backward navigation possible)
  */
-export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
+
+export class PbNavigation extends pbHotkeys(themableMixin(pbMixin(LitElement))) {
   static get properties() {
     return {
       ...super.properties,
