@@ -1,0 +1,214 @@
+{
+  "language": "Kieli",
+  "menu": {
+    "documentation": "Käyttöohjeet",
+    "admin": {
+      "title": "Ylläpito",
+      "recompile": "Käännä ODD uudelleen",
+      "appGenerator": "Sovelluksen luonti",
+      "edit-odd": "Muokkaa ODD"
+    },
+    "news": "Uutiset",
+    "download": {
+      "title": "Lataa",
+      "pdf-latex": "PDF (LaTeX versio)",
+      "pdf-fo": "PDF (FO versio)",
+      "pdf-title": "Lataa PDF",
+      "fo-source": "FO-lähde",
+      "latex-source": "TeX-lähde",
+      "single-page": "Yksi sivu",
+      "epub-download": "Lataa epub-sähkökirjana",
+      "view-tei": "Näytä TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Hups",
+    "close": "Sulje",
+    "yes": "Kyllä",
+    "no": "ei",
+    "serverError": "Pyyntö palvelimelle epäonnistui.",
+    "generatingFile": "Luodaan tiedosto...",
+    "downloadMessage": "Ladattavan tiedoston luonti voi kestää jopa muutaman minuutin. Ole hyvä ja odota hetki. Tämä valintaikkuna sulkeutuu automaattisesti, kun lataus on valmis.",
+    "loading": "Ladataan..."
+  },
+  "document": {
+    "contents": "Sisältö",
+    "selectODD": "Valitse ODD",
+    "selectTemplate": "Valitse malli",
+    "selectFeature": "Valitse ominaisuus",
+    "normalized": "Normalisoitu näkymä",
+    "plain": "Yksinkertainen lukunäkynä",
+    "view-type": "Sivunäkymä",
+    "add-panel": "Lisää näkymä",
+    "caveat-heading": "Huomautus",
+    "settings": "Asetukset",
+    "caveat": "Kokeile eri sivumalleja ja ODD-tiedostoja muuttamalla näitä valintoja. Huomaa, että kaikki asetukset eivät sovi kaikille dokumenteille. Esimerkiksi karttaa ei voi tuottaa ilman koordinaatteja, jotka on nimenomaisesti koodattu ja käsitelty, ja sivunäkymä olettaa, että sivun vaihdokset on merkitty. Jos näet 'palvelin ei palauttanut mitään sisältöä' -viestin, se on yleensä merkki tällaisesta epäsuhtaisuudesta koodattujen tietojen, ODD:n ja sivumallin välillä."
+  },
+  "browse": {
+    "description": "Käytä tätä sovellusta kokeiluihin ja erilaisten ODD-tiedostojen kokeilemiseen, jotka sisältävät käännösohjeita. Lataa omat tiedostot ja luo mukautettu ODD.",
+    "login": "Tiedostojen lataaminen ja pääkäyttäjän toiminnot (oletuskäyttäjä: 'tei-demo', salasana: 'demo').",
+    "sort": "Lajittelujärjestys",
+    "filter": "Suodata",
+    "filterPlaceholder": "Suodata",
+    "items": "Löytyi {{count}} kohde",
+    "items_plural": "Löytyi {{count}} kohdetta",
+    "title": "Otsikko",
+    "author": "Tekijä",
+    "modificationDate": "Muokkauspäivä",
+    "file": "Tiedoston nimi",
+    "delete": "Poista",
+    "confirmDeletion": "Haluatko varmasti poistaa tämän tiedoston?",
+    "confirmDeletion_plural": "Haluatko varmasti poistaa {{count}} tiedostoa?",
+    "documents": "Dokumentit",
+    "collections": "Paikallinen kokoelma",
+    "dts": "Hajautetut tekstipalvelut (Kokeellinen)",
+    "test": {
+      "title": "TEI Publisherin demokokoelma",
+      "description": "Dokumentteja, jotka esittelevät erilaisia ominaisuuksia. Valikoima ei ole millään tavalla kattava, vaan se edustaa osaa siitä, mikä on mahdollista. Ole hyvä ja lisää omia käyttötapauksia näiden täydentämiseksi."
+    },
+    "playground": {
+      "title": "Leikkikenttä",
+      "description": "Kirjoitusoikeuksilla varustettu kokoelma, johon voit ladata omia dokumentteja testausta varten."
+    },
+    "doc": {
+      "title": "Käyttöohjeet",
+      "description": "Dokumentaatio (käyttää Docbook XML:ää)."
+    },
+    "markdown": {
+      "title": "Markdown Näyte",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Siirry ylempään"
+  },
+  "upload": {
+    "upload": "Lataa",
+    "drop": "Pudota {{accept}} tiedostot tähän ladataksesi."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Näytä koodi",
+      "hide": "Pilota koodi"
+    },
+    "editCode": {
+      "show": "Muokkaa koodi",
+      "hide": "Sulje editori"
+    }
+  },
+  "clipboard": {
+    "copy": "Kopioi leikepöydälle",
+    "paste": "Liitä syötekenttään testaamista varten"
+  },
+  "login": {
+    "login": "Kirjaudu sisään",
+    "as": "Kirjautunut käyttäjänä %{user}",
+    "user": "Käyttäjä",
+    "password": "Salasana",
+    "invalid": "Väärä salasana tai virheellinen käyttäjä",
+    "requiredGroup": "täytyy olla ryhmän {{group}} jäsen"
+  },
+  "search": {
+    "search": "Haku",
+    "reset": "Nollaa",
+    "placeholder": "Syötä kysely",
+    "sections": "Hae osioita",
+    "headings": "Hae otsikoista"
+  },
+  "dts": {
+    "endpoint": "Valitse endpoint",
+    "note": "Kokeellinen: muita editioita, jotka paljastavat DTS APIn"
+  },
+  "odd": {
+    "files": "ODD-tiedostot",
+    "manage": {
+      "filename": "ODD-tiedoston nimi (ilman päätettä)",
+      "title": "Näytettävä otsikko",
+      "create": "Luo",
+      "create-from-example": "Luo esimerkeistä",
+      "delete": "Haluatko varmasti poistaa tiedoston \"{tiedostonimi}\"?",
+      "regenerate-all": "Luo uudelleen kaikki ODD:t (hidas)",
+      "filename-error": "Vaadittu kenttä. Käyttä kirjaimia, numeroita, merkkejä - ja _",
+      "title-error": "Otsikko on pakollinen"
+    },
+    "editor": {
+      "delete-spec": "Haluatko varmasti poistaa elementin spec kohteelle '{{ident}}'?",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "saved": "Tallennettu",
+      "denied": "Lupa evätty",
+      "denied-message": "Sinulla ei ole muokkausoikeutta tiedostoon {{odd}}",
+      "reload": "Päivitä",
+      "reload-confirm": "Kaikki tallentamattomat muutokset menetetään. Haluatko edetä?",
+      "add-element": "Lisää elementti",
+      "odd-source": "ODD-lähde",
+      "specs": "Elementtien tekniset tiedot",
+      "jump-to": "Siirry elementtiin ...",
+      "title-short": "Lyhyt otsikko",
+      "title-short-placeholder": "Näytettävä lyhyt otsikko",
+      "description-label": "Kuvaus",
+      "description-placeholder": "ODD:n kuvaus",
+      "source-label": "ODD-pohja",
+      "source-placeholder": "Perittävä ODD",
+      "use-namespace": "Valitse, jos haluat käyttää muuta nimiavaruutta kuin TEI",
+      "namespace-placeholder": "Oletusnimiavaruuden URI (jos ei TEI)",
+      "title": "Otsikko",
+      "title-placeholder": "ODD:n otsikko",
+      "model": {
+        "delete-model-label": "Poistetaanko malli?",
+        "delete-model-message": "Haluatko todella poistaa valitut mallit (modellit)?",
+        "description-placeholder": "[Dokumentoi malli]",
+        "predicate-placeholder": "[Määrittele muut ehdot, jotka on täytettävä (xquery)]",
+        "link-with-or": "tai",
+        "css-class-placeholder": "[Määritä CSS-luokan nimi (ulkoiselle CSS:lle)]",
+        "custom-behaviour-placeholder": "[Mukautettu käyttäytyminen]",
+        "template-placeholder": "[Määritä koodimalli, jota sovelletaan sisältöön]",
+        "param-name-placeholder": "[Parametrin nimi]",
+        "empty": "[Tyhjä]"
+      },
+      "css-source": "Avaa CSS-tiedosto"
+    }
+  },
+  "facets": {
+    "show": "Näytä ensimmäiset 50",
+    "genre": "Laji",
+    "language": "Kieli"
+  },
+  "appgen": {
+    "account": {
+      "user": "Käyttäjätili pääkäyttäjän tehtäviin. Käyttäjä luodaan, jos sitä ei ole vielä olemassa.",
+      "owner": "Käyttäjätili, joka omistaa sovelluksen.",
+      "password": "Salasana sovelluksen omistavalle käyttäjälle."
+    },
+    "submit": "Tallenna/Luo",
+    "index": {
+      "help": "Määritä pienin lohko, jonka pohjalta koko teksti luodaan. Asiakirjoihin, jotka on järjestetty osioiksi, valinta 'Luo osiolle' on yleensä paras. Jos osioita ei ole, valitse 'Luo tekstille'.",
+      "label": "Oletusindeksi koko tekstille",
+      "index-div": "Luo osion pohjalta",
+      "index-text": "Luo tekstille"
+    },
+    "view": {
+      "help": "Valitse mitä näytetään oletuksena tekstiä selatessa: yksi sivu tai koko osio. Sivuttainen näkymä edellyttää, että TEI on oikein merkitty &lt;tei:pb&gt;-tageilla.",
+      "div": "Osion mukaan (luku/osio...)",
+      "page": "Sivu sivulta"
+    },
+    "label": "Oletusnäkymä",
+    "template": {
+      "help": "Valitse HTML-malli mikä käytetään oletuksena",
+      "label": "HTML-malli"
+    },
+    "title": {
+      "help": "Sovelluksen nimi, joka näytetään esimerkiksi hallintapaneelissa",
+      "label": "Äppin otsikko"
+    },
+    "collection": "Nimi TEI-asiakirjoja sisältävälle alakokoelmalle",
+    "abbrev": {
+      "label": "Lyhyt nimi, jota käytetään URL-osoitteissa ja tiedostonimissä",
+      "placeholder": "Lyhyt nimi"
+    },
+    "uri": "URL-osoite, jolla sovellus voidaan tunnistaa yksilöllisesti",
+    "dialog": {
+      "title": "Luotu sovellus"
+    },
+    "open": "Avaa",
+    "success": "Sovelluksesi on onnistuneesti luotu!"
+  }
+}
