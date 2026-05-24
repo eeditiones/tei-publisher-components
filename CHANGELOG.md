@@ -1,3 +1,10 @@
+# [3.0.0-next-4.21](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.20...v3.0.0-next-4.21) (2026-05-24)
+
+
+### Features
+
+* **pb-card:** introduce pb-card component ([2c0fa9c](https://github.com/eeditiones/tei-publisher-components/commit/2c0fa9c0aa381d709febaf4fd68cf5f271347640))
+
 # [3.0.0-next-4.20](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.19...v3.0.0-next-4.20) (2026-05-20)
 
 
