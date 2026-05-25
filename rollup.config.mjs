@@ -24,7 +24,6 @@ const production = process.env.BUILD === 'production';
 
 // Legacy WebComponents polyfills are no longer needed in our Vite/ESM setup
 // Keep this empty so transform steps below don’t inject the loader script
-const wcloader = '';
 const pbbundle = '<script type="module" src="../pb-components-bundle.js"></script>';
 
 function replaceDemo(input, scripts) {
@@ -32,6 +31,9 @@ function replaceDemo(input, scripts) {
   return output.replace(
     /endpoint=".*?"/g,
     'endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0"',
+  ).replace(
+    /href="\.\.\/src\/assets\/design-system\.css"/g,
+    'href="../css/design-system.css"',
   );
 }
 
@@ -133,7 +135,11 @@ export default [
             dest: './css/leaflet',
           },
           {
-            src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.min.js*',
+            src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.min.js',
+            dest: './lib',
+          },
+          {
+            src: './node_modules/leaflet-control-geocoder/dist/Control.Geocoder.min.js.map',
             dest: './lib',
           },
           {
@@ -142,11 +148,15 @@ export default [
           },
           {
             src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
-            dest: './dist/lib',
+            dest: './lib',
+            transform: contents =>
+              contents.toString().replace(/\n\/\/# sourceMappingURL=.*$/m, ''),
           },
           {
-            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js.map',
+            src: './node_modules/openseadragon/build/openseadragon/openseadragon.min.js',
             dest: './dist/lib',
+            transform: contents =>
+              contents.toString().replace(/\n\/\/# sourceMappingURL=.*$/m, ''),
           },
           {
             src: './node_modules/openseadragon/build/openseadragon/images/*',
@@ -183,10 +193,6 @@ export default [
           {
             src: './src/assets/components.css',
             dest: './css',
-          },
-          {
-            src: './src/assets/design-system.css',
-            dest: './dist/css',
           },
         ],
       }),
@@ -229,15 +235,15 @@ export default [
               '!**/pb-code-editor.html',
             ],
             dest: 'dist/demo',
-            transform: contents => replaceDemo(contents, `${wcloader}${pbbundle}`),
+            transform: contents => replaceDemo(contents, pbbundle),
           },
           {
             src: 'demo/pb-odd-editor.html',
             dest: 'dist/demo',
-            transform: contents =>
+              transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`,
+                `${pbbundle}<script type="module" src="../pb-odd-editor.js"></script>`,
               ),
           },
           {
@@ -250,7 +256,7 @@ export default [
             transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`,
+                `${pbbundle}<script type="module" src="../pb-leaflet-map.js"></script>`,
               ),
           },
           {
@@ -259,7 +265,7 @@ export default [
             transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}${pbbundle}<script type="module" src="../pb-code-editor.js"></script>`,
+                `${pbbundle}<script type="module" src="../pb-code-editor.js"></script>`,
               ),
           },
           {
@@ -268,7 +274,7 @@ export default [
             transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}${pbbundle}<script type="module" src="../pb-tify.js"></script>`,
+                `${pbbundle}<script type="module" src="../pb-tify.js"></script>`,
               ),
           },
           {
@@ -277,7 +283,7 @@ export default [
             transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}${pbbundle}<script type="module" src="../pb-mei.js"></script>`,
+                `${pbbundle}<script type="module" src="../pb-mei.js"></script>`,
               ),
           },
           {
@@ -286,7 +292,7 @@ export default [
             transform: contents =>
               replaceDemo(
                 contents,
-                `${wcloader}<script type="module" src="pb-component-docs.js"></script>`,
+                '<script type="module" src="pb-component-docs.js"></script>',
               ),
           },
           {

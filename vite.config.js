@@ -1,3 +1,4 @@
+/* eslint-env node */
 const MOCK_VERSION = {
   api: '1.0.0',
   app: { name: 'mock-app', version: '0.0.0' },
@@ -13,6 +14,7 @@ const isCypress = !!process.env.CYPRESS;
 // - Serves from repo root so existing demo and api pages work
 // - Opens api.html by default
 // - Replaces process.env.NODE_ENV usages for legacy code paths
+// Set CYPRESS when running component tests so optimizeDeps does not crawl all demos.
 export default defineConfig({
   root: '.',
   server: {
@@ -51,7 +53,6 @@ export default defineConfig({
 
           if (url.startsWith('/demo/resources/i18n/common')) {
             const languageFile = url.substring('/demo/resources/i18n/common'.length + 1);
-            console.log(languageFile);
 
             try {
               const text = await readFile(
@@ -101,21 +102,17 @@ export default defineConfig({
       },
     },
   ],
-  resolve: {
-    alias: [
-      // Normalize any accidental /node_modules path imports to bare package names
-    ],
-  },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   optimizeDeps: {
-    // Prebundle common deps once so they aren't evaluated from multiple URLs
-    include: [
-      // Add commonly used packages here if needed
-    ],
+    ...(isCypress
+      ? {
+          entries: ['test/cypress/support/component-index.html'],
+          noDiscovery: true
+        }
+      : {}),
     exclude: [
-      // keep heavy/legacy libs out of prebundle
       'gridjs',
       'hotkeys-js',
       'construct-style-sheets-polyfill',

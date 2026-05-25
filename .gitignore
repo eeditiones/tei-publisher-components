@@ -16,7 +16,6 @@ css/
 dist
 build
 lib/*
-!lib/openseadragon.min.js
 docs/
 !src/docs/
 !src/docs/**
