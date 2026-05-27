@@ -2,6 +2,7 @@ import '@lrnwebcomponents/es-global-bridge';
 import { Registry } from './registry.js';
 import { resolveURL } from '../utils/url.js';
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 
 function expandTemplate(template = '', options) {
   return template.replace(/\${([^}]+)}/g, (match, p) => {
@@ -181,7 +182,8 @@ export class Airtable extends Registry {
         });
         strings = strings.filter(tok => !/^\d+$/.test(tok));
         strings.sort((s1, s2) => s2.length - s1.length);
-        container.innerHTML = expandTemplate(this.infoExpr, data);
+
+        container.innerHTML = sanitizeHTML(expandTemplate(this.infoExpr, data));
 
         resolve({
           id: record.id,

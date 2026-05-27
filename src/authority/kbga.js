@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 import { Registry } from './registry.js';
 
 export class KBGA extends Registry {
@@ -66,7 +67,8 @@ export class KBGA extends Registry {
               ${dates}
               ${note}
           `;
-      container.innerHTML = output;
+
+      container.innerHTML = sanitizeHTML(output);
       return {
         id: json.data['full-id'],
         // TODO: label is always a string, why do we do this

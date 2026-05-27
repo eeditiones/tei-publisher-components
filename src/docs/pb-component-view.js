@@ -3,6 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { marked } from 'marked';
 import '../pb-code-highlight.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 
 // Configure marked with custom renderer
 const renderer = {
@@ -21,7 +22,11 @@ function _md(md) {
   if (!md) {
     return null;
   }
-  return html`${unsafeHTML(marked.parse(md))}`;
+
+  const parsed = marked.parse(md, { async: false });
+
+  // Sanitize HTML because it is from a foreign source
+  return html`${unsafeHTML(sanitizeHTML(parsed))}`;
 }
 
 function _renderSection(title, data, hasDefaults = false) {

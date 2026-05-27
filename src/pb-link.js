@@ -95,7 +95,10 @@ export class PbLink extends pbMixin(LitElement) {
 
   render() {
     return html`<button @click="${this._onClick}" type="button">
-      ${unsafeHTML(this._content)}
+      ${
+        // No need to sanitize: this is the original innerHTML
+        unsafeHTML(this._content)
+      }
     </button>`;
   }
 

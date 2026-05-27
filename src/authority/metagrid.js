@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 import { Registry } from './registry.js';
 
 export class Metagrid extends Registry {
@@ -46,7 +47,8 @@ export class Metagrid extends Registry {
           </h3>
           <p>${json.metadata.birth_date} - ${json.metadata.death_date}</p>
         `;
-      container.innerHTML = output;
+
+      container.innerHTML = sanitizeHTML(output);
       return {
         id: `${slug}-${json.identifier}`,
         strings: [`${json.metadata.first_name} ${json.metadata.last_name}`],

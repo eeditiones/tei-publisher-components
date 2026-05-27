@@ -8,6 +8,7 @@ import { KBGA } from './kbga.js';
 import { Anton } from './anton.js';
 import { ReconciliationService } from './reconciliation.js';
 import { logger } from '../utils/logger.js';
+import { sanitizeHTML } from '../utils/sanitize.js';
 
 function createNestedConnectors(endpoint, root) {
   const authorities = [];
@@ -114,7 +115,7 @@ export class Custom extends Registry {
       );
       if (response.ok) {
         const json = await response.json();
-        container.innerHTML = json.details;
+        container.innerHTML = sanitizeHTML(json.details);
         return {
           id: json.id,
           strings: json.strings,

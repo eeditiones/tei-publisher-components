@@ -4,6 +4,7 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { themableMixin } from './theming.js';
 import { registry } from './urls.js';
 import { logger } from './utils/logger.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 
 /**
  * Implements a list which is split into different categories
@@ -160,7 +161,8 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
         }
         const json = await response.json();
         this._categories = json.categories;
-        this.innerHTML = json.items.join('');
+        // Sanitize what comes from the server here to prevent XSS
+        this.innerHTML = sanitizeHTML(json.items.join(''));
         this.emitTo('pb-end-update');
       } catch (error) {
         logger.error(`<pb-split-list> Error caught: ${error}`);
@@ -190,20 +192,21 @@ export class PbSplitList extends themableMixin(pbMixin(LitElement)) {
   render() {
     return html`
       <header>
-        ${this._categories.map(
-          cat =>
-            html`
-              <a
-                part="${this.selected === cat.category ? 'active-category' : 'category'}"
-                href="#${cat.category}"
-                title="${cat.count}"
-                class="${this.selected === cat.category ? 'active' : ''}"
-                @click="${ev => this._selectCategory(ev, cat.category)}"
-              >
-                ${cat.label ? unsafeHTML(cat.label) : cat.category}
-              </a>
-            `,
-        )}
+        ${this._categories.map(cat => {
+          // Sanitize this label as it comes from somewhere remote
+          const label = cat.label ? unsafeHTML(sanitizeHTML(cat.label)) : cat.category;
+          return html`
+            <a
+              part="${this.selected === cat.category ? 'active-category' : 'category'}"
+              href="#${cat.category}"
+              title="${cat.count}"
+              class="${this.selected === cat.category ? 'active' : ''}"
+              @click="${ev => this._selectCategory(ev, cat.category)}"
+            >
+              ${label}
+            </a>
+          `;
+        })}
       </header>
       <div id="items" part="items"><slot></slot></div>
     `;

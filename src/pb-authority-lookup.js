@@ -5,7 +5,18 @@ import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from './pb-i18n.js';
 import { createConnectors } from './authority/connectors.js';
 import { logger } from './utils/logger.js';
+import { sanitizeHTML } from './utils/sanitize.js';
 import './pb-restricted.js';
+
+/**
+ * @typedef Item
+ * @property {string} link
+ * @property {string} label - The label for an item. May contain HTML
+ * @property {number} occurrences
+ * @property {string|null} provider
+ * @property {string} register
+ * @property {string} details
+ */
 
 /**
  * Performs authority lookups via configurable connectors.
@@ -184,6 +195,9 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     return info;
   }
 
+  /**
+   * @param {Item}  item
+   */
   _formatItem(item) {
     return html`
       <li>
@@ -201,8 +215,10 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             </svg>
           </button>
           ${item.link
-            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
-            : html`${unsafeHTML(item.label)}`}
+            ? html`<a target="_blank" href="${item.link}"
+                >${unsafeHTML(sanitizeHTML(item.label))}</a
+              >`
+            : html`${unsafeHTML(sanitizeHTML(item.label))}`}
           <div class="badges">
             ${item.occurrences > 0
               ? html`<span class="occurrences badge" part="occurrences">${item.occurrences}</span>`
