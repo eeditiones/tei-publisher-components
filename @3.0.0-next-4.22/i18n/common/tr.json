@@ -1,0 +1,214 @@
+{
+  "language": "Dil ",
+  "menu": {
+    "documentation": "Dökümantasyon",
+    "admin": {
+      "title": "Yönetim",
+      "recompile": "Derleyişinizde ODD",
+      "appGenerator": "Uygulama Üreticisi",
+      "edit-odd": "Düzenle ODD"
+    },
+    "news": "Haberler",
+    "download": {
+      "title": "İndir",
+      "pdf-latex": "Taşınabilir Döküman Formatı (LaTeX Version)",
+      "pdf-fo": "Taşınabilir Döküman Formatı (FO Version)",
+      "pdf-title": "PDF olarak indir",
+      "fo-source": "FO kaynağı",
+      "latex-source": "TeX kaynağı",
+      "single-page": "Tek sayfa",
+      "epub-download": "Epub ebook olarak indir",
+      "view-tei": "TEI XML görünüm"
+    }
+  },
+  "dialogs": {
+    "error": "Hay aksi!",
+    "close": "Kapat",
+    "yes": "Evet",
+    "no": "hayır",
+    "serverError": "Sunucuya istek başarısız oldu.",
+    "generatingFile": "Dosya oluşturuluyor...",
+    "downloadMessage": "Indirmek için bir dosya oluşturmak birkaç dakika sürebilir. Lütfen bekle. İndirme tamamlandığında bu iletişim kutusunun otomatik olarak kapanması gerekir.",
+    "loading": "Yükleniyor..."
+  },
+  "document": {
+    "contents": "İçindekiler",
+    "selectODD": "ODD seç",
+    "selectTemplate": "Şablon seç",
+    "selectFeature": "Özellikleri seç",
+    "normalized": "Normalleştirilmiş görünüm",
+    "plain": "Düz okuma görünümü",
+    "view-type": "Sayfa Görünümü",
+    "add-panel": "Görünüm Ekle",
+    "caveat-heading": "Uyarılar",
+    "settings": "Ayarlar",
+    "caveat": "Burada sadece bu seçenekleri değiştiren farklı sayfa şablonları ve ODD'leri deneyin. Her ayar kombinasyonunun her belge için anlamlı olmadığını lütfen unutmayın. Örneğin, koordinatlar açıkça kodlanıp işlenmeden bir harita oluşturulamaz ve sayfa görünümünde sayfa sonları işaretlenmiş demektir. 'Sunucu herhangi bir içerik döndürmedi' iletisini görürseniz, bu genellikle kodlanmış veriler, ODD ve sayfa şablonu arasında böyle bir yanlış hizalama belirtisidir."
+  },
+  "browse": {
+    "description": "Deneme ve işleme modeli talimatları içeren çeşitli ODD'leri denemek için bu uygulamayı kullanın. Kendi dosyalarınızı yükleyin ve özel bir ODD oluşturun.",
+    "login": "dosya yüklemek veya yönetim işlevlerini görmek için (varsayılan kullanıcı: 'tei-demo', şifre: 'demo').",
+    "sort": "Sıralama şekli",
+    "filter": "Kriter seç",
+    "filterPlaceholder": "Filtrele",
+    "items": "{{count}} öğe bulundu",
+    "items_plural": "{{count}} öğe bulundu",
+    "title": "Başlık",
+    "author": "Yazar",
+    "modificationDate": "Değiştirilme tarihi",
+    "file": "Dosya Adı",
+    "delete": "Sil",
+    "confirmDeletion": "Bu dosyayı silmek istediğinize emin misiniz?",
+    "confirmDeletion_plural": "Bu dosyayı {{count}} silmek istediğinize emin misiniz?",
+    "documents": "Dokümanlar",
+    "collections": "Yerel koleksiyon",
+    "dts": "Dağıtık Metin Hizmetleri (Deneysel)",
+    "test": {
+      "title": "TEI Yayıncı Demo Koleksiyonu",
+      "description": "Çeşitli özellikleri gösteren belgeler. Seçim hiçbir şekilde kapsamlı değildir, ancak mümkün olanın bir alt kümesini temsil eder. Lütfen bunu tamamlamak için kendi kullanım senaryolarınıza katkıda bulunun.\n\n"
+    },
+    "playground": {
+      "title": "Oyun bahçesi",
+      "description": "Test için kendi belgelerinizi yükleyebileceğiniz yazılabilir bir koleksiyon."
+    },
+    "doc": {
+      "title": "Dokümantasyon",
+      "description": "Dokümantasyon (Docbook XML kullanarak)."
+    },
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Ebeveyne git"
+  },
+  "upload": {
+    "upload": "Yükle",
+    "drop": "Yüklemek için {{accept}} bir dosyayı buraya bırakın."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Kodu göster",
+      "hide": "Kodları Gizle"
+    },
+    "editCode": {
+      "show": "Kodu düzenle",
+      "hide": "Düzenleyiciyi kapat"
+    }
+  },
+  "clipboard": {
+    "copy": "Panoya kopyalamak için simgeye tıklayın",
+    "paste": "Test etmek için giriş alanına yapıştırın"
+  },
+  "login": {
+    "login": "Oturum Aç",
+    "as": "{{user}} olarak giriş yapıldı",
+    "user": "Kullanıcı",
+    "password": "Parola",
+    "invalid": "Yanlış parola veya geçersiz kullanıcı",
+    "requiredGroup": "{{group}} grubunun üyesi olmalı"
+  },
+  "search": {
+    "search": "Arama",
+    "reset": "Sıfırla",
+    "placeholder": "Sorgu Gir",
+    "sections": "Bölümleri ara",
+    "headings": "Arama başlıkları"
+  },
+  "dts": {
+    "endpoint": "Son Noktası seçin",
+    "note": "Deneysel: DTS API'sını gösteren diğer sürümlere erişin"
+  },
+  "odd": {
+    "files": "ODD Dosyalar",
+    "manage": {
+      "filename": "ODD'nin dosya adı (sonek olmadan)",
+      "title": "Görüntüleme başlığı",
+      "create": "Oluştur",
+      "create-from-example": "Örneklerden oluşturma",
+      "delete": "ODD Dosyasını {{file}} silmek istediğinizden emin misiniz?",
+      "regenerate-all": "Tüm ODD'leri Yeniden Oluştur (Yavaş)",
+      "filename-error": "Gereklidir. Harf, rakam ve _ kullanın",
+      "title-error": "Bir başlık gereklidir"
+    },
+    "editor": {
+      "delete-spec": "Için öğe spesifikasyonunu gerçekten silmek istiyor musunuz {{ident}}?",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "saved": "Kaydedildi",
+      "denied": "İzin reddedildi",
+      "denied-message": "Eklemek için yetkiniz yok {{odd}}",
+      "reload": "Yenidenyükleme",
+      "reload-confirm": "Kaydedilmemiş değişiklikler kaybolacak. Devam et?",
+      "add-element": "Element Ekle",
+      "odd-source": "ODD kaynağı",
+      "specs": "Eleman Özellikleri",
+      "jump-to": "Elemana atla ...",
+      "title-short": "Kısa başlık",
+      "title-short-placeholder": "Ekran için kısa başlık",
+      "description-label": "Açıklama",
+      "description-placeholder": "ODD açıklaması",
+      "source-label": "ODD baz",
+      "source-placeholder": "ODD miras almak",
+      "use-namespace": "TEI'den farklı bir ad alanı olup olmadığını kontrol edin",
+      "namespace-placeholder": "Varsayılan ad alanı URI'si (TEI değilse)",
+      "title": "Başlık",
+      "title-placeholder": "ODD'nin başlığı",
+      "model": {
+        "delete-model-label": "Modeli sil?",
+        "delete-model-message": "Bu alanı silmek istediğinize emin misiniz?",
+        "description-placeholder": "[Modeli belgeleyin]",
+        "predicate-placeholder": "[Karşılanması gereken diğer koşulları tanımlayın (xquery içinde)]",
+        "link-with-or": "ya da",
+        "css-class-placeholder": "[CSS sınıf adını tanımlayın (harici CSS için)]",
+        "custom-behaviour-placeholder": "[Özel Davranış]",
+        "template-placeholder": "[İçeriğe uygulanacak kod şablonunu tanımlayın]",
+        "param-name-placeholder": "[Parametre adı]",
+        "empty": "[Boş]"
+      },
+      "css-source": "CSS dosyasını aç"
+    }
+  },
+  "facets": {
+    "show": "En yüksek 50 görüntüleniyor",
+    "genre": "Tür",
+    "language": "Dil Seç"
+  },
+  "appgen": {
+    "account": {
+      "user": "Yönetici görevleri için kullanıcı hesabı. Henüz mevcut değilse kullanıcı oluşturulur.",
+      "owner": "Uygulamanın sahibi olacak kullanıcı hesabı.",
+      "password": "Bu uygulamaya sahip olan kullanıcı için şifre."
+    },
+    "submit": "Kaydet & Üret",
+    "index": {
+      "help": "Tam metin dizininin oluşturulduğu en küçük bloğu tanımlayın. Bölümler halinde düzenlenmiş belgeler için, 'Bölümde oluştur' seçeneğini seçmek genellikle en iyisidir. Bölme yoksa, 'Metinde oluştur'u seçin.",
+      "label": "Varsayılan Tam Metin Dizini",
+      "index-div": "Bölmede oluştur",
+      "index-text": "Metin oluştur"
+    },
+    "view": {
+      "help": "Metne göz atarken varsayılan olarak neyin gösterileceğini seçin: tek bir sayfa veya tüm bölüm. Sayfaya göre görüntüleme için TEI'nin &lt;tei:pb&gt; etiketleri.",
+      "div": "Bölüme göre (bölüm / paragraf...)",
+      "page": "Sayfaya göre"
+    },
+    "label": "Varsayılan Görünüm",
+    "template": {
+      "help": "Varsayılan olarak kullanılacak HTML şablonunu seçin",
+      "label": "HTML Şablonu"
+    },
+    "title": {
+      "help": "Gösterilecek uygulamanın başlığı; ör. kontrol panelinde",
+      "label": "Uygulamanın başlığı"
+    },
+    "collection": "TEI belgelerini tutmak için alt toplamanın adı",
+    "abbrev": {
+      "label": "URL'lerde ve dosya adlarında kullanılacak kısa ad",
+      "placeholder": "Kısa isim"
+    },
+    "uri": "Uygulamayı benzersiz şekilde tanımlamak için URL",
+    "dialog": {
+      "title": "Uygulama Üreticisi"
+    },
+    "open": "Aç",
+    "success": "Uygulamanız başarıyla oluşturuldu!"
+  }
+}

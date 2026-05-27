@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
+
+    <title>pb-custom-form Demo</title>
+    <script type="module" src="../pb-components-bundle.js"></script>
+</head>
+
+<body>
+    <pb-demo-snippet>
+        <template>
+            <style>
+                fieldset {
+                    display: flex;
+                    align-items: center;
+                    border: 0;
+                }
+
+                fieldset * {
+                    margin-right: 20px;
+                }
+            </style>
+            <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                <pb-custom-form auto-submit="input, select, button, pb-icon-button">
+                    <label>
+                        Search
+                        <span style="display:inline-flex; align-items:center; gap:0.5rem;">
+                            <input type="search" name="search" placeholder="Search" />
+                            <pb-icon-button icon="search"></pb-icon-button>
+                        </span>
+                    </label>
+                    <fieldset>
+                        <label>
+                            <input type="radio" name="view" value="correspondents"> Korrespondenten
+                        </label>
+                        <label>
+                            <input type="radio" name="view" value="mentions"> Korrespondenten und erwähnte Personen
+                        </label>
+                    </fieldset>
+                    <fieldset>
+                        <select name="type">
+                            <option value="one">One</option>
+                            <option value="two">Two</option>
+                        </select>
+                        <label>
+                            Sort
+                            <select id="sort" name="sort">
+                                <option value="author">Author</option>
+                                <option value="title">Title</option>
+                            </select>
+                        </label>
+                    </fieldset>
+                </pb-custom-form>
+                <pre id="output"></pre>
+            </pb-page>
+<script>
+                window.addEventListener('WebComponentsReady', () => {
+                    pbEvents.subscribe('pb-submit', null, (ev) => {
+                        document.getElementById('output').innerText = JSON.stringify(ev.detail.params);
+                    });
+                });
+
+</script>
+        </template>
+    </pb-demo-snippet>
+</body>
+
+</html>

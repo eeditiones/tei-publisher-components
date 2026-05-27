@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
+    <title>pb-card</title>
+    <!-- Minimal scripts for local dev demos -->
+    <script type="module" src="../src/pb-card.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <pb-card>
+      <h2>Simple card!</h2>
+      <p>Without too much data.</p>
+    </pb-card>
+
+    <pb-card>
+      <h2>With media!</h2>
+      <img src="../images/tei-publisher-logo-contrast-color.svg" alt="The TEI publisher logo" />
+    </pb-card>
+
+    <pb-card>
+      <header><h2>Or a footer!</h2></header>
+	  <section><p>Some content</p><p>With multiple paragraphs</p></section>
+      <footer><button>A call to action</button></footer>
+    </pb-card>
+
+  </body>
+</html>

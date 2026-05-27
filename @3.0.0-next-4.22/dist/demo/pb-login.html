@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+
+        <title>pb-login Demo</title>
+        <script type="module" src="../pb-components-bundle.js"></script>
+    </head>
+
+    <body>
+        <pb-demo-snippet>
+            <template>
+                <style type="text/css">
+                pb-login {
+                    --pb-login-link-color: #886666;
+                }
+                [slot="fallback"] {
+                    color: #ff9922;
+                }
+                </style>
+                <pb-page endpoint="https://teipublisher.com/exist/apps/tei-publisher" api-version="1.0.0">
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+
+                    <main>
+                        <pb-login id="loginElem">
+                            <p slot="information">Please log in with your eXist-db credentials.</p>
+                        </pb-login>
+
+                        <pb-restricted login="loginElem">
+                            <p>This paragraph will only be shown if a user is logged in.</p>
+                            <p slot="fallback">You need to be logged in to see this content.</p>
+                        </pb-restricted>
+
+                        <pb-restricted login="loginElem" group="dba">
+                            <p>This should only be visible to dba users.</p>
+                        </pb-restricted>
+                    </main>
+                </pb-page>
+            </template>
+        </pb-demo-snippet>
+    </body>
+</html>
