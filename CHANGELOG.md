@@ -1,3 +1,18 @@
+# [3.0.0-next-4.22](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.21...v3.0.0-next-4.22) (2026-05-27)
+
+
+### Bug Fixes
+
+* **pb-mei:** improve error handling and SVG rendering logic ([3f4a93b](https://github.com/eeditiones/tei-publisher-components/commit/3f4a93bf064e9302b48fdc9014efc3ccddc0a205))
+* **sanitation:** allow pb-code-highlight attributes ([5e40d7b](https://github.com/eeditiones/tei-publisher-components/commit/5e40d7bbec876d5af235baaa4c9d591498ea838e))
+
+
+### Features
+
+* **pb-timeline:** implement HTML sanitization for tooltips and info items ([3f77dc4](https://github.com/eeditiones/tei-publisher-components/commit/3f77dc4de8f053ac4977bb661ecc9579c24f5f57))
+* **pb-view-annotate:** add match anchor functionality for text segments ([5b85178](https://github.com/eeditiones/tei-publisher-components/commit/5b85178ca95a7feac023d8ee64d343e2b0772a1c))
+* **sanitize:** add DOMPurify for HTML sanitization ([e717b0b](https://github.com/eeditiones/tei-publisher-components/commit/e717b0b5fe2320c4e2b93f7b6fe59be780f656a2))
+
 # [3.0.0-next-4.21](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.20...v3.0.0-next-4.21) (2026-05-24)
 
 
