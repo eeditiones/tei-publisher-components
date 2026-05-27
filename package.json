@@ -94,7 +94,7 @@
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-chai-friendly": "^1.1.0",
-    "eslint-plugin-cypress": "^5.2.1",
+    "eslint-plugin-cypress": "^6.4.1",
     "globals": "^17.0.0",
     "lint-staged": "^16.2.7",
     "recursive-copy": "^2.0.14",
