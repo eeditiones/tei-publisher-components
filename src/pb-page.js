@@ -387,7 +387,11 @@ export class PbPage extends pbMixin(LitElement) {
         crossDomain: true,
       });
     }
+    /** @type {import('i18next').InitOptions} */
     const options = {
+      // If some lang.json file could not found, he i18n chained backend retries to load the same
+      // nonexistant file over and over. Spamming 404s. Disable retries
+      maxRetries: 0,
       fallbackLng: this.fallbackLanguage,
       defaultNS: 'common',
       ns: ['common'],

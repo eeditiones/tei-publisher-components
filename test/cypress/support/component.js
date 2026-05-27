@@ -97,10 +97,15 @@ beforeEach(() => {
 })
 
 // Helper: wait for a single DOM event on document
-Cypress.Commands.add('waitForEvent', (name) => {
-  return cy.document().then((doc) => new Cypress.Promise((resolve) => {
-    doc.addEventListener(name, resolve, { once: true })
-  }))
+Cypress.Commands.add('waitForEvent', (name, options = {}) => {
+  return cy.document().then((doc) =>
+    cy.wrap(
+      new Cypress.Promise((resolve) => {
+        doc.addEventListener(name, resolve, { once: true })
+      }),
+      options
+    )
+  )
 })
 
 // Helper: robustly stub window.fetch for JSON endpoints (works pre- and post-mount)
