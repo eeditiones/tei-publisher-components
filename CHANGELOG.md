@@ -1,3 +1,10 @@
+## [3.3.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.1...v3.3.2) (2026-06-02)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** fix marker display issues when switching pages ([ef8efb6](https://github.com/eeditiones/tei-publisher-components/commit/ef8efb625d943067be26f6defcc792f912bf1eb7))
+
 ## [3.3.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.0...v3.3.1) (2026-05-07)
 
 
