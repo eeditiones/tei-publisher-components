@@ -342,6 +342,10 @@ class PbViewAnnotate extends PbView {
 
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
+    this.subscribeTo('pb-start-update', () => {
+      this._cancelMarkerRefresh();
+      this._clearMarkers();
+    });
     this.subscribeTo('pb-refresh', () => {
       this._ranges = [];
       this._rangesMap.clear();
@@ -373,6 +377,7 @@ class PbViewAnnotate extends PbView {
   disconnectedCallback() {
     super.disconnectedCallback();
 
+    this._cancelMarkerRefresh();
     // Remove any events that we had earlier.
     this._disconnectedSignal.abort();
   }
@@ -383,10 +388,11 @@ class PbViewAnnotate extends PbView {
 
   set annotations(annoData) {
     this._ranges = annoData;
-    this.updateAnnotations(true);
+    this.updateAnnotations(true, false);
     this._markIncompleteAnnotations();
     this._initAnnotationColors();
     this._annotationStyles();
+    this._scheduleMarkerRefresh();
   }
 
   saveHistory() {
@@ -431,7 +437,7 @@ class PbViewAnnotate extends PbView {
 
   zoom(direction) {
     super.zoom(direction);
-    window.requestAnimationFrame(() => this.refreshMarkers());
+    this._scheduleMarkerRefresh();
   }
 
   getKey(type) {
@@ -444,7 +450,7 @@ class PbViewAnnotate extends PbView {
     const scheduleCallback = () => {
       _pendingCallback = setTimeout(() => {
         _pendingCallback = null;
-        this.refreshMarkers();
+        this._scheduleMarkerRefresh();
       }, 200);
     };
     window.addEventListener('resize', () => {
@@ -467,19 +473,76 @@ class PbViewAnnotate extends PbView {
 
   _handleContent() {
     super._handleContent();
-    this.updateComplete.then(() =>
-      setTimeout(() => {
-        this._initAnnotationColors();
-        this._annotationStyles();
-        this.updateAnnotations();
-        this._markIncompleteAnnotations();
-        if (this._scrollTop) {
-          this.scrollTop = this._scrollTop;
-          this._scrollTop = undefined;
-        }
-        this.emitTo('pb-annotations-loaded');
-      }, 300),
-    );
+    this.updateComplete.then(() => {
+      this._initAnnotationColors();
+      this._annotationStyles();
+      this.updateAnnotations(true, false);
+      this._markIncompleteAnnotations();
+      if (this._scrollTop) {
+        this.scrollTop = this._scrollTop;
+        this._scrollTop = undefined;
+      }
+      this.emitTo('pb-annotations-loaded');
+      // Marker positions depend on the ODD stylesheet and final text layout.
+      this._scheduleMarkerRefresh();
+    });
+  }
+
+  _cancelMarkerRefresh() {
+    if (this._markerRefreshController) {
+      this._markerRefreshController.abort();
+      this._markerRefreshController = null;
+    }
+  }
+
+  /**
+   * Refresh annotation markers after layout has settled. Measuring too early
+   * (e.g. while paginated content is still being replaced) leaves markers at
+   * stale coordinates.
+   */
+  async _scheduleMarkerRefresh() {
+    this._cancelMarkerRefresh();
+    const controller = new AbortController();
+    this._markerRefreshController = controller;
+    const { signal } = controller;
+
+    try {
+      await this.updateComplete;
+      if (signal.aborted) {
+        return;
+      }
+
+      const styleLink = this.shadowRoot.querySelector('#view link[rel="stylesheet"]');
+      if (styleLink && !styleLink.sheet) {
+        await new Promise(resolve => {
+          const done = () => resolve();
+          styleLink.addEventListener('load', done, { once: true });
+          styleLink.addEventListener('error', done, { once: true });
+        });
+      }
+      if (signal.aborted) {
+        return;
+      }
+
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+      if (signal.aborted) {
+        return;
+      }
+
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      if (signal.aborted) {
+        return;
+      }
+
+      this._paintMarkers();
+    } finally {
+      if (this._markerRefreshController === controller) {
+        this._markerRefreshController = null;
+      }
+    }
   }
 
   _updateAnnotation(teiRange, silent = false, batch = false) {
@@ -548,13 +611,13 @@ class PbViewAnnotate extends PbView {
     this._rangesMap.set(span, teiRange);
 
     if (!batch) {
-      this.refreshMarkers();
+      this._scheduleMarkerRefresh();
     }
 
     return span;
   }
 
-  updateAnnotations(silent = false) {
+  updateAnnotations(silent = false, refreshMarkers = true) {
     this._ranges.forEach(teiRange => {
       let span;
       switch (teiRange.type) {
@@ -579,7 +642,9 @@ class PbViewAnnotate extends PbView {
           break;
       }
     });
-    window.requestAnimationFrame(() => this.refreshMarkers());
+    if (refreshMarkers) {
+      this._scheduleMarkerRefresh();
+    }
   }
 
   _getSelection() {
@@ -750,7 +815,7 @@ class PbViewAnnotate extends PbView {
 
     this.emitTo('pb-annotations-changed', { ranges: this._ranges });
 
-    window.requestAnimationFrame(() => this.refreshMarkers());
+    this._scheduleMarkerRefresh();
 
     this._inHandler = true;
     try {
@@ -976,11 +1041,16 @@ class PbViewAnnotate extends PbView {
 
   /**
    * For all annotations currently shown, create a marker element and position
-   * it absolute next to the annotation
-   *
-   * @param {HTMLElement} root element containing the markers
+   * it absolute next to the annotation. Waits for layout to settle before measuring.
    */
   refreshMarkers() {
+    this._scheduleMarkerRefresh();
+  }
+
+  /**
+   * Measure annotation spans and paint underline markers into the marker layer.
+   */
+  _paintMarkers() {
     const root = this.shadowRoot.getElementById('view');
     const rootRect = root.getBoundingClientRect();
     const markerLayer = this.shadowRoot.getElementById('marker-layer');
@@ -1212,6 +1282,19 @@ class PbViewAnnotate extends PbView {
     return [
       super.styles,
       css`
+        :host {
+          position: relative;
+        }
+
+        #marker-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
         .annotation-type {
           display: inline-block;
           text-align: right;
