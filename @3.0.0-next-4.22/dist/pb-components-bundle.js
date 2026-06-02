@@ -1218,7 +1218,9 @@ import{x as t,i as e,a as n,p as s,w as r,c as o,b as a,E as l,m as c,B as d}fro
         <ul>
           <li>
             <select name="panels" class="dropdown" @change="${this._update}">
-              ${this.panels.map((e,i)=>t`<option value="${i}" ?selected=${i===this.active}>${e}</option>`)}
+              ${this.panels.map((e,i)=>t`<option value="${i}" ?selected=${i===this.active}>
+                    ${e}
+                  </option>`)}
             </select>
           </li>
         </ul>

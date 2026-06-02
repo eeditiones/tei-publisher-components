@@ -109,12 +109,12 @@ export class PbIcon extends LitElement {
       const isDev =
         (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ||
         (typeof location !== 'undefined' && /localhost|127\.0\.0\.1/.test(location.hostname));
-      
+
       if (isDev) {
         // In dev mode, check if we're running in TEI Publisher context
         const currentHost = window.location.hostname;
         const currentPort = window.location.port;
-        
+
         // If we're on the TEI Publisher port (8080), use the app's resources path
         if (currentPort === '8080' || currentHost.includes('tei-publisher')) {
           this.sprite = '/exist/apps/tei-publisher/resources/images/icons.svg';

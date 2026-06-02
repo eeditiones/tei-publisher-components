@@ -46,12 +46,18 @@
 
   /* === Elevation === */
   --pb-elevation-0: none;
-  --pb-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
-  --pb-elevation-2: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
-  --pb-elevation-3: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 3px -2px rgba(0, 0, 0, 0.12);
-  --pb-elevation-4: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-  --pb-elevation-6: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
-  --pb-elevation-8: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --pb-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  --pb-elevation-2: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.12);
+  --pb-elevation-3: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+    0 3px 3px -2px rgba(0, 0, 0, 0.12);
+  --pb-elevation-4: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  --pb-elevation-6: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+    0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  --pb-elevation-8: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
 
   /* === Typography === */
   --pb-font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -524,11 +530,21 @@
   user-select: none;
 }
 
-.pb-icon--xs { font-size: 12px; }
-.pb-icon--sm { font-size: 16px; }
-.pb-icon--md { font-size: 20px; }
-.pb-icon--lg { font-size: 24px; }
-.pb-icon--xl { font-size: 32px; }
+.pb-icon--xs {
+  font-size: 12px;
+}
+.pb-icon--sm {
+  font-size: 16px;
+}
+.pb-icon--md {
+  font-size: 20px;
+}
+.pb-icon--lg {
+  font-size: 24px;
+}
+.pb-icon--xl {
+  font-size: 32px;
+}
 
 /* === Utility Classes === */
 .pb-sr-only {
@@ -548,12 +564,24 @@
   outline-offset: var(--pb-focus-ring-offset);
 }
 
-.pb-elevation-1 { box-shadow: var(--pb-elevation-1); }
-.pb-elevation-2 { box-shadow: var(--pb-elevation-2); }
-.pb-elevation-3 { box-shadow: var(--pb-elevation-3); }
-.pb-elevation-4 { box-shadow: var(--pb-elevation-4); }
-.pb-elevation-6 { box-shadow: var(--pb-elevation-6); }
-.pb-elevation-8 { box-shadow: var(--pb-elevation-8); }
+.pb-elevation-1 {
+  box-shadow: var(--pb-elevation-1);
+}
+.pb-elevation-2 {
+  box-shadow: var(--pb-elevation-2);
+}
+.pb-elevation-3 {
+  box-shadow: var(--pb-elevation-3);
+}
+.pb-elevation-4 {
+  box-shadow: var(--pb-elevation-4);
+}
+.pb-elevation-6 {
+  box-shadow: var(--pb-elevation-6);
+}
+.pb-elevation-8 {
+  box-shadow: var(--pb-elevation-8);
+}
 
 /* === Responsive Design === */
 @media (max-width: 768px) {
