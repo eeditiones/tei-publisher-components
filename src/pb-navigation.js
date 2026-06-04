@@ -1,11 +1,41 @@
 import { LitElement, html, css } from 'lit-element';
+import { ifDefined } from 'lit-html/directives/if-defined';
 import { pbMixin } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
+
+/**
+ * Build a clean, canonical fragment URL for the current document: the current
+ * path plus `?id=` (persistent xml:id, preferred) or `?root=` (node id) as a
+ * fallback. Other query parameters are dropped so the link matches the
+ * canonical/sitemap URL. Returns null when there is no target.
+ *
+ * @param {string} id the target fragment's xml:id, if any
+ * @param {string} root the target fragment's node id, used when no xml:id exists
+ * @returns {string|null} the relative href, or null when there is no target
+ */
+function buildFragmentHref(id, root) {
+  if (!id && !root) {
+    return null;
+  }
+  const url = new URL(window.location.href);
+  url.search = '';
+  if (id) {
+    url.searchParams.set('id', id);
+  } else {
+    url.searchParams.set('root', root);
+  }
+  return url.pathname + url.search;
+}
 
 /**
  * Navigate backward/forward in a document. This component does not implement any functionality itself.
  * It just sends a `pb-navigate` event when clicked. You may also assign a shortcut key by setting property
  * `keyboard`.
+ *
+ * In addition to firing `pb-navigate`, the control renders a real `<a href>` pointing to the
+ * target fragment (`?id=` for a persistent xml:id, `?root=` as fallback) with `rel="next"`/`rel="prev"`.
+ * This makes the next/previous page reachable by crawlers and no-JS clients, while interactive
+ * clicks are intercepted (`preventDefault`) so the SPA navigates in place without a reload.
  *
  * @slot - default unnamed slot
  * @fires pb-navigate - Fire event indicating that listening components should navigate in the given direction
@@ -37,6 +67,14 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
       rendition: {
         type: String,
       },
+      /**
+       * Internal: the crawlable href pointing to the target fragment, recomputed
+       * from each `pb-update`.
+       */
+      _href: {
+        type: String,
+        attribute: false,
+      },
     };
   }
 
@@ -44,6 +82,7 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
     super();
     this.direction = 'forward';
     this.disabled = true;
+    this._href = null;
   }
 
   connectedCallback() {
@@ -70,25 +109,35 @@ export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
   }
 
   _update(ev) {
+    const { data } = ev.detail;
     if (this.direction === 'forward') {
-      if (ev.detail.data.next) {
-        this.disabled = false;
-      } else {
-        this.disabled = true;
-      }
-    } else if (ev.detail.data.previous) {
-      this.disabled = false;
+      this.disabled = !data.next;
+      this._href = buildFragmentHref(data.nextId, data.next);
     } else {
-      this.disabled = true;
+      this.disabled = !data.previous;
+      this._href = buildFragmentHref(data.previousId, data.previous);
     }
   }
 
-  _handleClick() {
+  _handleClick(ev) {
+    // Crawlers and no-JS clients follow the real href; for interactive use we
+    // navigate in place via the pb-navigate event instead of reloading.
+    if (ev) {
+      ev.preventDefault();
+    }
     this.emitTo('pb-navigate', { direction: this.direction });
   }
 
   render() {
-    return html` <a id="button" @click="${this._handleClick}"><slot></slot></a> `;
+    return html`
+      <a
+        id="button"
+        href="${ifDefined(this._href || undefined)}"
+        rel="${this.direction === 'forward' ? 'next' : 'prev'}"
+        @click="${this._handleClick}"
+        ><slot></slot
+      ></a>
+    `;
   }
 
   static get styles() {
