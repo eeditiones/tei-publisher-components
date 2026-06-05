@@ -650,6 +650,18 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   _doLoad(params) {
     this.emitTo('pb-start-update', params);
 
+    // On the first load, check whether the server already rendered this
+    // fragment into our light DOM. If so, request only
+    // the navigation metadata (content=none) and adopt the existing markup
+    // instead of rendering the same content a second time.
+    if (this._ssrContent === undefined) {
+      this._ssrContent = this.querySelector(':scope > [data-pb-ssr]') || null;
+      this._ssrFootnotes = this.querySelector(':scope > [data-pb-ssr-footnotes]') || null;
+    }
+    if (this._ssrContent) {
+      params.content = 'none';
+    }
+
     console.log('<pb-view> Loading view with params %o', params);
     if (!this.infiniteScroll) {
       this._clear();
@@ -709,9 +721,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     const index = await fetch(`index.json`).then(response => response.json());
     const paramNames = ['odd', 'view', 'xpath', 'map'];
-    this.querySelectorAll('pb-param').forEach(param =>
-      paramNames.push(`user.${param.getAttribute('name')}`),
-    );
+    this._params().forEach(param => paramNames.push(`user.${param.getAttribute('name')}`));
     let url = params.id ? createKey([...paramNames, 'id']) : createKey([...paramNames, 'root']);
     let file = index[url];
     if (!file) {
@@ -827,7 +837,17 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     const elem = document.createElement('div');
     // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
     fragment.appendChild(elem);
-    elem.innerHTML = resp.content;
+    if (this._ssrContent && (!resp.content || resp.content.length === 0)) {
+      // Adopt the server-rendered content from light DOM (SSR) rather than
+      // re-rendering it: move its children into the shadow content container.
+      while (this._ssrContent.firstChild) {
+        elem.appendChild(this._ssrContent.firstChild);
+      }
+      this._ssrContent.remove();
+      this._ssrContent = null;
+    } else {
+      elem.innerHTML = resp.content;
+    }
 
     // if before-update-event is set, we do not replace the content immediately,
     // but emit an event
@@ -889,10 +909,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
 
     if (this.appendFootnotes) {
       const footnotes = document.createElement('div');
-      if (resp.footnotes) {
+      if (this._ssrFootnotes) {
+        // Adopt the server-rendered footnotes from light DOM (SSR).
+        while (this._ssrFootnotes.firstChild) {
+          footnotes.appendChild(this._ssrFootnotes.firstChild);
+        }
+      } else if (resp.footnotes) {
         footnotes.innerHTML = resp.footnotes;
       }
       this._footnotes = footnotes;
+    }
+    // Drop the SSR footnotes marker even when not appending, so it does not
+    // linger in the light DOM (matches the dynamic path, which ignores
+    // footnotes unless append-footnotes is set).
+    if (this._ssrFootnotes) {
+      this._ssrFootnotes.remove();
+      this._ssrFootnotes = null;
     }
 
     this._initFootnotes(this._footnotes);
@@ -1013,9 +1045,20 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * Collect the configuration `pb-param` children of this view. Excludes any
+   * `pb-param` that may occur inside server-rendered (SSR) content adopted into
+   * the light DOM, so injected content can never be mistaken for a parameter.
+   */
+  _params() {
+    return Array.from(this.querySelectorAll('pb-param')).filter(
+      param => !param.closest('[data-pb-ssr], [data-pb-ssr-footnotes]'),
+    );
+  }
+
   _getParameters() {
     const params = [];
-    this.querySelectorAll('pb-param').forEach(param => {
+    this._params().forEach(param => {
       params[`user.${param.getAttribute('name')}`] = param.getAttribute('value');
     });
     // add parameters for features set with pb-toggle-feature
