@@ -1,3 +1,15 @@
+# [3.4.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.2...v3.4.0) (2026-06-05)
+
+
+### Bug Fixes
+
+* **pb-navigation:** output canonical URL for crawlers to follow ([0d75d73](https://github.com/eeditiones/tei-publisher-components/commit/0d75d73ae2401d4df98c72364f2b4dbb58e96b4c))
+
+
+### Features
+
+* **pb-view:** implement client-side hydration if prerendered fragment exists in light DOM ([2a01ff5](https://github.com/eeditiones/tei-publisher-components/commit/2a01ff531cfd5f818a988165a3358ddcd1571c53))
+
 ## [3.3.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.1...v3.3.2) (2026-06-02)
 
 
