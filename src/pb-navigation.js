@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { ifDefined } from 'lit-html/directives/if-defined';
 import { pbMixin } from './pb-mixin.js';
 import { pbHotkeys } from './pb-hotkeys.js';
+import { themableMixin } from './theming.js';
 
 /**
  * Build a clean, canonical fragment URL for the current document: the current
@@ -41,7 +42,7 @@ function buildFragmentHref(id, root) {
  * @fires pb-navigate - Fire event indicating that listening components should navigate in the given direction
  * @fires pb-update - When received, updates the state of navigation buttons (disables when no forward/backward navigation possible)
  */
-export class PbNavigation extends pbHotkeys(pbMixin(LitElement)) {
+export class PbNavigation extends themableMixin(pbHotkeys(pbMixin(LitElement))) {
   static get properties() {
     return {
       ...super.properties,
