@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.4.0...v3.4.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **pb-navigation:** make it styleable ([1d08eec](https://github.com/eeditiones/tei-publisher-components/commit/1d08eecca9f0dbcd2ecec115d4ad125a65f8357f))
+
 # [3.4.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.3.2...v3.4.0) (2026-06-05)
 
 
