@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.4.1...v3.5.0) (2026-06-08)
+
+
+### Features
+
+* **pb-highlight:** optionally listen on click rather than mouseenter and scroll target into view if clicked ([07bdcb4](https://github.com/eeditiones/tei-publisher-components/commit/07bdcb4207d9f8d85102a0e2085a1e0b43226c62))
+
 ## [3.4.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.4.0...v3.4.1) (2026-06-05)
 
 
