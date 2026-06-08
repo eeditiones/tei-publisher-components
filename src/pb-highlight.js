@@ -2,11 +2,11 @@ import { LitElement, html, css } from 'lit-element';
 import { pbMixin } from './pb-mixin';
 
 /**
- * Link elements to each other: if the user moves the mouse over one element,
+ * Link elements to each other: when a trigger action occurs on one element,
  * the others are highlighted by changing their background color. Which elements
  * are linked is determined by the `key` property: elements with the same key
- * are linked. If the user moves the mouse over an element, the key is sent with
- * a `pb-highlight` event. Other elements with the same key react to this event.
+ * are linked. The trigger action is configured via the `trigger` property and
+ * sends a `pb-highlight-on` event. Other elements with the same key react to this event.
  *
  * `pb-highlight` should be output for relevant elements via ODD processing model.
  *
@@ -17,6 +17,8 @@ import { pbMixin } from './pb-mixin';
  * @fires pb-highlight-on - Fires highlight event with a key passed to which other pb-highlight elements with the same key will react
  * @fires pb-highlight-off - When received, triggers removal of a highlight that might have been on for this element before
  * @fires pb-highlight-on - When received, switches the highlight on if the same key was received as the current element has
+ * @prop {"click" | "mouseenter"} trigger - Defines one or more actions (space separated) which should cause
+ * the highlight to show. Default is `mouseenter`. If `click` is among the triggers, matching elements scroll into view.
  * @cssprop --pb-highlight-color - Background color to highlight an element
  */
 export class PbHighlight extends pbMixin(LitElement) {
@@ -46,6 +48,12 @@ export class PbHighlight extends pbMixin(LitElement) {
         type: Boolean,
         attribute: 'highlight-self',
       },
+      /**
+       * Defines one or more actions (space separated) which should cause the highlight to show.
+       */
+      trigger: {
+        type: String,
+      },
       _className: {
         type: String,
       },
@@ -58,7 +66,16 @@ export class PbHighlight extends pbMixin(LitElement) {
     this.duration = 0;
     this.scroll = false;
     this.highlightSelf = false;
+    this.trigger = 'mouseenter';
     this._className = 'highlight-off';
+  }
+
+  _getTriggers() {
+    return (this.trigger || 'mouseenter').trim().split(/\s+/);
+  }
+
+  _isClickable() {
+    return this._getTriggers().includes('click');
   }
 
   connectedCallback() {
@@ -74,7 +91,7 @@ export class PbHighlight extends pbMixin(LitElement) {
     }
   }
 
-  _mouseOver() {
+  _triggerHighlight() {
     this.emitTo('pb-highlight-off', {
       source: this,
     });
@@ -84,7 +101,7 @@ export class PbHighlight extends pbMixin(LitElement) {
     this.emitTo('pb-highlight-on', {
       id: this.key,
       source: this,
-      scroll: this.scroll,
+      scroll: this.scroll || this._isClickable(),
     });
   }
 
@@ -92,7 +109,12 @@ export class PbHighlight extends pbMixin(LitElement) {
     if (this.disabled) {
       return html`<slot></slot>`;
     }
-    return html`<span id="content" class="${this._className}" @mouseover="${this._mouseOver}"
+    const triggers = this._getTriggers();
+    return html`<span
+      id="content"
+      class="${this._className}${this._isClickable() ? ' clickable' : ''}"
+      @mouseenter="${triggers.includes('mouseenter') ? this._triggerHighlight : null}"
+      @click="${triggers.includes('click') ? this._triggerHighlight : null}"
       ><slot></slot
     ></span>`;
   }
@@ -127,6 +149,10 @@ export class PbHighlight extends pbMixin(LitElement) {
       .highlight-off {
         background-color: inherit;
       }
+
+      .clickable {
+        cursor: pointer;
+      }
     `;
   }
 
@@ -134,7 +160,7 @@ export class PbHighlight extends pbMixin(LitElement) {
     if (ev.detail.source != this && ev.detail.id === this.key) {
       this._className = 'highlight-on';
       if (ev.detail.scroll && this.disabled == false) {
-        this.scrollIntoView({ block: 'center', behaviour: 'smooth' });
+        this.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
       if (this.duration > 0) {
         setTimeout(() => {
@@ -151,16 +177,16 @@ export class PbHighlight extends pbMixin(LitElement) {
   }
 
   /**
-   * Fired if mouse pointer enters the element
+   * Fired when a trigger action occurs on the element
    *
    * @event pb-highlight-on
    * @param {String} id key
    * @param {Object} source this element
-   * @param {scroll} should target scroll to highlighted position
+   * @param {Boolean} scroll should target scroll to highlighted position
    */
 
   /**
-   * Fired if mouse pointer leaves the element
+   * Fired before a new highlight is applied
    *
    * @event pb-highlight-off
    * @param {Object} source this element
