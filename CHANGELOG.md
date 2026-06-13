@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.5.0...v3.6.0) (2026-06-13)
+
+
+### Features
+
+* **pb-highlight:** allow multiple keys to target more than one receiver ([2453de5](https://github.com/eeditiones/tei-publisher-components/commit/2453de51434a8c3d93b21359fc5a1cc8cdf359ce))
+
 # [3.5.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.4.1...v3.5.0) (2026-06-08)
 
 
