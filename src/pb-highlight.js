@@ -5,7 +5,9 @@ import { pbMixin } from './pb-mixin';
  * Link elements to each other: when a trigger action occurs on one element,
  * the others are highlighted by changing their background color. Which elements
  * are linked is determined by the `key` property: elements with the same key
- * are linked. The trigger action is configured via the `trigger` property and
+ * are linked. Multiple keys (space or comma separated) may be specified; in that
+ * case the emitted `pb-highlight-on` event passes an array of ids and receivers
+ * highlight when any of their keys matches. The trigger action is configured via the `trigger` property and
  * sends a `pb-highlight-on` event. Other elements with the same key react to this event.
  *
  * `pb-highlight` should be output for relevant elements via ODD processing model.
@@ -16,7 +18,7 @@ import { pbMixin } from './pb-mixin';
  * @fires pb-highlight-off - Fires removal of all highlights that might have existed before
  * @fires pb-highlight-on - Fires highlight event with a key passed to which other pb-highlight elements with the same key will react
  * @fires pb-highlight-off - When received, triggers removal of a highlight that might have been on for this element before
- * @fires pb-highlight-on - When received, switches the highlight on if the same key was received as the current element has
+ * @fires pb-highlight-on - When received, switches the highlight on if any received key matches one of this element's keys
  * @prop {"click" | "mouseenter"} trigger - Defines one or more actions (space separated) which should cause
  * the highlight to show. Default is `mouseenter`. If `click` is among the triggers, matching elements scroll into view.
  * @cssprop --pb-highlight-color - Background color to highlight an element
@@ -26,7 +28,7 @@ export class PbHighlight extends pbMixin(LitElement) {
     return {
       ...super.properties,
       /**
-       * The key to which this element is connected.
+       * One or more keys (space or comma separated) to which this element is connected.
        */
       key: {
         type: String,
@@ -74,6 +76,26 @@ export class PbHighlight extends pbMixin(LitElement) {
     return (this.trigger || 'mouseenter').trim().split(/\s+/);
   }
 
+  _getKeys() {
+    return (this.key || '').trim().split(/[\s,]+/).filter(Boolean);
+  }
+
+  _getEventId() {
+    const keys = this._getKeys();
+    return keys.length > 1 ? keys : keys[0] || null;
+  }
+
+  _matchesKey(eventId) {
+    const keys = this._getKeys();
+    if (!keys.length || eventId == null) {
+      return false;
+    }
+    if (Array.isArray(eventId)) {
+      return keys.some(key => eventId.includes(key));
+    }
+    return keys.includes(eventId);
+  }
+
   _isClickable() {
     return this._getTriggers().includes('click');
   }
@@ -95,11 +117,12 @@ export class PbHighlight extends pbMixin(LitElement) {
     this.emitTo('pb-highlight-off', {
       source: this,
     });
+    const id = this._getEventId();
     if (this.highlightSelf) {
-      this._highlightOn({ detail: { id: this.key } });
+      this._highlightOn({ detail: { id } });
     }
     this.emitTo('pb-highlight-on', {
-      id: this.key,
+      id,
       source: this,
       scroll: this.scroll || this._isClickable(),
     });
@@ -157,7 +180,7 @@ export class PbHighlight extends pbMixin(LitElement) {
   }
 
   _highlightOn(ev) {
-    if (ev.detail.source != this && ev.detail.id === this.key) {
+    if (ev.detail.source != this && this._matchesKey(ev.detail.id)) {
       this._className = 'highlight-on';
       if (ev.detail.scroll && this.disabled == false) {
         this.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -180,7 +203,7 @@ export class PbHighlight extends pbMixin(LitElement) {
    * Fired when a trigger action occurs on the element
    *
    * @event pb-highlight-on
-   * @param {String} id key
+   * @param {String|Array<String>} id key or keys
    * @param {Object} source this element
    * @param {Boolean} scroll should target scroll to highlighted position
    */
