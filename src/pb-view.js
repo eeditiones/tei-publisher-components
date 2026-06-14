@@ -832,18 +832,31 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     this.emitTo('pb-end-update', null);
   }
 
+  /**
+   * Move markup from a server-rendered light-DOM wrapper into a target container.
+   *
+   * Re-parses the HTML string (same as the dynamic `innerHTML = resp.content`
+   * path) so nested custom elements such as `pb-popover` and `pb-highlight`
+   * upgrade when the target is connected to the shadow tree. Moving live nodes
+   * with `appendChild` leaves those elements inert: they may have been parsed
+   * before the component bundle loaded, or their lifecycle already ran in the
+   * wrong document root.
+   *
+   * @param {HTMLElement} container destination element inside the shadow content
+   * @param {HTMLElement} ssrWrapper `[data-pb-ssr]` or `[data-pb-ssr-footnotes]`
+   */
+  _adoptSsrMarkup(container, ssrWrapper) {
+    container.innerHTML = ssrWrapper.innerHTML;
+    ssrWrapper.remove();
+  }
+
   _replaceContent(resp, direction) {
     const fragment = document.createDocumentFragment();
     const elem = document.createElement('div');
     // elem.style.opacity = 0; //hide it - animation has to make sure to blend it in
     fragment.appendChild(elem);
     if (this._ssrContent && (!resp.content || resp.content.length === 0)) {
-      // Adopt the server-rendered content from light DOM (SSR) rather than
-      // re-rendering it: move its children into the shadow content container.
-      while (this._ssrContent.firstChild) {
-        elem.appendChild(this._ssrContent.firstChild);
-      }
-      this._ssrContent.remove();
+      this._adoptSsrMarkup(elem, this._ssrContent);
       this._ssrContent = null;
     } else {
       elem.innerHTML = resp.content;
@@ -910,10 +923,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.appendFootnotes) {
       const footnotes = document.createElement('div');
       if (this._ssrFootnotes) {
-        // Adopt the server-rendered footnotes from light DOM (SSR).
-        while (this._ssrFootnotes.firstChild) {
-          footnotes.appendChild(this._ssrFootnotes.firstChild);
-        }
+        this._adoptSsrMarkup(footnotes, this._ssrFootnotes);
       } else if (resp.footnotes) {
         footnotes.innerHTML = resp.footnotes;
       }
