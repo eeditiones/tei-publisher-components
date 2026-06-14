@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.0...v3.6.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* **pb-view:** fix SSR issue: webcomponents not initialized ([1b799ca](https://github.com/eeditiones/tei-publisher-components/commit/1b799ca2b0ac72ac03a8b37461ce14b710eaa11d))
+
 # [3.6.0](https://github.com/eeditiones/tei-publisher-components/compare/v3.5.0...v3.6.0) (2026-06-13)
 
 
