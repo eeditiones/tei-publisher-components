@@ -1,3 +1,10 @@
+## [3.6.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.2...v3.6.3) (2026-07-01)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add debouncing, avoid older results overwriting newer ([ea3d32a](https://github.com/eeditiones/tei-publisher-components/commit/ea3d32a2495da90f3c8efc91c3a36589ed0c8266))
+
 ## [3.6.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.1...v3.6.2) (2026-07-01)
 
 
