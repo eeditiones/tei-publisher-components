@@ -342,10 +342,6 @@ class PbViewAnnotate extends PbView {
 
     this.subscribeTo('pb-add-annotation', ev => this.addAnnotation(ev.detail));
     this.subscribeTo('pb-edit-annotation', this._editAnnotation.bind(this));
-    this.subscribeTo('pb-start-update', () => {
-      this._cancelMarkerRefresh();
-      this._clearMarkers();
-    });
     this.subscribeTo('pb-refresh', () => {
       this._ranges = [];
       this._rangesMap.clear();
@@ -469,6 +465,12 @@ class PbViewAnnotate extends PbView {
     if (ev && ev.detail && ev.detail.preserveScroll) {
       this._scrollTop = this.scrollTop;
     }
+  }
+
+  _doLoad(params) {
+    this._cancelMarkerRefresh();
+    this._clearMarkers();
+    super._doLoad(params);
   }
 
   _handleContent() {
@@ -861,6 +863,7 @@ class PbViewAnnotate extends PbView {
     if (json[this.getKey(span.dataset.type)] !== '') {
       span.classList.remove('incomplete');
     }
+    this._scheduleMarkerRefresh();
   }
 
   _editAnnotation(ev) {
