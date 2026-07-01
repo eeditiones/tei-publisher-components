@@ -87,6 +87,20 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this._authorities = {};
     this.noOccurrences = false;
     this.group = 'tei';
+    this._queryGeneration = 0;
+    this._queryDebounceMs = 300;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._queryTimer) {
+      clearTimeout(this._queryTimer);
+      this._queryTimer = null;
+    }
+    if (this._occurrencesController) {
+      this._occurrencesController.abort();
+      this._occurrencesController = null;
+    }
   }
 
   connectedCallback() {
@@ -101,7 +115,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       this.query = ev.detail.query;
       this.type = ev.detail.type;
       this._results = [];
-      this._query();
+      this._scheduleQuery(true);
     });
 
     waitOnce('pb-page-ready', () => {
@@ -110,7 +124,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
         this._authorities[connector.register] = connector;
       });
       if (this.autoLookup) {
-        this._query();
+        this._scheduleQuery(true);
       }
     });
 
@@ -347,28 +361,76 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     }
     this._results = [];
     this.query = e.target.value;
-    this._query();
+    this._scheduleQuery();
+  }
+
+  _scheduleQuery(immediate = false) {
+    if (this._queryTimer) {
+      clearTimeout(this._queryTimer);
+      this._queryTimer = null;
+    }
+    if (immediate) {
+      this._query();
+      return;
+    }
+    this._queryTimer = setTimeout(() => {
+      this._queryTimer = null;
+      this._query();
+    }, this._queryDebounceMs);
   }
 
   _query() {
+    const generation = ++this._queryGeneration;
+
+    if (this._occurrencesController) {
+      this._occurrencesController.abort();
+      this._occurrencesController = null;
+    }
+
+    const authority = this._authorities[this.type];
+    if (!authority) {
+      return;
+    }
+
     this.emitTo('pb-start-update');
-    this._authorities[this.type].query(this.query).then(results => {
-      this._occurrences(results.items).then(merged => {
+    authority
+      .query(this.query)
+      .then(results => {
+        if (generation !== this._queryGeneration) {
+          return undefined;
+        }
+        return this._occurrences(results.items, generation);
+      })
+      .then(merged => {
+        if (merged === undefined || generation !== this._queryGeneration) {
+          return;
+        }
         this._results = merged;
+        this.emitTo('pb-end-update');
+      })
+      .catch(err => {
+        if (generation !== this._queryGeneration) {
+          return;
+        }
+        console.error('<pb-authority-lookup> query failed: %s', err.message);
+        this.emitTo('pb-end-update');
       });
-      this.emitTo('pb-end-update');
-      // this.shadowRoot.getElementById('query').focus();
-    });
   }
 
   _addEntity() {
     this.emitTo('pb-authority-new-entity', { query: this.query, type: this.type });
   }
 
-  _occurrences(items) {
+  _occurrences(items, generation) {
     if (this.noOccurrences) {
       return Promise.resolve(items);
     }
+    if (this._occurrencesController) {
+      this._occurrencesController.abort();
+    }
+    const controller = new AbortController();
+    this._occurrencesController = controller;
+
     const params = new FormData();
     params.append('register', this.type);
     items.forEach(item => {
@@ -378,13 +440,27 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
       fetch(`${this.getEndpoint()}/api/annotations/occurrences`, {
         method: 'POST',
         body: params,
+        signal: controller.signal,
       })
         .then(response => {
+          if (generation !== this._queryGeneration) {
+            resolve(undefined);
+            return undefined;
+          }
           if (response.ok) {
             return response.json();
           }
+          resolve(items);
+          return undefined;
         })
         .then(json => {
+          if (json === undefined) {
+            return;
+          }
+          if (generation !== this._queryGeneration) {
+            resolve(undefined);
+            return;
+          }
           items.forEach(item => {
             if (json[item.id]) {
               item.occurrences = json[item.id];
@@ -405,6 +481,13 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             }
             return d;
           });
+          resolve(items);
+        })
+        .catch(err => {
+          if (err.name === 'AbortError' || generation !== this._queryGeneration) {
+            resolve(undefined);
+            return;
+          }
           resolve(items);
         });
     });
