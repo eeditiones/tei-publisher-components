@@ -12,10 +12,20 @@ export class KBGA extends Registry {
     const results = [];
 
     const register = this.getRegister();
-    const searchParam = register === 'bibls' ? 'biblsearch' : 'search';
-    const url = `https://meta.karl-barth.ch/api/${register}?${searchParam}=${encodeURIComponent(
-      key,
-    )}&perPage=${this._limit}`;
+    const baseUrl =
+      this._register === 'object' ? 'https://kba.karl-barth.ch' : 'https://meta.karl-barth.ch';
+    let searchQuery;
+    switch (register) {
+      case 'objects':
+            searchQuery = `fields%5B0%5D=creation_min&values%5B0%5D=${encodeURIComponent(key)}&operators%5B0%5D=%3D`;
+        break;
+      case 'bibls':
+        searchQuery = `biblsearch=${encodeURIComponent(key)}`;
+        break;
+      default:
+        searchQuery = `search=${encodeURIComponent(key)}`;
+    }
+    const url = `${baseUrl}/api/${register}?${searchQuery}&perPage=${this._limit}`;
     const label = this.getLabelField();
     return new Promise(resolve => {
       fetch(url)
@@ -26,6 +36,18 @@ export class KBGA extends Registry {
               (this._register === 'organization' && item.authority_type !== 'organisation') ||
               (this._register === 'person' && item.authority_type !== 'person')
             ) {
+              return;
+            }
+            if (this._register === 'object') {
+              results.push({
+                register: this._register,
+                id: String(item.id),
+                label: item.full_id,
+                details: item.title,
+                link: item.permalink,
+                strings: [],
+                provider: 'KBGA',
+              });
               return;
             }
             const result = {
@@ -54,6 +76,20 @@ export class KBGA extends Registry {
     const label = this.getLabelField();
     return new Promise(resolve => {
       this.getRecord(key).then(json => {
+        if (this._register === 'object') {
+          const { title, object_creation_min, permalink } = json.data;
+          const dates = object_creation_min ? `<p>${object_creation_min}</p>` : '';
+          const output = `
+            <h3 class="label"><a href="${permalink}" target="_blank">${title}</a></h3>
+            ${dates}
+          `;
+          container.innerHTML = output;
+          resolve({
+            id: String(json.data.id),
+            strings: [],
+          });
+          return;
+        }
         const died = json.data.death ? `† ${json.data.death}` : '';
         const dates = json.data.birth ? `<p>* ${json.data.birth} ${died}</p>` : '';
         const note = json.data.note_bio ? `<p>${json.data.note_bio}</p>` : '';
@@ -81,12 +117,17 @@ export class KBGA extends Registry {
    */
   async getRecord(key) {
     const id = key.replace(/^.*-([^-]+)$/, '$1');
-    return fetch(`https://meta.karl-barth.ch/api/${this.getRegister()}/${id}`)
+    const baseUrl =
+      this._register === 'object' ? 'https://kba.karl-barth.ch' : 'https://meta.karl-barth.ch';
+    return fetch(`${baseUrl}/api/${this.getRegister()}/${id}`)
       .then(response => response.json())
       .then(json => {
         const output = { ...json };
         output.name = json.data[this.getLabelField()];
         switch (this._register) {
+          case 'object':
+            output.name = `${json.data.title} (${json.data.object_creation_min})`;
+            break;
           case 'place':
             output.country = json.data.country;
             output.location = json.data.location.coordinates;
@@ -109,6 +150,9 @@ export class KBGA extends Registry {
   getLabelField() {
     let label;
     switch (this._register) {
+      case 'object':
+        label = 'title';
+        break;
       case 'place':
         label = 'placeName_full';
         break;
@@ -135,6 +179,9 @@ export class KBGA extends Registry {
     }
     let register;
     switch (this._register) {
+      case 'object':
+        register = 'objects';
+        break;
       case 'person':
       case 'organization':
         register = 'actors';
