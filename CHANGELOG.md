@@ -1,3 +1,11 @@
+## [3.6.2](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.1...v3.6.2) (2026-07-01)
+
+
+### Bug Fixes
+
+* **kbga:** object lookup broken ([a6632d8](https://github.com/eeditiones/tei-publisher-components/commit/a6632d8d086a2f25db1c1512fe30fca3fd02164e))
+* **pb-view-annotate:** marker refresh ([3ae5f71](https://github.com/eeditiones/tei-publisher-components/commit/3ae5f710c46aa765f166ee20570018fce69f86f6))
+
 ## [3.6.1](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.0...v3.6.1) (2026-06-14)
 
 
