@@ -1,3 +1,10 @@
+## [3.6.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.3...v3.6.4) (2026-07-03)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** scroll back to last position after refresh ([9f4eb4b](https://github.com/eeditiones/tei-publisher-components/commit/9f4eb4bb7f0fe50cf9043c24d2f2eda6f97196b2))
+
 ## [3.6.3](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.2...v3.6.3) (2026-07-01)
 
 
