@@ -405,7 +405,7 @@ class PbViewAnnotate extends PbView {
       console.warn('<pb-view-annotate> history is empty');
       return;
     }
-    this._scrollTop = this.scrollTop;
+    this._captureScrollPosition();
     const lastEntry = this._history.pop();
     this._clearMarkers();
     this._ranges = JSON.parse(lastEntry);
@@ -460,11 +460,57 @@ class PbViewAnnotate extends PbView {
     });
   }
 
-  _refresh(ev) {
-    super._refresh(ev);
-    if (ev && ev.detail && ev.detail.preserveScroll) {
-      this._scrollTop = this.scrollTop;
+  /**
+   * Return the nearest ancestor (or this element) that actually scrolls.
+   * In fixed-layout annotate pages the scroll container is usually `main`,
+   * not the pb-view-annotate host.
+   */
+  _scrollContainer() {
+    let el = this;
+    while (el) {
+      const { overflow, overflowY } = getComputedStyle(el);
+      const scrollable =
+        /(auto|scroll|overlay)/.test(overflowY) || /(auto|scroll|overlay)/.test(overflow);
+      if (scrollable && el.scrollHeight > el.clientHeight) {
+        return el;
+      }
+      el = el.parentElement;
     }
+    return this;
+  }
+
+  _captureScrollPosition() {
+    const el = this._scrollContainer();
+    this._scrollEl = el;
+    this._scrollTop = el.scrollTop;
+  }
+
+  _restoreScrollPosition() {
+    if (this._scrollTop === undefined || !this._scrollEl) {
+      return;
+    }
+    const { _scrollEl: el, _scrollTop: top } = this;
+    const restore = () => {
+      el.scrollTop = top;
+    };
+    restore();
+    requestAnimationFrame(() => {
+      restore();
+      setTimeout(restore, 100);
+      // Run after pb-view._scroll() (400ms) so URL-hash scrolling does not win.
+      setTimeout(() => {
+        restore();
+        this._scrollTop = undefined;
+        this._scrollEl = undefined;
+      }, 450);
+    });
+  }
+
+  _refresh(ev) {
+    if (ev?.detail?.preserveScroll) {
+      this._captureScrollPosition();
+    }
+    super._refresh(ev);
   }
 
   _doLoad(params) {
@@ -480,10 +526,7 @@ class PbViewAnnotate extends PbView {
       this._annotationStyles();
       this.updateAnnotations(true, false);
       this._markIncompleteAnnotations();
-      if (this._scrollTop) {
-        this.scrollTop = this._scrollTop;
-        this._scrollTop = undefined;
-      }
+      this._restoreScrollPosition();
       this.emitTo('pb-annotations-loaded');
       // Marker positions depend on the ODD stylesheet and final text layout.
       this._scheduleMarkerRefresh();
