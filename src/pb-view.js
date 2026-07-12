@@ -390,16 +390,20 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         this.highlight = true;
       }
 
+      const doc = this.getDocument();
+      const prevState = { ...registry.state, ...registry.getState(this) };
       const newState = {
         view: this.getView(),
         odd: this.getOdd(),
-        path: this.getDocument().path,
+        path: doc.path,
       };
       if (this.xmlId) {
         newState.id = this.xmlId;
       }
       if (this.view !== 'single' && this.nodeId) {
         newState.root = this.nodeId;
+      } else if (prevState.path && prevState.path !== doc.path) {
+        newState.root = null;
       }
       if (this.fill) {
         newState.fill = this.fill;
@@ -501,7 +505,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         }
         this.wait(() => {
           if (!this.disableHistory) {
-            this._setState({ ...registry.state, ...registry.getState(this) });
+            this._setState(registry.state);
           }
           this._refresh();
         });
@@ -578,14 +582,23 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     if (this.disableHistory || this.getAttribute('xml-id')) {
       return;
     }
+    const doc = this.getDocument();
+    if (!doc?.path) {
+      return;
+    }
     const state = { ...registry.state, ...registry.getState(this) };
-    if (state.id) {
+    if (state.path && state.path !== doc.path) {
+      return;
+    }
+    if (!this.xmlId && state.id) {
       this.xmlId = state.id;
     }
-    if (this.getView() === 'single') {
-      this.nodeId = null;
-    } else if (state.root) {
-      this.nodeId = state.root;
+    if (!this.nodeId) {
+      if (this.getView() === 'single') {
+        this.nodeId = null;
+      } else if (state.root) {
+        this.nodeId = state.root;
+      }
     }
   }
 
@@ -610,6 +623,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       if (ev.detail.id) {
         this.xmlId = ev.detail.id;
+        this.nodeId = null;
       } else if (ev.detail.id == null) {
         this.xmlId = null;
       }
@@ -1289,7 +1303,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (this.view === 'single') {
         // when switching to single view, clear current node id
         this.nodeId = null;
-      } else {
+      } else if (this.switchView) {
         // otherwise use value for alternate view returned from server
         this.nodeId = this.switchView;
       }

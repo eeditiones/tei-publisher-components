@@ -90,8 +90,13 @@ describe('mathematical formulas in pb-view', () => {
     const el = await waitForPage(
       `
                 <pb-page endpoint="${__karma__.config.endpoint}">
-                    <pb-document id="document1" path="test/euler_algebra02_1770.TEI-P5.xml" odd="dta" view="page"></pb-document>
-                    <pb-view src="document1" node-id="3.4.2.7.20.51.5.27"></pb-view>
+                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+                    <pb-view src="document1">
+                        <div data-pb-ssr>
+                            <p>Text with inline math <pb-formula>a^{2}+b^{2}=c^{2}</pb-formula> rendered via pb-view.</p>
+                            <p>Display mode: <pb-formula display>\\frac{y}{z^{m-1}}+\\frac{x}{z^{m+1}}=Q</pb-formula></p>
+                        </div>
+                    </pb-view>
                 </pb-page>
             `,
       'pb-end-update',

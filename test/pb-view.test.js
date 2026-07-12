@@ -27,7 +27,7 @@ describe('initialize and refresh view', () => {
     expect(view.getView()).to.equal('div');
     expect(view.getParameters().view).to.equal('div');
 
-    const h1 = view.shadowRoot.querySelector('h1');
+    let h1 = view.shadowRoot.querySelector('h1');
     expect(h1).to.exist;
     expect(h1).to.have.text('Introduction');
 
@@ -35,7 +35,7 @@ describe('initialize and refresh view', () => {
       document.dispatchEvent(
         new CustomEvent('pb-refresh', {
           detail: {
-            id: 'installation',
+            id: 'development-workflow',
             key: defaultChannel,
           },
         }),
@@ -43,16 +43,17 @@ describe('initialize and refresh view', () => {
     );
     await oneEvent(document, 'pb-end-update');
 
-    const h2 = view.shadowRoot.querySelector('h2');
-    expect(h2).to.have.text('Installation');
+    h1 = view.shadowRoot.querySelector('h1');
+    expect(h1).to.have.text('Development Workflows');
 
     // change to a different document
     setTimeout(() =>
       document.dispatchEvent(
         new CustomEvent('pb-refresh', {
           detail: {
-            path: 'test/graves6.xml',
-            odd: 'graves',
+            path: 'demo/CIDTC-3823-cortez.xml',
+            odd: 'teipublisher',
+            xpath: "//text[@type='source']",
             position: null,
             key: defaultChannel,
           },
@@ -61,8 +62,8 @@ describe('initialize and refresh view', () => {
     );
     await oneEvent(document, 'pb-end-update');
 
-    const geolocation = view.shadowRoot.querySelector('pb-geolocation[key=CanFloque] *');
-    expect(geolocation.innerHTML).to.equal('Can Floque');
+    const geolocation = view.shadowRoot.querySelector('.persName [slot="default"]');
+    expect(geolocation.innerHTML).to.equal('obispo diócesis Colmensis');
   });
 
   it('shows placeholder for non existing document', async () => {
@@ -85,9 +86,8 @@ describe('initialize and refresh view', () => {
     const el = await waitForPage(
       `
                 <pb-page endpoint="${__karma__.config.endpoint}">
-                    <pb-document id="document1" path="test/orlik_to_serafin.xml" odd="serafin"></pb-document>
-                    <pb-view src="document1" xpath="//text[@xml:lang = 'la']/body" view="single"
-                        append-footnotes></pb-view>
+                    <pb-document id="document1" path="demo/F-rom.xml" odd="shakespeare"></pb-document>
+                    <pb-view src="document1" view="page" append-footnotes></pb-view>
                 </pb-page>
             `,
       'pb-end-update',
@@ -96,6 +96,6 @@ describe('initialize and refresh view', () => {
     const view = el.querySelector('pb-view');
 
     const notes = view.shadowRoot.querySelector('#footnotes');
-    expect(notes.innerHTML).to.contain('brata');
+      expect(notes.innerHTML).to.contain('obscured');
   });
 });
