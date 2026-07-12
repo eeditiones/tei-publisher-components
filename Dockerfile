@@ -18,9 +18,13 @@ RUN git clone --depth 1 https://github.com/eeditiones/tei-publisher-lib.git \
     && cd tei-publisher-lib \
     && ant
 
-# tei-publisher-app is generated before docker build by ci/setup-tei-publisher-app.sh
+# tei-publisher-app XAR is generated before docker build by ci/setup-tei-publisher-app.sh
 # using Jinks main + ci/tp_config.json (see .github/workflows/node.js.yml).
-COPY tei-publisher-app/ tei-publisher-app/
+COPY tei-publisher-app/tei-publisher.xar /tmp/tei-publisher.xar
+RUN mkdir -p tei-publisher-app \
+    && cd tei-publisher-app \
+    && unzip -q /tmp/tei-publisher.xar \
+    && mkdir -p resources/lib resources/scripts resources/i18n/common
 WORKDIR /tmp/tei-publisher-app
 
 # Inject the webcomponents built in this repo (tp_config.json sets script.webcomponents=local)
