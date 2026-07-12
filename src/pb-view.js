@@ -384,27 +384,21 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     if (!this.disableHistory) {
-      if (registry.state.id && !this.xmlId) {
-        this.xmlId = registry.state.id;
-      }
+      this._syncPositionFromRegistry();
 
       if (registry.state.action && registry.state.action === 'search') {
         this.highlight = true;
       }
 
-      if (this.view === 'single') {
-        this.nodeId = null;
-      } else if (registry.state.root && !this.nodeId) {
-        this.nodeId = registry.state.root;
-      }
-
       const newState = {
-        id: this.xmlId,
         view: this.getView(),
         odd: this.getOdd(),
         path: this.getDocument().path,
       };
-      if (this.view !== 'single') {
+      if (this.xmlId) {
+        newState.id = this.xmlId;
+      }
+      if (this.view !== 'single' && this.nodeId) {
         newState.root = this.nodeId;
       }
       if (this.fill) {
@@ -507,7 +501,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
         }
         this.wait(() => {
           if (!this.disableHistory) {
-            this._setState(registry.state);
+            this._setState({ ...registry.state, ...registry.getState(this) });
           }
           this._refresh();
         });
@@ -567,6 +561,34 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  _refreshHasPosition(detail) {
+    if (!detail) {
+      return false;
+    }
+    return (
+      Object.prototype.hasOwnProperty.call(detail, 'id') ||
+      Object.prototype.hasOwnProperty.call(detail, 'root') ||
+      Object.prototype.hasOwnProperty.call(detail, 'position') ||
+      Object.prototype.hasOwnProperty.call(detail, 'path') ||
+      Object.prototype.hasOwnProperty.call(detail, 'xpath')
+    );
+  }
+
+  _syncPositionFromRegistry() {
+    if (this.disableHistory || this.getAttribute('xml-id')) {
+      return;
+    }
+    const state = { ...registry.state, ...registry.getState(this) };
+    if (state.id) {
+      this.xmlId = state.id;
+    }
+    if (this.getView() === 'single') {
+      this.nodeId = null;
+    } else if (state.root) {
+      this.nodeId = state.root;
+    }
+  }
+
   _refresh(ev) {
     if (ev && ev.detail) {
       if (
@@ -618,6 +640,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (!this.noScroll) {
         this._scrollTarget = ev.detail.hash;
       }
+    }
+    if (!this._refreshHasPosition(ev?.detail)) {
+      this._syncPositionFromRegistry();
     }
     this._updateStyles();
     if (this.infiniteScroll) {
@@ -1279,7 +1304,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this.columnSeparator = properties.columnSeparator;
     }
     this.xmlId = (!this.getAttribute('xml-id') && properties.id) || this.xmlId;
-    this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
+    if (Object.prototype.hasOwnProperty.call(properties, 'root')) {
+      this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
+    }
 
     if (properties.path) {
       this.getDocument().path = properties.path;
