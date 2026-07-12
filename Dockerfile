@@ -23,7 +23,7 @@ RUN git clone --depth 1 https://github.com/eeditiones/tei-publisher-lib.git \
 COPY tei-publisher-app/tei-publisher.xar /tmp/tei-publisher.xar
 RUN mkdir -p tei-publisher-app \
     && cd tei-publisher-app \
-    && unzip -q /tmp/tei-publisher.xar \
+    && jar xf /tmp/tei-publisher.xar \
     && mkdir -p resources/lib resources/scripts resources/i18n/common
 WORKDIR /tmp/tei-publisher-app
 
