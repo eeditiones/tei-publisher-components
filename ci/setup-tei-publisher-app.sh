@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Generate tei-publisher-app with Jinks for CI and local Docker builds.
 # Uses the latest jinks main branch (profiles) and ci/tp_config.json.
+# Downloads the deployed app as a XAR (jinks update --sync only fetches changed
+# files, not the full Ant project including build.xml).
 set -euo pipefail
 
 JINKS_REF="${JINKS_REF:-main}"
@@ -51,12 +53,18 @@ done
 echo "Creating tei-publisher app..."
 npx --yes @teipublisher/jinks-cli create -q -c "$ROOT/ci/tp_config.json" -s "$JINKS_SERVER"
 
-echo "Syncing generated app to ${APP_DIR}..."
+echo "Downloading tei-publisher app XAR..."
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR"
 (
   cd "$APP_DIR"
-  npx --yes @teipublisher/jinks-cli update tei-publisher --sync -q -y -s "$JINKS_SERVER"
+  npx --yes @teipublisher/jinks-cli run tei-publisher download -s "$JINKS_SERVER"
 )
+
+if [ ! -f "$APP_DIR/tei-publisher.xar" ]; then
+  echo "Error: tei-publisher.xar was not downloaded."
+  ls -la "$APP_DIR"
+  exit 1
+fi
 
 echo "tei-publisher-app ready at ${APP_DIR}"
