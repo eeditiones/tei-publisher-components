@@ -281,19 +281,11 @@ export class PbPage extends pbMixin(LitElement) {
     console.log('<pb-page> Loading component theme stylesheets from %s', stylesheetURLs.join(', '));
     this._themeSheet = await loadStylesheets(stylesheetURLs);
 
-    // try to figure out what version of TEI Publisher the server is running
+    // Determine the server API version. Jinks-generated apps expose a /login
+    // page (HTTP 200), so probing that URL is no longer a reliable indicator
+    // of a pre-7 server — use /api/version directly.
     if (!this.apiVersion) {
-      // first check if it has a login endpoint, i.e. runs a version < 7
-      // this is necessary to prevent a CORS failure
-      const json = await fetch(`${this.endpoint}/login`)
-        .then(res => {
-          if (res.ok) {
-            return null;
-          }
-          // if not, access the actual /api/version endpoint to retrieve the API version
-          return fetch(`${this.endpoint}/api/version`).then(res2 => res2.json());
-        })
-        .catch(() => fetch(`${this.endpoint}/api/version`).then(res2 => res2.json()));
+      const json = await fetch(`${this.endpoint}/api/version`).then(res2 => res2.json());
 
       if (json) {
         this.apiVersion = json.api;
