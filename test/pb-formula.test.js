@@ -90,7 +90,7 @@ describe('mathematical formulas in pb-view', () => {
     const el = await waitForPage(
       `
                 <pb-page endpoint="${__karma__.config.endpoint}">
-                    <pb-document id="document1" path="doc/documentation.xml" odd="docbook" view="div"></pb-document>
+                    <pb-document id="document1" path="demo/CIDTC-3823-cortez.xml" odd="teipublisher" view="div"></pb-document>
                     <pb-view src="document1">
                         <div data-pb-ssr>
                             <p>Text with inline math <pb-formula>a^{2}+b^{2}=c^{2}</pb-formula> rendered via pb-view.</p>
