@@ -39,6 +39,27 @@ function isSkippedNode(nodeToCheck) {
 }
 
 /**
+ * True if the text node contains only whitespace. Matches anno:string-length
+ * on the server and ignores HTML formatting whitespace between elements.
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
+function isWhitespaceOnlyText(node) {
+  return node.nodeType === Node.TEXT_NODE && /^[\s\n\r\t]*$/.test(node.textContent);
+}
+
+/**
+ * @param {Node} node
+ * @returns {boolean}
+ */
+function countsTowardOffset(node) {
+  return (
+    node.nodeType === Node.TEXT_NODE && !isWhitespaceOnlyText(node) && !isSkippedNode(node)
+  );
+}
+
+/**
  * For a given HTML node, compute the number of characters from the start
  * of the parent element.
  *
@@ -47,11 +68,11 @@ function isSkippedNode(nodeToCheck) {
  * @returns {Number} absolute offset
  */
 function absoluteOffset(container, node, offset) {
-  const walker = document.createTreeWalker(container);
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   walker.currentNode = node;
   while (walker.previousNode()) {
     const sibling = walker.currentNode;
-    if (!(sibling.nodeType === Node.ELEMENT_NODE || isSkippedNode(sibling))) {
+    if (countsTowardOffset(sibling)) {
       // eslint-disable-next-line no-param-reassign
       offset += sibling.textContent.length;
     }
@@ -135,13 +156,15 @@ function pointToRange(container, offset) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    // skip footnote links and empty text nodes (chrome sometimes inserts those)
-    if (!isSkippedNode(walker.currentNode) && walker.currentNode.textContent.length > 0) {
-      if (relOffset - walker.currentNode.textContent.length <= 0) {
-        return [walker.currentNode, relOffset];
-      }
-      relOffset -= walker.currentNode.textContent.length;
+    const current = walker.currentNode;
+    if (!countsTowardOffset(current)) {
+      continue;
     }
+    const len = current.textContent.length;
+    if (relOffset - len <= 0) {
+      return [current, relOffset];
+    }
+    relOffset -= len;
   }
   return null;
 }
