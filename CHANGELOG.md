@@ -1,3 +1,11 @@
+## [3.6.5](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.4...v3.6.5) (2026-07-14)
+
+
+### Bug Fixes
+
+* **pb-page:** detect API version via /api/version on Jinks apps ([ee074fd](https://github.com/eeditiones/tei-publisher-components/commit/ee074fd6fd730ee059e1c440ee5db265b16129ec))
+* **pb-view,pb-grid:** state management: preserve current page/chapter when creating new pb-view ([f86779f](https://github.com/eeditiones/tei-publisher-components/commit/f86779f5ad30c73f7266e2cbe22cba399e297630))
+
 ## [3.6.4](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.3...v3.6.4) (2026-07-03)
 
 
