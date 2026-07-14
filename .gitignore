@@ -14,6 +14,7 @@ images/leaflet
 css/
 dist
 build
+tei-publisher-app
 lib/*
 !lib/openseadragon.min.js
 docs/

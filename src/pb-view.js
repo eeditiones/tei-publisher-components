@@ -384,28 +384,26 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
 
     if (!this.disableHistory) {
-      if (registry.state.id && !this.xmlId) {
-        this.xmlId = registry.state.id;
-      }
+      this._syncPositionFromRegistry();
 
       if (registry.state.action && registry.state.action === 'search') {
         this.highlight = true;
       }
 
-      if (this.view === 'single') {
-        this.nodeId = null;
-      } else if (registry.state.root && !this.nodeId) {
-        this.nodeId = registry.state.root;
-      }
-
+      const doc = this.getDocument();
+      const prevState = { ...registry.state, ...registry.getState(this) };
       const newState = {
-        id: this.xmlId,
         view: this.getView(),
         odd: this.getOdd(),
-        path: this.getDocument().path,
+        path: doc.path,
       };
-      if (this.view !== 'single') {
+      if (this.xmlId) {
+        newState.id = this.xmlId;
+      }
+      if (this.view !== 'single' && this.nodeId) {
         newState.root = this.nodeId;
+      } else if (prevState.path && prevState.path !== doc.path) {
+        newState.root = null;
       }
       if (this.fill) {
         newState.fill = this.fill;
@@ -567,6 +565,43 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  _refreshHasPosition(detail) {
+    if (!detail) {
+      return false;
+    }
+    return (
+      Object.prototype.hasOwnProperty.call(detail, 'id') ||
+      Object.prototype.hasOwnProperty.call(detail, 'root') ||
+      Object.prototype.hasOwnProperty.call(detail, 'position') ||
+      Object.prototype.hasOwnProperty.call(detail, 'path') ||
+      Object.prototype.hasOwnProperty.call(detail, 'xpath')
+    );
+  }
+
+  _syncPositionFromRegistry() {
+    if (this.disableHistory || this.getAttribute('xml-id')) {
+      return;
+    }
+    const doc = this.getDocument();
+    if (!doc?.path) {
+      return;
+    }
+    const state = { ...registry.state, ...registry.getState(this) };
+    if (state.path && state.path !== doc.path) {
+      return;
+    }
+    if (!this.xmlId && state.id) {
+      this.xmlId = state.id;
+    }
+    if (!this.nodeId) {
+      if (this.getView() === 'single') {
+        this.nodeId = null;
+      } else if (state.root) {
+        this.nodeId = state.root;
+      }
+    }
+  }
+
   _refresh(ev) {
     if (ev && ev.detail) {
       if (
@@ -588,6 +623,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       }
       if (ev.detail.id) {
         this.xmlId = ev.detail.id;
+        this.nodeId = null;
       } else if (ev.detail.id == null) {
         this.xmlId = null;
       }
@@ -618,6 +654,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (!this.noScroll) {
         this._scrollTarget = ev.detail.hash;
       }
+    }
+    if (!this._refreshHasPosition(ev?.detail)) {
+      this._syncPositionFromRegistry();
     }
     this._updateStyles();
     if (this.infiniteScroll) {
@@ -1264,7 +1303,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       if (this.view === 'single') {
         // when switching to single view, clear current node id
         this.nodeId = null;
-      } else {
+      } else if (this.switchView) {
         // otherwise use value for alternate view returned from server
         this.nodeId = this.switchView;
       }
@@ -1279,7 +1318,9 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       this.columnSeparator = properties.columnSeparator;
     }
     this.xmlId = (!this.getAttribute('xml-id') && properties.id) || this.xmlId;
-    this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
+    if (Object.prototype.hasOwnProperty.call(properties, 'root')) {
+      this.nodeId = (!this.getAttribute('xml-id') && properties.root) || null;
+    }
 
     if (properties.path) {
       this.getDocument().path = properties.path;

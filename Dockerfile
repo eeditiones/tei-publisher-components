@@ -1,52 +1,63 @@
 ARG EXIST_VERSION=release
 ARG BUILD=local
-ARG PUBLISHER_VERSION=9.1.1
+ARG ROUTER_VERSION=1.12.1
 
 # START STAGE 1
 FROM ghcr.io/eeditiones/builder:latest AS builder
 
-ARG ROUTER_VERSION=1.10.0
-ARG PUBLISHER_VERSION
+ARG ROUTER_VERSION
 
-# Build tei-publisher-app
-RUN  git clone https://github.com/eeditiones/tei-publisher-app.git \
+WORKDIR /tmp
+
+# Build EXPATH dependencies required by the generated tei-publisher app
+RUN git clone --depth 1 https://github.com/eeditiones/jinks-templates.git \
+    && cd jinks-templates \
+    && ant
+
+RUN git clone --depth 1 https://github.com/eeditiones/tei-publisher-lib.git \
+    && cd tei-publisher-lib \
+    && ant
+
+# tei-publisher-app XAR is generated before docker build by ci/setup-tei-publisher-app.sh
+# using Jinks main + ci/tp_config.json (see .github/workflows/node.js.yml).
+COPY tei-publisher-app/tei-publisher.xar /tmp/tei-publisher.xar
+RUN mkdir -p tei-publisher-app \
     && cd tei-publisher-app \
-    && git checkout v${PUBLISHER_VERSION} \
-    # if you prefer to have webcomponents included locally, comment out following line and
-    # enable the ones below
-    && sed -i 's/$config:webcomponents :=.*;/$config:webcomponents := "local";/' modules/config.xqm \
-    && ant -Dnpm=npm xar-local
-
+    && jar xf /tmp/tei-publisher.xar \
+    && mkdir -p resources/lib resources/scripts resources/i18n/common
 WORKDIR /tmp/tei-publisher-app
 
+# Inject the webcomponents built in this repo (tp_config.json sets script.webcomponents=local)
+COPY dist/*.js resources/lib/
 COPY dist/*.js resources/scripts/
 COPY i18n/common/* resources/i18n/common/
 
-RUN ant
+RUN ant xar
 
 WORKDIR /tmp
 
 ADD http://exist-db.org/exist/apps/public-repo/public/roaster-${ROUTER_VERSION}.xar 001.xar
-ADD https://github.com/eeditiones/tei-publisher-lib/releases/latest/download/tei-publisher-lib.xar 002.xar
 
 FROM duncdrum/existdb:${EXIST_VERSION} AS build_local
 
 ARG USR=root
 USER ${USR}
 
-ONBUILD COPY --from=builder /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
 ONBUILD COPY --from=builder /tmp/*.xar /exist/autodeploy/
+ONBUILD COPY --from=builder /tmp/jinks-templates/build/*.xar /exist/autodeploy/004.xar
+ONBUILD COPY --from=builder /tmp/tei-publisher-lib/build/*.xar /exist/autodeploy/005.xar
+ONBUILD COPY --from=builder /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/006.xar
 
 # TODO(DP): Tagging scheme add EXIST_VERSION to the tag
-FROM  ghcr.io/jinntec/base:main AS build_prod
+FROM ghcr.io/jinntec/base:main AS build_prod
 
 ARG USR=nonroot
 USER ${USR}
 
-# Copy EXPATH dependencies
-ONBUILD COPY --from=builder --chown=${USR} /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/
-ONBUILD COPY --from=builder --chown=${USR} /tmp/*.xar /exist/autodeploy/
-
+ONBUILD COPY --from=builder /tmp/*.xar /exist/autodeploy/
+ONBUILD COPY --from=builder /tmp/jinks-templates/build/*.xar /exist/autodeploy/004.xar
+ONBUILD COPY --from=builder /tmp/tei-publisher-lib/build/*.xar /exist/autodeploy/005.xar
+ONBUILD COPY --from=builder /tmp/tei-publisher-app/build/*.xar /exist/autodeploy/006.xar
 
 FROM build_${BUILD}
 
@@ -54,8 +65,6 @@ ARG USR
 USER ${USR}
 
 WORKDIR /exist
-
-# ARG ADMIN_PASS=none
 
 ARG CACHE_MEM
 ARG MAX_BROKER
@@ -71,26 +80,6 @@ ENV JDK_JAVA_OPTIONS="\
     -Dteipublisher.ner-endpoint=${NER_ENDPOINT} \
     -Dteipublisher.context-path=${CONTEXT_PATH} \
     -Dteipublisher.proxy-caching=${PROXY_CACHING}"
-
-# ENV JAVA_TOOL_OPTIONS="\
-#   -Dfile.encoding=UTF8 \
-#   -Dsun.jnu.encoding=UTF-8 \
-#   -Djava.awt.headless=true \
-#   -Dorg.exist.db-connection.cacheSize=${CACHE_MEM:-256}M \
-#   -Dorg.exist.db-connection.pool.max=${MAX_BROKER:-20} \
-#   -Dlog4j.configurationFile=/exist/etc/log4j2.xml \
-#   -Dexist.home=/exist \
-#   -Dexist.configurationFile=/exist/etc/conf.xml \
-#   -Djetty.home=/exist \
-#   -Dexist.jetty.config=/exist/etc/jetty/standard.enabled-jetty-configs \
-#   -Dteipublisher.ner-endpoint=${NER_ENDPOINT} \
-#   -Dteipublisher.context-path=${CONTEXT_PATH} \
-#   -Dteipublisher.proxy-caching=${PROXY_CACHING} \
-#   -XX:+UseG1GC \
-#   -XX:+UseStringDeduplication \
-#   -XX:+UseContainerSupport \
-#   -XX:MaxRAMPercentage=${JVM_MAX_RAM_PERCENTAGE:-75.0} \
-#   -XX:+ExitOnOutOfMemoryError"
 
 # pre-populate the database by launching it once and change default pw
 RUN [ "java", "org.exist.start.Main", "client", "--no-gui",  "-l", "-u", "admin", "-P", "" ]
