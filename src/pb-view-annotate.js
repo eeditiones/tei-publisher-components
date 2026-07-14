@@ -15,7 +15,6 @@ import { get as i18n } from './pb-i18n.js';
  * @returns {Node} first child of ancestor containing current
  */
 function extendRange(current, ancestor) {
-  let parent = current;
   while (parent.parentNode !== ancestor) {
     parent = parent.parentElement;
   }
@@ -27,20 +26,30 @@ function extendRange(current, ancestor) {
  * Applies e.g. to footnote markers.
  *
  * @param {Node} nodeToCheck the node to check
+ * @param {boolean} collapseWhitespace
  * @returns true if node should be ignored
  */
-function isSkippedNode(nodeToCheck) {
+function isSkippedNode(nodeToCheck, collapseWhitespace = false) {
   let node = nodeToCheck;
   if (node.nodeType === Node.TEXT_NODE) {
     node = node.parentNode;
   }
-  const href = /** @type {Element} */ (node).getAttribute('href');
-  return href && /^#fn_.*$/.test(href);
+  while (node && node !== nodeToCheck.getRootNode()) {
+    const el = /** @type {Element} */ (node);
+    const href = el.getAttribute?.('href');
+    if (href && /^#fn_.*$/.test(href)) {
+      return true;
+    }
+    if (collapseWhitespace && el.getAttribute?.('rel') === 'footnote') {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
 }
 
 /**
- * True if the text node contains only whitespace. Matches anno:string-length
- * on the server and ignores HTML formatting whitespace between elements.
+ * True if the text node contains only whitespace. Ignores HTML formatting whitespace between elements.
  *
  * @param {Node} node
  * @returns {boolean}
@@ -51,12 +60,17 @@ function isWhitespaceOnlyText(node) {
 
 /**
  * @param {Node} node
+ * @param {boolean} collapseWhitespace
  * @returns {boolean}
  */
-function countsTowardOffset(node) {
-  return (
-    node.nodeType === Node.TEXT_NODE && !isWhitespaceOnlyText(node) && !isSkippedNode(node)
-  );
+function countsTowardOffset(node, collapseWhitespace = false) {
+  if (node.nodeType !== Node.TEXT_NODE || isSkippedNode(node, collapseWhitespace)) {
+    return false;
+  }
+  if (collapseWhitespace) {
+    return !isWhitespaceOnlyText(node);
+  }
+  return node.textContent.length > 0;
 }
 
 /**
@@ -65,14 +79,15 @@ function countsTowardOffset(node) {
  *
  * @param {Node} node the node for which to compute an absolute offset
  * @param {Number} offset start offset
+ * @param {boolean} collapseWhitespace
  * @returns {Number} absolute offset
  */
-function absoluteOffset(container, node, offset) {
+function absoluteOffset(container, node, offset, collapseWhitespace = false) {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   walker.currentNode = node;
   while (walker.previousNode()) {
     const sibling = walker.currentNode;
-    if (countsTowardOffset(sibling)) {
+    if (countsTowardOffset(sibling, collapseWhitespace)) {
       // eslint-disable-next-line no-param-reassign
       offset += sibling.textContent.length;
     }
@@ -86,9 +101,11 @@ function absoluteOffset(container, node, offset) {
  *
  * @param {Node} node input node
  * @param {Number} offset offset relative to the parent element
+ * @param {string} position
+ * @param {boolean} collapseWhitespace
  * @returns
  */
-function rangeToPoint(node, offset, position = 'start') {
+function rangeToPoint(node, offset, position = 'start', collapseWhitespace = false) {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const container = /** @type {Element} */ (node).closest('[data-tei]');
     if (offset === 0) {
@@ -102,15 +119,15 @@ function rangeToPoint(node, offset, position = 'start') {
       parent: container.getAttribute('data-tei'),
       offset:
         position === 'end'
-          ? absoluteOffset(container, child, 0) - 1
-          : absoluteOffset(container, child, 0),
+          ? absoluteOffset(container, child, 0, collapseWhitespace) - 1
+          : absoluteOffset(container, child, 0, collapseWhitespace),
     };
   }
   const container = /** @type {Element} */ (node.parentNode).closest('[data-tei]');
   if (container) {
     return {
       parent: container.getAttribute('data-tei'),
-      offset: absoluteOffset(container, node, offset),
+      offset: absoluteOffset(container, node, offset, collapseWhitespace),
     };
   }
   console.error('No container with data-tei found for %o', node.parentNode);
@@ -152,12 +169,12 @@ function nextTextNode(context, node) {
  * @param {*} offset absolute offset
  * @returns
  */
-function pointToRange(container, offset) {
+function pointToRange(container, offset, collapseWhitespace = false) {
   let relOffset = offset;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const current = walker.currentNode;
-    if (!countsTowardOffset(current)) {
+    if (!countsTowardOffset(current, collapseWhitespace)) {
       continue;
     }
     const len = current.textContent.length;
@@ -278,6 +295,16 @@ class PbViewAnnotate extends PbView {
       caseSensitive: {
         type: Boolean,
       },
+      /**
+       * When true, ignore whitespace-only text nodes within inline markup when computing annotation offsets.
+       * This makes annotations more robust against changes in whitespace formatting.
+       * However, it needs to be reflected on the server side, so TEI Publisher 11 or newer
+       * is required.
+       */
+      collapseWhitespace: {
+        type: Boolean,
+        attribute: 'collapse-whitespace',
+      },
       ...super.properties,
     };
   }
@@ -287,6 +314,7 @@ class PbViewAnnotate extends PbView {
     this.key = 'ref';
     this.keyMap = {};
     this.caseSensitive = false;
+    this.collapseWhitespace = false;
     this._ranges = [];
     this._rangesMap = new Map();
     this._history = [];
@@ -625,8 +653,8 @@ class PbViewAnnotate extends PbView {
 
     const range = document.createRange();
 
-    const startPoint = pointToRange(context, teiRange.start);
-    const endPoint = pointToRange(context, teiRange.end);
+    const startPoint = pointToRange(context, teiRange.start, this.collapseWhitespace);
+    const endPoint = pointToRange(context, teiRange.end, this.collapseWhitespace);
     if (!(startPoint && endPoint)) {
       console.error('<pb-view-annotate> Invalid range for %o', context);
       return null;
@@ -812,8 +840,8 @@ class PbViewAnnotate extends PbView {
     if (range.collapsed && !info.before) {
       return null;
     }
-    const startRange = rangeToPoint(range.startContainer, range.startOffset);
-    const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end');
+    const startRange = rangeToPoint(range.startContainer, range.startOffset, 'start', this.collapseWhitespace);
+    const endRange = rangeToPoint(range.endContainer, range.endOffset, 'end', this.collapseWhitespace);
     const adjustedRange = {
       context: startRange.parent,
       start: info.position === 'after' ? endRange.offset : startRange.offset,
@@ -1186,8 +1214,8 @@ class PbViewAnnotate extends PbView {
           ref = parsed[this.getKey(type)];
         }
 
-        const startRange = rangeToPoint(node, match.index);
-        const endRange = rangeToPoint(node, end, 'end');
+        const startRange = rangeToPoint(node, match.index, 'start', this.collapseWhitespace);
+        const endRange = rangeToPoint(node, end, 'end', this.collapseWhitespace);
 
         const [str, start] = collectText(node);
         const entry = {
@@ -1214,8 +1242,8 @@ class PbViewAnnotate extends PbView {
       const context = Array.from(root.querySelectorAll(`[data-tei="${teiRange.context}"]`)).filter(
         node => node.closest('pb-popover') === null && node.getAttribute('rel') !== 'footnote',
       )[0];
-      const startPoint = pointToRange(context, teiRange.start);
-      const endPoint = pointToRange(context, teiRange.end);
+      const startPoint = pointToRange(context, teiRange.start, this.collapseWhitespace);
+      const endPoint = pointToRange(context, teiRange.end, this.collapseWhitespace);
       range.setStart(startPoint[0], startPoint[1]);
       range.setEnd(endPoint[0], endPoint[1]);
     }
