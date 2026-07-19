@@ -1,3 +1,10 @@
+## [3.6.6](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.5...v3.6.6) (2026-07-19)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** make icons styleable ([be034d3](https://github.com/eeditiones/tei-publisher-components/commit/be034d37bdbef2b04c8a58468f210266cfeff9aa))
+
 ## [3.6.5](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.4...v3.6.5) (2026-07-14)
 
 
