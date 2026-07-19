@@ -146,7 +146,11 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
         ${this._authorities[this.type] && this._authorities[this.type].editable
           ? html`
               <pb-restricted group="${this.group}">
-                <button @click="${this._addEntity}" title="${translate('annotations.add-entity')}">
+                <button
+                  part="add-entity"
+                  @click="${this._addEntity}"
+                  title="${translate('annotations.add-entity')}"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
                     <path
                       fill="none"
@@ -197,7 +201,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     return html`
       <li>
         <div>
-          <button @click="${() => this._select(item)}" title="link to">
+          <button part="select" @click="${() => this._select(item)}" title="link to">
             <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
               <path
                 d="M208 352h-64a96 96 0 010-192h64M304 160h64a96 96 0 010 192h-64M163.29 256h187.42"
@@ -223,6 +227,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             ${this._authorities[this.type] && this._authorities[this.type].editable
               ? html` <pb-restricted group="${this.group}">
                   <button
+                    part="edit-entity"
                     @click="${() => this._editEntity(item)}"
                     title="${translate('annotations.edit-entity')}"
                   >
@@ -303,6 +308,28 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
         display: inline-flex;
         gap: 0.125rem;
         align-items: center;
+      }
+
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+      }
+
+      button:hover {
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      .ionicon {
+        width: 1.1rem;
+        height: 1.1rem;
+        flex: none;
       }
 
       .badge {
