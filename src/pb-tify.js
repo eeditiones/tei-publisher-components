@@ -102,6 +102,15 @@ export class PbTify extends pbMixin(LitElement) {
       return;
     }
 
+    if (this._endpoint === undefined) {
+      // Called before pb-page-ready resolved this._endpoint (e.g. via
+      // attributeChangedCallback or a pb-show-annotation event that arrived
+      // early); rearm for when it's known instead of resolving a bad URL.
+      // waitOnce replays immediately if the event already fired.
+      waitOnce('pb-page-ready', () => this._initViewer());
+      return;
+    }
+
     if (this._tify) {
       this._tify.destroy();
     }
