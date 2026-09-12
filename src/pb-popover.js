@@ -174,8 +174,11 @@ export class PbPopover extends pbMixin(LitElement) {
   }
 
   _checkCSSProperties() {
-    if (!this.theme && this.theme !== 'none') {
-      this.theme = getCSSProperty(this, '--pb-popover-theme', 'none');
+    if (!this.theme) {
+      // May stay null: the property is not readable until the element's style
+      // has been resolved, so the theme is picked up again in `_resolveTheme`
+      // when the popup is first shown.
+      this.theme = getCSSProperty(this, '--pb-popover-theme', null);
     }
     if (!this.placement) {
       this.placement = getCSSProperty(this, '--pb-popover-placement', 'auto');
@@ -199,6 +202,35 @@ export class PbPopover extends pbMixin(LitElement) {
     this._checkCSSProperties();
 
     loadTippyStyles(this.getRootNode(), this.theme);
+  }
+
+  /**
+   * Pick up `--pb-popover-theme` if it was not readable yet when the component
+   * first updated.
+   *
+   * An element whose style the browser has not computed returns an empty
+   * computed style - `display` reads as the empty string - and every custom
+   * property on it reads as empty with it. A `pb-popover` upgrading on a plain
+   * HTML page regularly hits this, in particular inside a hidden container, and
+   * would keep tippy's default dark theme although the stylesheet sets one. By
+   * the time the popup is shown the element is rendered, so the theme can be
+   * applied then.
+   */
+  _resolveTheme(instance) {
+    if (this.theme) {
+      return;
+    }
+    const theme = getCSSProperty(this, '--pb-popover-theme', null);
+    if (!theme) {
+      return;
+    }
+    // remember 'none' as well, so an unthemed popover stops re-reading
+    this.theme = theme;
+    if (theme === 'none') {
+      return;
+    }
+    loadTippyStyles(this.getRootNode(), theme);
+    instance.setProps({ theme });
   }
 
   _getContent() {
@@ -350,6 +382,7 @@ export class PbPopover extends pbMixin(LitElement) {
         };
       }
       options.onShow = instance => {
+        this._resolveTheme(instance);
         if (this.remote) {
           this._loadRemoteContent();
         } else {
