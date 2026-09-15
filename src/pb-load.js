@@ -358,13 +358,6 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   }
 
   _handleContent(ev) {
-    // Use the response carried by this specific request (ev.detail is the iron-ajax
-    // `request` object), not the shared <iron-ajax>'s `lastResponse`: iron-ajax fires
-    // `response` for every completed request, including ones superseded by a newer
-    // request started in the meantime, but only updates `lastResponse` for the most
-    // recent request. Reading `lastResponse` here could pick up a stale value from an
-    // earlier request - or, on the very first request, `undefined` - and briefly
-    // render the literal text "undefined" into the page.
     const resp = ev.detail.response;
     if (this.container) {
       this.style.display = 'none';
