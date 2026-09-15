@@ -2,7 +2,7 @@
 import { Registry } from './registry.js';
 
 /**
- * A tiny subset of the Reconciliation Service API (https://reconciliation-api.github.io/specs/)
+ * A subset of the Reconciliation Service API (https://reconciliation-api.github.io/specs/)
  * that this connector needs to speak, covering both the 0.2 and 1.0-draft protocol
  * versions. The two differ in query batch shape, result batch shape, and how a
  * manifest advertises its `view`/`preview` URL templates.
@@ -181,19 +181,20 @@ export class ReconciliationService extends Registry {
   }
 
   /**
-   * Undo the `${this._prefix}-` prefix query() adds to every returned candidate's id (so it's a
-   * valid, collision-resistant xml:id fragment across multiple configured authorities), to get
-   * back the raw id this service itself actually knows about. Needed anywhere a raw id must be
-   * sent back to the service - info()'s preview lookup already did this inline; fetchExtend()/
-   * getRecord() below reuse the same logic rather than duplicating the substring arithmetic.
+   * Undo the `${this._prefix}-` prefixing that query() adds to every returned candidate's id
+   * (so it's a valid, collision-resistant xml:id fragment across multiple configured
+   * authorities), to get back the raw id this service itself actually knows about. Needed
+   * anywhere a raw id must be sent back to the service - info()'s preview lookup already did
+   * this inline; fetchExtend()/getRecord() below reuse the same logic rather than duplicating
+   * the substring arithmetic.
    *
-   * Assumes `id` actually carries this connector's own prefix - it blindly chops off
-   * `this._prefix.length + 1` characters regardless of what's actually there. Custom's
-   * federated query() (custom.js) can hand this connector an id that came from a different
-   * nested connector or the local register instead, and this method has no way to detect that
-   * mismatch; it just returns a garbage substring. Callers that got the id from somewhere other
-   * than this connector's own query() should not assume _stripPrefix()/fetchExtend()/getRecord()
-   * will do anything sensible with it.
+   * NOTE: This assumes that `id` actually carries this connector's own prefix - it blindly
+   * chops off `this._prefix.length + 1` characters regardless of what's actually there.
+   * Custom's federated query() (custom.js) can hand this connector an id that came from a
+   * different nested connector or the local register instead, and this method has no way to
+   * detect that mismatch; it just returns a garbage substring! Callers that got the id from
+   * somewhere other than this connector's own query() should not assume
+   * _stripPrefix()/fetchExtend()/getRecord() will do anything sensible with it.
    */
   _stripPrefix(id) {
     return this._prefix ? id.substring(this._prefix.length + 1) : id;
