@@ -1,13 +1,5 @@
 import { Registry } from './registry.js';
 
-// Illustrative placeholder only - a generic location-pin icon, not fetched from GeoNames (which
-// has no depiction/image field of its own) - demonstrates that a connector's own info() preview
-// can include a thumbnail image the same way the reconcile profile's server-rendered /preview
-// does for reconciliation-service-backed types, even for a connector that renders its own bespoke
-// HTML rather than going through that server-side mechanism at all.
-const PLACE_ICON =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDYwIDgwIj48cGF0aCBkPSJNMzAgMkMxNCAyIDIgMTQgMiAzMGMwIDIyIDI4IDQ4IDI4IDQ4czI4LTI2IDI4LTQ4QzU4IDE0IDQ2IDIgMzAgMnoiIGZpbGw9IiNjMDM5MmIiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxMiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==';
-
 export class GeoNames extends Registry {
   constructor(configElem) {
     super(configElem);
@@ -57,7 +49,6 @@ export class GeoNames extends Registry {
             return;
           }
           const output = `
-            <img src="${PLACE_ICON}" alt="" style="max-width:100%; max-height:8em;"/>
             <h3 class="label">
               <a href="${json.link}" target="_blank">${json.name}</a>
             </h3>
@@ -80,9 +71,6 @@ export class GeoNames extends Registry {
    * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
    */
   async getRecord(key) {
-    // Assumes `key` actually carries this connector's own prefix (see the equivalent, more
-    // fully-explained _stripPrefix() in reconciliation.js) - a `key` sourced from elsewhere
-    // (the local register, a differently-prefixed nested connector) would be sliced wrong.
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
     return fetch(
       `https://secure.geonames.org/getJSON?geonameId=${encodeURIComponent(id)}&username=${
