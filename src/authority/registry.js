@@ -10,10 +10,7 @@ const DEFAULT_FIELDS = 'key=id';
 
 /**
  * Turn a free-text value (e.g. a candidate's label/name) into a token safe to use as an XML
- * NMTOKEN-like id/attribute value: trims, collapses runs of whitespace/punctuation into a single
- * hyphen, and strips any leading/trailing hyphen left over from that collapse. Mirrors the
- * hyphen-separated id convention already used throughout this project's own demo data
- * (e.g. "gnd-119442086", "kbga-actors-403") rather than inventing a new convention.
+ * NMTOKEN-like id/attribute value.
  *
  * @param {string} value
  * @returns {string}
@@ -127,9 +124,8 @@ export class Registry {
   /**
    * Fetch additional property values for a single matched entry beyond what `query()` already
    * returned (e.g. a reconciliation service's data-extension endpoint). Connectors that have no
-   * such capability simply return an empty object - this is what makes an `extend:propId` source in
-   * a `fields` mapping resolve to "no value" (silently omitted, see buildProperties) rather than
-   * needing every connector to special-case unsupported extend sources.
+   * such capability simply return an empty object so that a respective (mistaken) field config
+   * is silently omitted.
    *
    * @param {string} id the id to fetch extended properties for
    * @param {string[]} propertyIds the property ids to fetch
@@ -141,9 +137,7 @@ export class Registry {
 
   /**
    * Build the `properties` map to attach to a selected match, per this connector's `fields`
-   * config (see parseFieldsConfig) - the general mechanism every connector shares for letting an
-   * admin configure which of a match's fields end up in which output attribute, instead of the
-   * single hardcoded "id -> key" mapping used previously. A source of `id`/`label`/`type`/`score`
+   * config (see parseFieldsConfig). A source of `id`/`label`/`type`/`score`
    * is read directly off the candidate `item` (as returned by this connector's own `query()`);
    * a source of `extend:propId` is fetched via one batched `fetchExtend()` call. Only the `label`
    * source is slug-escaped (see `slugify`) - `id`/`type`/`score`/extend-sourced values are used
