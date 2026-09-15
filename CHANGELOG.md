@@ -1,3 +1,10 @@
+## [3.6.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.7...v3.6.8) (2026-09-12)
+
+
+### Bug Fixes
+
+* **pb-popover:** defer checking --pb-popover-theme until component is loaded ([c39dca7](https://github.com/eeditiones/tei-publisher-components/commit/c39dca7dd2ed9f9b577d924aadb491064ffea1a0))
+
 ## [3.6.7](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.6...v3.6.7) (2026-08-26)
 
 
