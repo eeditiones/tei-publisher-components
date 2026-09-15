@@ -441,17 +441,6 @@ class PbViewAnnotate extends PbView {
     return this.keyMap[type] || this.key;
   }
 
-  /**
-   * Resolve the id from an annotation's data, falling back to the legacy `key` property
-   * when the type's configured key (getKey(), typically `ref`) is absent. Needed because
-   * `keyMap`/`ref`-based ids are a later addition: any annotation created before a type's
-   * keyMap entry existed only ever had `key` set, and would otherwise look id-less (see
-   * onTrigger below, where "no id" means "show a raw properties table instead of an entity
-   * preview"). Use this instead of a plain `data[getKey(type)]` read anywhere an annotation
-   * might predate its type's current keyMap config; call sites that only ever *write* fresh
-   * annotation data (e.g. _updateAnnotation, search()'s result entries) don't need it, since
-   * they use the current key convention consistently by construction.
-   */
   getId(data, type) {
     const primaryKey = this.getKey(type);
     if (data[primaryKey]) {
@@ -660,10 +649,7 @@ class PbViewAnnotate extends PbView {
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
     // Same absent-or-empty check _markIncompleteAnnotations() uses below, via getId()'s
-    // key-with-legacy-@key-fallback resolution - a strict === '' comparison against
-    // properties[getKey(type)] would never match here, since addAnnotation()/
-    // updateAnnotation() always run properties through clearProperties() first, which
-    // drops empty-string values entirely rather than leaving them as ''.
+    // key-with-legacy-@key-fallback resolution.
     const id = this.getId(teiRange.properties, teiRange.type);
     const addClass = !id || id.length === 0 ? 'incomplete' : '';
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${
@@ -1054,10 +1040,9 @@ class PbViewAnnotate extends PbView {
             ready: () => instance.setContent(wrapper),
           });
         } else {
-          // Not linked to anything yet (or a non-authority annotation type, which has no
-          // id concept at all): fall back to a plain key/value dump of whatever properties
-          // it does have, e.g. for `sic`/`reg`/`app` annotations that don't reference an
-          // authority entry.
+          // Not linked to anything yet: fall back to a plain key/value dump of whatever
+          // properties it does have, e.g. for `sic`/`reg`/`app` annotations that don't
+          // reference an authority entry.
           info.innerHTML = '';
           const keys = Object.keys(data);
           if (keys.length === 0) {
