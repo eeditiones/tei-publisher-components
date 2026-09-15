@@ -1,14 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Registry } from './registry.js';
 
-// Illustrative placeholder only - a generic book icon, not fetched from GND (which has no
-// depiction/image field of its own) - demonstrates that a connector's own info() preview can
-// include a thumbnail image the same way the reconcile profile's server-rendered /preview does
-// for reconciliation-service-backed types, even for a connector that renders its own bespoke HTML
-// rather than going through that server-side mechanism at all.
-const WORK_ICON =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI3MCIgdmlld0JveD0iMCAwIDgwIDcwIj48cmVjdCB4PSI0IiB5PSI4IiB3aWR0aD0iMzQiIGhlaWdodD0iNTQiIHJ4PSIzIiBmaWxsPSIjMjk4MGI5Ii8+PHJlY3QgeD0iNDIiIHk9IjgiIHdpZHRoPSIzNCIgaGVpZ2h0PSI1NCIgcng9IjMiIGZpbGw9IiMyNDcxYTMiLz48cmVjdCB4PSI4IiB5PSIxNCIgd2lkdGg9IjI2IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI4IiB5PSIyMiIgd2lkdGg9IjI2IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI0NiIgeT0iMTQiIHdpZHRoPSIyNiIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iNDYiIHk9IjIyIiB3aWR0aD0iMjYiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==';
-
 function _details(item) {
   let professions = '';
   if (item.professionOrOccupation && item.professionOrOccupation.length > 0) {
@@ -90,9 +82,6 @@ export class GND extends Registry {
    * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
    */
   async getRecord(key) {
-    // Assumes `key` actually carries this connector's own prefix (see the equivalent, more
-    // fully-explained _stripPrefix() in reconciliation.js) - a `key` sourced from elsewhere
-    // (the local register, a differently-prefixed nested connector) would be sliced wrong.
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
     return fetch(`https://lobid.org/gnd/${id}.json`)
       .then(response => {
@@ -142,10 +131,7 @@ export class GND extends Registry {
           } else if (json.type.indexOf('AuthorityResource') > -1) {
             info = this.infoPerson(json);
           }
-          const icon =
-            this._register === 'work' ? `<img src="${WORK_ICON}" alt="" style="max-width:100%; max-height:8em;"/>` : '';
           const output = `
-          ${icon}
           <h3 class="label">
             <a href="https://${json.id}" target="_blank"> ${json.preferredName} </a>
           </h3>
