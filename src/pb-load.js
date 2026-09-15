@@ -358,7 +358,7 @@ export class PbLoad extends themableMixin(pbMixin(LitElement)) {
   }
 
   _handleContent(ev) {
-    const resp = this.shadowRoot.getElementById('loadContent').lastResponse;
+    const resp = ev.detail.response;
     if (this.container) {
       this.style.display = 'none';
       document.querySelectorAll(this.container).forEach(elem => {

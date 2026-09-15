@@ -436,8 +436,20 @@ class PbViewAnnotate extends PbView {
     this._scheduleMarkerRefresh();
   }
 
+  /** Which JSON property of an annotation's data holds its authority id, for this type. */
   getKey(type) {
     return this.keyMap[type] || this.key;
+  }
+
+  getId(data, type) {
+    const primaryKey = this.getKey(type);
+    if (data[primaryKey]) {
+      return data[primaryKey];
+    }
+    if (primaryKey !== 'key' && data.key) {
+      return data.key;
+    }
+    return data[primaryKey];
   }
 
   _resizeHandler() {
@@ -636,7 +648,10 @@ class PbViewAnnotate extends PbView {
 
     console.log('<pb-view-annotate> Range: %o', range);
     const span = document.createElement('span');
-    const addClass = teiRange.properties[this.getKey(teiRange.type)] === '' ? 'incomplete' : '';
+    // Same absent-or-empty check _markIncompleteAnnotations() uses below, via getId()'s
+    // key-with-legacy-@key-fallback resolution.
+    const id = this.getId(teiRange.properties, teiRange.type);
+    const addClass = !id || id.length === 0 ? 'incomplete' : '';
     span.className = `annotation annotation-${teiRange.type} ${teiRange.type} ${addClass} ${
       teiRange.before ? 'before' : ''
     }`;
@@ -903,7 +918,7 @@ class PbViewAnnotate extends PbView {
     const jsonOld = JSON.parse(span.dataset.annotation);
     const json = Object.assign(jsonOld || {}, properties);
     span.dataset.annotation = JSON.stringify(json);
-    if (json[this.getKey(span.dataset.type)] !== '') {
+    if (this.getId(json, span.dataset.type)) {
       span.classList.remove('incomplete');
     }
     this._scheduleMarkerRefresh();
@@ -1013,16 +1028,21 @@ class PbViewAnnotate extends PbView {
         typeInd.style.color = `var(${
           color && color.isLight ? '--pb-color-primary' : '--pb-color-inverse'
         })`;
-        if (data[this.getKey(type)]) {
+        const id = this.getId(data, type);
+        if (id) {
+          // Linked entity: let whoever handles pb-annotation-detail (e.g. annotations.js)
+          // fetch and render a real preview into `info`.
           this.emitTo('pb-annotation-detail', {
             type,
-            id: data[this.getKey(type)],
+            id,
             container: info,
             span,
             ready: () => instance.setContent(wrapper),
           });
         } else {
-          // show properties as key/value table
+          // Not linked to anything yet: fall back to a plain key/value dump of whatever
+          // properties it does have, e.g. for `sic`/`reg`/`app` annotations that don't
+          // reference an authority entry.
           info.innerHTML = '';
           const keys = Object.keys(data);
           if (keys.length === 0) {
@@ -1160,7 +1180,9 @@ class PbViewAnnotate extends PbView {
         if (annoData && annoType) {
           const parsed = JSON.parse(annoData) || {};
           isAnnotated = annoType === type;
-          ref = parsed[this.getKey(type)];
+          // getId(), not a plain getKey() lookup: a text occurrence can already be tagged
+          // with a legacy @key-only annotation (see getId's doc comment).
+          ref = this.getId(parsed, type);
         }
 
         const startRange = rangeToPoint(node, match.index);
@@ -1175,6 +1197,9 @@ class PbViewAnnotate extends PbView {
           textNode: node,
           kwic: kwicText(str, start + match.index, start + end),
         };
+        // Written under the canonical key name (getKey), not getId: this builds a fresh
+        // result entry for the "other occurrences" UI, so there is no legacy shape to
+        // preserve here the way there is when reading an existing annotation's data.
         entry[this.getKey(type)] = ref;
         result.push(entry);
       }
@@ -1231,8 +1256,8 @@ class PbViewAnnotate extends PbView {
     elem.querySelectorAll('.annotation.authority').forEach(annotation => {
       if (annotation.dataset.type) {
         const data = JSON.parse(annotation.dataset.annotation);
-        const key = this.getKey(annotation.dataset.type);
-        if (!data[key] || data[key].length === 0) {
+        const id = this.getId(data, annotation.dataset.type);
+        if (!id || id.length === 0) {
           annotation.classList.add('incomplete');
         } else {
           annotation.classList.remove('incomplete');
@@ -1349,6 +1374,19 @@ class PbViewAnnotate extends PbView {
 
         .annotation-popup .toolbar {
           margin-top: 1em;
+        }
+
+        /* A reconciliation service's preview HTML (injected here via
+         * pb-annotation-detail -- see annotations.js) is not bounded in size: a
+         * service may reasonably list several properties, or an image thumbnail,
+         * making the rendered content taller than the handful of lines this popup
+         * was originally sized for. Cap it and let it scroll internally instead of
+         * growing unbounded and overlapping/obscuring other page content -- a
+         * click-to-view info popup should stay compact regardless of how rich the
+         * underlying preview is. */
+        .annotation-popup .info {
+          max-height: 16em;
+          overflow-y: auto;
         }
 
         .annotation-popup table {

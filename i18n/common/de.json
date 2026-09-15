@@ -252,6 +252,7 @@
   },
   "annotations": {
     "edit": "Annotation ändern",
+    "cancel": "Abbrechen",
     "delete": "Annotation löschen",
     "save": "Änderungen ins TEI speichern",
     "no-properties": "Keine Eigenschaften vorhanden.",

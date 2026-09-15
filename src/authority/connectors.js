@@ -35,7 +35,16 @@ export function createConnectors(endpoint, root) {
       case 'Custom':
         instance = new Custom(endpoint, configElem);
         break;
+      case 'Metagrid':
+        instance = new Metagrid(configElem);
+        break;
       default:
+        console.error(
+          '<pb-authority> connector="%s" is not a recognized connector name - falling back to Metagrid. ' +
+            'Check for a typo (the exact, case-sensitive names are GND, GeoNames, Airtable, KBGA, Anton/GF, ' +
+            'ReconciliationService, Custom, Metagrid).',
+          connector,
+        );
         instance = new Metagrid(configElem);
         break;
     }

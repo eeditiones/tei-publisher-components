@@ -333,6 +333,7 @@
     "status": "Status",
     "enrichment": "Enrichment",
     "details": "Annotation Details",
+    "cancel": "Cancel",
     "hi-bold": "bold",
     "hi-i": "italic",
     "markup": "Inline text/markup or sequence of paragraphs",
