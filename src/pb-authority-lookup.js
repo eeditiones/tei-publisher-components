@@ -87,12 +87,6 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     this._authorities = {};
     this.noOccurrences = false;
     this.group = 'tei';
-    // Debounce search-as-you-type (_queryChanged -> _scheduleQuery) and guard against
-    // out-of-order responses: each _query() call captures the current _queryGeneration,
-    // and every async continuation (query() itself, then the occurrences() round-trip)
-    // checks it's still current before touching `this._results`. Without this, a fast
-    // keystroke could let an earlier request's response land after a later one's and
-    // silently overwrite fresher results with stale ones.
     this._queryGeneration = 0;
     this._queryDebounceMs = 300;
   }
@@ -203,23 +197,6 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     return info;
   }
 
-  /**
-   * Each result item carries three independent badges: `register` (its authority type,
-   * always present), `occurrences` (how often this entity is already referenced elsewhere
-   * in the current document, fetched separately via _occurrences() below), and `source`
-   * (the `provider` label a connector's own query() tags its results with, e.g. "local",
-   * "GND", "GeoNames" - shown so a federated lookup, i.e. Custom wrapping several nested
-   * connectors, see custom.js, doesn't present merged results as if they all came from one
-   * place).
-   *
-   * `item.label` is rendered as raw HTML via unsafeHTML() *only* when a connector
-   * explicitly opts in via `item.labelIsHtml` (today, only KBGA's bibl/songs registers,
-   * whose remote API returns a real, pre-formatted "asHtml" field - see kbga.js). Every
-   * other connector's label is plain text and must stay auto-escaped: ReconciliationService
-   * and Custom in particular surface labels extracted straight from document content
-   * (persName etc.), which anyone with document-edit access can influence - rendering that
-   * unconditionally as HTML was a real, confirmed stored-XSS vector before this flag existed.
-   */
   _formatItem(item) {
     const label = item.labelIsHtml ? unsafeHTML(item.label) : item.label;
     return html`
@@ -377,12 +354,6 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
 
   async _select(item) {
     const connector = this._authorities[item.register];
-    // Build the properties map from the connector's own `fields` config (see
-    // Registry.buildProperties/parseFieldsConfig) instead of the single hardcoded
-    // `{ ref: item.id }` this used to always emit - lets an admin configure which of a match's
-    // fields (id, label, type, score, or an extend:-sourced property) end up under which output
-    // property name. Falls back to the same default mapping a connector with no `fields`
-    // attribute configured would produce, for the edge case of no registered connector at all.
     const properties = connector ? await connector.buildProperties(item).catch(() => ({ key: item.id })) : { key: item.id };
     const options = {
       strings: item.strings,
