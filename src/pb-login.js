@@ -99,11 +99,21 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
     this.loginIcon = 'account-circle';
     this.logoutIcon = 'supervisor-account';
     this._hasFocus = true;
+
+    /**
+     * @type {import('./pb-fetch.js').PbFetch}
+     */
+    this._checkLogin = null;
+
+    /**
+     * @type {import('./pb-dialog.js').PbDialog}
+     */
+    this._loginDialog = null;
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-    this._checkLogin = this.shadowRoot.getElementById('checkLogin');
+  firstUpdated(changedProperties) {
+    super.firstUpdated(changedProperties);
+    this._checkLogin = this.shadowRoot.querySelector('pb-fetch#checkLogin');
     this._loginDialog = this.shadowRoot.querySelector('pb-dialog');
 
     this.renderRoot.querySelector('form').addEventListener('submit', e => {
@@ -117,7 +127,8 @@ export class PbLogin extends themableMixin(pbMixin(LitElement)) {
     window.addEventListener('focus', () => {
       if (!this._hasFocus) {
         this._hasFocus = true;
-        this._checkLogin.body = null;
+        // Pass an empty body so we don't POST without any info
+        this._checkLogin.body = {};
         this._checkLogin.generateRequest();
       }
     });
