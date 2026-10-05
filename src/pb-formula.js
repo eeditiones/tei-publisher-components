@@ -114,7 +114,7 @@ export function typesetMath(elem) {
 }
 
 /**
- * Represents a mathematical formula, either in TeX notation or MathML. The element itself
+ * Represents a mathematical formula, either in TeX notation or MathML, which is displayed using MathJax (v3.2.2). The element itself
  * does not do any typesetting. Instead you must call the global `typesetMath(rootNode)` function and
  * pass it the root context which should be searched for `pb-notation` elements. The function will
  * then do the actual typesetting. The reason for this is that formulas need to be typeset synchronously, i.e. one
