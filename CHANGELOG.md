@@ -1,3 +1,10 @@
+## [3.6.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.8...v3.6.9) (2026-10-20)
+
+
+### Bug Fixes
+
+* **i18n:** avoid grammatically incorrect phrasing ([0d85db4](https://github.com/eeditiones/tei-publisher-components/commit/0d85db42938a018a9c7bdafa7982a99c2880ee4f))
+
 ## [3.6.8](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.7...v3.6.8) (2026-09-12)
 
 
