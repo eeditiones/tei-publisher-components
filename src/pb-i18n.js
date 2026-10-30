@@ -124,12 +124,14 @@ export class PbI18n extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
-    // Capture initial fallback then clear host content so Lit fully controls light DOM
+    // Capture initial fallback then clear host content so Lit fully controls light DOM.
+    // Only on the first connect: on a reconnect (e.g. the element was moved) the
+    // content is Lit's own rendering, and clearing it would remove its part markers.
     if (!this._capturedFallback) {
       this._fallback = this.innerHTML;
       this._capturedFallback = true;
+      this.innerHTML = '';
     }
-    this.innerHTML = '';
 
     if (typeof document !== 'undefined') {
       document.addEventListener('pb-i18n-update', this._onI18nUpdate);
