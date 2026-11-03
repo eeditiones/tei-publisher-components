@@ -1,0 +1,214 @@
+{
+  "language": "Taal",
+  "menu": {
+    "documentation": "Documentatie",
+    "admin": {
+      "title": "Beheer",
+      "recompile": "ODD opnieuw compileren",
+      "appGenerator": "Applicatie Generator",
+      "edit-odd": "Bewerk ODD"
+    },
+    "news": "Nieuws",
+    "download": {
+      "title": "Downloaden",
+      "pdf-latex": "PDF (LaTeX versie)",
+      "pdf-fo": "PDF (FO versie)",
+      "pdf-title": "Download als PDF",
+      "fo-source": "FO bronbestand",
+      "latex-source": "TeX bronbestand",
+      "single-page": "Enkele Pagina",
+      "epub-download": "Download als epub ebook",
+      "view-tei": "TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Oeps!",
+    "close": "Sluit",
+    "yes": "Ja",
+    "no": "Nee",
+    "serverError": "Het verzoek aan de server is mislukt.",
+    "generatingFile": "Bestand wordt gegenereerd...",
+    "downloadMessage": "Even geduld alstublieft. Het genereren van een bestand kan enkele minuten duren. Dit dialoogvenster zal automatisch sluiten wanneer het bestand gedownload is.",
+    "loading": "Bezig met laden ..."
+  },
+  "document": {
+    "contents": "Inhoud",
+    "selectODD": "Selecteer ODD",
+    "selectTemplate": "Selecteer Sjabloon",
+    "selectFeature": "Selecteer feature",
+    "normalized": "Genormaliseerde Weergave",
+    "plain": "Eenvoudige Leesweergave",
+    "view-type": "Pagina aanzicht",
+    "add-panel": "Weergave Toevoegen",
+    "caveat-heading": "Opmerking",
+    "settings": "Instellingen",
+    "caveat": "Experimenteer met verschillende sjablonen en ODD's door de opties hier simpelweg aan te passen. Merk hierbij wel op dat niet elk type document compatibel is met elke combinatie van instellingen. Zo is het bijvoorbeeld onmogelijk om een kaart te genereren indien haar coordinaten niet eerst expliciet gecodeerd en verwerkt werden, of veronderstelt de Pagina Weergave dat het begin van nieuwe pagina's correct gemarkeerd werd in het document. Indien u het bericht 'de server heeft geen inhoud teruggestuurd' te lezen krijgt, is dat meestal een teken dat de gecodeerde data, de ODD, en/of het sjabloon niet goed op elkaar afgestemd zijn."
+  },
+  "browse": {
+    "description": "Gebruik deze applicatie om verschillende ODD's uit te proberen die telkens hun eigen verwerkingsinstructies bevatten. Laad je eigen bestanden in, en maak nieuwe ODD's aan.",
+    "login": "om bestanden te uploaden, of administratieve functies weer te geven (standaard gebruiker: 'tei-demo', wachtwoord: 'demo').",
+    "sort": "Sorteer op",
+    "filter": "Filteren op",
+    "filterPlaceholder": "Filter",
+    "items": "{{count}} item gevonden",
+    "items_plural": "{{count}} items gevonden",
+    "title": "Titel",
+    "author": "Auteur",
+    "modificationDate": "Wijzigingsdatum",
+    "file": "Bestandsnaam",
+    "delete": "Verwijder",
+    "confirmDeletion": "Weet u zeker dat u het bestand wilt verwijderen?",
+    "confirmDeletion_plural": "Weet u zeker dat u {{count}} bestanden wilt verwijderen?",
+    "documents": "Documenten",
+    "collections": "Locale collectie",
+    "dts": "Distributed Text Services (experimenteel)",
+    "test": {
+      "title": "TEI Publisher Demo Collectie",
+      "description": "Document die diverse functies demonstreren. Het is geen uitputtende set, maar een subset van wat mogelijk is. Draag alstublieft uw eigen voorbeelden bij zodat de set completer wordt."
+    },
+    "playground": {
+      "title": "Speeltuin",
+      "description": "Een collectie waarin getest kan worden met eigen documenten."
+    },
+    "doc": {
+      "title": "Documentatie",
+      "description": "Documentatie (met behulp van Docbook XML)."
+    },
+    "markdown": {
+      "title": "Markdown Voorbeeld",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
+  },
+  "upload": {
+    "upload": "Uploaden",
+    "drop": "Sleep {{accept}} bestanden hierheen voor uploaden."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Code weergeven",
+      "hide": "Code verbergen"
+    },
+    "editCode": {
+      "show": "Code bewerken",
+      "hide": "Sluit editor"
+    }
+  },
+  "clipboard": {
+    "copy": "Klik op naar klembord kopiëren",
+    "paste": "Paste in the input field to test"
+  },
+  "login": {
+    "login": "Aanmelden",
+    "as": "Aangemeld als {{user}}",
+    "user": "Gebuiker",
+    "password": "Wachtwoord",
+    "invalid": "Verkeerd wachtwoord of ongeldige gebruiker",
+    "requiredGroup": "moet lid zijn van de groep {{group}}"
+  },
+  "search": {
+    "search": "Zoek",
+    "reset": "Reset",
+    "placeholder": "Voer zoekopdracht in",
+    "sections": "Secties doorzoeken",
+    "headings": "Zoek in Headers"
+  },
+  "dts": {
+    "endpoint": "Selecteer endpoint",
+    "note": "Experimenteel: benader andere edities via de DTS API"
+  },
+  "odd": {
+    "files": "ODD Bestanden",
+    "manage": {
+      "filename": "Bestandsnaam van de ODD (zonder suffix)",
+      "title": "Titel voor aanzicht",
+      "create": "Aanmaken",
+      "create-from-example": "Maak uit voorbeelden",
+      "delete": "Weet u zeker dat u ODD {{file}} wilt verwijderen?",
+      "regenerate-all": "Alle ODD's opnieuw genereren (Onder)",
+      "filename-error": "Vereist. Gebruik letters, cijfers, - en _",
+      "title-error": "Titel is vereist"
+    },
+    "editor": {
+      "delete-spec": "Weet u zeker dat u de elementspecificatie voor '{{ident}}' wilt verwijderen?",
+      "save": "Opslaan",
+      "saving": "Bezig met opslaan...",
+      "saved": "Opgeslagen",
+      "denied": "Toestemming geweigerd",
+      "denied-message": "U heeft geen toestemming om {{odd}} op te slaan",
+      "reload": "Opnieuw laden",
+      "reload-confirm": "Wijzigingen die niet werden opgeslagen, gaan verloren. Doorgaan?",
+      "add-element": "Element Toevoegen",
+      "odd-source": "ODD bronbestand",
+      "specs": "Element specificaties",
+      "jump-to": "Spring naar element ...",
+      "title-short": "Korte titel",
+      "title-short-placeholder": "Korte titel voor aanzicht",
+      "description-label": "Beschrijving",
+      "description-placeholder": "Beschrijving van de ODD",
+      "source-label": "Basis ODD",
+      "source-placeholder": "ODD over te nemen van",
+      "use-namespace": "Vink aan om een andere namespace dan TEI te gebruiken",
+      "namespace-placeholder": "Standaard namespace URI (indien geen TEI)",
+      "title": "Titel",
+      "title-placeholder": "Titel van de ODD",
+      "model": {
+        "delete-model-label": "Model Verwijderen?",
+        "delete-model-message": "Wilt u echt het geselecteerde model verwijderen?",
+        "description-placeholder": "[Documenteer het model]",
+        "predicate-placeholder": "[Definieer extra voorwaarden (in XQuery)]",
+        "link-with-or": "of",
+        "css-class-placeholder": "[Definieer CSS class (voor externe CSS)]",
+        "custom-behaviour-placeholder": "[Aangepast gedrag]",
+        "template-placeholder": "[Definieer de code template die op de inhoud wordt toegepast]",
+        "param-name-placeholder": "[naam parameter]",
+        "empty": "[Leeg]"
+      },
+      "css-source": "Open CSS-bestand"
+    }
+  },
+  "facets": {
+    "show": "Top 50 weergeven",
+    "genre": "Genre",
+    "language": "Taal"
+  },
+  "appgen": {
+    "account": {
+      "user": "Gebruikersaccount voor administratieve taken. Deze gebruiker zal worden aangemaakt indien die nog niet bestaat.",
+      "owner": "De gebruikersaccount die de applicatie zal beheren.",
+      "password": "Wachtwoord voor de eigenaar van deze applicatie."
+    },
+    "submit": "Opslaan/Genereren",
+    "index": {
+      "help": "Definieer het kleinste blok waarvoor een text index wordt gemaakt. Als er geen divisies zijn, kies 'Indexeer text'.",
+      "label": "Standaard text index",
+      "index-div": "Indexeer divisie",
+      "index-text": "indexeer text"
+    },
+    "view": {
+      "help": "Wat wordt getoond bij bladeren door text: losse pagina's of hele divisies. Voor losse pagina's vereist &lt;tei:pb&gt; elementen in het TEI XML.",
+      "div": "Per divisie (chapter/section...)",
+      "page": "Per pagina"
+    },
+    "label": "Standaardweergave",
+    "template": {
+      "help": "Kies de standaard HTML template om te gebruiken",
+      "label": "HTML Template"
+    },
+    "title": {
+      "help": "Titel voor de applicatie, voor in het dashboard bijvoorbeeld",
+      "label": "Titel voor de applicatie"
+    },
+    "collection": "Naam van de subcollectie waarin TEI documenten komen",
+    "abbrev": {
+      "label": "Verkorte naam om te gebruiken in URL's en bestandsnamen",
+      "placeholder": "Verkorte naam"
+    },
+    "uri": "URL om de app uniek te identificeren",
+    "dialog": {
+      "title": "Applicatie aangemaakt"
+    },
+    "open": "Open",
+    "success": "Uw applicatie werd correct aangemaakt!"
+  }
+}

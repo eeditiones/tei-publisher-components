@@ -1,0 +1,214 @@
+{
+  "language": "Limbă",
+  "menu": {
+    "documentation": "Documentație",
+    "admin": {
+      "title": "Administrare",
+      "recompile": "Recompilare ODD",
+      "appGenerator": "Generator Aplicații",
+      "edit-odd": "Editare ODD"
+    },
+    "news": "Noutăți",
+    "download": {
+      "title": "Descarcă",
+      "pdf-latex": "PDF (Versiune LaTeX)",
+      "pdf-fo": "PDF (Versiune FO)",
+      "pdf-title": "Descărcare Ca PDF",
+      "fo-source": "Sursă FO",
+      "latex-source": "Sursă TeX",
+      "single-page": "O singură pagină",
+      "epub-download": "Descărcați ca epub ebook",
+      "view-tei": "Vizualizați TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Ooops",
+    "close": "Închideţi",
+    "yes": "Da",
+    "no": "nu",
+    "serverError": "Solicitarea către server a eșuat.",
+    "generatingFile": "Se generează fișierul...",
+    "downloadMessage": "Generarea unui fișier pentru descărcare poate dura până la câteva minute. Vă rugăm să așteptați. Acest dialog ar trebui să se închidă automat după terminarea descărcării.",
+    "loading": "Se încarcă ..."
+  },
+  "document": {
+    "contents": "Conţinut",
+    "selectODD": "Selectaţi ODD",
+    "selectTemplate": "Selectați șablonul",
+    "selectFeature": "Selectaţi caracteristica",
+    "normalized": "Vedere Normalizată",
+    "plain": "Vizualizare simpla lectură",
+    "view-type": "Vizualizare pagină",
+    "add-panel": "Adaugă Vedere",
+    "caveat-heading": "Avertisment",
+    "settings": "Settings",
+    "caveat": "Experimentați cu diferite șabloane de pagină și ODD-uri doar prin schimbarea aici a acestor opțiuni. Vă rugăm să țineți cont că nu fiecare combinație de setări are sens pentru fiecare document. De exemplu o hartă nu poate fi creeată fără a avea coordonatele codate și procesate, iar vizualizarea în mod pagină presupune că au fost marcate sfârșiturile de pagină. Dacă vedeți mesajul’serverul nu a întors nici un conținut’, acesta este in general un semn de aliniere necorespunzătoare între datele codificate, ODD și șablonul paginii."
+  },
+  "browse": {
+    "description": "Utilizaţi această aplicaţie pentru a experimenta şi încerca diverse ODD care conţin instrucţiuni de procesare. Încărcaţi-vă propriile fişiere şi creaţi un ODD personalizat.",
+    "login": "pentru a încărca fișiere sau a vedea funcțiile administrative (utilizator implicit: 'tei-demo', parola: 'demo').",
+    "sort": "Sortare după",
+    "filter": "Filtrare după",
+    "filterPlaceholder": "Filter",
+    "items": "A fost găsit obiectul {{count}}",
+    "items_plural": "Au fost găsite {{count}} obiecte",
+    "title": "Titlu",
+    "author": "Autor",
+    "modificationDate": "Data modificării",
+    "file": "Nume fișier",
+    "delete": "Ştergeţi",
+    "confirmDeletion": "Sunteți sigur că vreți să ștergeți fișierul?",
+    "confirmDeletion_plural": "Sunteți sigur că vreți să ștergeți {{count}} fișiere?",
+    "documents": "Documente",
+    "collections": "Colecție locală",
+    "dts": "Servicii de Text Distribuite (Experimental)",
+    "test": {
+      "title": "TEI Publisher Demo Collection",
+      "description": "Documents demonstrating various features. The selection is in no way comprehensive but represents a subset of what is possible. Please contribute your own use cases to complement this."
+    },
+    "playground": {
+      "title": "Spațiu de încercare",
+      "description": "O colecție editabilăîn care puteți încărca propriile documente pentru testare."
+    },
+    "doc": {
+      "title": "Documentation",
+      "description": "Documentation (using Docbook XML)."
+    },
+    "markdown": {
+      "title": "Markdown Sample",
+      "description": "An example of using markdown for static content."
+    },
+    "up": "Go to parent"
+  },
+  "upload": {
+    "upload": "Încărcaţi",
+    "drop": "Plasați {{accept}} fișiere aici pentru a le încărca."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Afișare cod",
+      "hide": "Ascunde cod"
+    },
+    "editCode": {
+      "show": "Editare cod",
+      "hide": "Închideți Editorul"
+    }
+  },
+  "clipboard": {
+    "copy": "Click the icon to copy to clipboard",
+    "paste": "Paste in the input field to test"
+  },
+  "login": {
+    "login": "Autentificare",
+    "as": "Autentificat ca {{user}}",
+    "user": "Utilizator",
+    "password": "Parolă",
+    "invalid": "Parolă greşită sau utilizator nevalid",
+    "requiredGroup": "trebuie să fie membru al grupului {{group}}"
+  },
+  "search": {
+    "search": "Search",
+    "reset": "Reset",
+    "placeholder": "Introduceți interogarea",
+    "sections": "Caută secțiuni",
+    "headings": "Căutați titluri"
+  },
+  "dts": {
+    "endpoint": "Selectați punctul final",
+    "note": "Experimental: acces la alte ediții care expun DTS API"
+  },
+  "odd": {
+    "files": "Fișiere ODD",
+    "manage": {
+      "filename": "Numele fişierului ODD (fără sufix)",
+      "title": "Titlu pentru afişare",
+      "create": "Creează",
+      "create-from-example": "Creați din exemple",
+      "delete": "Sunteţi sigur că doriţi să ştergeţi fişierul ODD {{file}}?",
+      "regenerate-all": "Regenerate All ODDs (Slow)",
+      "filename-error": "Required. Use letters, numbers, - and _",
+      "title-error": "A title is required"
+    },
+    "editor": {
+      "delete-spec": "Chiar doriți să ștergeți specificația elementului pentru '{{ident}}'?",
+      "save": "Salvaţi",
+      "saving": "Se salvează ...",
+      "saved": "Salvat",
+      "denied": "Permisiune refuzată",
+      "denied-message": "Nu aveţi permisiunea de a salva {{odd}}",
+      "reload": "Reîncărcare",
+      "reload-confirm": "Orice modificări nesalvate vor fi pierdute. Continuați?",
+      "add-element": "Adăugare element",
+      "odd-source": "Sursă ODD",
+      "specs": "Specificații elemente",
+      "jump-to": "Salt la elementul ...",
+      "title-short": "Titlu scurt",
+      "title-short-placeholder": "Titlu scurt pentru afişare",
+      "description-label": "Descriere",
+      "description-placeholder": "Descrierea ODD",
+      "source-label": "Bază ODD",
+      "source-placeholder": "ODD pentru a moșteni de la",
+      "use-namespace": "Verificați pentru că utilizați un spațiu de nume diferit de TEI",
+      "namespace-placeholder": "URI de nume implicit (dacă nu TEI)",
+      "title": "Titlu",
+      "title-placeholder": "Titlul ODD",
+      "model": {
+        "delete-model-label": "Ștergeți modelul?",
+        "delete-model-message": "Sunteți sigur că doriți să ștegeți modelul selectat?",
+        "description-placeholder": "[Documentați modelul]",
+        "predicate-placeholder": "[Definiţi condiţii suplimentare care trebuie îndeplinite (în xquery)]",
+        "link-with-or": "sau",
+        "css-class-placeholder": "[Definiți numele clasei CSS (pentru CSS extern)]",
+        "custom-behaviour-placeholder": "[Comportament personalizat]",
+        "template-placeholder": "[Definiți șablonul de cod pentru a aplica la conținut]",
+        "param-name-placeholder": "[Nume Param]",
+        "empty": "[Empty]"
+      },
+      "css-source": "Deschideți fișierul CSS"
+    }
+  },
+  "facets": {
+    "show": "Afișare top 50",
+    "genre": "Stil",
+    "language": "Limbă"
+  },
+  "appgen": {
+    "account": {
+      "user": "Contul de utilizator pentru sarcini administrative. Utilizatorul va fi creat dacă nu există încă.",
+      "owner": "Contul de utilizator care va deține aplicația.",
+      "password": "Parola pentru utilizatorul care deține această aplicație."
+    },
+    "submit": "Salvează/Generează",
+    "index": {
+      "help": "Definiți cel mai mic bloc pe care este creat un index de text complet. pentru documentele organizate în diviziuni, alegerea \"Crează pe diviziune\" este de obicei cea mai bună. Dacă nu există diviziuni, alegeți 'Creare pe text'.",
+      "label": "Indicele implicit de text complet",
+      "index-div": "Creează pe diviziune",
+      "index-text": "Crează pe text"
+    },
+    "view": {
+      "help": "Alegeți implicit ce este afișat atunci când vizualizați textul: o singură pagină sau o întreagă diviziune. Afișarea pe pagină necesită ca TEI să fie marcat corect cu &lt;tei:pb&gt; etichete.",
+      "div": "După diviziune (capitol/secțiune...)",
+      "page": "După pagină"
+    },
+    "label": "Vizualizare implicită",
+    "template": {
+      "help": "Alegeți șablonul HTML care să fie folosit ca implicit",
+      "label": "Şablon HTML"
+    },
+    "title": {
+      "help": "Titlul aplicației care va fi afișat, de exemplu, în tabloul de bord",
+      "label": "Titlul aplicației"
+    },
+    "collection": "Numele subcolecției pentru a deține documente TEI",
+    "abbrev": {
+      "label": "Nume scurt care va fi folosit în URL-uri şi nume de fişiere",
+      "placeholder": "Nume scurt"
+    },
+    "uri": "URL pentru identificarea unică a aplicației",
+    "dialog": {
+      "title": "Aplicație generată"
+    },
+    "open": "Deschideți",
+    "success": "Aplicația dvs. a fost generată cu succes!"
+  }
+}

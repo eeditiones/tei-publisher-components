@@ -1,0 +1,249 @@
+{
+  "language": "Jezik",
+  "menu": {
+    "documentation": "Dokumentacija",
+    "admin": {
+      "title": "Skrbnik",
+      "recompile": "Spremeni ODD",
+      "appGenerator": "Generator aplikacij",
+      "edit-odd": "Uredi ODD"
+    },
+    "news": "Novosti",
+    "download": {
+      "title": "Prenesi",
+      "pdf-latex": "PDF (zapis LaTeX)",
+      "pdf-fo": "PDF (zapis FO)",
+      "pdf-title": "Prenesi kot PDF",
+      "fo-source": "Izvorna koda FO",
+      "latex-source": "Izvorna koda TeX",
+      "single-page": "Enojna stran",
+      "epub-download": "Prenesi kot knjigo epub",
+      "view-tei": "Prikaži TEI XML"
+    }
+  },
+  "dialogs": {
+    "error": "Ojoj",
+    "close": "Zapri",
+    "yes": "Da",
+    "no": "Ne",
+    "serverError": "Zahteva strežniku je spodletela.",
+    "generatingFile": "Generiramo datoteko ...",
+    "downloadMessage": "Generiranje datoteke za prenos lahko traja do pet minut. To okno se samodejno zapre, ko je prenos končan.",
+    "loading": "Nalaganje ..."
+  },
+  "document": {
+    "contents": "Vsebina",
+    "selectODD": "Izberi ODD",
+    "selectTemplate": "Izberi predlogo",
+    "selectFeature": "Izberi lastnost",
+    "normalized": "Normaliziran prikaz",
+    "plain": "Bralni prikaz",
+    "view-type": "Prikaz po straneh",
+    "add-panel": "Dodaj prikaz",
+    "caveat-heading": "Pozor",
+    "settings": "Nastavitve začetnega zaslona",
+    "caveat": "Preizkusite razne predloge za oblikovanje strani in zasnove ODD, ki jih lahko tu izberete. Upoštevajte prosim, da vsaka kombinacija nastavitev ne bo smiselna za vsak dokument. Zemljevida denimo ni mogoče postaviti brez eksplicitno označenih in obdelanih koordinat; za prikaz po straneh pa je potrebno, da smo označili prelome strani. Če vidite sporočilo \"strežnik ni vrnil nobene vsebine\", je to običajno znak napačne poravnave med označenim besedilom, zasnovo ODD in predlogo strani."
+  },
+  "browse": {
+    "description": "Uporabite to aplikacijo, da preizkusite različne zasnove ODD, ki določajo modele za procesiranje besedila. Naložite svoje datoteke in ustvarite prilagojeno zasnovo ODD.",
+    "login": "je potrebna, da lahko naložite datoteke ali si ogledate administrativne funkcije (privzeti uporabnik: 'tei-demo', geslo: 'demo').",
+    "sort": "Razvrsti po",
+    "filter": "Presej po",
+    "filterPlaceholder": "Filtriraj",
+    "items": "Najden {{count}} predmet",
+    "items_plural": "Najdenih {{count}} predmetov",
+    "title": "Naslov",
+    "author": "Avtor",
+    "modificationDate": "Spremenjeno dne",
+    "file": "Ime datoteke",
+    "delete": "Izbriši",
+    "confirmDeletion": "Ste prepričani, da želite izbrisati do datoteko?",
+    "confirmDeletion_plural": "Ste prepričani, da želite izbrisati {{count}} datotek?",
+    "documents": "Dokumenti",
+    "collections": "Lokalna zbirka",
+    "dts": "Ponujene besedilne zbirke (poskusno)",
+    "test": {
+      "title": "Primeri uporabe TEI Publisher",
+      "description": "Ti dokumenti demonstrirajo razne zmogljivosti TEI Publisher. Izbor nikakor ni izčrpen, marveč predstavlja ožji nabor možnosti, ki jih TEI Publisher nudi. Prosimo, prispevajte svoje primere uporabe."
+    },
+    "playground": {
+      "title": "Igrišče",
+      "description": "Zbirka, v katero lahko za preizkus naložite svoje lastne dokumente."
+    },
+    "doc": {
+      "title": "Dokumentacija",
+      "description": "Dokumentacija (v zapisu Docbook XML)."
+    },
+    "markdown": {
+      "title": "Vzorec zapisa Markdown",
+      "description": "Primer zapisa Markdown za statično vsebino."
+    },
+    "up": "Eno raven višje"
+  },
+  "upload": {
+    "upload": "Naloži",
+    "drop": "Sem spusti datoteke {{accept}} za nalaganje."
+  },
+  "demo": {
+    "showCode": {
+      "show": "Pokaži kodo",
+      "hide": "Skrij kodo"
+    },
+    "editCode": {
+      "show": "Uredi kodo",
+      "hide": "Zapri urejevalnik"
+    }
+  },
+  "clipboard": {
+    "copy": "Kopiraj v odložišče",
+    "paste": "Prilepi v vnosno polje za poskus"
+  },
+  "login": {
+    "login": "Prijava",
+    "as": "Prijavljen kot {{user}}",
+    "user": "Uporabnik",
+    "password": "Geslo",
+    "invalid": "Napačno geslo ali neveljavno uporabniško ime",
+    "requiredGroup": "biti mora član skupine {{group}}"
+  },
+  "search": {
+    "search": "Išči",
+    "reset": "Ponastavi",
+    "placeholder": "Vnesi poizvedbo",
+    "sections": "Išči v razdelkih",
+    "headings": "Išči v naslovih"
+  },
+  "dts": {
+    "endpoint": "Izberi končno točko",
+    "note": "Poskusno: dostop do drugih izdaj, ki imajo API DTS"
+  },
+  "odd": {
+    "files": "Datoteke ODD",
+    "manage": {
+      "filename": "Ime datoteke ODD (brez končnice)",
+      "title": "Naslov za prikaz",
+      "create": "Ustvari",
+      "create-from-example": "Ustvari iz primerov",
+      "delete": "Ste prepričani, da želite izbrisati datoteko ODD {{file}}?",
+      "regenerate-all": "Znova generiraj vse ODD (dolgotrajno)",
+      "filename-error": "Zahtevano. Uporabi črke, številke - in _",
+      "title-error": "Naslov je obvezen"
+    },
+    "editor": {
+      "delete-spec": "Res želite izbrisati specifikacijo elementa za '{{ident}}'?",
+      "save": "Shrani",
+      "saving": "Shranjevanje ...",
+      "saved": "Shranjeno",
+      "denied": "Dostop zavrnjen",
+      "denied-message": "Nimate dovoljenja za shranjevanje {{odd}}",
+      "reload": "Osveži",
+      "reload-confirm": "Vse neshranjene spremembe bodo izgubljene. Želite nadaljevati?",
+      "add-element": "Dodaj element",
+      "odd-source": "Izvorna koda ODD",
+      "specs": "Specifikacije elementov",
+      "jump-to": "Skoči k elementu ...",
+      "title-short": "Kratek naslov",
+      "title-short-placeholder": "Kratek naslov za prikaz",
+      "description-label": "Opis",
+      "description-placeholder": "Opis ODD",
+      "source-label": "Osnovni ODD",
+      "source-placeholder": "ODD, iz katerega prevzemamo",
+      "use-namespace": "Preveri rabo drugih imenskih prostorov poleg TEI",
+      "namespace-placeholder": "URI privzetega imenskega prostora (če ni TEI)",
+      "title": "Naslov",
+      "title-placeholder": "Naslov ODD",
+      "model": {
+        "delete-model-label": "Izbrisati model?",
+        "delete-model-message": "Res želite izbrisati izbrani model?",
+        "description-placeholder": "[Dokumentiraj model]",
+        "predicate-placeholder": "[Določi nadaljnje pogoje, ki morajo biti upoštevani (v xquery)]",
+        "link-with-or": "ali",
+        "css-class-placeholder": "[Določi ime razreda CSS (za zunanji CSS)]",
+        "custom-behaviour-placeholder": "Privzeto obnašanje",
+        "template-placeholder": "[Določi kodno predlogo, ki bo aplicirana na vsebino]",
+        "param-name-placeholder": "[Ime parametra]",
+        "empty": "[Prazno]"
+      },
+      "css-source": "Odpri datoteko CSS"
+    }
+  },
+  "facets": {
+    "show": "Prikaži prvih 50",
+    "genre": "Zvrst",
+    "language": "Jezik"
+  },
+  "appgen": {
+    "account": {
+      "user": "Uporabniški račun za skrbniška opravila. Uporabnik bo ustvarjen, če še ne obstaja.",
+      "owner": "Uporabnik, ki bo lastnik aplikacije.",
+      "password": "Uporabniško geslo lastnika te aplikacije."
+    },
+    "submit": "Shrani/generiraj",
+    "index": {
+      "help": "Določi najmanjši blok, na katerem bo ustvarjeno besedilno kazalo. Za dokumente je priporočljivo izbrati 'Ustvari na ravni razdelka'. Če razdelkov ni, izberi 'Ustvari na ravni besedila'.",
+      "label": "Privzeto kazalo za celotno besedilo",
+      "index-div": "Ustvari na ravni razdelka",
+      "index-text": "Ustvari na ravni besedila"
+    },
+    "view": {
+      "help": "Izberi, kaj naj bo pri brskanju po besedilu privzeto prikazano: posamična stran ali celotni razdelek. Za prikaz po straneh mora biti dokument TEI pravilno označen z elementi &lt;tei:pb&gt;.",
+      "div": "Po razdelkih (poglavje/odlomek)",
+      "page": "Po straneh"
+    },
+    "label": "Privzeti prikaz",
+    "template": {
+      "help": "Izberi predlogo HTML za privzeto rabo",
+      "label": "Predloga HTML"
+    },
+    "title": {
+      "help": "Ime aplikacije, ki bo prikazano npr. na kontrolni plošči",
+      "label": "Ime aplikacije"
+    },
+    "collection": "Ime podzbirke, ki vsebuje dokumente TEI",
+    "abbrev": {
+      "label": "Kratko ime za rabo v naslovu URL in imenih datotek",
+      "placeholder": "Kratko ime"
+    },
+    "uri": "URL za unikatno identifikacijo aplikacije",
+    "dialog": {
+      "title": "Aplikacija je generirana"
+    },
+    "open": "Odpri",
+    "success": "Vaša aplikacija je bila uspešno generirana!"
+  },
+  "annotations": {
+    "edit": "Uredi oznake",
+    "delete": "Zbriši oznako",
+    "save": "Združi in shrani oznake v TEI",
+    "no-properties": "Ni definiranih lastnosti.",
+    "person": "Oseba",
+    "organisation": "Organizacija",
+    "place": "Kraj",
+    "term": "Pojem",
+    "date": "Datum",
+    "reg": "Regularizacija",
+    "app": "Enota kritičnega aparata",
+    "hi": "Poudarjeno",
+    "ref": "Povezava (ref)",
+    "abbreviation": "Okrajšava",
+    "occurrences": "Pojavitev v besedilu",
+    "correction": "Popravek",
+    "expansion": "Razvezava",
+    "reference": "Referenca",
+    "lookup": "Išči entiteto",
+    "apply": "Uporabi označevanje",
+    "apply-all": "Izberi in uporabi vse",
+    "changes": "Spremembe",
+    "undo": "Razveljavi zadnjo spremembo",
+    "download": "Shrani združeni TEI v lokalno datoteko",
+    "reload": "Ponovno naloži izvorni TEI",
+    "preview": "Predogled rezultatov združitve",
+    "confirm-restore-title": "Potrdite obnovitev",
+    "restore": "Za ta dokument smo našli označevanje iz prejšnje seje. Ga želite ponovno naložiti?",
+    "confirm-reload-title": "Potrdi ponovno nalaganje",
+    "confirm-reload": "Zavržemo trenutne oznake in ponovno naložimo vir?",
+    "modify": "Spremembo vključi v osnovno besedilo",
+    "modify-info": "Pozor: to ni označevanje, vendar bo spremenilo osnovno besedilo pri združitvi.",
+    "permission": "Dostop zavrnjen: nimate dovoljenja za shranjevanje oznak."
+  }
+}

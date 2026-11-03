@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <title>Using pb-table-grid with Search and Pagination</title>
+    <script>
+      // This patches the normal 'fetch' to handle calls to `/philosophers.json`. The public
+      // demos are static pages. Handle the sorting and filtering that would normaly happen on
+      // the back-end
+      let cache = null;
+      const originalFetch = window.fetch;
+      window.fetch = async (url, opts) => {
+        const u = new URL(String(url));
+        if (!u.pathname.endsWith('/philosophers.json')) {
+          // Fall back to regular fetch
+          return originalFetch.call(this, url, opts);
+        }
+        if (!cache) {
+          const resp = await originalFetch.call(this, u, opts);
+          cache = (await resp.json()).results;
+        }
+        // Keep the cached value intact
+        let results = [...cache];
+        const { searchParams } = u;
+        const search = searchParams.get('search');
+        const orderField = searchParams.get('order');
+        const dir = searchParams.get('dir');
+        const limit = parseInt(searchParams.get('limit') || '5', 10);
+        const start = parseInt(searchParams.get('start') || '1', 10);
+        if (search) {
+          const term = search.toLowerCase();
+          results = results.filter(r => Object.values(r).some(v => v.toLowerCase().includes(term)));
+        }
+        if (orderField) {
+          results.sort((a, b) => {
+            const av = a[orderField] ?? '';
+            const bv = b[orderField] ?? '';
+            return dir === 'desc' ? bv.localeCompare(av) : av.localeCompare(bv);
+          });
+        }
+        const count = results.length;
+        results = results.slice(Math.max(0, start - 1), Math.max(0, start - 1) + limit);
+        return new Response(JSON.stringify({ count, results }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      };
+    </script>
+    <script type="module" src="../pb-components-bundle.js"></script>
+  </head>
+  <body>
+    <h1>Using pb-table-grid with Search and Pagination</h1>
+
+    <pb-page theme="components.css" url-path="query" api-version="1.0.0">
+      <pb-table-grid
+        class="table-grid"
+        source="./philosophers.json"
+        css-path="../css/gridjs"
+        resizable
+        search
+        per-page="5"
+        pagination-top
+      >
+        <pb-table-column label="Name" property="name" sort width="25%"></pb-table-column>
+        <pb-table-column label="Born" property="birth" sort width="15%"></pb-table-column>
+        <pb-table-column label="Died" property="death" sort width="15%"></pb-table-column>
+        <pb-table-column
+          label="Nationality"
+          property="nationality"
+          sort
+          width="20%"
+        ></pb-table-column>
+        <pb-table-column label="Known For" property="known_for"></pb-table-column>
+      </pb-table-grid>
+    </pb-page>
+  </body>
+</html>
