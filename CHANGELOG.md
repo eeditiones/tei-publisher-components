@@ -1,3 +1,9 @@
+# [3.0.0-next-4.23](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.22...v3.0.0-next-4.23) (2026-11-03)
+
+### Bug Fixes
+
+- **pb-i18n:** keep rendered content when the element is moved ([7f1d69f](https://github.com/eeditiones/tei-publisher-components/commit/7f1d69f2c8336f80d83c678e46297ebe9de7ed71)), closes [#408](https://github.com/eeditiones/tei-publisher-components/issues/408)
+
 # [3.0.0-next-4.22](https://github.com/eeditiones/tei-publisher-components/compare/v3.0.0-next-4.21...v3.0.0-next-4.22) (2026-05-27)
 
 ### Bug Fixes
