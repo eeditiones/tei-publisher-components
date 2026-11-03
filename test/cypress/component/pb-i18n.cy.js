@@ -46,6 +46,51 @@ describe('pb-i18n (isolated)', () => {
     cy.get('pb-i18n').should('not.exist');
   });
 
+  describe('when moved in the DOM', () => {
+    // Moving an element disconnects and reconnects it (#408)
+    const move = () =>
+      cy.get('pb-i18n').then($el => {
+        const el = $el[0];
+        const target = document.createElement('div');
+        el.parentNode.append(target);
+        target.append(el);
+      });
+
+    // later tests expect no translation function
+    after(() => initTranslation(undefined));
+
+    it('should keep its translation', () => {
+      initTranslation(key => (key === 'test.key' ? 'Translated Text' : key));
+
+      cy.mount('<pb-i18n key="test.key">Fallback</pb-i18n>');
+      cy.get('pb-i18n').should('have.text', 'Translated Text');
+      move();
+      cy.get('div > pb-i18n').should('have.text', 'Translated Text');
+    });
+
+    it('should keep its fallback', () => {
+      initTranslation(key => key);
+
+      cy.mount('<pb-i18n key="test.missing">Fallback Text</pb-i18n>');
+      cy.get('pb-i18n').should('have.text', 'Fallback Text');
+      move();
+      cy.get('div > pb-i18n').should('have.text', 'Fallback Text');
+    });
+
+    it('should still update on a language change', () => {
+      initTranslation(key => (key === 'test.key' ? 'English' : key));
+
+      cy.mount('<pb-i18n key="test.key">Fallback</pb-i18n>');
+      cy.get('pb-i18n').should('have.text', 'English');
+      move();
+      cy.document().then(doc => {
+        const t = key => (key === 'test.key' ? 'Deutsch' : key);
+        doc.dispatchEvent(new CustomEvent('pb-i18n-update', { detail: { t } }));
+      });
+      cy.get('div > pb-i18n').should('have.text', 'Deutsch');
+    });
+  });
+
   it('should maintain proper DOM structure', () => {
     cy.mount('<pb-i18n key="test.key">Fallback</pb-i18n>');
     cy.get('pb-i18n').should('be.visible');
