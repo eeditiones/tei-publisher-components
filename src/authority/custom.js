@@ -130,4 +130,23 @@ export class Custom extends Registry {
       return Promise.reject(Error(response.status.toString()));
     });
   }
+
+  /**
+   * Delegate to whichever wrapped sub-connector actually implements data-extension fetching (e.g.
+   * a nested ReconciliationService).
+   *
+   * @param {string} id the id to fetch extended properties for
+   * @param {string[]} propertyIds the property ids to fetch
+   * @returns {Promise<Object.<string, *>>} promise resolving to a map of propertyId -> value
+   */
+  async fetchExtend(id, propertyIds) {
+    for (const connector of this._connectors) {
+      // eslint-disable-next-line no-await-in-loop
+      const result = await connector.fetchExtend(id, propertyIds).catch(() => ({}));
+      if (result && Object.keys(result).length > 0) {
+        return result;
+      }
+    }
+    return {};
+  }
 }

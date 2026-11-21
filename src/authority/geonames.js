@@ -89,12 +89,51 @@ export class GeoNames extends Registry {
         output.country = json.countryName;
         output.region = json.adminName1;
         output.note = json.fcodeName;
-        output.links = [
-          `https://www.geonames.org/${json.geonameId}`,
-          `https://${json.wikipediaURL}`,
-        ];
+        // Singular "link" is what a `fields="...=extend:link"` mapping reads (see fetchExtend()
+        // below and Registry.buildProperties) - it was missing before, silently making that
+        // source always resolve to nothing for GeoNames matches. Plural "links" is this
+        // codebase's existing multi-link convention shared with the other connectors
+        // (metagrid.js, anton.js, kbga.js); kept alongside "link" for consistency even though
+        // nothing currently reads it back out.
+        output.link = `https://www.geonames.org/${json.geonameId}`;
+        output.links = [output.link, `https://${json.wikipediaURL}`];
+        if (json.lat && json.lng) {
+          output.geo = `${json.lat},${json.lng}`;
+        }
         return output;
       })
       .catch(() => Promise.reject());
+  }
+
+  /**
+   * Fetch additional property values for a single matched entry beyond what query() already
+   * returned, using the same normalized record getRecord() already builds (region/country/note/
+   * link/geo) - lets a `fields` mapping's `extend:propId` source resolve for a GeoNames-backed
+   * match the same way it already does for a reconciliation-service-backed one, via
+   * Registry.buildProperties (this override is what makes Custom.fetchExtend's own delegation to
+   * wrapped connectors actually find something, instead of always silently resolving to "no
+   * value").
+   *
+   * @param {string} id the id to fetch extended properties for
+   * @param {string[]} propertyIds the property ids to fetch
+   * @returns {Promise<Object.<string, *>>} promise resolving to a map of propertyId -> value
+   */
+  async fetchExtend(id, propertyIds) {
+    try {
+      const record = await this.getRecord(id);
+      const result = {};
+      propertyIds.forEach(propId => {
+        let value = record[propId];
+        if (Array.isArray(value)) {
+          value = value.filter(Boolean).join('; ');
+        }
+        if (value !== undefined && value !== null && value !== '') {
+          result[propId] = value;
+        }
+      });
+      return result;
+    } catch (e) {
+      return {};
+    }
   }
 }

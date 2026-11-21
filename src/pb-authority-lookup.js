@@ -198,6 +198,7 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
   }
 
   _formatItem(item) {
+    const label = item.labelIsHtml ? unsafeHTML(item.label) : item.label;
     return html`
       <li>
         <div>
@@ -214,8 +215,8 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
             </svg>
           </button>
           ${item.link
-            ? html`<a target="_blank" href="${item.link}">${unsafeHTML(item.label)}</a>`
-            : html`${unsafeHTML(item.label)}`}
+            ? html`<a target="_blank" href="${item.link}">${label}</a>`
+            : html`${label}`}
           <div class="badges">
             ${item.occurrences > 0
               ? html`<span class="occurrences badge" part="occurrences">${item.occurrences}</span>`
@@ -351,14 +352,13 @@ export class PbAuthorityLookup extends themableMixin(pbMixin(LitElement)) {
     `;
   }
 
-  _select(item) {
+  async _select(item) {
     const connector = this._authorities[item.register];
+    const properties = connector ? await connector.buildProperties(item).catch(() => ({ key: item.id })) : { key: item.id };
     const options = {
       strings: item.strings,
       type: item.register,
-      properties: {
-        ref: item.id,
-      },
+      properties,
     };
     if (connector) {
       connector

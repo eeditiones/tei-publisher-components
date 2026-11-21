@@ -94,6 +94,13 @@ export class GND extends Registry {
         const output = { ...json };
         output.name = json.preferredName;
         output.link = json.id;
+        // Alias for "link" matching the reconcile profile's own "gnd" data-extension
+        // property id (see reconc-config.xql) - lets an `extend:gnd` field mapping
+        // resolve the same GND URI whether the match came directly from this GND
+        // connector or from a nested ReconciliationService connector answering the
+        // same request (Custom.fetchExtend tries each in turn with the same property
+        // ids, see custom.js).
+        output.gnd = json.id;
         if (json.dateOfBirth && json.dateOfBirth.length > 0) {
           output.birth = json.dateOfBirth[0];
         }
@@ -154,5 +161,37 @@ export class GND extends Registry {
       return `<p>${terms.join(', ')}</p>`;
     }
     return '';
+  }
+
+  /**
+   * Fetch additional property values for a single matched entry beyond what query() already
+   * returned, using the same normalized record getRecord() already builds (link/note/profession/
+   * birth/death) - lets a `fields` mapping's `extend:propId` source resolve for a GND-backed match
+   * the same way it already does for a reconciliation-service-backed one, via
+   * Registry.buildProperties (this override is what makes Custom.fetchExtend's own delegation to
+   * wrapped connectors actually find something, instead of always silently resolving to "no
+   * value").
+   *
+   * @param {string} id the id to fetch extended properties for
+   * @param {string[]} propertyIds the property ids to fetch
+   * @returns {Promise<Object.<string, *>>} promise resolving to a map of propertyId -> value
+   */
+  async fetchExtend(id, propertyIds) {
+    try {
+      const record = await this.getRecord(id);
+      const result = {};
+      propertyIds.forEach(propId => {
+        let value = record[propId];
+        if (Array.isArray(value)) {
+          value = value.filter(Boolean).join('; ');
+        }
+        if (value !== undefined && value !== null && value !== '') {
+          result[propId] = value;
+        }
+      });
+      return result;
+    } catch (e) {
+      return {};
+    }
   }
 }

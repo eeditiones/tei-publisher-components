@@ -54,6 +54,12 @@ export class KBGA extends Registry {
               register: this._register,
               id: this._prefix ? `${this._prefix}:${item['full-id']}` : item['full-id'],
               label: typeof label === 'string' ? item[label] : label(item),
+              // Only the bibl/songs "asHtml" field is real, KBGA-formatted markup (e.g.
+              // italicized titles) meant to be rendered as-is - see
+              // pb-authority-lookup.js's _formatItem, which only calls lit-html's
+              // unsafeHTML() when this flag is set. Every other register's label is a
+              // plain string and must stay auto-escaped.
+              labelIsHtml: label === 'asHtml',
               details: `${item['full-id']}`,
               link: `https://meta.karl-barth.ch/${register}/${item.id}`,
               strings: [typeof label === 'string' ? item[label] : label(item)],
