@@ -31,6 +31,7 @@ WORKDIR /tmp/tei-publisher-app
 COPY dist/*.js resources/lib/
 COPY dist/*.js resources/scripts/
 COPY i18n/common/* resources/i18n/common/
+COPY css/ resources/css/
 
 RUN ant xar
 
