@@ -393,6 +393,10 @@ export class PbPage extends pbMixin(LitElement) {
       initTranslation(t);
       // initialized and ready to go!
       this._updateI18n(t);
+
+      // Page is loaded. Lower the 'unresolved' flag so any loading screen can be closed
+      // The `init` promise here always resolves. No need for a catchs
+      this.unresolved = false;
       this.signalReady('pb-i18n-update', { t, language: this._i18nInstance.language });
       if (this.requireLanguage && this.apiVersion) {
         this.signalReady('pb-page-ready', {
@@ -414,7 +418,6 @@ export class PbPage extends pbMixin(LitElement) {
 
     // this.subscribeTo('pb-global-toggle', this._toggleFeatures.bind(this));
     this.addEventListener('pb-global-toggle', this._toggleFeatures.bind(this));
-    this.unresolved = false;
 
     console.log('<pb-page> endpoint: %s; trigger window resize', this.endpoint);
     this.querySelectorAll('app-header').forEach(h => h._notifyLayoutChanged());
