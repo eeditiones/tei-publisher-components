@@ -88,6 +88,15 @@
                                 </template>
                             </pb-popover>.
                         </pb-popover>
+                        <p>Footnotes may contain other footnotes<a id="fn-outer" class="trigger" href="#">1</a>.
+                            The footnote list repeats the nested marker with the same id, and
+                            both copies open the nested popover.</p>
+                        <ol>
+                            <li>An author's note referring to an editor's note<a id="fn-inner" class="trigger" href="#">a</a>.</li>
+                            <li>The editor's note<a id="fn-inner" class="trigger" href="#">a</a> as listed after the text.</li>
+                        </ol>
+                        <pb-popover for="fn-outer">An author's note referring to an editor's note<a id="fn-inner" class="trigger" href="#">a</a>.</pb-popover>
+                        <pb-popover for="fn-inner">The editor's note, shown on top of the author's note.</pb-popover>
                         <script>
                             window.addEventListener('WebComponentsReady', () => {
                                 document.getElementById('dynamic').alternate = '<p>This was set dynamically</p>';
