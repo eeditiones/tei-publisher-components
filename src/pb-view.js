@@ -1060,12 +1060,22 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
     }
   }
 
+  /**
+   * The element with the given id, preferring a visible one. The same id may occur
+   * more than once: a note marker inside another note is output in the hidden
+   * content of the outer note's popover and again in the list of notes.
+   */
+  _findTarget(id, root = this.shadowRoot) {
+    const elems = Array.from(root.querySelectorAll(`[id="${CSS.escape(id)}"]`));
+    return elems.find(elem => elem.getClientRects().length > 0) || elems[0] || null;
+  }
+
   _scroll() {
     if (this.noScroll) {
       return;
     }
     if (registry.hash) {
-      const target = this.shadowRoot.getElementById(registry.hash.substring(1));
+      const target = this._findTarget(registry.hash.substring(1));
       console.log('hash target: %o', target);
       if (target) {
         window.requestAnimationFrame(() =>
@@ -1078,7 +1088,7 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
   }
 
   _scrollToElement(ev, link) {
-    const target = this.shadowRoot.getElementById(link.hash.substring(1));
+    const target = this._findTarget(decodeURIComponent(link.hash.substring(1)));
     if (target) {
       ev.preventDefault();
       console.log('<pb-view> Scrolling to element %s', target.id);
@@ -1139,7 +1149,10 @@ export class PbView extends themableMixin(pbMixin(LitElement)) {
       content.querySelectorAll('.note, .fn-back').forEach(elem => {
         elem.addEventListener('click', ev => {
           ev.preventDefault();
-          const fn = this.shadowRoot.getElementById('content').querySelector(elem.hash);
+          const fn = this._findTarget(
+            decodeURIComponent(elem.hash.substring(1)),
+            this.shadowRoot.getElementById('content'),
+          );
           if (fn) {
             fn.scrollIntoView();
           }

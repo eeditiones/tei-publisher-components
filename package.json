@@ -38,6 +38,7 @@
   "dependencies": {
     "@babel/runtime": "7.27.1",
     "@cwmr/paper-autocomplete": "^4.0.0",
+    "@floating-ui/dom": "^1.8.0",
     "@jinntec/jinn-codemirror": "^1.18.2",
     "@lrnwebcomponents/es-global-bridge": "^7.0.4",
     "@polymer/app-layout": "^3.1.0",
@@ -89,7 +90,6 @@
     "path-to-regexp": "^6.2.1",
     "prismjs": "^1.29.0",
     "tify": "^0.28.1",
-    "tippy.js": "^6.3.7",
     "tom-select": "^2.2.2",
     "uniqolor": "^1.1.0",
     "verovio": "^3.16.0",

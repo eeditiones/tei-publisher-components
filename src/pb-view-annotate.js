@@ -1,9 +1,9 @@
 import '@polymer/paper-icon-button';
 import { css, html } from 'lit-element';
-import tippy from 'tippy.js';
 import uniqolor from 'uniqolor/src/index';
 import { PbView } from './pb-view.js';
-import { loadTippyStyles } from './pb-popover.js';
+import { loadPopoverStyles } from './pb-popover.js';
+import { PbPopoverPopup } from './pb-popover-popup.js';
 import { get as i18n } from './pb-i18n.js';
 
 /**
@@ -424,7 +424,7 @@ class PbViewAnnotate extends PbView {
     super.firstUpdated();
 
     this.enableScrollbar(false);
-    loadTippyStyles(this.shadowRoot, 'light-border');
+    loadPopoverStyles(this.shadowRoot, 'light-border');
   }
 
   render() {
@@ -939,7 +939,7 @@ class PbViewAnnotate extends PbView {
   }
 
   _createTooltip(span) {
-    if (span._tippy || !span.dataset.annotation) {
+    if (span._pbPopup || !span.dataset.annotation) {
       return;
     }
     const wrapper = document.createElement('div');
@@ -982,26 +982,13 @@ class PbViewAnnotate extends PbView {
     wrapper.appendChild(div);
 
     const root = this.shadowRoot.getElementById('view');
-    tippy(span, {
-      content: wrapper,
-      allowHTML: true,
-      interactive: true,
+    const popup = new PbPopoverPopup(span, {
       appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
       theme: 'light-border',
-      hideOnClick: false,
-      maxWidth: 'auto',
       trigger: 'click',
+      touch: true,
       placement: 'left',
-      popperOptions: {
-        modifiers: [
-          {
-            name: 'flip',
-            options: {
-              fallbackPlacements: ['right', 'top', 'bottom'],
-            },
-          },
-        ],
-      },
+      fallbackPlacements: ['right', 'top', 'bottom'],
       onTrigger: (instance, ev) => {
         ev.preventDefault();
         ev.stopPropagation();
@@ -1049,6 +1036,7 @@ class PbViewAnnotate extends PbView {
         instance.hideWithInteractivity(ev);
       },
     });
+    popup.setContent(wrapper);
   }
 
   /**
@@ -1103,8 +1091,8 @@ class PbViewAnnotate extends PbView {
     markerLayer.style.display = 'none';
     this._clearMarkers();
     root.querySelectorAll('.annotation').forEach(span => {
-      if (span._tippy) {
-        span._tippy.destroy();
+      if (span._pbPopup) {
+        span._pbPopup.destroy();
       }
       this._showMarker(span, markerLayer, rootRect, ancestors(span, 'annotation') * 5);
     });
