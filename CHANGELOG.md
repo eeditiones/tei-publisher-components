@@ -1,3 +1,11 @@
+## [3.6.10](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.9...v3.6.10) (2026-11-27)
+
+
+### Bug Fixes
+
+* remove dependency on outdated tippy.js, use Popover API and floating-ui instead ([eb492cd](https://github.com/eeditiones/tei-publisher-components/commit/eb492cdffa7886fbc4adbd354a7d85d7c7fd4afe))
+* show nested popovers reliably (e.g. footnotes in footnotes) ([00df614](https://github.com/eeditiones/tei-publisher-components/commit/00df614bbc699ba34014f7ddfbc79e592da85b5b))
+
 ## [3.6.9](https://github.com/eeditiones/tei-publisher-components/compare/v3.6.8...v3.6.9) (2026-10-20)
 
 
