@@ -1,31 +1,125 @@
 import { LitElement, html, css } from 'lit-element';
-import tippy from 'tippy.js';
+import { PbPopoverPopup, popupRootStyles } from './pb-popover-popup.js';
 import { pbMixin } from './pb-mixin.js';
 import { getCSSProperty } from './utils.js';
 import * as themes from './pb-popover-themes.js';
 
-function _injectStylesheet(root, name, cssCode) {
-  const style = root.querySelector(`#pb-popover-${name}`);
+function _injectStylesheet(root, id, cssCode) {
+  const style = root.querySelector(`#${id}`);
   if (!style) {
     const container = root.nodeType === Node.DOCUMENT_NODE ? document.head : root;
-    console.log('Loading tippy styles for theme %s into %o', name, container);
     const elem = document.createElement('style');
     elem.type = 'text/css';
-    elem.id = `pb-popover-${name}`;
+    elem.id = id;
     elem.innerHTML = cssCode;
     container.appendChild(elem);
   }
 }
 
-export function loadTippyStyles(root, theme) {
-  _injectStylesheet(root, 'base', themes.base);
-  if (theme && theme !== 'none') {
-    const name = themes.camelize(theme);
-    const themeCSS = themes[name];
-    if (themeCSS) {
-      _injectStylesheet(root, name, themeCSS);
-    }
+function _themeCSS(theme) {
+  if (!theme || theme === 'none') {
+    return null;
   }
+  const name = themes.camelize(theme);
+  const themeCSS = themes[name];
+  return themeCSS ? { name, css: themeCSS } : null;
+}
+
+/**
+ * Load the base styles and the given theme for popups of `pb-popover` into `root`
+ * (a document or shadow root).
+ */
+export function loadPopoverStyles(root, theme) {
+  _injectStylesheet(root, 'pb-popover-base', themes.base);
+  _injectStylesheet(root, 'pb-popover-root', popupRootStyles);
+  const themeCSS = _themeCSS(theme);
+  if (themeCSS) {
+    _injectStylesheet(root, `pb-popover-${themeCSS.name}`, themeCSS.css);
+  }
+}
+
+/**
+ * Load the base styles and the given theme for tippy.js into `root`.
+ *
+ * @deprecated No component uses tippy.js any more: use `loadPopoverStyles`.
+ */
+export function loadTippyStyles(root, theme) {
+  _injectStylesheet(root, 'tippy-base', themes.toTippy(themes.base));
+  const themeCSS = _themeCSS(theme);
+  if (themeCSS) {
+    _injectStylesheet(root, `tippy-${themeCSS.name}`, themes.toTippy(themeCSS.css));
+  }
+}
+
+/**
+ * Popovers with a `for` attribute, per root node (document or shadow root),
+ * keyed by the id of their trigger.
+ *
+ * The same trigger may occur more than once in a root: a footnote nested inside
+ * another footnote is output in the footnote list and again in the content of
+ * the outer popover, and a popup shows a clone of that content. All copies
+ * carry the same id, so looking up the trigger with `getElementById` finds only
+ * one of them, often an invisible one. The registry lets a popup that has just
+ * been shown find the triggers it contains and bind their popovers to them.
+ */
+const registries = new WeakMap();
+
+function _registry(root) {
+  let registry = registries.get(root);
+  if (!registry) {
+    registry = new Map();
+    registries.set(root, registry);
+  }
+  return registry;
+}
+
+/**
+ * Bind the popovers registered in `root` to the triggers inside `container`
+ * which have none yet. Used for the content of a popup once it is shown.
+ */
+function _bindTriggers(root, container) {
+  const registry = registries.get(root);
+  if (!registry || registry.size === 0) {
+    return;
+  }
+  container.querySelectorAll('[id]').forEach(elem => {
+    if (elem._pbPopup) {
+      return;
+    }
+    const popover = registry.get(elem.id);
+    if (popover && popover.isConnected) {
+      popover._bind(elem);
+    }
+  });
+}
+
+/**
+ * The popup root (`.pb-popover-root`) containing `elem`, if any. Looks through
+ * shadow DOM boundaries: the trigger of an inline `pb-popover` sits in its own
+ * shadow root, while the popover itself may be inside another popup.
+ */
+function _parentPopper(elem) {
+  let node = elem;
+  while (node) {
+    const popper = node.closest('.pb-popover-root');
+    if (popper) {
+      return popper;
+    }
+    node = node.getRootNode().host;
+  }
+  return null;
+}
+
+/**
+ * Is `elem` inside the content of a popover, which the browser never shows
+ * (light DOM of a `pb-popover` with `for`, or its alternate slot)?
+ */
+function _isHiddenSource(elem) {
+  const host = elem.parentElement && elem.parentElement.closest('pb-popover');
+  if (!host) {
+    return false;
+  }
+  return host.hasAttribute('for') || elem.closest('[slot="alternate"], template') !== null;
 }
 
 /**
@@ -51,11 +145,21 @@ export function loadTippyStyles(root, theme) {
  * ```
  *
  * If you would like popovers to contain nested popovers, choose approach 1 above and use `for`.
+ * The trigger of a nested popover may occur more than once with the same id, e.g. a footnote
+ * marker inside another footnote, repeated in the list of footnotes: every visible copy opens
+ * the popover, including the copy shown inside the outer popup.
  *
  * If property `persistent` is true, the popover will be shown
  * on click. Otherwise display a tooltip on mouseover.
  *
- * `pb-popover` uses the tippy.js library for the popup.
+ * The popup is shown in the browser's top layer (Popover API) and positioned with
+ * Floating UI. Its markup is
+ * `.pb-popover-root > .pb-popover-box[data-theme][data-placement] > .pb-popover-content + .pb-popover-arrow`.
+ *
+ * Deprecated: `pb-popover` used tippy.js before, so the popup elements also carry
+ * tippy's class names (`[data-tippy-root]`, `.tippy-box`, `.tippy-content`,
+ * `.tippy-arrow`), and existing stylesheets using them still apply. Use the
+ * `pb-popover-*` class names instead: tippy's will be removed in a future major version.
  *
  * ## Styling
  *
@@ -66,7 +170,7 @@ export function loadTippyStyles(root, theme) {
  *
  * @prop {String} for - The id of a trigger element (e.g. a link) to which the popover will
  * be attached. If not set, the trigger is the pb-popover itself.
- * @prop {"material" | "light" | "translucent" | "light-border"} theme - The tippy theme to use.
+ * @prop {"material" | "light" | "translucent" | "light-border"} theme - The popup theme to use (the same as those of tippy.js).
  * @prop {"auto" | "top" | "bottom" | "left" | "right"} placement - Preferred placement of the popup.
  * Default is 'auto'.
  * @prop {String} fallbackPlacement - Fallback placement if there is more space on another side.
@@ -150,8 +254,16 @@ export class PbPopover extends pbMixin(LitElement) {
     this.fallbackPlacement = null;
     this.popupClass = null;
     this.stopPropagation = false;
-    this._tippy = null;
+    this._popup = null;
+    this._instances = new Set();
     this._content = null;
+  }
+
+  /**
+   * @deprecated Use `_popup`.
+   */
+  get _tippy() {
+    return this._popup;
   }
 
   render() {
@@ -163,11 +275,26 @@ export class PbPopover extends pbMixin(LitElement) {
       ><span class="hidden"><slot name="alternate"></slot></span>`;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // connected again after having been rendered before: see `_attach`
+    if (this.hasUpdated) {
+      this._registerMutationObserver();
+      this._attach();
+    }
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._tippy) {
-      this._tippy.destroy();
+    if (this.for && this._root) {
+      const registry = registries.get(this._root);
+      if (registry && registry.get(this.for) === this) {
+        registry.delete(this.for);
+      }
     }
+    this._instances.forEach(instance => instance.destroy());
+    this._instances.clear();
+    this._popup = null;
     if (this._observer) {
       this._observer.disconnect();
     }
@@ -201,7 +328,7 @@ export class PbPopover extends pbMixin(LitElement) {
   _injectStyles() {
     this._checkCSSProperties();
 
-    loadTippyStyles(this.getRootNode(), this.theme);
+    loadPopoverStyles(this.getRootNode(), this.theme);
   }
 
   /**
@@ -212,7 +339,7 @@ export class PbPopover extends pbMixin(LitElement) {
    * computed style - `display` reads as the empty string - and every custom
    * property on it reads as empty with it. A `pb-popover` upgrading on a plain
    * HTML page regularly hits this, in particular inside a hidden container, and
-   * would keep tippy's default dark theme although the stylesheet sets one. By
+   * would keep the default dark theme although the stylesheet sets one. By
    * the time the popup is shown the element is rendered, so the theme can be
    * applied then.
    */
@@ -229,7 +356,7 @@ export class PbPopover extends pbMixin(LitElement) {
     if (theme === 'none') {
       return;
     }
-    loadTippyStyles(this.getRootNode(), theme);
+    loadPopoverStyles(this.getRootNode(), theme);
     instance.setProps({ theme });
   }
 
@@ -295,24 +422,27 @@ export class PbPopover extends pbMixin(LitElement) {
    */
   set alternate(content) {
     this._content = content;
-    if (this._tippy) {
-      this._tippy.setContent(this._content);
-    }
+    this._instances.forEach(instance => {
+      instance.setContent(this._content);
+      if (instance.state.isMounted) {
+        _bindTriggers(this._root, instance.popper);
+      }
+    });
   }
 
   /**
-   * Overwrite to enable/disable tippy instance
+   * Overwrite to enable/disable the popups
    */
   command(command, state) {
     if (command === 'disable') {
       this.disabled = state;
-      if (this._tippy) {
+      this._instances.forEach(instance => {
         if (state) {
-          this._tippy.disable();
+          instance.disable();
         } else {
-          this._tippy.enable();
+          instance.enable();
         }
-      }
+      });
     }
   }
 
@@ -327,71 +457,98 @@ export class PbPopover extends pbMixin(LitElement) {
       this.trigger = this.persistent ? 'click' : 'mouseenter';
     }
 
+    this._attach();
+  }
+
+  /**
+   * Bind the popover to its trigger(s). Runs after the first render and again
+   * whenever the element is connected anew: the content of a popup is removed
+   * from the page when the popup hides, which destroys the popups of
+   * popovers inside it (see `disconnectedCallback`), and Lit does not call
+   * `firstUpdated` a second time when the popup shows again.
+   */
+  _attach() {
     const root = this.getRootNode();
-    let target;
+    this._root = root;
     if (this.for) {
-      target = root.getElementById(this.for);
-      if (!target) {
+      // the first popover for an id wins; clones of it inside popups don't take over
+      const registry = _registry(root);
+      if (!registry.has(this.for) || !registry.get(this.for).isConnected) {
+        registry.set(this.for, this);
+      }
+      const targets = Array.from(root.querySelectorAll(`[id="${CSS.escape(this.for)}"]`));
+      const visible = targets.filter(target => !_isHiddenSource(target));
+      if (targets.length === 0) {
         console.error('<pb-popover> target element %s not found', this.for);
       }
+      (visible.length > 0 ? visible : targets).forEach(target => this._bind(target));
     } else {
-      target = this.shadowRoot.getElementById('link');
+      this._bind(this.shadowRoot.getElementById('link'));
     }
-    if (target) {
-      const options = {
-        allowHTML: true,
-        appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
-        placement: this.placement,
-        interactive: true,
-        ignoreAttributes: true,
-        boundary: 'viewport',
-        maxWidth: 'none',
-        touch: this.touch,
-        hideOnClick: false,
-        trigger: this.trigger,
-      };
-      if (this.stopPropagation) {
-        options.onTrigger = (instance, ev) => {
-          ev.stopPropagation();
-        };
-      }
-      if (this.persistent) {
-        options.onClickOutside = (instance, ev) => {
-          instance.hideWithInteractivity(ev);
-        };
-      }
-      if (this.theme && this.theme !== 'none') {
-        options.theme = this.theme;
-      }
-      if (this.fallbackPlacement) {
-        const placements = this.fallbackPlacement.split(' ');
-        options.popperOptions = {
-          modifiers: [
-            {
-              name: 'flip',
-              options: {
-                fallbackPlacements: placements,
-              },
-            },
-          ],
-        };
-      }
-      if (this.popupClass) {
-        options.onCreate = instance => {
-          instance.popper.classList.add(this.popupClass);
-        };
-      }
-      options.onShow = instance => {
-        this._resolveTheme(instance);
-        if (this.remote) {
-          this._loadRemoteContent();
-        } else {
-          instance.setContent(this._getContent());
-        }
-        this.emitTo('pb-popover-show', { source: this, popup: instance });
-      };
+  }
 
-      this._tippy = tippy(target, options);
+  /**
+   * Attach a popup for this popover to the trigger element `target`.
+   * Called once for every copy of the trigger.
+   */
+  _bind(target) {
+    if (!target || target._pbPopup) {
+      return;
+    }
+    const root = this._root;
+    const options = {
+      appendTo: root.nodeType === Node.DOCUMENT_NODE ? document.body : root,
+      placement: this.placement,
+      touch: this.touch,
+      trigger: this.trigger,
+      theme: this.theme,
+      popupClass: this.popupClass,
+    };
+    // A trigger inside another popup: the new popup becomes its child. The outer
+    // popup stays open while the pointer is over the nested one and closes it
+    // when it closes itself.
+    const parentPopper = _parentPopper(target);
+    if (parentPopper && parentPopper._pbPopup) {
+      options.parent = parentPopper._pbPopup;
+    }
+    if (this.stopPropagation) {
+      options.onTrigger = (instance, ev) => {
+        ev.stopPropagation();
+      };
+    }
+    if (this.persistent) {
+      options.onClickOutside = (instance, ev) => {
+        instance.hideWithInteractivity(ev);
+      };
+    }
+    if (this.fallbackPlacement) {
+      options.fallbackPlacements = this.fallbackPlacement.split(' ');
+    }
+    options.onShow = instance => {
+      this._resolveTheme(instance);
+      instance.setContent(this._getContent());
+      if (this.remote) {
+        this._loadRemoteContent();
+      }
+      this.emitTo('pb-popover-show', { source: this, popup: instance });
+    };
+    options.onMount = instance => {
+      _bindTriggers(root, instance.popper);
+    };
+    options.onDestroy = instance => {
+      this._instances.delete(instance);
+      if (this._popup === instance) {
+        this._popup = this._instances.values().next().value || null;
+      }
+    };
+
+    const instance = new PbPopoverPopup(target, options);
+    if (this.disabled) {
+      instance.disable();
+    }
+    this._instances.add(instance);
+    if (!this._popup) {
+      this._popup = instance;
     }
   }
 
