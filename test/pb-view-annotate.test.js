@@ -5,11 +5,13 @@ import '../src/pb-document.js';
 import '../src/pb-view-annotate.js';
 
 describe('pb-view-annotate tooltip', () => {
+  // without disable-history the view would write its ODD into the shared history
+  // state (and URL), which later tests' pb-document elements would pick up
   async function annotatedSpan() {
     const container = await fixture(html`
       <div>
-        <pb-document id="annotate-doc" path="test.xml" odd="teipublisher"></pb-document>
-        <pb-view-annotate src="annotate-doc"></pb-view-annotate>
+        <pb-document id="annotate-doc" path="test.xml" odd="teipublisher" disable-history></pb-document>
+        <pb-view-annotate src="annotate-doc" disable-history></pb-view-annotate>
       </div>
     `);
     const el = container.querySelector('pb-view-annotate');
